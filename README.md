@@ -106,7 +106,14 @@ Here we'll show you how to get started with unity and DOJO
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+Assuming you're using windows You'll have to install the following two programs on your machine
+
+* UnityHub
+
+* Unity 2022.3.12(f1)
+  
+Now you'll need to either open a command prompt and run "wsl" or install wsl to your machine
+
 * wsl
   ```sh
   wsl --install
