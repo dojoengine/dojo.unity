@@ -95,10 +95,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Katana][KantaNetwork]][Kanta-url]
 * [![TypedSDKs]
 * [![Unity][Unity.com]][Unity-url]
-[Sozo]: https://img.shields.io/badge/sozo-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
-[Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
-[Cairo]: https://img.shields.io/badge/Cairo-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
-[Cairo-url]: https://github.com/starkware-libs/cairo
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
@@ -209,6 +206,10 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+[Sozo]: https://img.shields.io/badge/sozo-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
+[Cairo]: https://img.shields.io/badge/Cairo-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
+[Cairo-url]: https://github.com/starkware-libs/cairo
 [contributors-shield]: https://img.shields.io/github/contributors/dojoengine/dojo.unity.svg?style=for-the-badge
 [contributors-url]: https://github.com/dojoengine/dojo/unity/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dojoengine/dojo.unity.svg?style=for-the-badge
