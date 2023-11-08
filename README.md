@@ -217,7 +217,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
 [Cairo-url]: https://github.com/starkware-libs/cairo
 [Katana]: https://github.com/dojoengine/dojo/blob/main/.github/katana-mark.svg
-[Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana/
+[Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
 [contributors-shield]: https://img.shields.io/github/contributors/dojoengine/dojo.unity.svg?style=for-the-badge
 [contributors-url]: https://github.com/dojoengine/dojo/unity/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dojoengine/dojo.unity.svg?style=for-the-badge
