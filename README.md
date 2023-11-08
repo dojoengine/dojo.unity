@@ -92,7 +92,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Sozo]][Sozo-url]
 * [![Cairo]][Cairo-url]
 * [![Torii]][Torii-url]
-* [![Katana]]
+* [![Katana]][Katana-url]
 * [![Unity]][Unity-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -106,7 +106,14 @@ Here we'll show you how to get started with unity and DOJO
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+Assuming you're using windows You'll have to install the following two programs on your machine
+
+* UnityHub
+
+* Unity 2022.3.12(f1)
+  
+Now you'll need to either open a command prompt and run "wsl" or install wsl to your machine
+
 * wsl
   ```sh
   wsl --install
@@ -215,8 +222,10 @@ Use this space to list resources you find helpful and would like to give credit 
 [Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
 [Cairo-url]: https://github.com/starkware-libs/cairo
-[Katana]: https://github.com/juoni/dojo.unity/blob/main/Images/katana-logo.png
-
+[Katana]: https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png
+[Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
+[Unity]: https://avatars.githubusercontent.com/u/426196?s=200&v=4
+[Unity-url]: https://www.unity.com
 [contributors-shield]: https://img.shields.io/github/contributors/dojoengine/dojo.unity.svg?style=for-the-badge
 [contributors-url]: https://github.com/dojoengine/dojo/unity/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dojoengine/dojo.unity.svg?style=for-the-badge
