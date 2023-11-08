@@ -93,7 +93,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Cairo][CairoECS]][Cairo-url]
 * [![Torii][ToriiIndexer]][Torii-url]
 * [![Katana][KantaNetwork]][Kanta-url]
-* [![TypedSDKs]
+
 * [![Unity][Unity.com]][Unity-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
