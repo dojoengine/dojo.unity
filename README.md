@@ -223,7 +223,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [Katana]: https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png
 [Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
 [Unity]: https://avatars.githubusercontent.com/u/426196?s=200&v=4
-[Unity-url]: https://www.unity.com
+[Unity-url]: https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe
 [contributors-shield]: https://img.shields.io/github/contributors/dojoengine/dojo.unity.svg?style=for-the-badge
 [contributors-url]: https://github.com/dojoengine/dojo/unity/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dojoengine/dojo.unity.svg?style=for-the-badge
