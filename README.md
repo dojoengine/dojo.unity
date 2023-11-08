@@ -96,7 +96,7 @@ and test and run your first dojo enabled Unity project
 * [![Sozo]][Sozo-url] Your trusty CLI tool to oversee and upkeep your in-game universes.
 * [![Cairo]][Cairo-url] it provides a solid foundation to structure your game.
 * [![Torii]][Torii-url] Say goodbye to manually creating indexers. Torii does it automatically for you!
-* [!["Katana"][Katana-url]  An RPC development network to streamline and expedite your game's iterative processes.
+* [![Katana][Katana-url]  An RPC development network to streamline and expedite your game's iterative processes.
 * [![Unity]][Unity-url] Unity is a cross-platform game engine developed by Unity Technologies
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -228,7 +228,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
 [Cairo-url]: https://github.com/starkware-libs/cairo
-[Katana]:https://raw.githubusercontent.com/juoni/dojo.unity/main/Images/katana-mark.png?w=50"
+[Katana]:https://raw.githubusercontent.com/juoni/dojo.unity/main/Images/katana-mark.png?w=50
 [Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
 [Unity]: https://avatars.githubusercontent.com/u/426196?s=200&v=4
 [Unity-url]: https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe
