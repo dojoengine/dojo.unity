@@ -115,18 +115,17 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
+* installing dojo
+  1. Ensure dojo is on our machine
+  ```sh
+  curl -L https://install.dojoengine.org | bash
+  ```
 
-1. Ensure dojo is installed  ```sh curl -L https://install.dojoengine.org | bash   ```
 2. Open a new wsl terminal window  and run
-   ```sh dojoup```
-4. Install NPM packages
    ```sh
-   npm install
+   dojoup
    ```
-5. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
