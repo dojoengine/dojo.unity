@@ -106,7 +106,7 @@ Here we'll show you how to get started with unity and DOJO
 
 Assuming you're using windows You'll have to install the following two programs on your machine
 
-* UnityHub
+* [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe)
 
 * Unity 2022.3.12(f1)
   
