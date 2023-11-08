@@ -90,9 +90,9 @@ and test and run your first dojo enabled Unity project
 This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
 * [![Sozo]][Sozo-url]
-* [![Cairo][CairoECS]][Cairo-url]
-* [![Torii][ToriiIndexer]][Torii-url]
-* [![Katana][KantaNetwork]][Kanta-url]
+* [![Cairo]][Cairo-url]
+* [![Torii]][Torii-url]
+* [![Katana]][Kanta-url]
 
 * [![Unity][Unity.com]][Unity-url]
 
