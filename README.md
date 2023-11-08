@@ -129,7 +129,7 @@ Now you'll need to either open a command prompt and run "wsl" or install wsl to 
   ```
   into the command prompt and running it.
   
-  2. Ensure dojo is installed on our linux distribution(wsl installation)
+   Ensure dojo is installed on our linux distribution(wsl installation)
   
   ```sh
   curl -L https://install.dojoengine.org | bash
