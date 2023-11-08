@@ -81,7 +81,7 @@ Dojo is a community driven open-source, Provable Game Engine, providing a compre
 🚀 Launch Your Onchain Game Faster with Dojo
 Dojo offers a comprehensive suite of onchain game development tools, harnessing the capabilities of Rust and Cairo 🦀, to deliver unparalleled speed and scalability.
 
-🔑 Highlighted Features of Dojo:
+
 In this project you'll learn to to install Dojo/katana via windows machine
 and test and run your first dojo enabled Unity project
 
@@ -91,12 +91,12 @@ and test and run your first dojo enabled Unity project
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+🔑 Highlighted Features of Dojo:
 
-* [![Sozo]][Sozo-url]
-* [![Cairo]][Cairo-url]
-* [![Torii]][Torii-url]
-* [![Katana]][Katana-url]
+* [![Sozo]][Sozo-url] Your trusty CLI tool to oversee and upkeep your in-game universes.
+* [![Cairo]][Cairo-url] it provides a solid foundation to structure your game.
+* [![Torii]][Torii-url] Say goodbye to manually creating indexers. Torii does it automatically for you!
+* [![Katana]][Katana-url]  An RPC development network to streamline and expedite your game's iterative processes.
 * [![Unity]][Unity-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
