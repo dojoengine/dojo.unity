@@ -232,8 +232,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [forks-url]: https://github.com/dojoengine/dojo.unity
 [stars-shield]: https://img.shields.io/github/stars/dojoengine/dojo.unity.svg?style=for-the-badge
 [stars-url]: https://github.com/dojoengine/dojo.unity/stargazers
-[issues-shield]: https://img.shields.io/github/issues/dojoengine/dojo.unity/.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/dojoengine/dojo.unity/?style=for-the-badge
 [issues-url]: https://github.com/dojoengine/dojo.unity//issues
-[license-shield]: https://img.shields.io/github/license/dojoengine/dojo.unity/.svg?style=for-the-badge
-[license-url]: https://github.com/dojoengine/dojo.unity//blob/master/LICENSE.txt
+
 
