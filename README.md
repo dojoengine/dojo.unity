@@ -76,6 +76,12 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://dojoengine.org)
 
+Dojo is a community driven open-source, Provable Game Engine, providing a comprehensive toolkit for building verifiable games and autonomous worlds.
+
+🚀 Launch Your Onchain Game Faster with Dojo
+Dojo offers a comprehensive suite of onchain game development tools, harnessing the capabilities of Rust and Cairo 🦀, to deliver unparalleled speed and scalability.
+
+🔑 Highlighted Features of Dojo:
 In this project you'll learn to to install Dojo/katana via windows machine
 and test and run your first dojo enabled Unity project
 
