@@ -109,6 +109,8 @@ Assuming you're using windows You'll have to install the following two programs 
 * [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe)
 
 * [Unity 2022.3.12(f1)](https://unity.com/releases/editor/whats-new/2022.3.12)
+
+* [Visual Studio 2017 c++ Build Tools ](https://learn.microsoft.com/en-us/visualstudio/releasenotes/vs2017-relnotes-history)
   
 Now you'll need to either open a command prompt and run "wsl" or install wsl to your machine
 
