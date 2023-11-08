@@ -116,7 +116,15 @@ This is an example of how to list things you need to use the software and how to
 ### Installation
 
 * installing dojo
-  1. Ensure dojo is on our machine
+  1. Open a wsl terminal by either searching for the wsl icon, or  typing
+  
+  ```sh
+  wsl 
+  ```
+  into the command prompt and running it.
+  
+  2. Ensure dojo is installed on our linux distribution(wsl installation)
+  
   ```sh
   curl -L https://install.dojoengine.org | bash
   ```
@@ -204,7 +212,7 @@ Use this space to list resources you find helpful and would like to give credit 
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [Torii]: https://github.com/dojoengine/dojo/blob/main/crates/torii
 [Torii-url]: https://github.com/dojoengine/dojo/blob/main/crates/torii
-[Sozo]: https://img.shields.io/badge/sozo-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Sozo]: https://img.shields.io/badge/Sozo-CLI_-blue
 [Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
 [Cairo]: https://img.shields.io/badge/Cairo-20232A?style=for-the-badge&logo=react&logoColor=61DAFB
 [Cairo-url]: https://github.com/starkware-libs/cairo
