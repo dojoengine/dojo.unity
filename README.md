@@ -210,8 +210,8 @@ Use this space to list resources you find helpful and would like to give credit 
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-<!--[Torii]: https://github.com/dojoengine/dojo/blob/main/crates/torii
-[Torii-url]: https://github.com/dojoengine/dojo/blob/main/crates/torii -->
+[Torii]: https://img.shields.io/badge/Torri-Indexer_-orange
+[Torii-url]: https://github.com/dojoengine/dojo/blob/main/crates/torii
 [Sozo]: https://img.shields.io/badge/Sozo-CLI_-blue
 [Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
