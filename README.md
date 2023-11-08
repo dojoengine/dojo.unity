@@ -122,14 +122,14 @@ Now you'll need to either open a command prompt and run "wsl" or install wsl to 
 ### Installation
 
 * installing dojo
-  1. Open a wsl terminal by either searching for the wsl icon, or  typing
+  1. Open a wsl terminal by either searching for the wsl icon, or  typing into the command prompt and running it.
   
   ```sh
   wsl 
   ```
-  into the command prompt and running it.
   
-   Ensure dojo is installed on our linux distribution(wsl installation)
+  
+  Ensure dojo is installed on our linux distribution(wsl installation)
   
   ```sh
   curl -L https://install.dojoengine.org | bash
