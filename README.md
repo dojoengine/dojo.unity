@@ -92,7 +92,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 * [![Sozo]][Sozo-url]
 * [![Cairo]][Cairo-url]
 * [![Torii]][Torii-url]
-* [![Katana]]
+* [![Katana]][Katana-url]
 * [![Unity]][Unity-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -216,7 +216,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
 [Cairo-url]: https://github.com/starkware-libs/cairo
 [Katana]: https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png
-
+[Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
 [contributors-shield]: https://img.shields.io/github/contributors/dojoengine/dojo.unity.svg?style=for-the-badge
 [contributors-url]: https://github.com/dojoengine/dojo/unity/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dojoengine/dojo.unity.svg?style=for-the-badge
