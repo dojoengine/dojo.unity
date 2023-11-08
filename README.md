@@ -174,9 +174,9 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
+juoni - [@dojostarknet](https://twitter.com/dojostarknet) 
 
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
+Project Link: [https://github.com/dojoengine/dojo.unity](https://github.com/dojoengine/dojo.unity)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
