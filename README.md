@@ -5,7 +5,7 @@
 First, install [.NET 7.0](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 
 Second, install clang 
-   <img src="images/vs-clang-install.png" alt="Logo" width="80" height="80">
+   <img src="images/vs-clang-install.png" alt="Logo" width="256" height="256">
 
 or via LLVM
 
