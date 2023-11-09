@@ -229,7 +229,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
 [Cairo-url]: https://github.com/starkware-libs/cairo
-[Katana]:https://img.shields.io/badge/Katana-RPCs_-red
+[Katana]: https://img.shields.io/badge/Katana-RPCs_-red
 [Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
 [Unity]: https://avatars.githubusercontent.com/u/426196?s=200&v=4
 [Unity-url]: https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe
