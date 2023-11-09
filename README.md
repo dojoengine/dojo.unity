@@ -99,9 +99,11 @@ and test and run your first dojo enabled Unity project
 
 * [![Torii]][Torii-url] Say goodbye to manually creating indexers. Torii does it automatically for you!
 
+ <img src="https://raw.githubusercontent.com/juoni/dojo.unity/main/Images/katana-mark.png?w=100" align="middle" />
+   
 * [![Katana]][Katana-url]An RPC development network to streamline and expedite your game's iterative processes.
 
-   <img src="https://raw.githubusercontent.com/juoni/dojo.unity/main/Images/katana-mark.png?w=100" align="middle" />
+
 
 
 
