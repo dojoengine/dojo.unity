@@ -96,7 +96,7 @@ and test and run your first dojo enabled Unity project
 * [![Sozo]][Sozo-url] Your trusty CLI tool to oversee and upkeep your in-game universes.
 * [![Cairo]][Cairo-url] it provides a solid foundation to structure your game.
 * [![Torii]][Torii-url] Say goodbye to manually creating indexers. Torii does it automatically for you!
-* [![Katana][Katana-url]  An RPC development network to streamline and expedite your game's iterative processes.
+* [![[Katana]](https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png?raw=true)[Katana-url]  An RPC development network to streamline and expedite your game's iterative processes.
 * [![Unity]][Unity-url] Unity is a cross-platform game engine developed by Unity Technologies
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -106,7 +106,7 @@ and test and run your first dojo enabled Unity project
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Here we'll show you how to get started with unity and DOJO
+Here we'll show you how to get started with unity and DOJO using Windows coupled with WSL(Windows Subsystem for Linux)
 
 ### Prerequisites
 
