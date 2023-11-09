@@ -1,0 +1,26 @@
+{
+  "name": "com.unity.ide.visualstudio",
+  "displayName": "Visual Studio Editor",
+  "description": "Code editor integration for supporting Visual Studio as code editor for unity. Adds support for generating csproj files for intellisense purposes, auto discovery of installations, etc.",
+  "version": "2.0.21",
+  "unity": "2019.4",
+  "unityRelease": "25f1",
+  "dependencies": {
+    "com.unity.test-framework": "1.1.9"
+  },
+  "relatedPackages": {
+    "com.unity.ide.visualstudio.tests": "2.0.21"
+  },
+  "_upm": {
+    "changelog": "Integration:\n\n- Only disable the legacy `com.unity.ide.vscode` package going forward.\n- Fix json parsing issues with specific non-UTF code pages.\n\nProject generation:\n\n- Target `netstandard2.1` instead of `netstandard2.0`.\n- Set `defaultSolution` in `settings.json`.\n- Remove `files.exclude` entries for root `csproj` and `sln` files in `settings.json` when needed.\n- Add `vstuc` launch configuration to `launch.json` when needed.\n- Add `visualstudiotoolsforunity.vstuc` entry to `extensions.json` when needed.\n- You can prevent the package from patching those configuration files by creating a `.vscode/.vstupatchdisable` file."
+  },
+  "upmCi": {
+    "footprint": "33ecd838a074080a82176ca86b21c837ba396a28"
+  },
+  "documentationUrl": "https://docs.unity3d.com/Packages/com.unity.ide.visualstudio@2.0/manual/index.html",
+  "repository": {
+    "url": "https://github.cds.internal.unity3d.com/unity/com.unity.ide.visualstudio.git",
+    "type": "git",
+    "revision": "eb2b500b99f6429d3d9dcb8acbcbd366dfbb42be"
+  }
+}
