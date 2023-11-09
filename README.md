@@ -163,6 +163,41 @@ Now you'll need to either open a command prompt and run "wsl" or install wsl to 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
+For an in-depth setup guide, consult the [Dojo book](https://book.dojoengine.org/getting-started/quick-start.html).
+
+## Launch the Example
+
+### Dojo Contract
+
+After cloning the project, execute the following:
+
+0. **init submodule**
+
+```
+git submodule update --init --recursive
+```
+
+1. **Terminal 1 - Katana**:
+
+```console
+cd dojo-starter && katana --disable-fee
+```
+
+2. **Terminal 2 - Contracts**:
+
+```console
+cd dojo-starter && sozo build && sozo migrate
+```
+
+### Unity
+
+1. Go to Unity Hub and add the [unity](./unity) folder as a project.
+2. In the Unity Editor, navigate to the `Starknet SDK -> Setup` to setup your game and do the following.
+   - Select Dojo as your preferred game engine.
+   - Enter `http://localhost:5050` as the RPC Node.
+   - Enter the World Address and System Address gotten from `sozo migrate` as the World Address and System Address respectively.
+3. Navigate to the `Assets -> Scenes -> Game` in the Project Hierarchy and open the `Game` scene.
+4. In the Game Hierarchy, select the `PlayerCanvas -> Astronaut` object. In the Inspector, you should see a `Astronaut` component. Fill in the `Player Address` field with the address of the player and `Player key` with the from `Katana` terminal.
 
 _For more examples, please refer to the [Documentation](https://dojoengine.org)_
 
