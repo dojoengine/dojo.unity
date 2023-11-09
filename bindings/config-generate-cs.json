@@ -1,0 +1,8 @@
+{
+    "inputFilePath": "./ast/cross-platform.json",
+    "outputFileDirectory": "./client",
+    "namespaceName": "dojo_namespace",
+    "className": "dojo",
+    "isEnabledFileScopedNamespace": false,
+    "isEnabledLibraryImport": true
+}
