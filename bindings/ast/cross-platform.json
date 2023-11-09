@@ -1,15 +1,83 @@
 {
   "platforms": [
-    "x86_64-unknown-linux-gnu",
     "aarch64-apple-darwin",
-    "x86_64-apple-darwin",
     "aarch64-pc-windows-msvc",
     "aarch64-unknown-linux-gnu",
-    "x86_64-pc-windows-msvc"
+    "x86_64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "x86_64-unknown-linux-gnu"
   ],
   "macroObjects": {},
   "variables": {},
   "functions": {
+    "client_add_entities_to_sync": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "entities",
+          "type": {
+            "name": "EntityModel*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "EntityModel",
+              "kind": "struct",
+              "sizeOf": 24,
+              "alignOf": 8,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "entities_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "error",
+          "type": {
+            "name": "Error*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Error",
+              "kind": "struct",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
     "client_free": {
       "callingConvention": "cdecl",
       "returnType": {
@@ -141,74 +209,6 @@
         }
       ]
     },
-    "client_add_entities_to_sync": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "entities",
-          "type": {
-            "name": "EntityModel*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "EntityModel",
-              "kind": "struct",
-              "sizeOf": 24,
-              "alignOf": 8,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "entities_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "error",
-          "type": {
-            "name": "Error*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Error",
-              "kind": "struct",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
     "client_remove_entities_to_sync": {
       "callingConvention": "cdecl",
       "returnType": {
@@ -279,30 +279,23 @@
     }
   },
   "records": {
-    "FieldElement": {
-      "size_of": 32,
-      "align_of": 1,
+    "Error": {
+      "size_of": 8,
+      "align_of": 8,
       "fields": [
         {
-          "name": "data",
+          "name": "message",
           "type": {
-            "name": "uint8_t[32]",
-            "kind": "array",
-            "sizeOf": 32,
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
             "alignOf": 8,
-            "sizeOfElement": 1,
-            "arraySize": 32,
             "innerType": {
-              "name": "uint8_t",
-              "kind": "typeAlias",
+              "name": "const char",
+              "kind": "primitive",
               "sizeOf": 1,
               "alignOf": 1,
-              "innerType": {
-                "name": "unsigned char",
-                "kind": "primitive",
-                "sizeOf": 1,
-                "alignOf": 1
-              }
+              "isConst": true
             }
           }
         }
@@ -363,23 +356,30 @@
         }
       ]
     },
-    "Error": {
-      "size_of": 8,
-      "align_of": 8,
+    "FieldElement": {
+      "size_of": 32,
+      "align_of": 1,
       "fields": [
         {
-          "name": "message",
+          "name": "data",
           "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
+            "name": "uint8_t[32]",
+            "kind": "array",
+            "sizeOf": 32,
             "alignOf": 8,
+            "sizeOfElement": 1,
+            "arraySize": 32,
             "innerType": {
-              "name": "const char",
-              "kind": "primitive",
+              "name": "uint8_t",
+              "kind": "typeAlias",
               "sizeOf": 1,
               "alignOf": 1,
-              "isConst": true
+              "innerType": {
+                "name": "unsigned char",
+                "kind": "primitive",
+                "sizeOf": 1,
+                "alignOf": 1
+              }
             }
           }
         }

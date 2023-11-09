@@ -70,3 +70,34 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# JetBrains
+.idea/
+
+# VisualStudio
+.vs/
+
+# User-specific files
+*.user
+
+# CMake
+cmake-build*/
+
+# C# build artifacts
+bin/
+obj/
+nupkg/
+publish/
+
+# C build artifacts
+lib/
+*.dll
+*.dylib
+*.so
+
+# C2CS artifacts
+ast/
+
+# macOS
+.DS_Store
+
