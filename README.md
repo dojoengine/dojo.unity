@@ -94,10 +94,15 @@ and test and run your first dojo enabled Unity project
 🔑 Highlighted Features of Dojo:
 
 * [![Sozo]][Sozo-url] Your trusty CLI tool to oversee and upkeep your in-game universes.
+  
 * [![Cairo]][Cairo-url] it provides a solid foundation to structure your game.
+
 * [![Torii]][Torii-url] Say goodbye to manually creating indexers. Torii does it automatically for you!
+
 * [![Katana]][Katana-url]An RPC development network to streamline and expedite your game's iterative processes.
+
 * [!https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png]
+
 * [![Unity]][Unity-url] Unity is a cross-platform game engine developed by Unity Technologies
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
