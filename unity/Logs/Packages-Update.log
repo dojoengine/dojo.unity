@@ -1,0 +1,9 @@
+
+=== Mon Nov  6 06:27:39 2023
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 2.1.0 to 2.2.0
+  com.unity.timeline from version 1.7.5 to 1.7.6
