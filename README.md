@@ -14,8 +14,6 @@
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
 
 
 
@@ -76,7 +74,12 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://dojoengine.org)
+
+Dojo is a community driven open-source, Provable Game Engine, providing a comprehensive toolkit for building verifiable games and autonomous worlds.
+
+🚀 Launch Your Onchain Game Faster with Dojo
+Dojo offers a comprehensive suite of onchain game development tools, harnessing the capabilities of Rust and Cairo 🦀, to deliver unparalleled speed and scalability.
+
 
 In this project you'll learn to to install Dojo/katana via windows machine
 and test and run your first dojo enabled Unity project
@@ -87,13 +90,23 @@ and test and run your first dojo enabled Unity project
 
 ### Built With
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+🔑 Highlighted Features of Dojo:
 
-* [![Sozo]][Sozo-url]
-* [![Cairo]][Cairo-url]
-* [![Torii]][Torii-url]
-* [![Katana]][Katana-url]
-* [![Unity]][Unity-url]
+* [![Sozo]][Sozo-url] Your trusty CLI tool to oversee and upkeep your in-game universes.
+  
+* [![Cairo]][Cairo-url] it provides a solid foundation to structure your game.
+
+* [![Torii]][Torii-url] Say goodbye to manually creating indexers. Torii does it automatically for you!
+
+ <img src="https://raw.githubusercontent.com/juoni/dojo.unity/main/Images/katana-mark.png?w=100" align="middle" />
+   
+* [![Katana]][Katana-url]An RPC development network to streamline and expedite your game's iterative processes.
+
+
+
+
+
+* [![Unity]][Unity-url] Unity is a cross-platform game engine developed by Unity Technologies
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -102,15 +115,17 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Here we'll show you how to get started with unity and DOJO
+Here we'll show you how to get started with unity and DOJO using Windows coupled with WSL(Windows Subsystem for Linux)
 
 ### Prerequisites
 
 Assuming you're using windows You'll have to install the following two programs on your machine
 
-* UnityHub
+* [UnityHub](https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe)
 
-* Unity 2022.3.12(f1)
+* [Unity 2022.3.12(f1)](https://unity.com/releases/editor/whats-new/2022.3.12)
+
+* [Visual Studio 2017 c++ Build Tools ](https://learn.microsoft.com/en-us/visualstudio/releasenotes/vs2017-relnotes-history)
   
 Now you'll need to either open a command prompt and run "wsl" or install wsl to your machine
 
@@ -122,20 +137,20 @@ Now you'll need to either open a command prompt and run "wsl" or install wsl to 
 ### Installation
 
 * installing dojo
-  1. Open a wsl terminal by either searching for the wsl icon, or  typing
+  Open a wsl terminal by either searching for the wsl icon, or  typing into the command prompt and running it.
   
   ```sh
   wsl 
   ```
-  into the command prompt and running it.
   
-  2. Ensure dojo is installed on our linux distribution(wsl installation)
+  
+* Ensure dojo is installed on our linux distribution(wsl installation)
   
   ```sh
   curl -L https://install.dojoengine.org | bash
   ```
 
-2. Open a new wsl terminal window  and run
+* Open a new wsl terminal window  and run
    ```sh
    dojoup
    ```
@@ -148,6 +163,43 @@ Now you'll need to either open a command prompt and run "wsl" or install wsl to 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
+For an in-depth setup guide, consult the [Dojo book](https://book.dojoengine.org/getting-started/quick-start.html).
+
+## Launch the Example
+
+### Dojo Contract
+
+After cloning the project (On WSL) , execute the following:
+
+again on WSL navigate to the repository and execute the following:
+
+0. **init submodule**
+
+```
+git submodule update --init --recursive
+```
+
+1. **Terminal 1 - Katana**:
+
+```console
+cd dojo-starter && katana --disable-fee
+```
+
+2. **Terminal 2 - Contracts**:
+
+```console
+cd dojo-starter && sozo build && sozo migrate
+```
+
+### Unity
+
+1. Go to Unity Hub and add the [unity](./unity) folder as a project.
+2. In the Unity Editor, navigate to the `Starknet SDK -> Setup` to setup your game and do the following.
+   - Select Dojo as your preferred game engine.
+   - Enter `http://localhost:5050` as the RPC Node.
+   - Enter the World Address and System Address gotten from `sozo migrate` as the World Address and System Address respectively.
+3. Navigate to the `Assets -> Scenes -> Game` in the Project Hierarchy and open the `Game` scene.
+4. In the Game Hierarchy, select the `PlayerCanvas -> Astronaut` object. In the Inspector, you should see a `Astronaut` component. Fill in the `Player Address` field with the address of the player and `Player key` with the from `Katana` terminal.
 
 _For more examples, please refer to the [Documentation](https://dojoengine.org)_
 
@@ -222,18 +274,17 @@ Use this space to list resources you find helpful and would like to give credit 
 [Sozo-url]: https://github.com/dojoengine/dojo/tree/main/crates/sozo
 [Cairo]: https://img.shields.io/badge/Cairo-ECS_-green
 [Cairo-url]: https://github.com/starkware-libs/cairo
-[Katana]: https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png
+[Katana]: https://img.shields.io/badge/Katana-RPCs_-red
 [Katana-url]: https://github.com/dojoengine/dojo/blob/main/crates/katana
 [Unity]: https://avatars.githubusercontent.com/u/426196?s=200&v=4
-[Unity-url]: https://www.unity.com
+[Unity-url]: https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe
 [contributors-shield]: https://img.shields.io/github/contributors/dojoengine/dojo.unity.svg?style=for-the-badge
 [contributors-url]: https://github.com/dojoengine/dojo/unity/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/dojoengine/dojo.unity.svg?style=for-the-badge
 [forks-url]: https://github.com/dojoengine/dojo.unity
 [stars-shield]: https://img.shields.io/github/stars/dojoengine/dojo.unity.svg?style=for-the-badge
 [stars-url]: https://github.com/dojoengine/dojo.unity/stargazers
-[issues-shield]: https://img.shields.io/github/issues/dojoengine/dojo.unity/.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/dojoengine/dojo.unity/?style=for-the-badge
 [issues-url]: https://github.com/dojoengine/dojo.unity//issues
-[license-shield]: https://img.shields.io/github/license/dojoengine/dojo.unity/.svg?style=for-the-badge
-[license-url]: https://github.com/dojoengine/dojo.unity//blob/master/LICENSE.txt
+
 
