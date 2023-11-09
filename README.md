@@ -169,7 +169,9 @@ For an in-depth setup guide, consult the [Dojo book](https://book.dojoengine.org
 
 ### Dojo Contract
 
-After cloning the project, execute the following:
+After cloning the project (On WSL) , execute the following:
+
+again on WSL navigate to the repository and execute the following:
 
 0. **init submodule**
 
