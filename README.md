@@ -101,7 +101,8 @@ and test and run your first dojo enabled Unity project
 
 * [![Katana]][Katana-url]An RPC development network to streamline and expedite your game's iterative processes.
 
-* [!https://github.com/juoni/dojo.unity/blob/main/Images/katana-mark.png]
+   <img src="Images/Katana-mark.png" alt="Logo" width="80" height="80">
+
 
 * [![Unity]][Unity-url] Unity is a cross-platform game engine developed by Unity Technologies
 
