@@ -24,7 +24,7 @@ namespace dojo_namespace
 
     public static unsafe partial class dojo
     {
-        public const string LibraryName = "dojo";
+        private const string LibraryName = "libtorii_c";
 
         #region API
 
@@ -989,6 +989,10 @@ namespace dojo_namespace
         [StructLayout(LayoutKind.Sequential)]
         public struct ToriiClient
         {
+            public static implicit operator ToriiClient(ToriiClient v)
+            {
+                throw new NotImplementedException();
+            }
         }
 
         [CNode(Kind = "TypeAlias")]
