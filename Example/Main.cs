@@ -36,9 +36,6 @@ namespace Dojo
             dojo.Error* error = null;
             dojo.Ty entity = *dojo.client_entity(this.client, &query, error);
 
-            // transform entity.ty_tuple.data ptr and length to c# list
-            new List()
-
             return entity;
         }
     }
