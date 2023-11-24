@@ -5,7 +5,7 @@ using dojo_bindings;
 
 static class Example
 {
-    static void OnEntityStateUpdate()
+    private static void OnEntityStateUpdate()
     {
         // React
     }
@@ -24,6 +24,7 @@ static class Example
         client.AddEntitiesToSync(entities);
 
         // Listen for updates
+        dojo.FnPtr_Void.@delegate callback = OnEntityStateUpdate;
         client.OnEntityStateUpdate(new dojo.EntityQuery
         {
             _model = CString.FromString(""),
@@ -39,7 +40,7 @@ static class Example
                     }
                 }
             }
-        }, Example.OnEntityStateUpdate);
+        }, new dojo.FnPtr_Void(callback));
 
         client.RemoveEntitiesToSync(entities);
     }
