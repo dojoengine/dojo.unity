@@ -44,6 +44,12 @@ namespace Dojo
         public dojo.Ty Entity(dojo.EntityQuery query)
         {
             dojo.Error* error = null;
+            // NOTE: this returns a complex data type
+            // there are multiple allocated carrays
+            // which means that they need to be fred.
+
+            // NOTE: we could copy the data into a managed structure
+            // and free the original structure from rust.
             dojo.Ty entity = *dojo.client_entity(client, &query, error);
 
             if (error != null)
@@ -51,14 +57,23 @@ namespace Dojo
                 throw new Exception(error->message);
             }
 
+            // freeing the c array is up to the caller
+            // dojo.ty_free(entity);
             return entity;
         }
 
         public ReadOnlySpan<dojo.EntityQuery> Entities(dojo.EntityQuery query)
         {
             dojo.CArray_EntityQuery* entities = dojo.client_subscribed_entities(client);
+            // NOTE: we could copy the data into a managed array
+            // and free the c array from rust.
+            // however, it is slower
+            // dojo.EntityQuery[] arr = new Span<dojo.EntityQuery>(entities->data, (int)entities->data_len).ToArray();
+            // dojo.carray_free(entities);
 
-
+            // this just returns a span of the carray data
+            // freeing the c array is up to the caller
+            // dojo.carray_free(entities);
             return new Span<dojo.EntityQuery>(entities->data, (int)entities->data_len);
         }
 
