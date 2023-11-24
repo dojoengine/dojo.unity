@@ -4,5 +4,6 @@
     "namespaceName": "dojo_namespace",
     "className": "dojo",
     "isEnabledFileScopedNamespace": false,
-    "isEnabledLibraryImport": true
+    "isEnabledLibraryImport": true,
+    "isEnabledFunctionPointers": false
 }
