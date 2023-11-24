@@ -5,7 +5,7 @@ using dojo_bindings;
 
 namespace Dojo
 {
-    unsafe class ToriiClient
+    public unsafe class ToriiClient
     {
 
         private dojo.ToriiClient* client;

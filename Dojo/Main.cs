@@ -18,7 +18,7 @@ static class Example
         var entities = new dojo.EntityQuery[] { new dojo.EntityQuery { _model = CString.FromString("") } };
 
         // Throws an exception if the client cannot be created
-        ToriiClient client = new ToriiClient("http://localhost:1234", "http://localhost:1234", world, entities);
+        ToriiClient client = new ToriiClient("http://localhost:50051", "http://localhost:50052", world, entities);
 
         // Add our entities to the sync list
         client.AddEntitiesToSync(entities);
