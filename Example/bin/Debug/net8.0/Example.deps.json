@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Example/1.0.0": {
+        "dependencies": {
+          "Dojo": "1.0.0"
+        },
+        "runtime": {
+          "Example.dll": {}
+        }
+      },
+      "Dojo/1.0.0": {
+        "runtime": {
+          "Dojo.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Example/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Dojo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

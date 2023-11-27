@@ -8,6 +8,7 @@
     ".NETCoreApp,Version=v8.0": {
       "DojoTests/1.0.0": {
         "dependencies": {
+          "Dojo": "1.0.0",
           "Microsoft.NET.Test.Sdk": "17.6.0",
           "NUnit": "3.13.3",
           "NUnit.Analyzers": "3.6.1",
@@ -315,7 +316,12 @@
       },
       "NUnit.Analyzers/3.6.1": {},
       "NUnit3TestAdapter/4.2.1": {},
-      "System.Reflection.Metadata/1.6.0": {}
+      "System.Reflection.Metadata/1.6.0": {},
+      "Dojo/1.0.0": {
+        "runtime": {
+          "Dojo.dll": {}
+        }
+      }
     }
   },
   "libraries": {
@@ -414,6 +420,11 @@
       "sha512": "sha512-COC1aiAJjCoA5GBF+QKL2uLqEBew4JsCkQmoHKbN3TlOZKa2fKLz5CpiRQKDz0RsAOEGsVKqOD5bomsXq/4STQ==",
       "path": "system.reflection.metadata/1.6.0",
       "hashPath": "system.reflection.metadata.1.6.0.nupkg.sha512"
+    },
+    "Dojo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
     }
   }
 }

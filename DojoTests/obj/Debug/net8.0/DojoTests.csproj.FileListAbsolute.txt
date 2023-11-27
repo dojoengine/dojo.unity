@@ -97,3 +97,9 @@
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.pdb
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.genruntimeconfig.cache
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/ref/DojoTests.dll
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/CoverletSourceRootsMapping_DojoTests
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.deps.json
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.runtimeconfig.json
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.dll
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.pdb
