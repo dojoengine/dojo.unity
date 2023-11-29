@@ -13,10 +13,15 @@ public class Tests
     {
         var toriiUrl = "http://0.0.0.0:8080";
         var rpcUrl = "http://0.0.0.0:5050";
-        var world = new dojo.FieldElement { };
-        var entities = new dojo.EntityQuery[] { new dojo.EntityQuery { _model = CString.FromString("") } };
+        var world = "0x31571485922572446df9e3198a891e10d3a48e544544317dbcbb667e15848cd";
+        var entities = new List<dojo.Keys>();
+        var player = new dojo.Keys();
+        player._model = CString.FromString("Moves");
         
-        client = new ToriiClient(toriiUrl, rpcUrl, world, entities);
+
+        entities.Add(player);
+        
+        client = new ToriiClient(toriiUrl, rpcUrl, world, entities.ToArray());
 
         if (client == null)
         {
@@ -38,21 +43,10 @@ public class Tests
     [Test]
     public void TestEntity()
     {
-        var query = new dojo.EntityQuery
+        var query = new dojo.Keys
         {
             _model = CString.FromString(""),
-            clause = new dojo.Clause
-            {
-                attribute = new dojo.AttributeClause
-                {
-                    _attribute = CString.FromString("name"),
-                    operator_ = dojo.ComparisonOperator.Eq,
-                    value = new dojo.Value
-                    {
-                        _v_string = CString.FromString("mimi")
-                    }
-                }
-            }
+
         };
 
         var entity = client.Entity(query);
@@ -61,7 +55,7 @@ public class Tests
     [Test]
     public void TestAddEntitiesToSync()
     {
-        var entities = new dojo.EntityQuery[] { new dojo.EntityQuery { _model = CString.FromString("") } };
+        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString(""), } };
 
         client.AddEntitiesToSync(entities);
 
@@ -72,7 +66,7 @@ public class Tests
     [Test]
     public void TestRemoveEntitiesToSync()
     {
-        var entities = new dojo.EntityQuery[] { new dojo.EntityQuery { _model = CString.FromString("") } };
+        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("") } };
 
         client.RemoveEntitiesToSync(entities);
     }
@@ -83,21 +77,10 @@ public class Tests
         dojo.FnPtr_Void.@delegate callback = () => {
             
         };
-        client.OnEntityStateUpdate(new dojo.EntityQuery
+        client.OnEntityStateUpdate(new dojo.Keys
         {
             _model = CString.FromString(""),
-            clause = new dojo.Clause
-            {
-                attribute = new dojo.AttributeClause
-                {
-                    _attribute = CString.FromString("name"),
-                    operator_ = dojo.ComparisonOperator.Eq,
-                    value = new dojo.Value
-                    {
-                        _v_string = CString.FromString("mimi")
-                    }
-                }
-            }
+            
         }, new dojo.FnPtr_Void(callback));
     }
 }

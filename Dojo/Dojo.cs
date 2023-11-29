@@ -9,23 +9,24 @@ namespace Dojo
     {
 
         private dojo.ToriiClient* client;
-        public ToriiClient(string toriiUrl, string rpcUrl, dojo.FieldElement world, dojo.EntityQuery[] entities)
+        public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.Keys[] entities)
         {
             CString ctoriiUrl = CString.FromString(toriiUrl);
             CString crpcUrl = CString.FromString(rpcUrl);
-            dojo.EntityQuery* entitiesPtr;
+            CString cworld = CString.FromString(world);
+            dojo.Keys* entitiesPtr;
 
-            fixed (dojo.EntityQuery* ptr = &entities[0])
+            fixed (dojo.Keys* ptr = &entities[0])
             {
                 entitiesPtr = ptr;
             }
 
-            dojo.Error* error = null;
-            client = dojo.client_new(ctoriiUrl, crpcUrl, &world, entitiesPtr, (nuint)entities.Length, error);
+            dojo.Error error;
+            client = dojo.client_new(ctoriiUrl, crpcUrl, cworld, entitiesPtr, (nuint)entities.Length, &error);
 
-            if (error != null)
+            if (client == null)
             {
-                throw new Exception(error->message);
+                throw new Exception(error.message);
             }
         }
 
@@ -41,20 +42,20 @@ namespace Dojo
             return worldMetadata;
         }
 
-        public dojo.Ty Entity(dojo.EntityQuery query)
+        public dojo.Ty Entity(dojo.Keys query)
         {
-            dojo.Error* error = null;
+            dojo.Error error;
             // NOTE: this returns a complex data type
             // there are multiple allocated carrays
             // which means that they need to be fred.
 
             // NOTE: we could copy the data into a managed structure
             // and free the original structure from rust.
-            dojo.Ty entity = *dojo.client_entity(client, &query, error);
+            dojo.Ty entity = *dojo.client_entity(client, &query, &error);
 
-            if (error != null)
+            if (error.message != string.Empty)
             {
-                throw new Exception(error->message);
+                throw new Exception(error.message);
             }
 
             // freeing the c array is up to the caller
@@ -62,9 +63,9 @@ namespace Dojo
             return entity;
         }
 
-        public ReadOnlySpan<dojo.EntityQuery> Entities(dojo.EntityQuery query)
+        public ReadOnlySpan<dojo.KeysClause> Entities()
         {
-            dojo.CArray_EntityQuery* entities = dojo.client_subscribed_entities(client);
+            dojo.CArray_KeysClause* entities = dojo.client_subscribed_entities(client);
             // NOTE: we could copy the data into a managed array
             // and free the c array from rust.
             // however, it is slower
@@ -74,64 +75,58 @@ namespace Dojo
             // this just returns a span of the carray data
             // freeing the c array is up to the caller
             // dojo.carray_free(entities);
-            return new Span<dojo.EntityQuery>(entities->data, (int)entities->data_len);
+            return new Span<dojo.KeysClause>(entities->data, (int)entities->data_len);
         }
 
-        public void AddEntitiesToSync(dojo.EntityQuery[] entities)
+        public void AddEntitiesToSync(dojo.Keys[] entities)
         {
-            dojo.EntityQuery* entitiesPtr;
+            dojo.Keys* entitiesPtr;
 
-            fixed (dojo.EntityQuery* ptr = &entities[0])
+            fixed (dojo.Keys* ptr = &entities[0])
             {
                 entitiesPtr = ptr;
             }
 
-            dojo.Error* error = null;
-            dojo.client_add_entities_to_sync(client, entitiesPtr, (nuint)entities.Length, error);
+            dojo.Error error;
+            dojo.client_add_entities_to_sync(client, entitiesPtr, (nuint)entities.Length, &error);
 
-            if (error != null)
+            if (error.message != string.Empty)
             {
-                throw new Exception(error->message);
+                throw new Exception(error.message);
             }
         }
 
-        public void RemoveEntitiesToSync(dojo.EntityQuery[] entities)
+        public void RemoveEntitiesToSync(dojo.Keys[] entities)
         {
-            dojo.EntityQuery* entitiesPtr;
+            dojo.Keys* entitiesPtr;
 
-            fixed (dojo.EntityQuery* ptr = &entities[0])
+            fixed (dojo.Keys* ptr = &entities[0])
             {
                 entitiesPtr = ptr;
             }
 
-            dojo.Error* error = null;
-            dojo.client_remove_entities_to_sync(client, entitiesPtr, (nuint)entities.Length, error);
+            dojo.Error error;
+            dojo.client_remove_entities_to_sync(client, entitiesPtr, (nuint)entities.Length, &error);
 
-            if (error != null)
+            if (error.message != string.Empty)
             {
-                throw new Exception(error->message);
+                throw new Exception(error.message);
             }
         }
 
-        public void OnEntityStateUpdate(dojo.EntityQuery query, dojo.FnPtr_Void callback)
+        public void OnEntityStateUpdate(dojo.Keys query, dojo.FnPtr_Void callback)
         {
-            dojo.Error* error = null;
-            dojo.client_on_entity_state_update(client, &query, callback, error);
-
-            if (error != null)
-            {
-                throw new Exception(error->message);
-            }
+            dojo.client_on_entity_state_update(client, &query, callback);
         }
 
         public void StartSubscription()
         {
-            dojo.Error* error = null;
-            dojo.client_start_subscription(client, error);
+            dojo.Error error;
+            dojo.client_start_subscription(client, &error);
 
-            if (error != null)
+            if (error.message != string.Empty)
             {
-                throw new Exception(error->message);
+                throw new Exception(error.message);
             }
         }
     }
