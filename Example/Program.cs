@@ -8,6 +8,7 @@ internal class Example
     private static void OnEntityStateUpdate()
     {
         // React
+        Console.WriteLine("Entity state updated");
     }
 
     unsafe static void Main()
@@ -34,31 +35,23 @@ internal class Example
 
         // Throws an exception if the client cannot be created
         ToriiClient client = new ToriiClient("http://localhost:8080", "http://localhost:5050", world, entities);
-        
+
         // Get the world metadata
         dojo.WorldMetadata worldMetadata = client.WorldMetadata();
+
+        // Start the subscription
+        client.StartSubscription();
 
         // Add our entities to the sync list
         client.AddEntitiesToSync(entities);
 
         // Listen for updatest
         dojo.FnPtr_Void.@delegate callback = OnEntityStateUpdate;
-        client.OnEntityStateUpdate(new dojo.Keys
+        client.OnEntityStateUpdate(entities[0], new dojo.FnPtr_Void(callback));
+        while (true)
         {
-            _model = CString.FromString(""),
-            // clause = new dojo.Clause
-            // {
-            //     attribute = new dojo.AttributeClause
-            //     {
-            //         _attribute = CString.FromString("name"),
-            //         operator_ = dojo.ComparisonOperator.Eq,
-            //         value = new dojo.Value
-            //         {
-            //             _v_string = CString.FromString("mimi")
-            //         }
-            //     }
-            // }
-        }, new dojo.FnPtr_Void(callback));
+            // client.Update();
+        }
 
         client.RemoveEntitiesToSync(entities);
     }
