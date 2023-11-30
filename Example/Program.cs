@@ -31,8 +31,6 @@ internal class Example
             data_len = (nuint)keys.Length,
         } } };
 
-        Console.WriteLine(entities[0].keys[0].ToString());
-
         // Throws an exception if the client cannot be created
         ToriiClient client = new ToriiClient("http://localhost:8080", "http://localhost:5050", world, entities);
 

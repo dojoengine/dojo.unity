@@ -17,6 +17,11 @@ public class Tests
         var entities = new List<dojo.Keys>();
         var player = new dojo.Keys();
         player._model = CString.FromString("Moves");
+        player._keys = new dojo.CArray______c_char
+        {
+            data = new CString[] { CString.FromString("0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973") },
+            data_len = 1,
+        };
         
 
         entities.Add(player);
