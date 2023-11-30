@@ -15,13 +15,9 @@ public class Tests
         var rpcUrl = "http://0.0.0.0:5050";
         var world = "0x31571485922572446df9e3198a891e10d3a48e544544317dbcbb667e15848cd";
         var entities = new List<dojo.Keys>();
-        var player = new dojo.Keys();
-        player._model = CString.FromString("Moves");
-        player._keys = new dojo.CArray______c_char
-        {
-            data = new CString[] { CString.FromString("0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973") },
-            data_len = 1,
-        };
+        var player = new dojo.Keys{};
+        player.model = "Moves";
+        player.keys = new CString[] { CString.FromString("0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973") };
         
 
         entities.Add(player);
