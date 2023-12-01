@@ -5,7 +5,134 @@
   "macroObjects": {},
   "variables": {},
   "functions": {
-    "client_add_entities_to_sync": {
+    "client_entity": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "Ty*",
+        "kind": "pointer",
+        "sizeOf": 8,
+        "alignOf": 8,
+        "innerType": {
+          "name": "Ty",
+          "kind": "struct",
+          "sizeOf": 48,
+          "alignOf": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 125,
+            "column": 16
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType",
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 6,
+                "column": 16
+              }
+            }
+          }
+        },
+        {
+          "name": "keys",
+          "type": {
+            "name": "Keys*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Keys",
+              "kind": "struct",
+              "sizeOf": 24,
+              "alignOf": 8,
+              "isConst": true,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 13,
+                "column": 16
+              }
+            }
+          }
+        },
+        {
+          "name": "error",
+          "type": {
+            "name": "Error*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Error",
+              "kind": "struct",
+              "sizeOf": 8,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 18,
+                "column": 16
+              }
+            }
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 194,
+        "column": 12
+      }
+    },
+    "ty_free": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "ty",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 125,
+                "column": 16
+              }
+            }
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 220,
+        "column": 6
+      }
+    },
+    "client_remove_entities_to_sync": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "void",
@@ -105,7 +232,90 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 198,
+        "line": 211,
+        "column": 6
+      }
+    },
+    "client_subscribed_entities": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "CArray_KeysClause*",
+        "kind": "pointer",
+        "sizeOf": 8,
+        "alignOf": 8,
+        "innerType": {
+          "name": "CArray_KeysClause",
+          "kind": "struct",
+          "sizeOf": 16,
+          "alignOf": 8,
+          "isConst": true,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 155,
+            "column": 16
+          }
+        }
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType",
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 6,
+                "column": 16
+              }
+            }
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 196,
+        "column": 33
+      }
+    },
+    "client_free": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType",
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 6,
+                "column": 16
+              }
+            }
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 216,
         "column": 6
       }
     },
@@ -250,8 +460,45 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 183,
+        "line": 187,
         "column": 21
+      }
+    },
+    "keys_free": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "array",
+          "type": {
+            "name": "CArray_KeysClause*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "CArray_KeysClause",
+              "kind": "struct",
+              "sizeOf": 16,
+              "alignOf": 8,
+              "isConst": true,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 155,
+                "column": 16
+              }
+            }
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 218,
+        "column": 6
       }
     },
     "client_start_subscription": {
@@ -305,45 +552,11 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 194,
+        "line": 198,
         "column": 6
       }
     },
-    "client_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType",
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 6,
-                "column": 16
-              }
-            }
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 212,
-        "column": 6
-      }
-    },
-    "client_remove_entities_to_sync": {
+    "client_add_entities_to_sync": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "void",
@@ -443,221 +656,8 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 207,
+        "line": 202,
         "column": 6
-      }
-    },
-    "ty_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "ty",
-          "type": {
-            "name": "Ty*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 123,
-                "column": 16
-              }
-            }
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 216,
-        "column": 6
-      }
-    },
-    "client_subscribed_entities": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "CArray_KeysClause*",
-        "kind": "pointer",
-        "sizeOf": 8,
-        "alignOf": 8,
-        "innerType": {
-          "name": "CArray_KeysClause",
-          "kind": "struct",
-          "sizeOf": 16,
-          "alignOf": 8,
-          "isConst": true,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 151,
-            "column": 16
-          }
-        }
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType",
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 6,
-                "column": 16
-              }
-            }
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 192,
-        "column": 33
-      }
-    },
-    "keys_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "array",
-          "type": {
-            "name": "CArray_KeysClause*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "CArray_KeysClause",
-              "kind": "struct",
-              "sizeOf": 16,
-              "alignOf": 8,
-              "isConst": true,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 151,
-                "column": 16
-              }
-            }
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 214,
-        "column": 6
-      }
-    },
-    "client_entity": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "Ty*",
-        "kind": "pointer",
-        "sizeOf": 8,
-        "alignOf": 8,
-        "innerType": {
-          "name": "Ty",
-          "kind": "struct",
-          "sizeOf": 48,
-          "alignOf": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 123,
-            "column": 16
-          }
-        }
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType",
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 6,
-                "column": 16
-              }
-            }
-          }
-        },
-        {
-          "name": "keys",
-          "type": {
-            "name": "Keys*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Keys",
-              "kind": "struct",
-              "sizeOf": 24,
-              "alignOf": 8,
-              "isConst": true,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 13,
-                "column": 16
-              }
-            }
-          }
-        },
-        {
-          "name": "error",
-          "type": {
-            "name": "Error*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Error",
-              "kind": "struct",
-              "sizeOf": 8,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 18,
-                "column": 16
-              }
-            }
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 190,
-        "column": 12
       }
     },
     "client_metadata": {
@@ -670,7 +670,7 @@
         "location": {
           "fileName": "dojo.h",
           "filePath": "/dojo.h",
-          "line": 175,
+          "line": 179,
           "column": 16
         }
       },
@@ -698,7 +698,7 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 196,
+        "line": 200,
         "column": 22
       }
     },
@@ -763,12 +763,126 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 203,
+        "line": 207,
         "column": 6
       }
     }
   },
   "records": {
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD4": {
+      "size_of": 16,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "u128",
+          "type": {
+            "name": "uint8_t[16]",
+            "kind": "array",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "sizeOfElement": 1,
+            "arraySize": 16,
+            "innerType": {
+              "name": "uint8_t",
+              "kind": "typeAlias",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "location": {
+                "fileName": "stdint.h",
+                "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+                "line": 266,
+                "column": 24
+              },
+              "innerType": {
+                "name": "unsigned char",
+                "kind": "primitive",
+                "sizeOf": 1,
+                "alignOf": 1
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 57,
+            "column": 17
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 56,
+        "column": 7
+      }
+    },
+    "CArray_CHashItem______c_char__ModelMetadata": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "CHashItem______c_char__ModelMetadata*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "CHashItem______c_char__ModelMetadata",
+              "kind": "struct",
+              "sizeOf": 120,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 169,
+                "column": 16
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 175,
+            "column": 48
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 298,
+              "column": 26
+            },
+            "innerType": {
+              "name": "unsigned long long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 176,
+            "column": 13
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 174,
+        "column": 16
+      }
+    },
     "FieldElement": {
       "size_of": 32,
       "align_of": 1,
@@ -816,12 +930,267 @@
         "column": 16
       }
     },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "record_kind": "union",
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 44,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 44,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 2,
+            "alignOf": 2,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 47,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 47,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD2",
+            "kind": "struct",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 50,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 50,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD3",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 53,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 53,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD4",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 1,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 56,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 56,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD5",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 59,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 59,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD6",
+            "kind": "struct",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 62,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 62,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD7",
+            "kind": "struct",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 65,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 65,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD8",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 68,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 68,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD9",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 71,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 71,
+            "column": 7
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD10",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 74,
+              "column": 7
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 74,
+            "column": 7
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 43,
+        "column": 5
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD6": {
       "size_of": 4,
       "align_of": 4,
       "fields": [
         {
-          "name": "u32",
+          "name": "u_size",
           "type": {
             "name": "uint32_t",
             "kind": "typeAlias",
@@ -843,178 +1212,16 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 50,
-            "column": 16
+            "line": 63,
+            "column": 18
           }
         }
       ],
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 49,
-        "column": 5
-      }
-    },
-    "Struct": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "name",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 91,
-            "column": 15
-          }
-        },
-        {
-          "name": "children",
-          "type": {
-            "name": "CArray_Member",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 85,
-              "column": 16
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 92,
-            "column": 24
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 90,
-        "column": 16
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 1,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "u8",
-          "type": {
-            "name": "uint8_t",
-            "kind": "typeAlias",
-            "sizeOf": 1,
-            "alignOf": 1,
-            "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 266,
-              "column": 24
-            },
-            "innerType": {
-              "name": "unsigned char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 44,
-            "column": 15
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 43,
-        "column": 5
-      }
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
-      "size_of": 32,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ty_enum",
-          "type": {
-            "name": "Enum",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 105,
-              "column": 16
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 133,
-            "column": 19
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 132,
-        "column": 5
-      }
-    },
-    "Error": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "message",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 19,
-            "column": 15
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 18,
-        "column": 16
+        "line": 62,
+        "column": 7
       }
     },
     "Enum": {
@@ -1039,7 +1246,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 106,
+            "line": 108,
             "column": 15
           }
         },
@@ -1067,7 +1274,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 107,
+            "line": 109,
             "column": 11
           }
         },
@@ -1081,7 +1288,7 @@
             "location": {
               "fileName": "dojo.h",
               "filePath": "/dojo.h",
-              "line": 100,
+              "line": 102,
               "column": 16
             }
           },
@@ -1089,7 +1296,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 108,
+            "line": 110,
             "column": 28
           }
         }
@@ -1097,615 +1304,7 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 105,
-        "column": 16
-      }
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ty_struct",
-          "type": {
-            "name": "Struct",
-            "kind": "struct",
-            "sizeOf": 24,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 90,
-              "column": 16
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 130,
-            "column": 21
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 129,
-        "column": 5
-      }
-    },
-    "KeysClause": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "model",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 147,
-            "column": 15
-          }
-        },
-        {
-          "name": "keys",
-          "type": {
-            "name": "CArray_FieldElement",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 141,
-              "column": 16
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 148,
-            "column": 30
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 146,
-        "column": 16
-      }
-    },
-    "WorldMetadata": {
-      "size_of": 144,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "world_address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 22,
-              "column": 16
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 176,
-            "column": 23
-          }
-        },
-        {
-          "name": "world_class_hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 22,
-              "column": 16
-            }
-          },
-          "offset_of": 32,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 177,
-            "column": 23
-          }
-        },
-        {
-          "name": "executor_address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 22,
-              "column": 16
-            }
-          },
-          "offset_of": 64,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 178,
-            "column": 23
-          }
-        },
-        {
-          "name": "executor_class_hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 22,
-              "column": 16
-            }
-          },
-          "offset_of": 96,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 179,
-            "column": 23
-          }
-        },
-        {
-          "name": "models",
-          "type": {
-            "name": "CArray_CHashItem______c_char__ModelMetadata",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 170,
-              "column": 16
-            }
-          },
-          "offset_of": 128,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 180,
-            "column": 54
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 175,
-        "column": 16
-      }
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD3": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ty_tuple",
-          "type": {
-            "name": "CArray_Ty",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 111,
-              "column": 16
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 136,
-            "column": 24
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 135,
-        "column": 5
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD7": {
-      "size_of": 1,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "p_bool",
-          "type": {
-            "name": "_Bool",
-            "kind": "primitive",
-            "sizeOf": 1,
-            "alignOf": 1
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 65,
-            "column": 12
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 64,
-        "column": 5
-      }
-    },
-    "CHashItem______c_char__ModelMetadata": {
-      "size_of": 120,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "key",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 166,
-            "column": 15
-          }
-        },
-        {
-          "name": "value",
-          "type": {
-            "name": "ModelMetadata",
-            "kind": "struct",
-            "sizeOf": 112,
-            "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 156,
-              "column": 16
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 167,
-            "column": 24
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 165,
-        "column": 16
-      }
-    },
-    "CArray_FieldElement": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "FieldElement*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "FieldElement",
-              "kind": "struct",
-              "sizeOf": 32,
-              "alignOf": 1,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 22,
-                "column": 16
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 142,
-            "column": 24
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 298,
-              "column": 26
-            },
-            "innerType": {
-              "name": "unsigned long long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 143,
-            "column": 13
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 141,
-        "column": 16
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD10": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "contract_address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 22,
-              "column": 16
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 74,
-            "column": 27
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 73,
-        "column": 5
-      }
-    },
-    "CArray_Ty": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "Ty*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 123,
-                "column": 16
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 112,
-            "column": 14
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 298,
-              "column": 26
-            },
-            "innerType": {
-              "name": "unsigned long long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 113,
-            "column": 13
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 111,
-        "column": 16
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD4": {
-      "size_of": 16,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "u128",
-          "type": {
-            "name": "uint8_t[16]",
-            "kind": "array",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "sizeOfElement": 1,
-            "arraySize": 16,
-            "innerType": {
-              "name": "uint8_t",
-              "kind": "typeAlias",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "location": {
-                "fileName": "stdint.h",
-                "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-                "line": 266,
-                "column": 24
-              },
-              "innerType": {
-                "name": "unsigned char",
-                "kind": "primitive",
-                "sizeOf": 1,
-                "alignOf": 1
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 56,
-            "column": 15
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 55,
-        "column": 5
-      }
-    },
-    "Primitive": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "Primitive_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 38,
-              "column": 3
-            },
-            "innerType": {
-              "name": "Primitive_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 26,
-                "column": 14
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 41,
-            "column": 17
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 42,
-              "column": 3
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 42,
-            "column": 3
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 40,
+        "line": 107,
         "column": 16
       }
     },
@@ -1728,7 +1327,7 @@
               "location": {
                 "fileName": "dojo.h",
                 "filePath": "/dojo.h",
-                "line": 146,
+                "line": 150,
                 "column": 16
               }
             }
@@ -1736,7 +1335,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 152,
+            "line": 156,
             "column": 22
           }
         },
@@ -1764,7 +1363,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 153,
+            "line": 157,
             "column": 13
           }
         }
@@ -1772,145 +1371,11 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 151,
+        "line": 155,
         "column": 16
       }
     },
-    "CArray_EnumOption": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "EnumOption*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "EnumOption",
-              "kind": "struct",
-              "sizeOf": 16,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 95,
-                "column": 16
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 101,
-            "column": 22
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 298,
-              "column": 26
-            },
-            "innerType": {
-              "name": "unsigned long long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 102,
-            "column": 13
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 100,
-        "column": 16
-      }
-    },
-    "CArray_Member": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "Member*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Member",
-              "kind": "struct",
-              "sizeOf": 24,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 79,
-                "column": 16
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 86,
-            "column": 18
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 298,
-              "column": 26
-            },
-            "innerType": {
-              "name": "unsigned long long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 87,
-            "column": 13
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 85,
-        "column": 16
-      }
-    },
-    "Ty_ANONYMOUS_FIELD1": {
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
       "record_kind": "union",
       "size_of": 40,
       "align_of": 8,
@@ -1918,31 +1383,9 @@
         {
           "name": "",
           "type": {
-            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD0",
             "kind": "struct",
             "sizeOf": 40,
-            "alignOf": 8,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 126,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 126,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 24,
             "alignOf": 8,
             "isAnonymous": true,
             "location": {
@@ -1962,9 +1405,9 @@
         {
           "name": "",
           "type": {
-            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2",
+            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD1",
             "kind": "struct",
-            "sizeOf": 32,
+            "sizeOf": 24,
             "alignOf": 8,
             "isAnonymous": true,
             "location": {
@@ -1984,9 +1427,9 @@
         {
           "name": "",
           "type": {
-            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD3",
+            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD2",
             "kind": "struct",
-            "sizeOf": 16,
+            "sizeOf": 32,
             "alignOf": 8,
             "isAnonymous": true,
             "location": {
@@ -2002,76 +1445,82 @@
             "line": 135,
             "column": 5
           }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 125,
-        "column": 3
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 2,
-      "align_of": 2,
-      "fields": [
+        },
         {
-          "name": "u16",
+          "name": "",
           "type": {
-            "name": "uint16_t",
-            "kind": "typeAlias",
-            "sizeOf": 2,
-            "alignOf": 2,
+            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD3",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true,
             "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 243,
-              "column": 25
-            },
-            "innerType": {
-              "name": "unsigned short",
-              "kind": "primitive",
-              "sizeOf": 2,
-              "alignOf": 2
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 138,
+              "column": 5
             }
           },
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 47,
-            "column": 16
+            "line": 138,
+            "column": 5
           }
         }
       ],
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 46,
+        "line": 128,
         "column": 5
       }
     },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 40,
+    "Struct": {
+      "size_of": 24,
       "align_of": 8,
       "fields": [
         {
-          "name": "ty_primitive",
+          "name": "name",
           "type": {
-            "name": "Primitive",
-            "kind": "struct",
-            "sizeOf": 40,
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
             "alignOf": 8,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 40,
-              "column": 16
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
             }
           },
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 127,
+            "line": 93,
+            "column": 15
+          }
+        },
+        {
+          "name": "children",
+          "type": {
+            "name": "CArray_Member",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 87,
+              "column": 16
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 94,
             "column": 24
           }
         }
@@ -2079,55 +1528,8 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 126,
-        "column": 5
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD5": {
-      "size_of": 32,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "u256",
-          "type": {
-            "name": "uint64_t[4]",
-            "kind": "array",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "sizeOfElement": 8,
-            "arraySize": 4,
-            "innerType": {
-              "name": "uint64_t",
-              "kind": "typeAlias",
-              "sizeOf": 8,
-              "alignOf": 8,
-              "location": {
-                "fileName": "stdint.h",
-                "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-                "line": 98,
-                "column": 25
-              },
-              "innerType": {
-                "name": "unsigned long long",
-                "kind": "primitive",
-                "sizeOf": 8,
-                "alignOf": 8
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 59,
-            "column": 16
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 58,
-        "column": 5
+        "line": 92,
+        "column": 16
       }
     },
     "ModelMetadata": {
@@ -2144,14 +1546,14 @@
             "location": {
               "fileName": "dojo.h",
               "filePath": "/dojo.h",
-              "line": 123,
+              "line": 125,
               "column": 16
             }
           },
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 157,
+            "line": 161,
             "column": 13
           }
         },
@@ -2174,7 +1576,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 158,
+            "line": 162,
             "column": 15
           }
         },
@@ -2202,7 +1604,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 159,
+            "line": 163,
             "column": 12
           }
         },
@@ -2230,7 +1632,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 160,
+            "line": 164,
             "column": 12
           }
         },
@@ -2252,7 +1654,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 161,
+            "line": 165,
             "column": 23
           }
         },
@@ -2266,7 +1668,7 @@
             "location": {
               "fileName": "dojo.h",
               "filePath": "/dojo.h",
-              "line": 141,
+              "line": 145,
               "column": 16
             }
           },
@@ -2274,7 +1676,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 162,
+            "line": 166,
             "column": 30
           }
         }
@@ -2282,16 +1684,16 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 156,
+        "line": 160,
         "column": 16
       }
     },
-    "EnumOption": {
-      "size_of": 16,
+    "KeysClause": {
+      "size_of": 24,
       "align_of": 8,
       "fields": [
         {
-          "name": "name",
+          "name": "model",
           "type": {
             "name": "const char*",
             "kind": "pointer",
@@ -2308,121 +1710,103 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 96,
+            "line": 151,
             "column": 15
           }
         },
         {
-          "name": "ty",
+          "name": "keys",
           "type": {
-            "name": "Ty*",
-            "kind": "pointer",
-            "sizeOf": 8,
+            "name": "CArray_FieldElement",
+            "kind": "struct",
+            "sizeOf": 16,
             "alignOf": 8,
-            "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 123,
-                "column": 16
-              }
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 145,
+              "column": 16
             }
           },
           "offset_of": 8,
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 97,
-            "column": 14
+            "line": 152,
+            "column": 30
           }
         }
       ],
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 95,
+        "line": 150,
         "column": 16
       }
     },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD6": {
-      "size_of": 4,
-      "align_of": 4,
-      "fields": [
-        {
-          "name": "u_size",
-          "type": {
-            "name": "uint32_t",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 198,
-              "column": 25
-            },
-            "innerType": {
-              "name": "unsigned int",
-              "kind": "primitive",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 62,
-            "column": 16
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 61,
-        "column": 5
-      }
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD3": {
-      "size_of": 8,
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD1": {
+      "size_of": 24,
       "align_of": 8,
       "fields": [
         {
-          "name": "u64",
+          "name": "ty_struct",
           "type": {
-            "name": "uint64_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
+            "name": "Struct",
+            "kind": "struct",
+            "sizeOf": 24,
             "alignOf": 8,
             "location": {
-              "fileName": "stdint.h",
-              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
-              "line": 98,
-              "column": 25
-            },
-            "innerType": {
-              "name": "unsigned long long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 92,
+              "column": 16
             }
           },
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 53,
-            "column": 16
+            "line": 133,
+            "column": 21
           }
         }
       ],
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 52,
+        "line": 132,
+        "column": 5
+      }
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD2": {
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ty_enum",
+          "type": {
+            "name": "Enum",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 107,
+              "column": 16
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 136,
+            "column": 19
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 135,
         "column": 5
       }
     },
@@ -2494,59 +1878,26 @@
         "column": 16
       }
     },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD8": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "felt252",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 22,
-              "column": 16
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 68,
-            "column": 27
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 67,
-        "column": 5
-      }
-    },
-    "CArray_CHashItem______c_char__ModelMetadata": {
+    "CArray_Member": {
       "size_of": 16,
       "align_of": 8,
       "fields": [
         {
           "name": "data",
           "type": {
-            "name": "CHashItem______c_char__ModelMetadata*",
+            "name": "Member*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "CHashItem______c_char__ModelMetadata",
+              "name": "Member",
               "kind": "struct",
-              "sizeOf": 120,
+              "sizeOf": 24,
               "alignOf": 8,
               "location": {
                 "fileName": "dojo.h",
                 "filePath": "/dojo.h",
-                "line": 165,
+                "line": 81,
                 "column": 16
               }
             }
@@ -2554,8 +1905,8 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 171,
-            "column": 48
+            "line": 88,
+            "column": 18
           }
         },
         {
@@ -2582,7 +1933,7 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 172,
+            "line": 89,
             "column": 13
           }
         }
@@ -2590,7 +1941,521 @@
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 170,
+        "line": 87,
+        "column": 16
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD0": {
+      "size_of": 1,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "u8",
+          "type": {
+            "name": "uint8_t",
+            "kind": "typeAlias",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 266,
+              "column": 24
+            },
+            "innerType": {
+              "name": "unsigned char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 45,
+            "column": 17
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 44,
+        "column": 7
+      }
+    },
+    "EnumOption": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 98,
+            "column": 15
+          }
+        },
+        {
+          "name": "ty",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 125,
+                "column": 16
+              }
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 99,
+            "column": 14
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 97,
+        "column": 16
+      }
+    },
+    "Ty": {
+      "size_of": 48,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "Ty_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 123,
+              "column": 3
+            },
+            "innerType": {
+              "name": "Ty_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 118,
+                "column": 14
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 126,
+            "column": 10
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Ty_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 127,
+              "column": 3
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 127,
+            "column": 3
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 125,
+        "column": 16
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD3": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "u64",
+          "type": {
+            "name": "uint64_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 98,
+              "column": 25
+            },
+            "innerType": {
+              "name": "unsigned long long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 54,
+            "column": 18
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 53,
+        "column": 7
+      }
+    },
+    "Member": {
+      "size_of": 24,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 82,
+            "column": 15
+          }
+        },
+        {
+          "name": "ty",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 125,
+                "column": 16
+              }
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 83,
+            "column": 14
+          }
+        },
+        {
+          "name": "key",
+          "type": {
+            "name": "_Bool",
+            "kind": "primitive",
+            "sizeOf": 1,
+            "alignOf": 1
+          },
+          "offset_of": 16,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 84,
+            "column": 8
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 81,
+        "column": 16
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD10": {
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "contract_address",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 22,
+              "column": 16
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 75,
+            "column": 29
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 74,
+        "column": 7
+      }
+    },
+    "Ty_ANONYMOUS_FIELD1": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "union",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 128,
+              "column": 5
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 128,
+            "column": 5
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 127,
+        "column": 3
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD7": {
+      "size_of": 1,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "p_bool",
+          "type": {
+            "name": "_Bool",
+            "kind": "primitive",
+            "sizeOf": 1,
+            "alignOf": 1
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 66,
+            "column": 14
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 65,
+        "column": 7
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD8": {
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "felt252",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 22,
+              "column": 16
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 69,
+            "column": 29
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 68,
+        "column": 7
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1": {
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "union",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 43,
+              "column": 5
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 43,
+            "column": 5
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 42,
+        "column": 3
+      }
+    },
+    "CArray_EnumOption": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "EnumOption*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "EnumOption",
+              "kind": "struct",
+              "sizeOf": 16,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 97,
+                "column": 16
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 103,
+            "column": 22
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 298,
+              "column": 26
+            },
+            "innerType": {
+              "name": "unsigned long long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 104,
+            "column": 13
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 102,
         "column": 16
       }
     },
@@ -2650,7 +2515,320 @@
         "column": 16
       }
     },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD9": {
+    "CArray_FieldElement": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "FieldElement*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "FieldElement",
+              "kind": "struct",
+              "sizeOf": 32,
+              "alignOf": 1,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 22,
+                "column": 16
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 146,
+            "column": 24
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 298,
+              "column": 26
+            },
+            "innerType": {
+              "name": "unsigned long long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 147,
+            "column": 13
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 145,
+        "column": 16
+      }
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD3": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ty_tuple",
+          "type": {
+            "name": "CArray_Ty",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 113,
+              "column": 16
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 139,
+            "column": 24
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 138,
+        "column": 5
+      }
+    },
+    "Primitive": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "Primitive_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 38,
+              "column": 3
+            },
+            "innerType": {
+              "name": "Primitive_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 26,
+                "column": 14
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 41,
+            "column": 17
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "isAnonymous": true,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 42,
+              "column": 3
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 42,
+            "column": 3
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 40,
+        "column": 16
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD2": {
+      "size_of": 4,
+      "align_of": 4,
+      "fields": [
+        {
+          "name": "u32",
+          "type": {
+            "name": "uint32_t",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 198,
+              "column": 25
+            },
+            "innerType": {
+              "name": "unsigned int",
+              "kind": "primitive",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 51,
+            "column": 18
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 50,
+        "column": 7
+      }
+    },
+    "CArray_Ty": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8,
+              "location": {
+                "fileName": "dojo.h",
+                "filePath": "/dojo.h",
+                "line": 125,
+                "column": 16
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 114,
+            "column": 14
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 298,
+              "column": 26
+            },
+            "innerType": {
+              "name": "unsigned long long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 115,
+            "column": 13
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 113,
+        "column": 16
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD1": {
+      "size_of": 2,
+      "align_of": 2,
+      "fields": [
+        {
+          "name": "u16",
+          "type": {
+            "name": "uint16_t",
+            "kind": "typeAlias",
+            "sizeOf": 2,
+            "alignOf": 2,
+            "location": {
+              "fileName": "stdint.h",
+              "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+              "line": 243,
+              "column": 25
+            },
+            "innerType": {
+              "name": "unsigned short",
+              "kind": "primitive",
+              "sizeOf": 2,
+              "alignOf": 2
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 48,
+            "column": 18
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 47,
+        "column": 7
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD9": {
       "size_of": 32,
       "align_of": 1,
       "fields": [
@@ -2671,279 +2849,24 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 71,
-            "column": 27
+            "line": 72,
+            "column": 29
           }
         }
       ],
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 70,
-        "column": 5
+        "line": 71,
+        "column": 7
       }
     },
-    "Primitive_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 32,
+    "CHashItem______c_char__ModelMetadata": {
+      "size_of": 120,
       "align_of": 8,
       "fields": [
         {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 1,
-            "alignOf": 1,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 43,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 43,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 2,
-            "alignOf": 2,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 46,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 46,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2",
-            "kind": "struct",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 49,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 49,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD3",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 52,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 52,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD4",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 1,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 55,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 55,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD5",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 58,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 58,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD6",
-            "kind": "struct",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 61,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 61,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD7",
-            "kind": "struct",
-            "sizeOf": 1,
-            "alignOf": 1,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 64,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 64,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD8",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 67,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 67,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD9",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 70,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 70,
-            "column": 5
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD10",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 73,
-              "column": 5
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 73,
-            "column": 5
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 42,
-        "column": 3
-      }
-    },
-    "Member": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "name",
+          "name": "key",
           "type": {
             "name": "const char*",
             "kind": "pointer",
@@ -2960,132 +2883,308 @@
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 80,
+            "line": 170,
             "column": 15
           }
         },
         {
-          "name": "ty",
+          "name": "value",
           "type": {
-            "name": "Ty*",
+            "name": "ModelMetadata",
+            "kind": "struct",
+            "sizeOf": 112,
+            "alignOf": 8,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 160,
+              "column": 16
+            }
+          },
+          "offset_of": 8,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 171,
+            "column": 24
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 169,
+        "column": 16
+      }
+    },
+    "WorldMetadata": {
+      "size_of": 144,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "world_address",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 22,
+              "column": 16
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 180,
+            "column": 23
+          }
+        },
+        {
+          "name": "world_class_hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 22,
+              "column": 16
+            }
+          },
+          "offset_of": 32,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 181,
+            "column": 23
+          }
+        },
+        {
+          "name": "executor_address",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 22,
+              "column": 16
+            }
+          },
+          "offset_of": 64,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 182,
+            "column": 23
+          }
+        },
+        {
+          "name": "executor_class_hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 22,
+              "column": 16
+            }
+          },
+          "offset_of": 96,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 183,
+            "column": 23
+          }
+        },
+        {
+          "name": "models",
+          "type": {
+            "name": "CArray_CHashItem______c_char__ModelMetadata",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 174,
+              "column": 16
+            }
+          },
+          "offset_of": 128,
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 184,
+            "column": 54
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 179,
+        "column": 16
+      }
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD0": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ty_primitive",
+          "type": {
+            "name": "Primitive",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "location": {
+              "fileName": "dojo.h",
+              "filePath": "/dojo.h",
+              "line": 40,
+              "column": 16
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 130,
+            "column": 24
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 129,
+        "column": 5
+      }
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0_ANONYMOUS_FIELD5": {
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "u256",
+          "type": {
+            "name": "uint64_t[4]",
+            "kind": "array",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "sizeOfElement": 8,
+            "arraySize": 4,
+            "innerType": {
+              "name": "uint64_t",
+              "kind": "typeAlias",
+              "sizeOf": 8,
+              "alignOf": 8,
+              "location": {
+                "fileName": "stdint.h",
+                "filePath": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include/stdint.h",
+                "line": 98,
+                "column": 25
+              },
+              "innerType": {
+                "name": "unsigned long long",
+                "kind": "primitive",
+                "sizeOf": 8,
+                "alignOf": 8
+              }
+            }
+          },
+          "location": {
+            "fileName": "dojo.h",
+            "filePath": "/dojo.h",
+            "line": 60,
+            "column": 18
+          }
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 59,
+        "column": 7
+      }
+    },
+    "Error": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "message",
+          "type": {
+            "name": "const char*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 123,
-                "column": 16
-              }
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
             }
           },
-          "offset_of": 8,
           "location": {
             "fileName": "dojo.h",
             "filePath": "/dojo.h",
-            "line": 81,
-            "column": 14
-          }
-        },
-        {
-          "name": "key",
-          "type": {
-            "name": "_Bool",
-            "kind": "primitive",
-            "sizeOf": 1,
-            "alignOf": 1
-          },
-          "offset_of": 16,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 82,
-            "column": 8
+            "line": 19,
+            "column": 15
           }
         }
       ],
       "location": {
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
-        "line": 79,
-        "column": 16
-      }
-    },
-    "Ty": {
-      "size_of": 48,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "Ty_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 121,
-              "column": 3
-            },
-            "innerType": {
-              "name": "Ty_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4,
-              "location": {
-                "fileName": "dojo.h",
-                "filePath": "/dojo.h",
-                "line": 116,
-                "column": 14
-              }
-            }
-          },
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 124,
-            "column": 10
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Ty_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 40,
-            "alignOf": 8,
-            "isAnonymous": true,
-            "location": {
-              "fileName": "dojo.h",
-              "filePath": "/dojo.h",
-              "line": 125,
-              "column": 3
-            }
-          },
-          "offset_of": 8,
-          "location": {
-            "fileName": "dojo.h",
-            "filePath": "/dojo.h",
-            "line": 125,
-            "column": 3
-          }
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 123,
+        "line": 18,
         "column": 16
       }
     }
   },
   "enums": {
+    "Ty_Tag": {
+      "typeInteger": {
+        "name": "int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "TyPrimitive"
+        },
+        {
+          "name": "TyStruct",
+          "value": 1
+        },
+        {
+          "name": "TyEnum",
+          "value": 2
+        },
+        {
+          "name": "TyTuple",
+          "value": 3
+        }
+      ],
+      "location": {
+        "fileName": "dojo.h",
+        "filePath": "/dojo.h",
+        "line": 118,
+        "column": 14
+      }
+    },
     "Primitive_Tag": {
       "typeInteger": {
         "name": "int",
@@ -3142,37 +3241,6 @@
         "fileName": "dojo.h",
         "filePath": "/dojo.h",
         "line": 26,
-        "column": 14
-      }
-    },
-    "Ty_Tag": {
-      "typeInteger": {
-        "name": "int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "TyPrimitive"
-        },
-        {
-          "name": "TyStruct",
-          "value": 1
-        },
-        {
-          "name": "TyEnum",
-          "value": 2
-        },
-        {
-          "name": "TyTuple",
-          "value": 3
-        }
-      ],
-      "location": {
-        "fileName": "dojo.h",
-        "filePath": "/dojo.h",
-        "line": 116,
         "column": 14
       }
     }

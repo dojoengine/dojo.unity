@@ -51,7 +51,7 @@ namespace Dojo
 
             // NOTE: we could copy the data into a managed structure
             // and free the original structure from rust.
-            dojo.Ty entity = *dojo.client_entity(client, &query, &error);
+            dojo.Ty* entity = dojo.client_entity(client, &query, &error);
 
             if (error.message != string.Empty)
             {
@@ -60,7 +60,7 @@ namespace Dojo
 
             // freeing the c array is up to the caller
             // dojo.ty_free(entity);
-            return entity;
+            return *entity;
         }
 
         public ReadOnlySpan<dojo.KeysClause> Entities()

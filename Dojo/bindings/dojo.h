@@ -39,39 +39,41 @@ typedef enum Primitive_Tag {
 
 typedef struct Primitive {
   Primitive_Tag tag;
-  union {
-    struct {
-      uint8_t u8;
-    };
-    struct {
-      uint16_t u16;
-    };
-    struct {
-      uint32_t u32;
-    };
-    struct {
-      uint64_t u64;
-    };
-    struct {
-      uint8_t u128[16];
-    };
-    struct {
-      uint64_t u256[4];
-    };
-    struct {
-      uint32_t u_size;
-    };
-    struct {
-      bool p_bool;
-    };
-    struct {
-      struct FieldElement felt252;
-    };
-    struct {
-      struct FieldElement class_hash;
-    };
-    struct {
-      struct FieldElement contract_address;
+  struct {
+    union {
+      struct {
+        uint8_t u8;
+      };
+      struct {
+        uint16_t u16;
+      };
+      struct {
+        uint32_t u32;
+      };
+      struct {
+        uint64_t u64;
+      };
+      struct {
+        uint8_t u128[16];
+      };
+      struct {
+        uint64_t u256[4];
+      };
+      struct {
+        uint32_t u_size;
+      };
+      struct {
+        bool p_bool;
+      };
+      struct {
+        struct FieldElement felt252;
+      };
+      struct {
+        struct FieldElement class_hash;
+      };
+      struct {
+        struct FieldElement contract_address;
+      };
     };
   };
 } Primitive;
@@ -122,7 +124,8 @@ typedef enum Ty_Tag {
 
 typedef struct Ty {
   Ty_Tag tag;
-  union {
+  struct {
+    union {
     struct {
       struct Primitive ty_primitive;
     };
@@ -135,6 +138,7 @@ typedef struct Ty {
     struct {
       struct CArray_Ty ty_tuple;
     };
+  };
   };
 } Ty;
 
