@@ -10,9 +10,6 @@ using System.Text.Json;
 
 internal class Example
 {
-    [DllImport("kernel32.dll", SetLastError = true)]
-    static extern bool SetDllDirectory(string lpPathName);
-
     private static void OnEntityStateUpdate()
     {
         // React
@@ -28,8 +25,8 @@ internal class Example
         var world = "0x5010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138";
         var player = "0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
         // Initialize entities
-        var entities = new dojo.Keys[] { new dojo.Keys { model = "Position", keys = new CString[] {
-            CString.FromString(player)
+        var entities = new dojo.Keys[] { new dojo.Keys { model = "Position", keys = new string[] {
+            player
         } } };
 
         // Throws an exception if the client cannot be created

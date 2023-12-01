@@ -21,7 +21,7 @@ public class Tests
         var entities = new dojo.Keys[] {
             new dojo.Keys {
                 model = "Moves",
-                keys = new CString[] { CString.FromString(playerKey) }
+                keys = new string[] { playerKey }
             }
         };
 
@@ -54,7 +54,7 @@ public class Tests
         var query = new dojo.Keys
         {
             model = "Moves",
-            keys = new CString[] { CString.FromString(playerKey) }
+            keys = new string[] { playerKey }
 
         };
 
@@ -72,7 +72,7 @@ public class Tests
                      .Select(x => Convert.ToByte(playerKey.Substring(x, 2), 16))
                      .ToArray();
 
-        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), keys = new CString[] { CString.FromString(playerKey) } } };
+        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), keys = new string[] { playerKey } } };
         client.AddEntitiesToSync(entities);
 
         var subscribedEntities = client.Entities();
@@ -87,7 +87,7 @@ public class Tests
     [Test]
     public void TestRemoveEntitiesToSync()
     {
-        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), keys = new CString[] { CString.FromString(playerKey) } } };
+        var entities = new dojo.Keys[] { new dojo.Keys { model = "Moves", keys = new string[] { playerKey } } };
         client.AddEntitiesToSync(entities);
         client.RemoveEntitiesToSync(entities);
 
@@ -105,7 +105,7 @@ public class Tests
         client.OnEntityStateUpdate(new dojo.Keys
         {
             model = "Moves",
-            keys = new CString[] { CString.FromString(playerKey) }
+            keys = new string[] { playerKey }
 
         }, new dojo.FnPtr_Void(callback));
     }
