@@ -20,16 +20,7 @@ internal class Example
         {
             CString.FromString("0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973"),
         };
-
-        CString* keysPtr;
-        fixed (CString* ptr = &keys[0])
-        {
-            keysPtr = ptr;
-        }
-        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), _keys = new dojo.CArray______c_char{
-            data = keysPtr,
-            data_len = (nuint)keys.Length,
-        } } };
+        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), keys = keys } };
 
         // Throws an exception if the client cannot be created
         ToriiClient client = new ToriiClient("http://localhost:8080", "http://localhost:5050", world, entities);

@@ -1,3 +1,4 @@
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/CoverletSourceRootsMapping_DojoTests
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/NUnit3.TestAdapter.dll
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/NUnit3.TestAdapter.pdb
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/nunit.engine.dll
@@ -85,6 +86,8 @@
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/zh-Hant/Microsoft.TestPlatform.CommunicationUtilities.resources.dll
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/zh-Hant/Microsoft.TestPlatform.CrossPlatEngine.resources.dll
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/zh-Hant/Microsoft.VisualStudio.TestPlatform.Common.resources.dll
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.dll
+/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.pdb
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.csproj.AssemblyReference.cache
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.GeneratedMSBuildEditorConfig.editorconfig
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.AssemblyInfoInputs.cache
@@ -97,6 +100,3 @@
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.pdb
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/DojoTests.genruntimeconfig.cache
 /Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/obj/Debug/net8.0/ref/DojoTests.dll
-/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/CoverletSourceRootsMapping_DojoTests
-/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.dll
-/Users/nasr/Documents/development.nosync/dojo.unity/DojoTests/bin/Debug/net8.0/Dojo.pdb
