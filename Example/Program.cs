@@ -2,9 +2,15 @@
 using bottlenoselabs.C2CS.Runtime;
 using Dojo;
 using dojo_bindings;
+using System.Runtime.InteropServices;
+
+
 
 internal class Example
 {
+    [DllImport("kernel32.dll", SetLastError = true)]
+    static extern bool SetDllDirectory(string lpPathName);
+
     private static void OnEntityStateUpdate()
     {
         // React
@@ -13,6 +19,9 @@ internal class Example
 
     unsafe static void Main()
     {
+        // Use root directory to load the native library
+        Environment.CurrentDirectory = "../";
+
         // Initialize world data
         var world = "0x5010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138";
         // Initialize entities

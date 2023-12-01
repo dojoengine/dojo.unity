@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
 
@@ -7,7 +8,6 @@ namespace Dojo
 {
     public unsafe class ToriiClient
     {
-
         private dojo.ToriiClient* client;
         public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.Keys[] entities)
         {

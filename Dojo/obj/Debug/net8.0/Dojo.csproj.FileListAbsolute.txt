@@ -10,4 +10,3 @@
 /Users/nasr/Documents/development.nosync/dojo.unity/Dojo/obj/Debug/net8.0/refint/Dojo.dll
 /Users/nasr/Documents/development.nosync/dojo.unity/Dojo/obj/Debug/net8.0/Dojo.pdb
 /Users/nasr/Documents/development.nosync/dojo.unity/Dojo/obj/Debug/net8.0/ref/Dojo.dll
-/Users/nasr/Documents/development.nosync/dojo.unity/Dojo/obj/Debug/net8.0/Dojo.csproj.AssemblyReference.cache
