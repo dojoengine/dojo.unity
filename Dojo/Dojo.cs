@@ -79,7 +79,7 @@ namespace Dojo
             return new Ty(entity);
         }
 
-        public ReadOnlySpan<dojo.KeysClause> Entities()
+        public ReadOnlySpan<dojo.KeysClause> SubscribedEntities()
         {
             dojo.CArray_KeysClause* entities = dojo.client_subscribed_entities(client);
             // NOTE: we could copy the data into a managed array
