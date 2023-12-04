@@ -6,6 +6,22 @@ using dojo_bindings;
 
 namespace Dojo
 {
+    // A managed type for the Ty structure
+    // Frees the underlying dojo.Ty when the object is garbage collected
+    public unsafe class Ty(dojo.Ty* ty)
+    {
+        public dojo.Ty_Tag tag => ty->tag;
+        public dojo.Struct struct_ => ty->ty_struct;
+        public dojo.Enum enum_ => ty->ty_enum;
+        public dojo.Primitive primitive => ty->ty_primitive;
+        public Span<dojo.Ty> tuple => ty->ty_tuple;
+
+        ~Ty()
+        {
+            dojo.ty_free(ty);
+        }
+    }
+    
     public unsafe class ToriiClient
     {
         private dojo.ToriiClient* client;
@@ -42,7 +58,7 @@ namespace Dojo
             return worldMetadata;
         }
 
-        public dojo.Ty Entity(dojo.Keys query)
+        public Ty Entity(dojo.Keys query)
         {
             dojo.Error error;
             // NOTE: this returns a complex data type
@@ -60,7 +76,7 @@ namespace Dojo
 
             // freeing the c array is up to the caller
             // dojo.ty_free(entity);
-            return *entity;
+            return new Ty(entity);
         }
 
         public ReadOnlySpan<dojo.KeysClause> Entities()

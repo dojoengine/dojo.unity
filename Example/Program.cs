@@ -19,7 +19,7 @@ internal class Example
     unsafe static void Main()
     {
         // Use root directory to load the native library
-        Environment.CurrentDirectory = "../";
+        Environment.CurrentDirectory = "../../../../";
 
         // Initialize world data
         var world = "0x5010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138";
@@ -35,8 +35,8 @@ internal class Example
         // Get the world metadata
         dojo.WorldMetadata worldMetadata = client.WorldMetadata();
 
-        dojo.Ty entity = client.Entity(entities[0]);
-        Console.WriteLine(entity.ty_struct.children[0].name);
+        Dojo.Ty entity = client.Entity(entities[0]);
+        Console.WriteLine(entity.struct_.children[0].name);
 
         // Start the subscription
         client.StartSubscription();

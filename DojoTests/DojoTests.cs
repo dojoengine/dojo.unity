@@ -60,8 +60,8 @@ public class Tests
 
         var entity = client.Entity(query);
 
-        Assert.That(entity.ty_struct.name, Is.EqualTo("Moves"));
-        Assert.That(entity.ty_struct.children[0].name, Is.EqualTo("player"));
+        Assert.That(entity.struct_.name, Is.EqualTo("Moves"));
+        Assert.That(entity.struct_.children[0].name, Is.EqualTo("player"));
     }
 
     [Test]
