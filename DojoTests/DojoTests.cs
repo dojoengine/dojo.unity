@@ -75,7 +75,7 @@ public class Tests
         var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), keys = new string[] { playerKey } } };
         client.AddEntitiesToSync(entities);
 
-        var subscribedEntities = client.Entities();
+        var subscribedEntities = client.SubscribedEntities();
 
         for (int i = 0; i < subscribedEntities.Length; i++)
         {
@@ -91,7 +91,7 @@ public class Tests
         client.AddEntitiesToSync(entities);
         client.RemoveEntitiesToSync(entities);
 
-        var subscribedEntities = client.Entities();
+        var subscribedEntities = client.SubscribedEntities();
         Assert.That(subscribedEntities.Length, Is.EqualTo(0));
     }
 
