@@ -61,12 +61,6 @@ namespace Dojo
         public Ty Entity(dojo.Keys query)
         {
             dojo.Error error;
-            // NOTE: this returns a complex data type
-            // there are multiple allocated carrays
-            // which means that they need to be fred.
-
-            // NOTE: we could copy the data into a managed structure
-            // and free the original structure from rust.
             dojo.Ty* entity = dojo.client_entity(client, &query, &error);
 
             if (error.message != string.Empty)
@@ -74,8 +68,8 @@ namespace Dojo
                 throw new Exception(error.message);
             }
 
-            // freeing the c array is up to the caller
-            // dojo.ty_free(entity);
+            // we instantiate a new managed Ty object
+            // which will free the underlying c ty when it is garbage collected
             return new Ty(entity);
         }
 
