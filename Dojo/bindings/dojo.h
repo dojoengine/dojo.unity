@@ -3,6 +3,20 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+typedef enum ComparisonOperator {
+  Eq,
+  Neq,
+  Gt,
+  Gte,
+  Lt,
+  Lte,
+} ComparisonOperator;
+
+typedef enum LogicalOperator {
+  And,
+  Or,
+} LogicalOperator;
+
 typedef struct ToriiClient ToriiClient;
 
 typedef struct CArray______c_char {
@@ -10,10 +24,10 @@ typedef struct CArray______c_char {
   uintptr_t data_len;
 } CArray______c_char;
 
-typedef struct Keys {
+typedef struct KeysClause {
   const char *model;
   struct CArray______c_char keys;
-} Keys;
+} KeysClause;
 
 typedef struct Error {
   const char *message;
@@ -39,41 +53,39 @@ typedef enum Primitive_Tag {
 
 typedef struct Primitive {
   Primitive_Tag tag;
-  struct {
-    union {
-      struct {
-        uint8_t u8;
-      };
-      struct {
-        uint16_t u16;
-      };
-      struct {
-        uint32_t u32;
-      };
-      struct {
-        uint64_t u64;
-      };
-      struct {
-        uint8_t u128[16];
-      };
-      struct {
-        uint64_t u256[4];
-      };
-      struct {
-        uint32_t u_size;
-      };
-      struct {
-        bool p_bool;
-      };
-      struct {
-        struct FieldElement felt252;
-      };
-      struct {
-        struct FieldElement class_hash;
-      };
-      struct {
-        struct FieldElement contract_address;
-      };
+  union {
+    struct {
+      uint8_t u8;
+    };
+    struct {
+      uint16_t u16;
+    };
+    struct {
+      uint32_t u32;
+    };
+    struct {
+      uint64_t u64;
+    };
+    struct {
+      uint8_t u128[16];
+    };
+    struct {
+      uint64_t u256[4];
+    };
+    struct {
+      uint32_t u_size;
+    };
+    struct {
+      bool p_bool;
+    };
+    struct {
+      struct FieldElement felt252;
+    };
+    struct {
+      struct FieldElement class_hash;
+    };
+    struct {
+      struct FieldElement contract_address;
     };
   };
 } Primitive;
@@ -124,8 +136,7 @@ typedef enum Ty_Tag {
 
 typedef struct Ty {
   Ty_Tag tag;
-  struct {
-    union {
+  union {
     struct {
       struct Primitive ty_primitive;
     };
@@ -139,23 +150,121 @@ typedef struct Ty {
       struct CArray_Ty ty_tuple;
     };
   };
-  };
 } Ty;
 
-typedef struct CArray_FieldElement {
-  struct FieldElement *data;
-  uintptr_t data_len;
-} CArray_FieldElement;
+typedef struct Model {
+  const char *name;
+  struct CArray_Member members;
+} Model;
 
-typedef struct KeysClause {
+typedef struct CArray_Model {
+  struct Model *data;
+  uintptr_t data_len;
+} CArray_Model;
+
+typedef struct Entity {
+  struct FieldElement key;
+  struct CArray_Model models;
+} Entity;
+
+typedef struct CArray_Entity {
+  struct Entity *data;
+  uintptr_t data_len;
+} CArray_Entity;
+
+typedef struct CArray_u8 {
+  uint8_t *data;
+  uintptr_t data_len;
+} CArray_u8;
+
+typedef enum ValueType_Tag {
+  VString,
+  Int,
+  UInt,
+  VBool,
+  Bytes,
+} ValueType_Tag;
+
+typedef struct ValueType {
+  ValueType_Tag tag;
+  union {
+    struct {
+      const char *v_string;
+    };
+    struct {
+      int64_t int_;
+    };
+    struct {
+      uint64_t u_int;
+    };
+    struct {
+      bool v_bool;
+    };
+    struct {
+      struct CArray_u8 bytes;
+    };
+  };
+} ValueType;
+
+typedef struct Value {
+  struct Primitive primitive_type;
+  struct ValueType value_type;
+} Value;
+
+typedef struct MemberClause {
   const char *model;
-  struct CArray_FieldElement keys;
-} KeysClause;
+  const char *member;
+  enum ComparisonOperator operator_;
+  struct Value value;
+} MemberClause;
+
+typedef struct CArray_Clause {
+  struct Clause *data;
+  uintptr_t data_len;
+} CArray_Clause;
+
+typedef struct CompositeClause {
+  const char *model;
+  enum LogicalOperator operator_;
+  struct CArray_Clause clauses;
+} CompositeClause;
+
+typedef enum Clause_Tag {
+  Keys,
+  CMember,
+  Composite,
+} Clause_Tag;
+
+typedef struct Clause {
+  Clause_Tag tag;
+  union {
+    struct {
+      struct KeysClause keys;
+    };
+    struct {
+      struct MemberClause c_member;
+    };
+    struct {
+      struct CompositeClause composite;
+    };
+  };
+} Clause;
+
+typedef struct Query {
+  uint32_t limit;
+  uint32_t offset;
+  struct Clause clause;
+} Query;
 
 typedef struct CArray_KeysClause {
   struct KeysClause *data;
   uintptr_t data_len;
 } CArray_KeysClause;
+
+typedef struct CArray_FieldElement {
+  struct FieldElement *data;
+  uintptr_t data_len;
+} CArray_FieldElement;
 
 typedef struct ModelMetadata {
   struct Ty schema;
@@ -187,34 +296,48 @@ typedef struct WorldMetadata {
 struct ToriiClient *client_new(const char *torii_url,
                                const char *rpc_url,
                                const char *world,
-                               const struct Keys *entities,
+                               const struct KeysClause *entities,
                                uintptr_t entities_len,
                                struct Error *error);
 
-struct Ty *client_entity(struct ToriiClient *client, const struct Keys *keys, struct Error *error);
+struct Ty *client_entity(struct ToriiClient *client,
+                         const struct KeysClause *keys,
+                         struct Error *error);
 
-const struct CArray_KeysClause *client_subscribed_entities(struct ToriiClient *client);
+struct CArray_Entity client_entities(struct ToriiClient *client,
+                                     const struct Query *query,
+                                     struct Error *error);
+
+struct CArray_KeysClause client_subscribed_entities(struct ToriiClient *client);
 
 void client_start_subscription(struct ToriiClient *client, struct Error *error);
 
 struct WorldMetadata client_metadata(struct ToriiClient *client);
 
 void client_add_entities_to_sync(struct ToriiClient *client,
-                                 const struct Keys *entities,
+                                 const struct KeysClause *entities,
                                  uintptr_t entities_len,
                                  struct Error *error);
 
 void client_on_entity_state_update(struct ToriiClient *client,
-                                   const struct Keys *entity,
+                                   const struct KeysClause *entity,
                                    void (*callback)(void));
 
 void client_remove_entities_to_sync(struct ToriiClient *client,
-                                    const struct Keys *entities,
+                                    const struct KeysClause *entities,
                                     uintptr_t entities_len,
                                     struct Error *error);
 
-void client_free(struct ToriiClient *client);
-
-void keys_free(const struct CArray_KeysClause *array);
+void client_free(struct ToriiClient *t);
 
 void ty_free(struct Ty *ty);
+
+void entity_free(struct Entity *entity);
+
+void error_free(struct Error *error);
+
+void world_metadata_free(struct WorldMetadata *metadata);
+
+void carray_free(void *data, uintptr_t data_len);
+
+void string_free(char *string);

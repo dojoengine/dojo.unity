@@ -18,8 +18,8 @@ public class Tests
         Environment.CurrentDirectory = "../../../../";
         var toriiUrl = "http://0.0.0.0:8080";
         var rpcUrl = "http://0.0.0.0:5050";
-        var entities = new dojo.Keys[] {
-            new dojo.Keys {
+        var entities = new dojo.KeysClause[] {
+            new dojo.KeysClause {
                 model = "Moves",
                 keys = new string[] { playerKey }
             }
@@ -45,17 +45,73 @@ public class Tests
                      .Select(x => Convert.ToByte(worldAddress.Substring(x, 2), 16))
                      .ToArray();
 
+        // models should correspond to Moves and Position
+        var movesExists = false;
+        var positionExists = false;
+        foreach (var cHashItemCCharModelMetadata in worldMetadata.models)
+        {
+            var modelMetadata = cHashItemCCharModelMetadata.value;
+            switch (modelMetadata.name.ToString())
+            {
+                case "":
+                    
+                case "Moves":
+                    movesExists = true;
+                    
+                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.TyStruct));
+                    Assert.That(modelMetadata.schema.ty_struct.children[0].name.ToString(), Is.EqualTo("player"));
+                    Assert.That(modelMetadata.schema.ty_struct.children[1].name.ToString(), Is.EqualTo("remaining"));
+                    Assert.That(modelMetadata.schema.ty_struct.children[2].name.ToString(), Is.EqualTo("last_direction"));
+                    
+                    // maybe worth verifying the field types?
+                    
+                    break;
+                case "Position":
+                    positionExists = true;
+                    
+                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.TyStruct));
+                    Assert.That(modelMetadata.schema.ty_struct.children[0].name.ToString(), Is.EqualTo("player"));
+                    Assert.That(modelMetadata.schema.ty_struct.children[1].name.ToString(), Is.EqualTo("vec"));
+                    
+                    // maybe worth verifying the field types?
+                    
+                    break;
+            }
+        }
+        
         Assert.That(worldMetadata.world_address.data.ToArray(), Is.EqualTo(worldAddressBytes));
+        Assert.That(movesExists, Is.True);
+        Assert.That(positionExists, Is.True);
     }
 
     [Test]
+    public void TestEntities()
+    {
+        var query = new dojo.Query()
+        {
+            limit = 5,
+            clause = new dojo.Clause()
+            {
+                tag = dojo.Clause_Tag.Keys,
+                keys = new dojo.KeysClause()
+                {
+                    model = "Moves",
+                    keys = new string[] { playerKey }
+                }
+            }
+        };
+        
+        var entities = client.Entities(query);
+        Assert.That(entities.Length, Is.EqualTo(1));
+    }
+    
+    [Test]
     public void TestEntity()
     {
-        var query = new dojo.Keys
+        var query = new dojo.KeysClause()
         {
             model = "Moves",
             keys = new string[] { playerKey }
-
         };
 
         var entity = client.Entity(query);
@@ -67,12 +123,7 @@ public class Tests
     [Test]
     public void TestAddEntitiesToSync()
     {
-        var playerKeyBytes = Enumerable.Range(2, playerKey.Length-2)
-                     .Where(x => x % 2 == 0)
-                     .Select(x => Convert.ToByte(playerKey.Substring(x, 2), 16))
-                     .ToArray();
-
-        var entities = new dojo.Keys[] { new dojo.Keys { _model = CString.FromString("Moves"), keys = new string[] { playerKey } } };
+        var entities = new dojo.KeysClause[] { new dojo.KeysClause() { _model = CString.FromString("Moves"), keys = new string[] { playerKey } } };
         client.AddEntitiesToSync(entities);
 
         var subscribedEntities = client.SubscribedEntities();
@@ -80,14 +131,14 @@ public class Tests
         for (int i = 0; i < subscribedEntities.Length; i++)
         {
             Assert.That(subscribedEntities[i].model.ToString(), Is.EqualTo("Moves"));
-            Assert.That(subscribedEntities[i].keys[0].data.ToArray(), Is.EqualTo(playerKeyBytes));
+            Assert.That(subscribedEntities[i].keys[0].ToString(), Is.EqualTo(playerKey));
         }
     }
 
     [Test]
     public void TestRemoveEntitiesToSync()
     {
-        var entities = new dojo.Keys[] { new dojo.Keys { model = "Moves", keys = new string[] { playerKey } } };
+        var entities = new dojo.KeysClause[] { new dojo.KeysClause { model = "Moves", keys = new string[] { playerKey } } };
         client.AddEntitiesToSync(entities);
         client.RemoveEntitiesToSync(entities);
 
@@ -102,7 +153,7 @@ public class Tests
         {
 
         };
-        client.OnEntityStateUpdate(new dojo.Keys
+        client.OnEntityStateUpdate(new dojo.KeysClause()
         {
             model = "Moves",
             keys = new string[] { playerKey }

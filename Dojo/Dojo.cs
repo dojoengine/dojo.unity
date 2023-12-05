@@ -22,17 +22,30 @@ namespace Dojo
         }
     }
     
+    // A managed type for Entity
+    // Frees the underlying dojo.Entity when the object is garbage collected
+    public unsafe class Entity(dojo.Entity* entity)
+    {
+        public dojo.FieldElement key => entity->key;
+        public Span<dojo.Model> models => entity->models;
+
+        ~Entity()
+        {
+            dojo.entity_free(entity);
+        }
+    }
+    
     public unsafe class ToriiClient
     {
         private dojo.ToriiClient* client;
-        public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.Keys[] entities)
+        public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.KeysClause[] entities)
         {
             CString ctoriiUrl = CString.FromString(toriiUrl);
             CString crpcUrl = CString.FromString(rpcUrl);
             CString cworld = CString.FromString(world);
-            dojo.Keys* entitiesPtr;
+            dojo.KeysClause* entitiesPtr;
 
-            fixed (dojo.Keys* ptr = &entities[0])
+            fixed (dojo.KeysClause* ptr = &entities[0])
             {
                 entitiesPtr = ptr;
             }
@@ -53,12 +66,13 @@ namespace Dojo
 
         public dojo.WorldMetadata WorldMetadata()
         {
+            // TODO: implement a managed type for WorldMetadata too
             dojo.WorldMetadata worldMetadata = dojo.client_metadata(client);
 
             return worldMetadata;
         }
 
-        public Ty Entity(dojo.Keys query)
+        public Ty Entity(dojo.KeysClause query)
         {
             dojo.Error error;
             dojo.Ty* entity = dojo.client_entity(client, &query, &error);
@@ -73,9 +87,21 @@ namespace Dojo
             return new Ty(entity);
         }
 
+        public ReadOnlySpan<dojo.Entity> Entities(dojo.Query query)
+        {
+            dojo.Error error;
+            dojo.CArray_Entity entities = dojo.client_entities(client, &query, &error);
+            if (error.message != string.Empty)
+            {
+                throw new Exception(error.message);
+            }
+            
+            return new Span<dojo.Entity>(entities.data, (int)entities.data_len);
+        }
+        
         public ReadOnlySpan<dojo.KeysClause> SubscribedEntities()
         {
-            dojo.CArray_KeysClause* entities = dojo.client_subscribed_entities(client);
+            dojo.CArray_KeysClause entities = dojo.client_subscribed_entities(client);
             // NOTE: we could copy the data into a managed array
             // and free the c array from rust.
             // however, it is slower
@@ -85,14 +111,14 @@ namespace Dojo
             // this just returns a span of the carray data
             // freeing the c array is up to the caller
             // dojo.carray_free(entities);
-            return new Span<dojo.KeysClause>(entities->data, (int)entities->data_len);
+            return new Span<dojo.KeysClause>(entities.data, (int)entities.data_len);
         }
 
-        public void AddEntitiesToSync(dojo.Keys[] entities)
+        public void AddEntitiesToSync(dojo.KeysClause[] entities)
         {
-            dojo.Keys* entitiesPtr;
+            dojo.KeysClause* entitiesPtr;
 
-            fixed (dojo.Keys* ptr = &entities[0])
+            fixed (dojo.KeysClause* ptr = &entities[0])
             {
                 entitiesPtr = ptr;
             }
@@ -106,11 +132,11 @@ namespace Dojo
             }
         }
 
-        public void RemoveEntitiesToSync(dojo.Keys[] entities)
+        public void RemoveEntitiesToSync(dojo.KeysClause[] entities)
         {
-            dojo.Keys* entitiesPtr;
+            dojo.KeysClause* entitiesPtr;
 
-            fixed (dojo.Keys* ptr = &entities[0])
+            fixed (dojo.KeysClause* ptr = &entities[0])
             {
                 entitiesPtr = ptr;
             }
@@ -124,7 +150,7 @@ namespace Dojo
             }
         }
 
-        public void OnEntityStateUpdate(dojo.Keys query, dojo.FnPtr_Void callback)
+        public void OnEntityStateUpdate(dojo.KeysClause query, dojo.FnPtr_Void callback)
         {
             dojo.client_on_entity_state_update(client, &query, callback);
         }
