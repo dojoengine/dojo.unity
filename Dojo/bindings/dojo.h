@@ -3,6 +3,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+typedef enum BlockTag {
+  Latest,
+  Pending,
+} BlockTag;
+
 typedef enum ComparisonOperator {
   Eq,
   Neq,
@@ -16,6 +21,8 @@ typedef enum LogicalOperator {
   And,
   Or,
 } LogicalOperator;
+
+typedef struct Account Account;
 
 typedef struct ToriiClient ToriiClient;
 
@@ -293,6 +300,36 @@ typedef struct WorldMetadata {
   struct CArray_CHashItem______c_char__ModelMetadata models;
 } WorldMetadata;
 
+/**
+ * Block hash, number or tag
+ */
+typedef enum BlockId_Tag {
+  Hash,
+  Number,
+  BlockTag_,
+} BlockId_Tag;
+
+typedef struct BlockId {
+  BlockId_Tag tag;
+  union {
+    struct {
+      struct FieldElement hash;
+    };
+    struct {
+      uint64_t number;
+    };
+    struct {
+      enum BlockTag block_tag;
+    };
+  };
+} BlockId;
+
+typedef struct Call {
+  const char *to;
+  const char *selector;
+  struct CArray_FieldElement calldata;
+} Call;
+
 struct ToriiClient *client_new(const char *torii_url,
                                const char *rpc_url,
                                const char *world,
@@ -328,7 +365,25 @@ void client_remove_entities_to_sync(struct ToriiClient *client,
                                     uintptr_t entities_len,
                                     struct Error *error);
 
+struct Account *account_new(const char *rpc_url,
+                            const char *private_key,
+                            const char *address,
+                            struct Error *error);
+
+struct FieldElement account_address(struct Account *account);
+
+struct FieldElement account_chain_id(struct Account *account);
+
+void account_set_block_id(struct Account *account, struct BlockId block_id);
+
+void account_execute_raw(struct Account *account,
+                         const struct Call *calldata,
+                         uintptr_t calldata_len,
+                         struct Error *error);
+
 void client_free(struct ToriiClient *t);
+
+void account_free(struct Account *account);
 
 void ty_free(struct Ty *ty);
 

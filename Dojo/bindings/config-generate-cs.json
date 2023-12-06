@@ -1,10 +1,10 @@
 {
-    "inputFilePath": "./ast/cross-platform.json",
-    "outputFileDirectory": "./client",
-    "namespaceName": "dojo_bindings",
-    "libraryName": "libtorii_c.dylib",
-    "className": "dojo",
-    "isEnabledFileScopedNamespace": false,
-    "isEnabledLibraryImport": true,
-    "isEnabledFunctionPointers": false
+  "inputFilePath": "./ast/cross-platform.json",
+  "outputFileDirectory": "./client",
+  "namespaceName": "dojo_bindings",
+  "libraryName": "libtorii_c.dylib",
+  "className": "dojo",
+  "isEnabledFileScopedNamespace": false,
+  "isEnabledLibraryImport": true,
+  "isEnabledFunctionPointers": false
 }

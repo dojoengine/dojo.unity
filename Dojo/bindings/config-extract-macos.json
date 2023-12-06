@@ -1,7 +1,7 @@
 {
-    "inputFilePath": "./dojo.h",
-    "platforms": {
-        "aarch64-apple-darwin": {},
-        "x86_64-apple-darwin": {}
-    }
+  "inputFilePath": "./dojo.h",
+  "platforms": {
+    "aarch64-apple-darwin": {},
+    "x86_64-apple-darwin": {}
+  }
 }
