@@ -1,0 +1,3 @@
+[submodule "c2cs"]
+	path = c2cs
+	url = https://github.com/Larkooo/c2cs

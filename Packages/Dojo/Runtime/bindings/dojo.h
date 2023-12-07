@@ -365,8 +365,14 @@ void client_remove_entities_to_sync(struct ToriiClient *client,
                                     uintptr_t entities_len,
                                     struct Error *error);
 
+struct FieldElement signing_key_new(void);
+
+struct FieldElement felt_from_hex_be(const char *hex, struct Error *error);
+
+struct FieldElement verifying_key_new(struct FieldElement signing_key);
+
 struct Account *account_new(const char *rpc_url,
-                            const char *private_key,
+                            struct FieldElement private_key,
                             const char *address,
                             struct Error *error);
 

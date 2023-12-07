@@ -11,7 +11,13 @@ public unsafe class Account
     public Account(string rpcUrl, string privateKey, string address)
     {
         dojo.Error error;
-        account = dojo.account_new(CString.FromString(rpcUrl), CString.FromString(privateKey),
+        var felt = dojo.felt_from_hex_be(CString.FromString(privateKey), &error);
+        if (error.message != string.Empty)
+        {
+            throw new Exception(error.message);
+        }
+        
+        account = dojo.account_new(CString.FromString(rpcUrl), felt,
             CString.FromString(address), &error);
         if (account == null)
         {
