@@ -28,7 +28,7 @@ public class Tests
             new()
             {
                 model = "Moves",
-                keys = new[] { playerKey }
+                keys = new string[]{ playerKey }
             }
         };
 
@@ -187,7 +187,7 @@ public class Tests
     public void TestAddEntitiesToSync()
     {
         var entities = new dojo.KeysClause[]
-            { new() { _model = CString.FromString("Moves"), keys = new[] { playerKey } } };
+            { new() { _model = CString.FromString("Position"), keys = new[] { playerKey } } };
         client.AddEntitiesToSync(entities);
 
         var subscribedEntities = client.SubscribedEntities();
