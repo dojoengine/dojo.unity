@@ -13,18 +13,17 @@ namespace Dojo
         // Start is called before the first frame update
         void Start()
         {
-            
         }
 
         // Update is called once per frame
         void Update()
         {
-            
         }
 
         // Called when the entity state is updated
         // model: the model that was updated
-        public virtual void OnEntityStateUpdate() {
+        public virtual void OnEntityStateUpdate()
+        {
             Debug.Log("EntityInstance.OnEntityStateUpdate");
         }
     }

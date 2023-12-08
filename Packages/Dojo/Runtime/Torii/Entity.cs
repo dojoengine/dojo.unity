@@ -1,22 +1,25 @@
 using System;
 using dojo_bindings;
 
-// A managed type for Entity
-// Frees the underlying dojo.Entity when the object is garbage collected
-public unsafe class Entity
+namespace Dojo.Torii
 {
-    private readonly dojo.Entity* _entity;
-
-    public Entity(dojo.Entity* entity)
+    // A managed type for Entity
+    // Frees the underlying dojo.Entity when the object is garbage collected
+    public unsafe class Entity
     {
-        _entity = entity;
-    }
+        private readonly dojo.Entity* _entity;
 
-    public dojo.FieldElement key => _entity->key;
-    public Span<dojo.Model> models => _entity->models;
+        public Entity(dojo.Entity* entity)
+        {
+            _entity = entity;
+        }
 
-    ~Entity()
-    {
-        dojo.entity_free(_entity);
+        public dojo.FieldElement key => _entity->key;
+        public Span<dojo.Model> models => _entity->models;
+
+        ~Entity()
+        {
+            dojo.entity_free(_entity);
+        }
     }
 }
