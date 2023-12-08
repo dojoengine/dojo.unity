@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using dojo_bindings;
 using UnityEngine;
 
 namespace Dojo
@@ -19,6 +20,10 @@ namespace Dojo
         void Update()
         {
         
+        }
+
+        public void OnEntityStateUpdate() {
+            Debug.Log("jme suis fait pigner sur discord");
         }
     }
 }

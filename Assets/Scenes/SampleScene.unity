@@ -152,9 +152,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c435e2dec4c7d4c74b1be5f81685099b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toriiUrl: http://localhost:8080
-  rpcUrl: http://localhost:5050
-  world: {fileID: 2019443015}
 --- !u!4 &15422551
 Transform:
   m_ObjectHideFlags: 0
@@ -182,6 +179,7 @@ GameObject:
   - component: {fileID: 405400152}
   - component: {fileID: 405400151}
   - component: {fileID: 405400150}
+  - component: {fileID: 405400153}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -275,6 +273,21 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 405400148}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &405400153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405400148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a60e5be7e4d5a40d5a1171d9e2db780a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  key: 0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
+  models:
+  - Moves
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,6 +503,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 85bbcaeafdf5e41c6a2f48ff65820b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toriiUrl: http://localhost:8080
+  rpcUrl: http://localhost:5050
+  worldAddress: 0x05010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138
 --- !u!4 &2019443016
 Transform:
   m_ObjectHideFlags: 0
