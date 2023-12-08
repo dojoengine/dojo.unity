@@ -19,11 +19,13 @@ namespace Dojo
         // Update is called once per frame
         void Update()
         {
-        
+            
         }
 
-        public void OnEntityStateUpdate() {
-            Debug.Log("jme suis fait pigner sur discord");
+        // Called when the entity state is updated
+        // model: the model that was updated
+        public virtual void OnEntityStateUpdate() {
+            Debug.Log("EntityInstance.OnEntityStateUpdate");
         }
     }
 }

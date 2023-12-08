@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using bottlenoselabs.C2CS.Runtime;
 using UnityEngine;
 using dojo_bindings;
+using JetBrains.Annotations;
 
 public unsafe class ToriiClient
 {
@@ -21,13 +22,13 @@ public unsafe class ToriiClient
             entitiesPtr = ptr;
         }
 
-        dojo.Error error;
-        client = dojo.client_new(ctoriiUrl, crpcUrl, cworld, entitiesPtr, (nuint)entities.Length, &error);
-
-        if (client == null)
+        var result = dojo.client_new(ctoriiUrl, crpcUrl, cworld, entitiesPtr, (nuint)entities.Length);
+        if (result.tag == dojo.Result_____ToriiClient_Tag.Err_____ToriiClient)
         {
-            throw new Exception(error.message);
+            throw new Exception(result.err.message);
         }
+        
+        client = result.ok;
     }
 
     ~ToriiClient()
@@ -43,31 +44,35 @@ public unsafe class ToriiClient
         return worldMetadata;
     }
 
+    [CanBeNull]
     public Ty Entity(dojo.KeysClause query)
     {
-        dojo.Error error;
-        dojo.Ty* entity = dojo.client_entity(client, &query, &error);
-
-        if (error.message != string.Empty)
+        dojo.Result_COption_Ty result = dojo.client_entity(client, &query);
+        if (result.tag == dojo.Result_COption_Ty_Tag.Err_COption_Ty)
         {
-            throw new Exception(error.message);
+            throw new Exception(result.err.message);
         }
 
+        // can be None - nullable
+        if (result.ok.tag == dojo.COption_Ty_Tag.None_Ty)
+        {
+            return null;
+        }
+        
         // we instantiate a new managed Ty object
         // which will free the underlying c ty when it is garbage collected
-        return new Ty(entity);
+        return new Ty(&result.ok.some);
     }
 
     public ReadOnlySpan<dojo.Entity> Entities(dojo.Query query)
     {
-        dojo.Error error;
-        dojo.CArray_Entity entities = dojo.client_entities(client, &query, &error);
-        if (error.message != string.Empty)
+        dojo.Result_CArray_Entity result = dojo.client_entities(client, &query);
+        if (result.tag == dojo.Result_CArray_Entity_Tag.Err_CArray_Entity)
         {
-            throw new Exception(error.message);
+            throw new Exception(result.err.message);
         }
 
-        return new Span<dojo.Entity>(entities.data, (int)entities.data_len);
+        return result.ok;
     }
 
     public ReadOnlySpan<dojo.KeysClause> SubscribedEntities()
@@ -94,12 +99,10 @@ public unsafe class ToriiClient
             entitiesPtr = ptr;
         }
 
-        dojo.Error error;
-        dojo.client_add_entities_to_sync(client, entitiesPtr, (nuint)entities.Length, &error);
-
-        if (error.message != string.Empty)
+        var result = dojo.client_add_entities_to_sync(client, entitiesPtr, (nuint)entities.Length);
+        if (result.tag == dojo.Result_bool_Tag.Err_bool)
         {
-            throw new Exception(error.message);
+            throw new Exception(result.err.message);
         }
     }
 
@@ -112,12 +115,10 @@ public unsafe class ToriiClient
             entitiesPtr = ptr;
         }
 
-        dojo.Error error;
-        dojo.client_remove_entities_to_sync(client, entitiesPtr, (nuint)entities.Length, &error);
-
-        if (error.message != string.Empty)
+        var result = dojo.client_remove_entities_to_sync(client, entitiesPtr, (nuint)entities.Length);
+        if  (result.tag == dojo.Result_bool_Tag.Err_bool)
         {
-            throw new Exception(error.message);
+            throw new Exception(result.err.message);
         }
     }
 
@@ -128,12 +129,10 @@ public unsafe class ToriiClient
 
     public void StartSubscription()
     {
-        dojo.Error error;
-        dojo.client_start_subscription(client, &error);
-
-        if (error.message != string.Empty)
+        var result = dojo.client_start_subscription(client);
+        if (result.tag == dojo.Result_bool_Tag.Err_bool)
         {
-            throw new Exception(error.message);
+            throw new Exception(result.err.message);
         }
     }
 }

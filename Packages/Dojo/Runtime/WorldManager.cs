@@ -15,43 +15,42 @@ namespace Dojo
         public string rpcUrl = "http://localhost:5050";
         [Header("World")]
         public string worldAddress;
-        private ToriiClient toriiClient;
-
+        public SynchronizationMaster synchronizationMaster;
+        public ToriiClient toriiClient;
+        
         // Start is called before the first frame update
         void Start()
         {
-            // we make a dictionary of our models and the keys that use them
-            Dictionary<string, string[]> keys = new Dictionary<string, string[]>();
-            foreach (var entity in Entities())
+            // generate the keys clauses for all 
+            // of our entities and their models
+            var entities = new dojo.KeysClause[]
             {
-                var instance = entity.GetComponent<EntityInstance>();
-                // check if the model is in keys already and add it if its not
-                foreach (var model in instance.models)
+                new dojo.KeysClause
                 {
-                    if (!keys.ContainsKey(model))
-                    {
-                        keys.Add(model, new[] {instance.key});
-                    }
-                    keys[model].Append(instance.key);
+                    model = "Moves",
+                    keys = new string[]{"0x0"}
                 }
-            }
-
-            // convert the dictionary to a KeysClause array
-            var entities = new List<dojo.KeysClause>();
-            foreach (var model in keys)
-            {
-                entities.Add(new dojo.KeysClause{
-                    model = model.Key,
-                    keys = model.Value
-                });
-            }
+            };
+            // foreach (var entity in Entities())
+            // {
+            //     if (!entity.activeSelf) continue;
+            //
+            //     var instance = entity.GetComponent<EntityInstance>();
+            //     // check if the model is in keys already and add it if its not
+            //     foreach (var model in instance.models)
+            //     {
+            //         entities.Add(new dojo.KeysClause{
+            //             model = model,
+            //             keys = new[] {instance.key}
+            //         });
+            //     }
+            // }
             
             // create the torii client and start subscription service
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, entities.ToArray());
+            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, entities);
             toriiClient.StartSubscription();
 
-            // add entities to sync
-            toriiClient.AddEntitiesToSync(entities.ToArray());
+            var subEntities = toriiClient.SubscribedEntities();
 
             // register entity callbacks
             foreach (var entity in Entities())

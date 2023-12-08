@@ -2,66 +2,61 @@ using System;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
 
-// A managed type for the Ty structure
-// Frees the underlying dojo.Ty when the object is garbage collected
-public unsafe class Account
+namespace Dojo.Starknet
 {
-    private dojo.Account* account;
-        
-    public Account(string rpcUrl, string privateKey, string address)
+    public unsafe class Account
     {
-        dojo.Error error;
-        var felt = dojo.felt_from_hex_be(CString.FromString(privateKey), &error);
-        if (error.message != string.Empty)
-        {
-            throw new Exception(error.message);
-        }
-        
-        account = dojo.account_new(CString.FromString(rpcUrl), felt,
-            CString.FromString(address), &error);
-        if (account == null)
-        {
-            throw new Exception(error.message);
-        }
-    }
-        
-    ~Account()
-    {
-        dojo.account_free(account);
-    }
-        
-    public dojo.FieldElement Address()
-    {
-        dojo.FieldElement address = dojo.account_address(account);
+        private dojo.Account* account;
             
-        return address;
-    }
-        
-    public dojo.FieldElement ChainId()
-    {
-        dojo.FieldElement chainId = dojo.account_chain_id(account);
+        public Account(JsonRpcClient provider, SigningKey privateKey, string address)
+        {
+            var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey(),
+                CString.FromString(address));
+            if (resultAccount.tag == dojo.Result_____Account_Tag.Err_____Account)
+            {
+                throw new Exception(resultAccount.err.message);
+            }
             
-        return chainId;
-    }
-        
-    public void SetBlockId(dojo.BlockId blockId)
-    {
-        dojo.account_set_block_id(account, blockId);
-    }
-
-    public void ExecuteRaw(dojo.Call[] calls)
-    {
-        dojo.Call* callsPtr;
-        fixed (dojo.Call* ptr = &calls[0])
-        {
-            callsPtr = ptr;
+            account = resultAccount.ok;
         }
-
-        dojo.Error error;
-        dojo.account_execute_raw(account, callsPtr, (nuint) calls.Length, &error);
-        if (error.message != string.Empty)
+            
+        ~Account()
         {
-            throw new Exception(error.message);
+            dojo.account_free(account);
+        }
+            
+        public dojo.FieldElement Address()
+        {
+            dojo.FieldElement address = dojo.account_address(account);
+                
+            return address;
+        }
+            
+        public dojo.FieldElement ChainId()
+        {
+            dojo.FieldElement chainId = dojo.account_chain_id(account);
+                
+            return chainId;
+        }
+            
+        public void SetBlockId(dojo.BlockId blockId)
+        {
+            dojo.account_set_block_id(account, blockId);
+        }
+    
+        public void ExecuteRaw(dojo.Call[] calls)
+        {
+            dojo.Call* callsPtr;
+            fixed (dojo.Call* ptr = &calls[0])
+            {
+                callsPtr = ptr;
+            }
+    
+            var result = dojo.account_execute_raw(account, callsPtr, (nuint) calls.Length);
+            if (result.tag == dojo.Result_bool_Tag.Err_bool)
+            {
+                throw new Exception(result.err.message);
+            }
         }
     }
 }
