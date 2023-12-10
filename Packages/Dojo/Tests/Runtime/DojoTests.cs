@@ -3,6 +3,9 @@ using System.Linq;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
 using NUnit.Framework;
+using Dojo.Torii;
+using Dojo.Starknet;
+using UnityEditor.VersionControl;
 
 public class Tests
 {
@@ -11,15 +14,16 @@ public class Tests
     private readonly string playerKey = "0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
     private readonly string worldAddress = "0x05010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138";
     private readonly string actionsAddress = "0x031571485922572446df9e3198a891e10d3a48e544544317dbcbb667e15848cd";
-    
+
     private ToriiClient client;
+    private JsonRpcClient provider;
     private Account account;
 
     // our callback will mutate this variable
     // we can use this to check that the callback was called
     // when our account spawns
     private bool entityUpdated = false;
-    
+
     [SetUp]
     public void SetupTorii()
     {
@@ -42,7 +46,11 @@ public class Tests
     [SetUp]
     public void SetupAccount()
     {
-        account = new Account(rpcUrl, "0x1800000000300000180000000000030000000000003006001800006600", playerKey);
+        provider = new JsonRpcClient(rpcUrl);
+
+        var signer = new SigningKey("0x1800000000300000180000000000030000000000003006001800006600");
+
+        account = new Account(provider, signer, playerKey);
     }
 
     [Test]
@@ -53,18 +61,18 @@ public class Tests
             .Where(x => x % 2 == 0)
             .Select(x => Convert.ToByte(playerKey.Substring(x, 2), 16))
             .ToArray();
-        
+
         Assert.That(address.data.ToArray(), Is.EqualTo(playerAddressBytes));
     }
-    
+
     [Test]
     public void TestAccountChainId()
     {
         var chainId = account.ChainId();
-        
+
         // check chainid?
     }
-    
+
     [Test]
     public void TestAccountSetBlockId()
     {
@@ -73,7 +81,7 @@ public class Tests
             tag = dojo.BlockId_Tag.BlockTag_,
             block_tag = dojo.BlockTag.Pending
         };
-        
+
         account.SetBlockId(blockId);
     }
 
@@ -85,16 +93,16 @@ public class Tests
             to = actionsAddress,
             selector = "spawn"
         };
-        
+
         account.ExecuteRaw(new[] { call });
-        
+
         // We wait until our callback is called to mark our 
         // entity as updated. We timeout after 5 seconds.
         var start = DateTime.Now;
         while (!entityUpdated && DateTime.Now - start < TimeSpan.FromSeconds(5))
         {
         }
-        
+
         Assert.That(entityUpdated, Is.True);
     }
 
@@ -153,14 +161,8 @@ public class Tests
         var query = new dojo.Query
         {
             limit = 5,
-            clause = new dojo.Clause
-            {
-                tag = dojo.Clause_Tag.Keys,
-                keys = new dojo.KeysClause
-                {
-                    model = "Moves",
-                    keys = new[] { playerKey }
-                }
+            clause = new dojo.COption_Clause{
+                tag = dojo.COption_Clause_Tag.None_Clause,
             }
         };
 

@@ -5,6 +5,7 @@ using bottlenoselabs.C2CS.Runtime;
 using UnityEngine;
 using dojo_bindings;
 using JetBrains.Annotations;
+using System.Linq;
 
 namespace Dojo.Torii
 {
@@ -19,7 +20,7 @@ namespace Dojo.Torii
             CString cworld = CString.FromString(world);
             dojo.KeysClause* entitiesPtr;
 
-            fixed (dojo.KeysClause* ptr = &entities[0])
+            fixed (dojo.KeysClause* ptr = entities)
             {
                 entitiesPtr = ptr;
             }
@@ -30,7 +31,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            client = result.ok;
+            client = result._ok;
         }
 
         ~ToriiClient()
@@ -66,7 +67,7 @@ namespace Dojo.Torii
             return new Ty(&result.ok.some);
         }
 
-        public ReadOnlySpan<dojo.Entity> Entities(dojo.Query query)
+        public ReadOnlySpan<Entity> Entities(dojo.Query query)
         {
             dojo.Result_CArray_Entity result = dojo.client_entities(client, &query);
             if (result.tag == dojo.Result_CArray_Entity_Tag.Err_CArray_Entity)
@@ -74,7 +75,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            return result.ok;
+            return result.ok.ToArray().Select(e => new Entity(&e)).ToArray();
         }
 
         public ReadOnlySpan<dojo.KeysClause> SubscribedEntities()

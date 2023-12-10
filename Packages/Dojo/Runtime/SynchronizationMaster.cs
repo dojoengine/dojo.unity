@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Dojo.Torii;
 using dojo_bindings;
 using PlasticGui;
 using UnityEngine;
@@ -12,7 +14,7 @@ namespace Dojo
         public WorldManager worldManager;
 
         // Models to synchronize
-        public string[] models;
+        public Dictionary<string, string> models;
 
         // Maximum number of entities to synchronize
         public uint limit = 100;
@@ -20,24 +22,22 @@ namespace Dojo
         // Start is called before the first frame update
         void Start()
         {
-            // var query = new dojo.Query
-            // {
-            //     clause = new dojo.Clause
-            //     {
-            //         tag = dojo.Clause_Tag.Composite,
-            //         composite = 
-            //     },
-            //     limit = limit,
-            // };
+            var query = new dojo.Query
+            {
+                clause = new dojo.COption_Clause
+                {
+                    tag = dojo.COption_Clause_Tag.None_Clause,
+                },
+                limit = limit,
+            };
 
-            // var entities = worldManager.toriiClient.Entities(query);
-            // foreach (var entity in entities)
-            // {
-            //     // bytes to hex string
-            //     var key = "0x" + entity.key.data.ToArray().Aggregate("", (s, b) => s + b.ToString("x2"));
-            //     var models = entity.models.ToArray().Select(m => m.name).ToArray();
-            //     worldManager.AddEntity(key, models);
-            // }
+            var entities = worldManager.toriiClient.Entities(query);
+            foreach (var entity in entities)
+            {
+                // bytes to hex string
+                var key = "0x" + entity.key.data.ToArray().Aggregate("", (s, b) => s + b.ToString("x2"));
+                worldManager.AddEntity(key, entity.models);
+            }
         }
 
         // Update is called once per frame

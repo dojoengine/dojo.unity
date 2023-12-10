@@ -17,7 +17,7 @@ namespace Dojo.Starknet
                 throw new Exception(resultAccount.err.message);
             }
             
-            account = resultAccount.ok;
+            account = resultAccount._ok;
         }
             
         ~Account()

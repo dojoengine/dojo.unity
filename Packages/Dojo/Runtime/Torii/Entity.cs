@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using dojo_bindings;
 
 namespace Dojo.Torii
@@ -15,7 +17,15 @@ namespace Dojo.Torii
         }
 
         public dojo.FieldElement key => _entity->key;
-        public Span<dojo.Model> models => _entity->models;
+        public Dictionary<string, Model> models
+        {
+            get
+            {
+                _entity->models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))).ToArray();
+
+                return new Dictionary<string, Model>(models);
+            }
+        }
 
         ~Entity()
         {

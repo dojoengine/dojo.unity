@@ -5,6 +5,7 @@ using System.Linq;
 using dojo_bindings;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using Dojo.Torii;
 
 namespace Dojo
 {
@@ -17,20 +18,20 @@ namespace Dojo
         public string worldAddress;
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
-        
+
         // Start is called before the first frame update
         void Start()
         {
             // generate the keys clauses for all 
             // of our entities and their models
-            var entities = new dojo.KeysClause[]
-            {
-                new dojo.KeysClause
-                {
-                    model = "Moves",
-                    keys = new string[]{"0x0"}
-                }
-            };
+            // var entities = new dojo.KeysClause[]
+            // {
+            //     new dojo.KeysClause
+            //     {
+            //         model = "Moves",
+            //         keys = new string[]{"0x0"}
+            //     }
+            // };
             // foreach (var entity in Entities())
             // {
             //     if (!entity.activeSelf) continue;
@@ -45,13 +46,13 @@ namespace Dojo
             //         });
             //     }
             // }
-            
+
             // create the torii client and start subscription service
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, entities);
+            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[]{});
             toriiClient.StartSubscription();
 
-            var subEntities = toriiClient.SubscribedEntities();
 
+            // var subEntities = toriiClient.SubscribedEntities();
             // register entity callbacks
             foreach (var entity in Entities())
             {
@@ -65,15 +66,17 @@ namespace Dojo
 
         }
 
-        public void RegisterEntityCallback(string name) {
+        public void RegisterEntityCallback(string name)
+        {
             var entity = Entity(name);
             var instance = entity.GetComponent<EntityInstance>();
 
             foreach (var model in instance.models)
             {
-                toriiClient.OnEntityStateUpdate(new dojo.KeysClause{
-                    model = model,
-                    keys = new[] {instance.key}
+                toriiClient.OnEntityStateUpdate(new dojo.KeysClause
+                {
+                    model = model.Key,
+                    keys = new[] { instance.key }
                 }, new dojo.FnPtr_Void(instance.OnEntityStateUpdate));
             }
         }
@@ -106,14 +109,16 @@ namespace Dojo
                 if (child.GetComponent<EntityInstance>() != null)
                 {
                     entities.Add(child.gameObject);
-                } else {
+                }
+                else
+                {
                     Debug.LogWarning($"Child {child.name} does not have an EntityInstance component");
                 }
             }
             return entities.ToArray();
         }
 
-        public GameObject AddEntity(string key, string[] models)
+        public GameObject AddEntity(string key, Dictionary<string, Model> models)
         {
             var entity = new GameObject(key);
             var instance = entity.AddComponent<EntityInstance>();

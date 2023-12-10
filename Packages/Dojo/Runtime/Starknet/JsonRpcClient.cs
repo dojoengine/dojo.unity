@@ -16,7 +16,7 @@ namespace Dojo.Starknet
                 throw new Exception(result.err.message);
             }
             
-            client = result.ok;
+            client = result._ok;
         }
     }
 }
