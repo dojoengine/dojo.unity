@@ -6,7 +6,19 @@ using UnityEngine;
 
 namespace Dojo
 {
-    public class EntityInstance : MonoBehaviour
+    public interface IEntityHandler
+    {
+        public static EntityInstance HandleEntityInstance(GameObject entity, string key, Dictionary<string, Model> models)
+        {
+            var instance = entity.AddComponent<EntityInstance>();
+            instance.key = key;
+            instance.models = models;
+
+            return instance;
+        }
+    }
+
+    public class EntityInstance : MonoBehaviour, IEntityHandler 
     {
         public string key;
         public Dictionary<string, Model> models;
@@ -14,20 +26,17 @@ namespace Dojo
         // Start is called before the first frame update
         void Start()
         {
-            Debug.Log("EntityInstance.Start");
         }
 
         // Update is called once per frame
         void Update()
         {
-            Debug.Log("EntityInstance.Update");
         }
 
         // Called when the entity state is updated
         // model: the model that was updated
         public virtual void OnEntityStateUpdate()
         {
-            Debug.Log("EntityInstance.OnEntityStateUpdate");
         }
     }
 }

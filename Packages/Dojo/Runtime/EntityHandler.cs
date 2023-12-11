@@ -7,18 +7,6 @@ namespace Dojo
 {
     public class EntityHandler : MonoBehaviour
     {
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
-
         public virtual EntityInstance HandleEntityInstance(GameObject entity, string key, Dictionary<string, Model> models) {
             var instance = entity.AddComponent<EntityInstance>();
             instance.key = key;
