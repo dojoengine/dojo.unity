@@ -22,55 +22,21 @@ namespace Dojo
         // Start is called before the first frame update
         void Start()
         {
-            // generate the keys clauses for all 
-            // of our entities and their models
-            // var entities = new dojo.KeysClause[]
-            // {
-            //     new dojo.KeysClause
-            //     {
-            //         model = "Moves",
-            //         keys = new string[]{"0x0"}
-            //     }
-            // };
-            // foreach (var entity in Entities())
-            // {
-            //     if (!entity.activeSelf) continue;
-            //
-            //     var instance = entity.GetComponent<EntityInstance>();
-            //     // check if the model is in keys already and add it if its not
-            //     foreach (var model in instance.models)
-            //     {
-            //         entities.Add(new dojo.KeysClause{
-            //             model = model,
-            //             keys = new[] {instance.key}
-            //         });
-            //     }
-            // }
-
             // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[]{});
+
+            // fetch entities from the world
+            // TODO: maybe do in the start function of the SynchronizationMaster?
+            // problem is when to start the subscription service
+            synchronizationMaster.SynchronizeEntities();
+
+            // start subscription service
             toriiClient.StartSubscription();
         }
 
         // Update is called once per frame
         void Update()
         {
-
-        }
-
-        public void RegisterEntityCallback(string name)
-        {
-            var entity = Entity(name);
-            var instance = entity.GetComponent<EntityInstance>();
-
-            foreach (var model in instance.models)
-            {
-                toriiClient.OnEntityStateUpdate(new dojo.KeysClause
-                {
-                    model = model.Key,
-                    keys = new[] { instance.key }
-                }, new dojo.FnPtr_Void(instance.OnEntityStateUpdate));
-            }
         }
 
         public GameObject Entity(string name)
@@ -112,7 +78,15 @@ namespace Dojo
 
         public GameObject AddEntity(string key)
         {
-            var entity = new GameObject(key);
+            // check if entity already exists
+            var entity = transform.Find(key)?.gameObject;
+            if (entity != null)
+            {
+                Debug.LogWarning($"Entity {key} already exists");
+                return entity.gameObject;
+            }
+
+            entity = new GameObject(key);
             entity.transform.parent = transform;
             
             return entity;

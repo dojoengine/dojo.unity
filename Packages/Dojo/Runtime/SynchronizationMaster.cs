@@ -17,10 +17,19 @@ namespace Dojo
         public uint limit = 100;
 
         // Handle entities that get synchronized
-        public EntityHandler entityHandler;
+        public EntityHandler[] entityHandlers;
 
         // Start is called before the first frame update
         void Start()
+        {
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+        }
+
+        public int SynchronizeEntities()
         {
             var query = new dojo.Query
             {
@@ -37,13 +46,29 @@ namespace Dojo
                 // bytes to hex string
                 var key = "0x" + BitConverter.ToString(entity.key.data.ToArray()).Replace("-", "").ToLower();
                 var entityGameObject = worldManager.AddEntity(key);
-                entityHandler.HandleEntityInstance(entityGameObject, key, entity.models);
+                foreach (var handler in entityHandlers) {
+                    handler.HandleEntityInstance(entityGameObject, key, entity.models);
+                }
             }
+
+            return entities.Count;
         }
 
-        // Update is called once per frame
-        void Update()
+        public void RegisterEntityCallback<T>(string name) where T: EntityInstance
         {
+            var entity = worldManager.Entity(name);
+            var instance = entity.GetComponent<T>();
+
+            foreach (var model in instance.models)
+            {
+                worldManager.toriiClient.OnEntityStateUpdate(new dojo.KeysClause
+                {
+                    model = model.Key,
+                    keys = new[] { instance.key }
+                }, new dojo.FnPtr_Void(() => {
+                    instance.OnEntityStateUpdate();
+                }));
+            }
         }
     }
 }
