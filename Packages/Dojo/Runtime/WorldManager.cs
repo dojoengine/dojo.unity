@@ -50,14 +50,6 @@ namespace Dojo
             // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[]{});
             toriiClient.StartSubscription();
-
-
-            // var subEntities = toriiClient.SubscribedEntities();
-            // register entity callbacks
-            foreach (var entity in Entities())
-            {
-                RegisterEntityCallback(entity.name);
-            }
         }
 
         // Update is called once per frame
@@ -118,14 +110,11 @@ namespace Dojo
             return entities.ToArray();
         }
 
-        public GameObject AddEntity(string key, Dictionary<string, Model> models)
+        public GameObject AddEntity(string key)
         {
             var entity = new GameObject(key);
-            var instance = entity.AddComponent<EntityInstance>();
-            instance.key = key;
-            instance.models = models;
-
             entity.transform.parent = transform;
+            
             return entity;
         }
 

@@ -10,8 +10,8 @@ namespace Dojo.Torii
         private string _name;
         public string name => _name;
 
-        private dojo.Ty _ty;
-        public dojo.Ty ty => _ty; 
+        private dojo.Ty* _ty;
+        public dojo.Ty ty => *_ty; 
 
         private bool _key;
         public bool key => _key;
@@ -19,7 +19,7 @@ namespace Dojo.Torii
         public Member(dojo.Member member)
         {
             _name = member.name;
-            _ty = member.ty;
+            _ty = member._ty;
             _key = member.key;
         }
 

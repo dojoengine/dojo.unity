@@ -67,15 +67,21 @@ namespace Dojo.Torii
             return new Ty(&result.ok.some);
         }
 
-        public ReadOnlySpan<Entity> Entities(dojo.Query query)
+        public List<Entity> Entities(dojo.Query query)
         {
             dojo.Result_CArray_Entity result = dojo.client_entities(client, &query);
             if (result.tag == dojo.Result_CArray_Entity_Tag.Err_CArray_Entity)
             {
                 throw new Exception(result.err.message);
             }
+            
+            var entities = new List<Entity>();
+            foreach (var entity in result.ok)
+            {
+                entities.Add(new Entity(&entity));
+            }
 
-            return result.ok.ToArray().Select(e => new Entity(&e)).ToArray();
+            return entities;
         }
 
         public ReadOnlySpan<dojo.KeysClause> SubscribedEntities()

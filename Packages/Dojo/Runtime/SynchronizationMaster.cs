@@ -13,11 +13,11 @@ namespace Dojo
     {
         public WorldManager worldManager;
 
-        // Models to synchronize
-        public Dictionary<string, string> models;
-
         // Maximum number of entities to synchronize
         public uint limit = 100;
+
+        // Handle entities that get synchronized
+        public EntityHandler entityHandler;
 
         // Start is called before the first frame update
         void Start()
@@ -35,8 +35,9 @@ namespace Dojo
             foreach (var entity in entities)
             {
                 // bytes to hex string
-                var key = "0x" + entity.key.data.ToArray().Aggregate("", (s, b) => s + b.ToString("x2"));
-                worldManager.AddEntity(key, entity.models);
+                var key = "0x" + BitConverter.ToString(entity.key.data.ToArray()).Replace("-", "").ToLower();
+                var entityGameObject = worldManager.AddEntity(key);
+                entityHandler.HandleEntityInstance(entityGameObject, key, entity.models);
             }
         }
 

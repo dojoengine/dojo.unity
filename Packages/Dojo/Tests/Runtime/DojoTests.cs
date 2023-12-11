@@ -167,7 +167,7 @@ public class Tests
         };
 
         var entities = client.Entities(query);
-        Assert.That(entities.Length, Is.EqualTo(1));
+        Assert.That(entities.Count, Is.EqualTo(1));
     }
 
     [Test]
