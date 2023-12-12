@@ -25,7 +25,7 @@ namespace dojo_bindings
 
     public static unsafe partial class dojo
     {
-        private const string LibraryName = "libtorii_c.dylib";
+        private const string LibraryName = "libtorii_c";
 
         #region API
 

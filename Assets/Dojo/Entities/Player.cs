@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,6 +11,8 @@ using Debug = UnityEngine.Debug;
 public class Player : EntityInstance {
     public Position position => new Position(models["Position"]);
     public Moves moves => new Moves(models["Moves"]);
+
+    public static string[] _models = {"Position", "Moves"};
 
     void Start() {
         Debug.Log("Player.Start");

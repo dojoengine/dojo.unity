@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class PlayerHandler : EntityHandler {
     public override EntityInstance HandleEntityInstance(GameObject entity, string key, Dictionary<string, Model> models) {
-        if (!(models.ContainsKey("Moves") && models.ContainsKey("Position"))) {
-            return null;
+        // check that keys in _models are in models
+        foreach (var model in Player._models) {
+            if (!models.ContainsKey(model)) {
+                return null;
+            }
         }
         
         var instance = entity.AddComponent<Player>();

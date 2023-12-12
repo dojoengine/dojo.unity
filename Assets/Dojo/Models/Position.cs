@@ -4,7 +4,6 @@ using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
 
-[Serializable]
 public class Position : Model
 {
     public dojo.FieldElement player => members["player"].ty.ty_primitive.contract_address;
