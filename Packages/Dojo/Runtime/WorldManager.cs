@@ -24,14 +24,17 @@ namespace Dojo
         {
             // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[] { });
+            // start subscription service
+            toriiClient.StartSubscription();
 
             // fetch entities from the world
             // TODO: maybe do in the start function of the SynchronizationMaster?
             // problem is when to start the subscription service
             synchronizationMaster.SynchronizeEntities();
 
-            // start subscription service
-            toriiClient.StartSubscription();
+            // listen for entity updates
+            synchronizationMaster.RegisterEntityCallbacks();
+
         }
 
         // Update is called once per frame

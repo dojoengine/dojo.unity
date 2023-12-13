@@ -6,6 +6,7 @@ using UnityEngine;
 using dojo_bindings;
 using JetBrains.Annotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Dojo.Torii
 {
@@ -13,6 +14,8 @@ namespace Dojo.Torii
     {
         public delegate void OnSyncModelUpdateDelegate();
         public delegate void OnEntityStateUpdateDelegate(dojo.FieldElement key, Model[] models);
+
+        public event OnEntityStateUpdateDelegate OnEntityUpdated;
 
         private dojo.ToriiClient* client;
 
@@ -141,32 +144,41 @@ namespace Dojo.Torii
                 callback();
             };
 
-            dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
+            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
+            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            {
+                throw new Exception(res.err.message);
+            }
         }
 
-        public void OnEntityStateUpdate(dojo.FieldElement[] entities, OnEntityStateUpdateDelegate callback)
+        private void HandleEntityStateUpdate(dojo.FieldElement key, dojo.CArray_Model models)
+        {
+            var mappedModels = new Model[(uint)models.data_len];
+            for (var i = 0; i < (uint)models.data_len; i++)
+            {
+                mappedModels[i] = new Model(
+                    models.data[i]);
+                // TODO: free model
+            }
+
+            OnEntityUpdated?.Invoke(key, mappedModels);
+        }
+
+        public void OnEntityStateUpdate(dojo.FieldElement[] entities, dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback)
         {
             dojo.FieldElement* entitiesPtr;
 
-            fixed (dojo.FieldElement* ptr = &entities[0])
+            fixed (dojo.FieldElement* ptr = entities)
             {
                 entitiesPtr = ptr;
             }
 
-            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate handler = (key, models) =>
+            // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
+            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callback));
+            if (res.tag == dojo.Result_bool_Tag.Err_bool)
             {
-                var mappedModels = new Model[(uint)models.data_len];
-                for (var i = 0; i < (uint)models.data_len; i++)
-                {
-                    mappedModels[i] = new Model(
-                        models.data[i]);
-                    // TODO: free model
-                }
-
-                callback(key, mappedModels);
-            };
-
-            dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(handler));
+                throw new Exception(res.err.message);
+            }
         }
 
         public void StartSubscription()

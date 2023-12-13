@@ -165,7 +165,7 @@ public class Tests
         Assert.That(positionExists, Is.True);
     }
 
-    [Test]
+    [Test, Order(1)]
     public void TestEntities()
     {
         var query = new dojo.Query
@@ -224,11 +224,11 @@ public class Tests
     [Test, Order(2)]
     public void TestOnEntityStateUpdate()
     {
-        ToriiClient.OnEntityStateUpdateDelegate callback = (key, models) =>
+        dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
         {
             entityUpdated = true;
         };
-        client.OnEntityStateUpdate(new dojo.FieldElement[] { dojo.felt_from_hex_be(CString.FromString(playerKey)).ok }, callback);
+        client.OnEntityStateUpdate(new dojo.FieldElement[] { }, callback);
     }
 
     [Test, Order(2)]

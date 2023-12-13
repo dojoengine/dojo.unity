@@ -64,27 +64,32 @@ namespace Dojo
             return entities.Count;
         }
 
+        private void HandleEntityUpdate(dojo.FieldElement key, Model[] models)
+        {
+            var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
+            var entity = GameObject.Find(name);
+            
+            foreach (var model in models)
+            {
+                var component = entity.GetComponent(model.name);
+                if (component == null)
+                {
+                    Debug.LogError($"Component {model.GetType().Name} not found");
+                    continue;
+                }
+
+                ((ModelInstance)component).OnUpdated(model);
+            }
+        }
+
         public void RegisterEntityCallbacks()
         {
-            Dojo.Torii.ToriiClient.OnEntityStateUpdateDelegate callback = (key, models) =>
+            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
             {
-                var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
-                var entity = worldManager.Entity(name);
-
-                foreach (var model in models)
-                {
-                    var modelInstance = (ModelInstance)entity.GetComponent(model.name);
-                    if (modelInstance == null)
-                    {
-                        Debug.LogError($"ModelInstance not found for {model.name}");
-                        continue;
-                    }
-
-                    modelInstance.OnUpdated(model);
-                }
+                UnityMainThreadDispatcher.Instance().Enqueue(() => HandleEntityUpdate(key, Model.Models(models)));
             };
 
-            worldManager.toriiClient.OnEntityStateUpdate(Array.Empty<dojo.FieldElement>(), callback);
+            worldManager.toriiClient.OnEntityStateUpdate(new dojo.FieldElement[] { }, callback);
         }
     }
 }
