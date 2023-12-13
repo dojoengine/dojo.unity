@@ -66,12 +66,22 @@ namespace Dojo
 
         public void RegisterEntityCallbacks()
         {
-            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
+            Dojo.Torii.ToriiClient.OnEntityStateUpdateDelegate callback = (key, models) =>
             {
                 var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
                 var entity = worldManager.Entity(name);
 
-                // foreach (var model )
+                foreach (var model in models)
+                {
+                    var modelInstance = (ModelInstance)entity.GetComponent(model.name);
+                    if (modelInstance == null)
+                    {
+                        Debug.LogError($"ModelInstance not found for {model.name}");
+                        continue;
+                    }
+
+                    modelInstance.OnUpdated(model);
+                }
             };
 
             worldManager.toriiClient.OnEntityStateUpdate(Array.Empty<dojo.FieldElement>(), callback);

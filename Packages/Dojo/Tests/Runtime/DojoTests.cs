@@ -224,7 +224,7 @@ public class Tests
     [Test, Order(2)]
     public void TestOnEntityStateUpdate()
     {
-        dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
+        ToriiClient.OnEntityStateUpdateDelegate callback = (key, models) =>
         {
             entityUpdated = true;
         };
@@ -234,7 +234,7 @@ public class Tests
     [Test, Order(2)]
     public void TestOnSyncModelUpdate()
     {
-        dojo.FnPtr_Void.@delegate callback = () =>
+        ToriiClient.OnSyncModelUpdateDelegate callback = () =>
         {
             modelEntityUpdated = true;
         };

@@ -11,6 +11,9 @@ namespace Dojo.Torii
 {
     public unsafe class ToriiClient
     {
+        public delegate void OnSyncModelUpdateDelegate();
+        public delegate void OnEntityStateUpdateDelegate(dojo.FieldElement key, Model[] models);
+
         private dojo.ToriiClient* client;
 
         public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.KeysClause[] entities)
@@ -74,7 +77,7 @@ namespace Dojo.Torii
             {
                 throw new Exception(result.err.message);
             }
-            
+
             var entities = new List<Entity>();
             foreach (var entity in result.ok)
             {
@@ -131,12 +134,17 @@ namespace Dojo.Torii
             }
         }
 
-        public void OnSyncModelUpdate(dojo.KeysClause model, dojo.FnPtr_Void.@delegate callback)
+        public void OnSyncModelUpdate(dojo.KeysClause model, OnSyncModelUpdateDelegate callback)
         {
-            dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(callback));
+            dojo.FnPtr_Void.@delegate handler = () =>
+            {
+                callback();
+            };
+
+            dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
         }
 
-        public void OnEntityStateUpdate(dojo.FieldElement[] entities, dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback)
+        public void OnEntityStateUpdate(dojo.FieldElement[] entities, OnEntityStateUpdateDelegate callback)
         {
             dojo.FieldElement* entitiesPtr;
 
@@ -145,7 +153,20 @@ namespace Dojo.Torii
                 entitiesPtr = ptr;
             }
 
-            dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callback));
+            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate handler = (key, models) =>
+            {
+                var mappedModels = new Model[(uint)models.data_len];
+                for (var i = 0; i < (uint)models.data_len; i++)
+                {
+                    mappedModels[i] = new Model(
+                        models.data[i]);
+                    // TODO: free model
+                }
+
+                callback(key, mappedModels);
+            };
+
+            dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(handler));
         }
 
         public void StartSubscription()

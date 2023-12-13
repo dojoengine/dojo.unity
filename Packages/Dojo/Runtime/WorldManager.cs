@@ -23,7 +23,7 @@ namespace Dojo
         void Start()
         {
             // create the torii client and start subscription service
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[]{});
+            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[] { });
 
             // fetch entities from the world
             // TODO: maybe do in the start function of the SynchronizationMaster?
@@ -39,6 +39,7 @@ namespace Dojo
         {
         }
 
+
         public GameObject Entity(string name)
         {
             var entity = transform.Find(name);
@@ -48,32 +49,15 @@ namespace Dojo
                 return null;
             }
 
-            var instance = entity.GetComponent<EntityInstance>();
-            if (instance == null)
-            {
-                Debug.LogError($"Entity {name} does not have an EntityInstance component");
-                return null;
-            }
-
             return entity.gameObject;
         }
 
         // return all children that have the EntityInstance component
         public GameObject[] Entities()
         {
-            var entities = new List<GameObject>();
-            foreach (Transform child in transform)
-            {
-                if (child.GetComponent<EntityInstance>() != null)
-                {
-                    entities.Add(child.gameObject);
-                }
-                else
-                {
-                    Debug.LogWarning($"Child {child.name} does not have an EntityInstance component");
-                }
-            }
-            return entities.ToArray();
+            return transform.Cast<Transform>()
+                .Select(t => t.gameObject)
+                .ToArray();
         }
 
         public GameObject AddEntity(string key)
@@ -88,7 +72,7 @@ namespace Dojo
 
             entity = new GameObject(key);
             entity.transform.parent = transform;
-            
+
             return entity;
         }
 

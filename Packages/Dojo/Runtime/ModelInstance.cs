@@ -12,7 +12,7 @@ namespace Dojo
 
         }
 
-        public virtual void OnUpdated(string key, Model model) {
+        public virtual void OnUpdated(Model model) {
             Initialize(model);
         }
     }
