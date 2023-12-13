@@ -48,23 +48,23 @@ namespace Dojo.Torii
         }
 
         [CanBeNull]
-        public Ty Entity(dojo.KeysClause query)
+        public Ty Model(dojo.KeysClause query)
         {
-            dojo.Result_COption_Ty result = dojo.client_entity(client, &query);
-            if (result.tag == dojo.Result_COption_Ty_Tag.Err_COption_Ty)
+            dojo.Result_COption_____Ty result = dojo.client_model(client, &query);
+            if (result.tag == dojo.Result_COption_____Ty_Tag.Err_COption_____Ty)
             {
                 throw new Exception(result.err.message);
             }
 
             // can be None - nullable
-            if (result.ok.tag == dojo.COption_Ty_Tag.None_Ty)
+            if (result.ok.tag == dojo.COption_____Ty_Tag.None_____Ty)
             {
                 return null;
             }
 
             // we instantiate a new managed Ty object
             // which will free the underlying c ty when it is garbage collected
-            return new Ty(&result.ok.some);
+            return new Ty(result.ok._some);
         }
 
         public List<Entity> Entities(dojo.Query query)
@@ -84,9 +84,9 @@ namespace Dojo.Torii
             return entities;
         }
 
-        public ReadOnlySpan<dojo.KeysClause> SubscribedEntities()
+        public ReadOnlySpan<dojo.KeysClause> SubscribedModels()
         {
-            dojo.CArray_KeysClause entities = dojo.client_subscribed_entities(client);
+            dojo.CArray_KeysClause models = dojo.client_subscribed_models(client);
             // NOTE: we could copy the data into a managed array
             // and free the c array from rust.
             // however, it is slower
@@ -96,44 +96,56 @@ namespace Dojo.Torii
             // this just returns a span of the carray data
             // freeing the c array is up to the caller
             // dojo.carray_free(entities);
-            return new Span<dojo.KeysClause>(entities.data, (int)entities.data_len);
+            return new Span<dojo.KeysClause>(models.data, (int)models.data_len);
         }
 
-        public void AddEntitiesToSync(dojo.KeysClause[] entities)
+        public void AddModelsToSync(dojo.KeysClause[] models)
         {
-            dojo.KeysClause* entitiesPtr;
+            dojo.KeysClause* modelsPtr;
 
-            fixed (dojo.KeysClause* ptr = &entities[0])
+            fixed (dojo.KeysClause* ptr = &models[0])
             {
-                entitiesPtr = ptr;
+                modelsPtr = ptr;
             }
 
-            var result = dojo.client_add_entities_to_sync(client, entitiesPtr, (nuint)entities.Length);
+            var result = dojo.client_add_models_to_sync(client, modelsPtr, (nuint)models.Length);
             if (result.tag == dojo.Result_bool_Tag.Err_bool)
             {
                 throw new Exception(result.err.message);
             }
         }
 
-        public void RemoveEntitiesToSync(dojo.KeysClause[] entities)
+        public void RemoveModelsToSync(dojo.KeysClause[] models)
         {
-            dojo.KeysClause* entitiesPtr;
+            dojo.KeysClause* modelsPtr;
 
-            fixed (dojo.KeysClause* ptr = &entities[0])
+            fixed (dojo.KeysClause* ptr = &models[0])
             {
-                entitiesPtr = ptr;
+                modelsPtr = ptr;
             }
 
-            var result = dojo.client_remove_entities_to_sync(client, entitiesPtr, (nuint)entities.Length);
+            var result = dojo.client_remove_models_to_sync(client, modelsPtr, (nuint)models.Length);
             if (result.tag == dojo.Result_bool_Tag.Err_bool)
             {
                 throw new Exception(result.err.message);
             }
         }
 
-        public void OnEntityStateUpdate(dojo.KeysClause query, dojo.FnPtr_Void callback)
+        public void OnSyncModelUpdate(dojo.KeysClause model, dojo.FnPtr_Void.@delegate callback)
         {
-            dojo.client_on_entity_state_update(client, &query, callback);
+            dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(callback));
+        }
+
+        public void OnEntityStateUpdate(dojo.FieldElement[] entities, dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback)
+        {
+            dojo.FieldElement* entitiesPtr;
+
+            fixed (dojo.FieldElement* ptr = &entities[0])
+            {
+                entitiesPtr = ptr;
+            }
+
+            dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callback));
         }
 
         public void StartSubscription()

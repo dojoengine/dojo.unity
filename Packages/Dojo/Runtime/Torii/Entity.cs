@@ -10,15 +10,13 @@ namespace Dojo.Torii
     // Frees the underlying dojo.Entity when the object is garbage collected
     public unsafe class Entity
     {
-        private readonly dojo.Entity* _entity;
         private Dictionary<string, Model> _models;
         private dojo.FieldElement _key;
         
         public Entity(dojo.Entity* entity)
         {
-            _entity = entity;
-            _key = _entity->key;
-            _models = new Dictionary<string, Model>(_entity->models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))));
+            _key = entity->key;
+            _models = new Dictionary<string, Model>(entity->models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))));
             
         }
 

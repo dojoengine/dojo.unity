@@ -17,7 +17,7 @@ namespace Dojo
         public uint limit = 100;
 
         // Handle entities that get synchronized
-        public EntityHandler[] entityHandlers;
+        public ModelInstance[] models;
 
         // Start is called before the first frame update
         void Start()
@@ -41,34 +41,40 @@ namespace Dojo
             };
 
             var entities = worldManager.toriiClient.Entities(query);
+            // TODO: cleanup
             foreach (var entity in entities)
             {
                 // bytes to hex string
                 var key = "0x" + BitConverter.ToString(entity.key.data.ToArray()).Replace("-", "").ToLower();
                 var entityGameObject = worldManager.AddEntity(key);
-                foreach (var handler in entityHandlers) {
-                    handler.HandleEntityInstance(entityGameObject, key, entity.models);
+                foreach (var entityModel in entity.models.Values)
+                {
+                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                    if (model == null)
+                    {
+                        Debug.LogError($"Model {entityModel.name} not found");
+                        continue;
+                    }
+
+                    var component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
+                    component.Initialize(entityModel);
                 }
             }
 
             return entities.Count;
         }
 
-        public void RegisterEntityCallback<T>(string name) where T: EntityInstance
+        public void RegisterEntityCallbacks()
         {
-            var entity = worldManager.Entity(name);
-            var instance = entity.GetComponent<T>();
-
-            foreach (var model in instance.models)
+            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
             {
-                worldManager.toriiClient.OnEntityStateUpdate(new dojo.KeysClause
-                {
-                    model = model.Key,
-                    keys = new[] { instance.key }
-                }, new dojo.FnPtr_Void(() => {
-                    instance.OnEntityStateUpdate();
-                }));
-            }
+                var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
+                var entity = worldManager.Entity(name);
+
+                // foreach (var model )
+            };
+
+            worldManager.toriiClient.OnEntityStateUpdate(Array.Empty<dojo.FieldElement>(), callback);
         }
     }
 }

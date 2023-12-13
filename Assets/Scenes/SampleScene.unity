@@ -320,6 +320,7 @@ GameObject:
   - component: {fileID: 2019443016}
   - component: {fileID: 2019443015}
   - component: {fileID: 2019443017}
+  - component: {fileID: 2019443019}
   - component: {fileID: 2019443018}
   m_Layer: 0
   m_Name: WorldManager
@@ -373,7 +374,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldManager: {fileID: 2019443015}
   limit: 100
-  entityHandlers:
+  models:
+  - {fileID: 2019443019}
   - {fileID: 2019443018}
 --- !u!114 &2019443018
 MonoBehaviour:
@@ -384,9 +386,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 2019443014}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5f86337a0d29a42d3af3241243ba1456, type: 3}
+  m_Script: {fileID: 11500000, guid: 043ae0b8f2d5246499b92dea35147ab6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  x: 0
+  y: 0
+--- !u!114 &2019443019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2019443014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74bbe268ed776435caae0a617a8832d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  remaining: 0
+  lastDirection: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

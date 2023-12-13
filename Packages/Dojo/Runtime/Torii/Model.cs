@@ -7,8 +7,6 @@ namespace Dojo.Torii
 {
     public unsafe class Model
     {
-        public dojo.Model model;
-
         protected string _name;
         public string name => _name;
         protected Dictionary<string, Member> _members;
@@ -16,7 +14,6 @@ namespace Dojo.Torii
 
         public Model(dojo.Model model)
         {
-            this.model = model;
             _name = model.name;
             _members = new Dictionary<string, Member>(model.members.ToArray().Select(m => new KeyValuePair<string, Member>(m.name, new Member(m))));
         }

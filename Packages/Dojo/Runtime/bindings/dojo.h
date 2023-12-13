@@ -178,36 +178,36 @@ typedef struct Ty {
   };
 } Ty;
 
-typedef enum COption_Ty_Tag {
-  Some_Ty,
-  None_Ty,
-} COption_Ty_Tag;
+typedef enum COption_____Ty_Tag {
+  Some_____Ty,
+  None_____Ty,
+} COption_____Ty_Tag;
 
-typedef struct COption_Ty {
-  COption_Ty_Tag tag;
+typedef struct COption_____Ty {
+  COption_____Ty_Tag tag;
   union {
     struct {
-      struct Ty some;
+      struct Ty *some;
     };
   };
-} COption_Ty;
+} COption_____Ty;
 
-typedef enum Result_COption_Ty_Tag {
-  Ok_COption_Ty,
-  Err_COption_Ty,
-} Result_COption_Ty_Tag;
+typedef enum Result_COption_____Ty_Tag {
+  Ok_COption_____Ty,
+  Err_COption_____Ty,
+} Result_COption_____Ty_Tag;
 
-typedef struct Result_COption_Ty {
-  Result_COption_Ty_Tag tag;
+typedef struct Result_COption_____Ty {
+  Result_COption_____Ty_Tag tag;
   union {
     struct {
-      struct COption_Ty ok;
+      struct COption_____Ty ok;
     };
     struct {
       struct Error err;
     };
   };
-} Result_COption_Ty;
+} Result_COption_____Ty;
 
 typedef struct Model {
   const char *name;
@@ -513,27 +513,34 @@ struct Result_____ToriiClient client_new(const char *torii_url,
                                          const struct KeysClause *entities,
                                          uintptr_t entities_len);
 
-struct Result_COption_Ty client_entity(struct ToriiClient *client, const struct KeysClause *keys);
+struct Result_COption_____Ty client_model(struct ToriiClient *client,
+                                          const struct KeysClause *keys);
 
 struct Result_CArray_Entity client_entities(struct ToriiClient *client, const struct Query *query);
 
-struct CArray_KeysClause client_subscribed_entities(struct ToriiClient *client);
+struct CArray_KeysClause client_subscribed_models(struct ToriiClient *client);
 
 struct Result_bool client_start_subscription(struct ToriiClient *client);
 
 struct WorldMetadata client_metadata(struct ToriiClient *client);
 
-struct Result_bool client_add_entities_to_sync(struct ToriiClient *client,
-                                               const struct KeysClause *entities,
-                                               uintptr_t entities_len);
+struct Result_bool client_add_models_to_sync(struct ToriiClient *client,
+                                             const struct KeysClause *models,
+                                             uintptr_t models_len);
 
-void client_on_entity_state_update(struct ToriiClient *client,
-                                   const struct KeysClause *entity,
-                                   void (*callback)(void));
+struct Result_bool client_on_sync_model_update(struct ToriiClient *client,
+                                               struct KeysClause model,
+                                               void (*callback)(void));
 
-struct Result_bool client_remove_entities_to_sync(struct ToriiClient *client,
-                                                  const struct KeysClause *entities,
-                                                  uintptr_t entities_len);
+struct Result_bool client_on_entity_state_update(struct ToriiClient *client,
+                                                 struct FieldElement *entities,
+                                                 uintptr_t entities_len,
+                                                 void (*callback)(struct FieldElement,
+                                                                  struct CArray_Model));
+
+struct Result_bool client_remove_models_to_sync(struct ToriiClient *client,
+                                                const struct KeysClause *models,
+                                                uintptr_t models_len);
 
 struct FieldElement signing_key_new(void);
 

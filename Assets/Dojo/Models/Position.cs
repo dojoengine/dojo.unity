@@ -1,17 +1,21 @@
 using System;
 using System.Linq;
+using Dojo;
 using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
 
-public class Position : Model
+public class Position : ModelInstance
 {
-    public dojo.FieldElement player => members["player"].ty.ty_primitive.contract_address;
+    public dojo.FieldElement player;
     // public Vector2Int position => new Vector2Int((int)x, (int)y);
-    public UInt32 x => members["vec"].ty.ty_struct.children[0].ty.ty_primitive.u32;
-    public UInt32 y => members["vec"].ty.ty_struct.children[1].ty.ty_primitive.u32;
+    public UInt32 x;
+    public UInt32 y;
 
-    public Position(Model model) : base(model.model)
+    public override void Initialize(Model model)
     {
+        player = model.members["player"].ty.ty_primitive.contract_address;
+        x = model.members["vec"].ty.ty_struct.children[0].ty.ty_primitive.u32;
+        y = model.members["vec"].ty.ty_struct.children[1].ty.ty_primitive.u32;
     }
 }

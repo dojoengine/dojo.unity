@@ -25,7 +25,7 @@ namespace Dojo
 
         // Called when the entity state is updated
         // model: the model that was updated
-        public virtual void OnEntityStateUpdate()
+        public virtual void OnEntityStateUpdate(dojo.FieldElement key, Model[] models)
         {
         }
     }
