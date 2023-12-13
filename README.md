@@ -21,7 +21,7 @@ By then, you should have Katana and Torii up and running locally, which we're go
 If you are using Windows or Linux, you will need to build [dojo.c](https://github.com/dojoengine/dojo.c) yourself. Make sure that you're using the latest supported version
 
 ```bash
-git clone git@github.com:Larkooo/dojo.c.git
+git clone git@github.com:dojoengine/dojo.c.git
 cargo build --release
 ```
 
