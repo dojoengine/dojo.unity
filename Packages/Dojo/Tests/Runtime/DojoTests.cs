@@ -224,20 +224,21 @@ public class Tests
     [Test, Order(2)]
     public void TestOnEntityStateUpdate()
     {
-        dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
+        ToriiEvents.OnEntityStateUpdateDelegate callback = (key, models) =>
         {
             entityUpdated = true;
         };
-        client.OnEntityStateUpdate(new dojo.FieldElement[] { }, callback);
+        ToriiEvents.Instance.OnEntityUpdated += callback;
     }
 
     [Test, Order(2)]
     public void TestOnSyncModelUpdate()
     {
-        ToriiClient.OnSyncModelUpdateDelegate callback = () =>
+        ToriiEvents.OnSyncModelUpdateDelegate callback = () =>
         {
             modelEntityUpdated = true;
         };
-        client.OnSyncModelUpdate(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, callback);
+        client.RegisterSyncModelUpdates(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } });
+        ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }

@@ -20,7 +20,7 @@ namespace Dojo
         public ToriiClient toriiClient;
 
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[] { });
@@ -34,7 +34,6 @@ namespace Dojo
 
             // listen for entity updates
             synchronizationMaster.RegisterEntityCallbacks();
-
         }
 
         // Update is called once per frame
@@ -55,7 +54,7 @@ namespace Dojo
             return entity.gameObject;
         }
 
-        // return all children that have the EntityInstance component
+        // return all children
         public GameObject[] Entities()
         {
             return transform.Cast<Transform>()

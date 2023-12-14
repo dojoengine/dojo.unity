@@ -17,11 +17,5 @@ namespace Dojo.Torii
             _name = model.name;
             _members = new Dictionary<string, Member>(model.members.ToArray().Select(m => new KeyValuePair<string, Member>(m.name, new Member(m))));
         }
-
-        public static Model[] Models(dojo.CArray_Model models)
-        {
-            var span = new Span<dojo.Model>(models.data, (int)models.data_len);
-            return span.ToArray().Select(m => new Model(m)).ToArray();
-        }
     }
 }

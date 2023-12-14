@@ -29,7 +29,7 @@ typedef struct CJsonRpcClient CJsonRpcClient;
 typedef struct ToriiClient ToriiClient;
 
 typedef struct Error {
-  const char *message;
+  char *message;
 } Error;
 
 typedef enum Result_____ToriiClient_Tag {
@@ -571,6 +571,10 @@ struct Result_bool account_execute_raw(struct Account *account,
                                        uintptr_t calldata_len);
 
 void client_free(struct ToriiClient *t);
+
+void jsonrpc_client_free(struct CJsonRpcClient *rpc);
+
+void model_free(struct Model *model);
 
 void account_free(struct Account *account);
 

@@ -41,40 +41,50 @@ namespace Dojo
             };
 
             var entities = worldManager.toriiClient.Entities(query);
-            // TODO: cleanup
             foreach (var entity in entities)
             {
-                // bytes to hex string
-                var key = "0x" + BitConverter.ToString(entity.key.data.ToArray()).Replace("-", "").ToLower();
-                var entityGameObject = worldManager.AddEntity(key);
-                foreach (var entityModel in entity.models.Values)
-                {
-                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
-                    if (model == null)
-                    {
-                        Debug.LogError($"Model {entityModel.name} not found");
-                        continue;
-                    }
-
-                    var component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
-                    component.Initialize(entityModel);
-                }
+                SpawnEntity(entity.key, entity.models.Values.ToArray());
             }
 
             return entities.Count;
         }
+        
+        private GameObject SpawnEntity(dojo.FieldElement felt, Model[] entityModels)
+        {
+            // bytes to hex string
+            var key = "0x" + BitConverter.ToString(felt.data.ToArray()).Replace("-", "").ToLower();
+            var entityGameObject = worldManager.AddEntity(key);
+            foreach (var entityModel in entityModels)
+            {
+                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                if (model == null)
+                {
+                    Debug.LogError($"Model {entityModel.name} not found");
+                    continue;
+                }
 
-        private void HandleEntityUpdate(dojo.FieldElement key, Model[] models)
+                var component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
+                component.Initialize(entityModel);
+            }
+
+            return entityGameObject;
+        }
+
+        private void HandleEntityUpdate(dojo.FieldElement key, Model[] entityModels)
         {
             var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
             var entity = GameObject.Find(name);
+            if (entity == null)
+            {
+                entity = SpawnEntity(key, entityModels);
+            }
             
-            foreach (var model in models)
+            foreach (var model in entityModels)
             {
                 var component = entity.GetComponent(model.name);
                 if (component == null)
                 {
-                    Debug.LogError($"Component {model.GetType().Name} not found");
+                    Debug.LogError($"Component {model.name} not found");
                     continue;
                 }
 
@@ -84,12 +94,7 @@ namespace Dojo
 
         public void RegisterEntityCallbacks()
         {
-            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callback = (key, models) =>
-            {
-                UnityMainThreadDispatcher.Instance().Enqueue(() => HandleEntityUpdate(key, Model.Models(models)));
-            };
-
-            worldManager.toriiClient.OnEntityStateUpdate(new dojo.FieldElement[] { }, callback);
+            ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }
 }
