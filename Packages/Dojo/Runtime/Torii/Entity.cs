@@ -13,10 +13,10 @@ namespace Dojo.Torii
         private Dictionary<string, Model> _models;
         private dojo.FieldElement _key;
         
-        public Entity(dojo.Entity* entity)
+        public Entity(dojo.Entity entity)
         {
-            _key = entity->key;
-            _models = new Dictionary<string, Model>(entity->models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))));
+            _key = entity.key;
+            _models = new Dictionary<string, Model>(entity.models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))));
             
         }
 

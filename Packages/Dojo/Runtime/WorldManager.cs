@@ -20,18 +20,20 @@ namespace Dojo
         public ToriiClient toriiClient;
 
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {
             // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[] { });
+            // start subscription service
+            toriiClient.StartSubscription();
 
             // fetch entities from the world
             // TODO: maybe do in the start function of the SynchronizationMaster?
             // problem is when to start the subscription service
             synchronizationMaster.SynchronizeEntities();
 
-            // start subscription service
-            toriiClient.StartSubscription();
+            // listen for entity updates
+            synchronizationMaster.RegisterEntityCallbacks();
         }
 
         // Update is called once per frame
@@ -52,7 +54,7 @@ namespace Dojo
             return entity.gameObject;
         }
 
-        // return all children that have the EntityInstance component
+        // return all children
         public GameObject[] Entities()
         {
             return transform.Cast<Transform>()

@@ -6,14 +6,12 @@ using UnityEngine;
 using dojo_bindings;
 using JetBrains.Annotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
     {
-        public delegate void OnSyncModelUpdateDelegate();
-        public delegate void OnEntityStateUpdateDelegate(dojo.FieldElement key, Model[] models);
-
         private dojo.ToriiClient* client;
 
         public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.KeysClause[] entities)
@@ -35,6 +33,9 @@ namespace Dojo.Torii
             }
 
             client = result._ok;
+            
+            // set up callbacks
+            RegisterEntityStateUpdates(new dojo.FieldElement[]{});
         }
 
         ~ToriiClient()
@@ -79,11 +80,13 @@ namespace Dojo.Torii
             }
 
             var entities = new List<Entity>();
-            foreach (var entity in result.ok)
+            for (var i = 0; i < (int)result._ok.data_len; i++)
             {
-                entities.Add(new Entity(&entity));
+                entities.Add(new Entity(result._ok.data[i]));
+                // dojo.entity_free(&result._ok.data[i]);
             }
 
+            dojo.carray_free(result._ok.data, result._ok.data_len);
             return entities;
         }
 
@@ -99,7 +102,9 @@ namespace Dojo.Torii
             // this just returns a span of the carray data
             // freeing the c array is up to the caller
             // dojo.carray_free(entities);
-            return new Span<dojo.KeysClause>(models.data, (int)models.data_len);
+            var arr = new Span<dojo.KeysClause>(models.data, (int)models.data_len).ToArray();
+            dojo.carray_free(models.data, models.data_len);
+            return arr;
         }
 
         public void AddModelsToSync(dojo.KeysClause[] models)
@@ -134,39 +139,50 @@ namespace Dojo.Torii
             }
         }
 
-        public void OnSyncModelUpdate(dojo.KeysClause model, OnSyncModelUpdateDelegate callback)
+        public void RegisterSyncModelUpdates(dojo.KeysClause model)
         {
             dojo.FnPtr_Void.@delegate handler = () =>
             {
-                callback();
+                UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.SyncModelUpdated());
             };
 
-            dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
+            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
+            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            {
+                throw new Exception(res.err.message);
+            }
         }
 
-        public void OnEntityStateUpdate(dojo.FieldElement[] entities, OnEntityStateUpdateDelegate callback)
+        private void RegisterEntityStateUpdates(dojo.FieldElement[] entities)
         {
             dojo.FieldElement* entitiesPtr;
 
-            fixed (dojo.FieldElement* ptr = &entities[0])
+            fixed (dojo.FieldElement* ptr = entities)
             {
                 entitiesPtr = ptr;
             }
-
-            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate handler = (key, models) =>
+            
+            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = (key, models) =>
             {
-                var mappedModels = new Model[(uint)models.data_len];
-                for (var i = 0; i < (uint)models.data_len; i++)
+                var mappedModels = new Model[(int)models.data_len];
+                for (var i = 0; i < (int)models.data_len; i++)
                 {
-                    mappedModels[i] = new Model(
-                        models.data[i]);
-                    // TODO: free model
+                    mappedModels[i] = new Model(models.data[i]);
+                    // TODO: free the c model
+                    // dojo.model_free(&models.data[i]);
                 }
-
-                callback(key, mappedModels);
+                
+                dojo.carray_free(models.data, models.data_len);
+                UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(key, mappedModels));
             };
+            
 
-            dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(handler));
+            // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
+            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callbackHandler));
+            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            {
+                throw new Exception(res.err.message);
+            }
         }
 
         public void StartSubscription()
