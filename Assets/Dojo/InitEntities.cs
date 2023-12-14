@@ -10,12 +10,10 @@ public class InitEntities : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        worldManager.synchronizationMaster.OnEntitySpawned += InitEntity;
         foreach (var entity in worldManager.Entities())
         {
-            var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            // change color of capsule to a random color
-            capsule.GetComponent<Renderer>().material.color = Random.ColorHSV();
-            capsule.transform.parent = entity.transform;
+            InitEntity(entity);
         }
     }
 
@@ -23,5 +21,13 @@ public class InitEntities : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void InitEntity(GameObject entity)
+    {
+        var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        // change color of capsule to a random color
+        capsule.GetComponent<Renderer>().material.color = Random.ColorHSV();
+        capsule.transform.parent = entity.transform;
     }
 }

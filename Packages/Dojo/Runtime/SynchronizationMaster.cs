@@ -18,10 +18,16 @@ namespace Dojo
 
         // Handle entities that get synchronized
         public ModelInstance[] models;
+        
+        public event Action<GameObject> OnEntitySpawned;
 
         // Start is called before the first frame update
         void Start()
         {
+            foreach (var model in models)
+            {
+                model.enabled = false;
+            }
         }
 
         // Update is called once per frame
@@ -67,6 +73,7 @@ namespace Dojo
                 component.Initialize(entityModel);
             }
 
+            OnEntitySpawned?.Invoke(entityGameObject);
             return entityGameObject;
         }
 
@@ -76,19 +83,30 @@ namespace Dojo
             var entity = GameObject.Find(name);
             if (entity == null)
             {
+                // should we fetch the entity here?
                 entity = SpawnEntity(key, entityModels);
             }
             
-            foreach (var model in entityModels)
+            foreach (var entityModel in entityModels)
             {
-                var component = entity.GetComponent(model.name);
+                var component = entity.GetComponent(entityModel.name);
                 if (component == null)
                 {
-                    Debug.LogError($"Component {model.name} not found");
-                    continue;
+                    // TODO: decouple?
+                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                    if (model == null)
+                    {
+                        Debug.LogError($"Model {entityModel.name} not found");
+                        continue;
+                    }
+                        
+                    // we dont need to initialize the component
+                    // because it'll get updated
+                    component = (ModelInstance)entity.AddComponent(model.GetType());
                 }
 
-                ((ModelInstance)component).OnUpdated(model);
+                // update component with new model data
+                ((ModelInstance)component).OnUpdated(entityModel);
             }
         }
 
