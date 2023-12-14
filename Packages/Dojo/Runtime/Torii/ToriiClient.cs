@@ -80,11 +80,13 @@ namespace Dojo.Torii
             }
 
             var entities = new List<Entity>();
-            foreach (var entity in result.ok)
+            for (var i = 0; i < (int)result._ok.data_len; i++)
             {
-                entities.Add(new Entity(&entity));
+                entities.Add(new Entity(result._ok.data[i]));
+                // dojo.entity_free(&result._ok.data[i]);
             }
 
+            dojo.carray_free(result._ok.data, result._ok.data_len);
             return entities;
         }
 
@@ -100,7 +102,9 @@ namespace Dojo.Torii
             // this just returns a span of the carray data
             // freeing the c array is up to the caller
             // dojo.carray_free(entities);
-            return new Span<dojo.KeysClause>(models.data, (int)models.data_len);
+            var arr = new Span<dojo.KeysClause>(models.data, (int)models.data_len).ToArray();
+            dojo.carray_free(models.data, models.data_len);
+            return arr;
         }
 
         public void AddModelsToSync(dojo.KeysClause[] models)
