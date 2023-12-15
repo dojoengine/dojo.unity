@@ -33,9 +33,6 @@ namespace Dojo.Torii
             }
 
             client = result._ok;
-            
-            // set up callbacks
-            RegisterEntityStateUpdates(new dojo.FieldElement[]{});
         }
 
         ~ToriiClient()
@@ -139,11 +136,18 @@ namespace Dojo.Torii
             }
         }
 
-        public void RegisterSyncModelUpdates(dojo.KeysClause model)
+        public void RegisterSyncModelUpdates(dojo.KeysClause model, bool dispatchToMainThread = true)
         {
             dojo.FnPtr_Void.@delegate handler = () =>
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.SyncModelUpdated());
+                if (dispatchToMainThread)
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.SyncModelUpdated());
+                }
+                else
+                {
+                    ToriiEvents.Instance.SyncModelUpdated();
+                }
             };
 
             dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
@@ -153,7 +157,7 @@ namespace Dojo.Torii
             }
         }
 
-        private void RegisterEntityStateUpdates(dojo.FieldElement[] entities)
+        public void RegisterEntityStateUpdates(dojo.FieldElement[] entities, bool dispatchToMainThread = true)
         {
             dojo.FieldElement* entitiesPtr;
 
@@ -161,7 +165,7 @@ namespace Dojo.Torii
             {
                 entitiesPtr = ptr;
             }
-            
+
             dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = (key, models) =>
             {
                 var mappedModels = new Model[(int)models.data_len];
@@ -171,14 +175,48 @@ namespace Dojo.Torii
                     // TODO: free the c model
                     // dojo.model_free(&models.data[i]);
                 }
-                
+
                 dojo.carray_free(models.data, models.data_len);
-                UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(key, mappedModels));
+                // only run this when in unity play mode
+                // we need our unity main thread dispatcher to run this on the main thread
+                if (dispatchToMainThread)
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(key, mappedModels));
+                }
+                else
+                {
+                    ToriiEvents.Instance.EntityUpdated(key, mappedModels);
+                }
             };
-            
+
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
             dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callbackHandler));
+            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            {
+                throw new Exception(res.err.message);
+            }
+        }
+
+        public void OnEntityStateUpdateRaw(dojo.FieldElement[] entities, dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler)
+        {
+            dojo.FieldElement* entitiesPtr;
+
+            fixed (dojo.FieldElement* ptr = entities)
+            {
+                entitiesPtr = ptr;
+            }
+
+            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callbackHandler));
+            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            {
+                throw new Exception(res.err.message);
+            }
+        }
+
+        public void OnSyncModelUpdateRaw(dojo.KeysClause model, dojo.FnPtr_Void.@delegate callbackHandler)
+        {
+            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(callbackHandler));
             if (res.tag == dojo.Result_bool_Tag.Err_bool)
             {
                 throw new Exception(res.err.message);

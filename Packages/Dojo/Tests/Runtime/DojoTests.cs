@@ -227,7 +227,8 @@ public class Tests
         ToriiEvents.OnEntityStateUpdateDelegate callback = (key, models) =>
         {
             entityUpdated = true;
-        };
+        }; 
+        client.RegisterEntityStateUpdates(new dojo.FieldElement[] {}, false);
         ToriiEvents.Instance.OnEntityUpdated += callback;
     }
 
@@ -238,7 +239,7 @@ public class Tests
         {
             modelEntityUpdated = true;
         };
-        client.RegisterSyncModelUpdates(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } });
+        client.RegisterSyncModelUpdates(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, false);
         ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }

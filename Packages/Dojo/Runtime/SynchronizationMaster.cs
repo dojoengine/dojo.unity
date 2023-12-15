@@ -49,7 +49,7 @@ namespace Dojo
             var entities = worldManager.toriiClient.Entities(query);
             foreach (var entity in entities)
             {
-                SpawnEntity(entity.key, entity.models.Values.ToArray());
+                SpawnEntity(entity.id, entity.models.Values.ToArray());
             }
 
             return entities.Count;
@@ -112,6 +112,7 @@ namespace Dojo
 
         public void RegisterEntityCallbacks()
         {
+            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[]{});
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }
