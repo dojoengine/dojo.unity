@@ -5,13 +5,13 @@ using dojo_bindings;
 
 namespace Dojo.Torii
 {
-    public unsafe class Member
+    public class Member
     {
         private string _name;
         public string name => _name;
 
-        private dojo.Ty* _ty;
-        public dojo.Ty ty => *_ty; 
+        private dojo.Ty _ty;
+        public dojo.Ty ty => _ty; 
 
         private bool _key;
         public bool key => _key;
@@ -19,7 +19,7 @@ namespace Dojo.Torii
         public Member(dojo.Member member)
         {
             _name = member.name;
-            _ty = member._ty;
+            _ty = member.ty;
             _key = member.key;
         }
 

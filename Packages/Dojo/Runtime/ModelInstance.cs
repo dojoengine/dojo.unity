@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;

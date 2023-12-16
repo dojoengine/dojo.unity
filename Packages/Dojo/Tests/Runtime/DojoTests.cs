@@ -16,8 +16,8 @@ public class Tests
     private readonly string rpcUrl = "http://0.0.0.0:5050";
     private readonly string playerKey = "0x028cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20";
     private readonly string playerAddress = "0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
-    private readonly string worldAddress = "0x05010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138";
-    private readonly string actionsAddress = "0x031571485922572446df9e3198a891e10d3a48e544544317dbcbb667e15848cd";
+    private readonly string worldAddress = "0x033ac2f528bb97cc7b79148fd1756dc368be0e95d391d8c6d6473ecb60b4560e";
+    private readonly string actionsAddress = "0x0152dcff993befafe5001975149d2c50bd9621da7cbaed74f68e7d5e54e65abc";
 
     private ToriiClient client;
     private JsonRpcClient provider;
@@ -165,7 +165,7 @@ public class Tests
         Assert.That(positionExists, Is.True);
     }
 
-    [Test]
+    [Test, Order(1)]
     public void TestEntities()
     {
         var query = new dojo.Query
@@ -224,20 +224,22 @@ public class Tests
     [Test, Order(2)]
     public void TestOnEntityStateUpdate()
     {
-        ToriiClient.OnEntityStateUpdateDelegate callback = (key, models) =>
+        ToriiEvents.OnEntityStateUpdateDelegate callback = (key, models) =>
         {
             entityUpdated = true;
-        };
-        client.OnEntityStateUpdate(new dojo.FieldElement[] { dojo.felt_from_hex_be(CString.FromString(playerKey)).ok }, callback);
+        }; 
+        client.RegisterEntityStateUpdates(new dojo.FieldElement[] {}, false);
+        ToriiEvents.Instance.OnEntityUpdated += callback;
     }
 
     [Test, Order(2)]
     public void TestOnSyncModelUpdate()
     {
-        ToriiClient.OnSyncModelUpdateDelegate callback = () =>
+        ToriiEvents.OnSyncModelUpdateDelegate callback = () =>
         {
             modelEntityUpdated = true;
         };
-        client.OnSyncModelUpdate(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, callback);
+        client.RegisterSyncModelUpdates(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, false);
+        ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }

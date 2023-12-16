@@ -18,10 +18,16 @@ namespace Dojo
 
         // Handle entities that get synchronized
         public ModelInstance[] models;
+        
+        public event Action<GameObject> OnEntitySpawned;
 
         // Start is called before the first frame update
         void Start()
         {
+            foreach (var model in models)
+            {
+                model.enabled = false;
+            }
         }
 
         // Update is called once per frame
@@ -41,50 +47,73 @@ namespace Dojo
             };
 
             var entities = worldManager.toriiClient.Entities(query);
-            // TODO: cleanup
             foreach (var entity in entities)
             {
-                // bytes to hex string
-                var key = "0x" + BitConverter.ToString(entity.key.data.ToArray()).Replace("-", "").ToLower();
-                var entityGameObject = worldManager.AddEntity(key);
-                foreach (var entityModel in entity.models.Values)
+                SpawnEntity(entity.id, entity.models.Values.ToArray());
+            }
+
+            return entities.Count;
+        }
+        
+        private GameObject SpawnEntity(dojo.FieldElement felt, Model[] entityModels)
+        {
+            // bytes to hex string
+            var key = "0x" + BitConverter.ToString(felt.data.ToArray()).Replace("-", "").ToLower();
+            var entityGameObject = worldManager.AddEntity(key);
+            foreach (var entityModel in entityModels)
+            {
+                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                if (model == null)
                 {
+                    Debug.LogError($"Model {entityModel.name} not found");
+                    continue;
+                }
+
+                var component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
+                component.Initialize(entityModel);
+            }
+
+            OnEntitySpawned?.Invoke(entityGameObject);
+            return entityGameObject;
+        }
+
+        private void HandleEntityUpdate(dojo.FieldElement key, Model[] entityModels)
+        {
+            var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
+            var entity = GameObject.Find(name);
+            if (entity == null)
+            {
+                // should we fetch the entity here?
+                entity = SpawnEntity(key, entityModels);
+            }
+            
+            foreach (var entityModel in entityModels)
+            {
+                var component = entity.GetComponent(entityModel.name);
+                if (component == null)
+                {
+                    // TODO: decouple?
                     var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
                     if (model == null)
                     {
                         Debug.LogError($"Model {entityModel.name} not found");
                         continue;
                     }
-
-                    var component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
-                    component.Initialize(entityModel);
+                        
+                    // we dont need to initialize the component
+                    // because it'll get updated
+                    component = (ModelInstance)entity.AddComponent(model.GetType());
                 }
-            }
 
-            return entities.Count;
+                // update component with new model data
+                ((ModelInstance)component).OnUpdated(entityModel);
+            }
         }
 
         public void RegisterEntityCallbacks()
         {
-            Dojo.Torii.ToriiClient.OnEntityStateUpdateDelegate callback = (key, models) =>
-            {
-                var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
-                var entity = worldManager.Entity(name);
-
-                foreach (var model in models)
-                {
-                    var modelInstance = (ModelInstance)entity.GetComponent(model.name);
-                    if (modelInstance == null)
-                    {
-                        Debug.LogError($"ModelInstance not found for {model.name}");
-                        continue;
-                    }
-
-                    modelInstance.OnUpdated(model);
-                }
-            };
-
-            worldManager.toriiClient.OnEntityStateUpdate(Array.Empty<dojo.FieldElement>(), callback);
+            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[]{});
+            ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }
 }
