@@ -1,51 +1,61 @@
-# dojo.unity
+<!-- markdownlint-disable -->
+<div align="center">
+  <img src=".github/dojo-mark-full-dark.svg" height="128">
+</div>
+<div align="center">
+<br />
+<!-- markdownlint-restore -->
 
-## Getting started
+<a href="https://twitter.com/dojostarknet">
+<img src="https://img.shields.io/twitter/follow/dojostarknet?style=social"/>
+</a>
+<a href="https://github.com/dojoengine/dojo">
+<img src="https://img.shields.io/github/stars/dojoengine/dojo?style=social"/>
+</a>
 
-### Prerequisites
+[![discord](https://img.shields.io/badge/join-dojo-green?logo=discord&logoColor=white)](https://discord.gg/PwDa2mKhR4)
+![Github Actions][gha-badge] [![Telegram Chat][tg-badge]][tg-url]
 
-Before getting started, there are a few steps you must follow in order to get the project up and running.
+[gha-badge]: https://img.shields.io/github/actions/workflow/status/dojoengine/dojo/ci.yml?branch=main
+[tg-badge]: https://img.shields.io/endpoint?color=neon&logo=telegram&label=chat&style=flat-square&url=https%3A%2F%2Ftg.sumanjay.workers.dev%2Fdojoengine
+[tg-url]: https://t.me/dojoengine
 
-#### Dojo
+</div>
 
-Ensure that you're using the latest supported Dojo [version](https://github.com/dojoengine/dojo/releases).
+Here's an improved version of your text, with clearer formatting, additional guidance, and a more professional tone.
 
-#### World
+---
 
-If you only want to experiment with the demo `dojo-starter` unity project, you must follow the instructions in the [dojo-starter](https://book.dojoengine.org/cairo/hello-dojo.html) repo.
+[![Watch the video](.github/unity-screen-grab.png)](.github/Unity_Integration.mp4)
 
-By then, you should have Katana and Torii up and running locally, which we're going to use in the demo project. As well as your world and contract addresses.
+# Dojo.Unity SDK Guide
 
-#### Binaries
+## Prerequisites
 
-If you are using Windows or Linux, you will need to build [dojo.c](https://github.com/dojoengine/dojo.c) yourself. Make sure that you're using the latest supported version
+> **Important Notice:**  
+> Please be aware that this SDK is in its early stages of release. As it is continuously being developed, any feedback or suggestions are highly appreciated. Feel free to report issues or contribute to the project. Your input is invaluable!
 
-```bash
-git clone git@github.com:dojoengine/dojo.c.git
-cargo build --release
-```
+### Setting Up Dojo
 
-This will generate a `.dll` or `.so` binary in the `target/release` directory, depending on your platform. You will need to copy it to the following location `Packages/Dojo/Libraries`
+1. **Download the Latest Dojo Version**  
+   Always use the most recent version of Dojo for optimal compatibility and features. You can find the latest release at the [Dojo GitHub Repository](https://github.com/dojoengine/dojo/releases).
 
+   Run the following commands in your terminal to install:
 
-### Setting up the project
+   ```bash
+   curl -L https://install.dojoengine.org | bash
+   # After installation, update to the latest version
+   dojoup
+   ```
 
-You can now open the project in Unity and start setting it up.
+### Installing Unity
 
-#### World Manager
+2. **Install Unity**  
+   For integration with Dojo, download and install Unity. Visit the [Unity Download Page](https://unity.com/) and follow the instructions provided there for installation.
 
-You will notice a WorldManager game object in the scene. This is the main entry point for the Dojo world. Any entities from your Dojo world will be instantiated under this game object.
+### Accessing Documentation
 
-![worldmanager](https://media.discordapp.net/attachments/544666013707272194/1184380066776486028/image.png?ex=658bc2e4&is=65794de4&hm=04d51e234ef46f2ea9c41374da680149985afa45c3eb1611ea851c3125acb4fe&=&format=webp&quality=lossless)
+3. **Refer to the Official Documentation**  
+   For detailed guidance on using the Dojo.Unity SDK, please refer to the official documentation. It provides comprehensive instructions and examples to help you get started:
 
-You can replace the default values in the WorldManager script component by yours - like the exposed URLs for your Katana and Torii instances, as well as your world address.
-
-#### Synchronization Master
-
-The second component to look at is the SynchronizationMaster - this is where you can specify the number of maximum entities you want synchronized, and your models components.
-
-![sync](https://media.discordapp.net/attachments/544666013707272194/1184380125928763412/image.png?ex=658bc2f2&is=65794df2&hm=c5dd5b2e0452f627329cf8b036e763bec84b79130cd237beac4d261f25de774b&=&format=webp&quality=lossless)
-
-Models are the components that will be synchronized between the Dojo world and the Unity world. You can add as many as you want, but make sure that you have the same models in your Dojo world.
-
-![models](https://media.discordapp.net/attachments/544666013707272194/1184380159478988860/image.png?ex=658bc2fa&is=65794dfa&hm=56971410358f53303c464c7c9185fd1301aa69e535ede028f7c49618a0297d89&=&format=webp&quality=lossless)
+   [Dojo.Unity SDK Documentation](https://book.dojoengine.org/client/sdk/unity.html)
