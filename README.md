@@ -26,8 +26,6 @@ Here's an improved version of your text, with clearer formatting, additional gui
 
 ---
 
-[![Watch the video](.github/unity-screen-grab.png)](.github/Unity_Integration.mp4)
-
 # Dojo.Unity SDK Guide
 
 ## Prerequisites
