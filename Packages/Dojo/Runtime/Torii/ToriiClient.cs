@@ -12,6 +12,8 @@ namespace Dojo.Torii
 {
     public unsafe class ToriiClient
     {
+        private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate entityStateUpdateHandler;
+        private dojo.FnPtr_Void.@delegate syncModelUpdateHandler;
         private dojo.ToriiClient* client;
 
         public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.KeysClause[] entities)
@@ -138,7 +140,7 @@ namespace Dojo.Torii
 
         public void RegisterSyncModelUpdates(dojo.KeysClause model, bool dispatchToMainThread = true)
         {
-            dojo.FnPtr_Void.@delegate handler = () =>
+            syncModelUpdateHandler = () =>
             {
                 if (dispatchToMainThread)
                 {
@@ -150,7 +152,7 @@ namespace Dojo.Torii
                 }
             };
 
-            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(handler));
+            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(syncModelUpdateHandler));
             if (res.tag == dojo.Result_bool_Tag.Err_bool)
             {
                 throw new Exception(res.err.message);
@@ -166,7 +168,7 @@ namespace Dojo.Torii
                 entitiesPtr = ptr;
             }
 
-            dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = (key, models) =>
+            entityStateUpdateHandler = (key, models) =>
             {
                 var mappedModels = new Model[(int)models.data_len];
                 for (var i = 0; i < (int)models.data_len; i++)
@@ -191,7 +193,7 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callbackHandler));
+            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(entityStateUpdateHandler));
             if (res.tag == dojo.Result_bool_Tag.Err_bool)
             {
                 throw new Exception(res.err.message);
