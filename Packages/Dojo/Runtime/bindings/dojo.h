@@ -220,7 +220,7 @@ typedef struct CArray_Model {
 } CArray_Model;
 
 typedef struct Entity {
-  struct FieldElement id;
+  struct FieldElement hashed_keys;
   struct CArray_Model models;
 } Entity;
 

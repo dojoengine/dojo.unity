@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Dojo.Torii;
 using dojo_bindings;
-using PlasticGui;
 using UnityEngine;
 
 namespace Dojo
@@ -49,7 +46,7 @@ namespace Dojo
             var entities = worldManager.toriiClient.Entities(query);
             foreach (var entity in entities)
             {
-                SpawnEntity(entity.id, entity.models.Values.ToArray());
+                SpawnEntity(entity.hashed_keys, entity.models.Values.ToArray());
             }
 
             return entities.Count;
