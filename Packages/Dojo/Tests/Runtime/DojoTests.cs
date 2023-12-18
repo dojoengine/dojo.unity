@@ -104,7 +104,7 @@ public class Tests
         // We wait until our callback is called to mark our 
         // entity as updated. We timeout after 5 seconds.
         var start = DateTime.Now;
-        while (!(entityUpdated || modelEntityUpdated) && DateTime.Now - start < TimeSpan.FromSeconds(5))
+        while (!(entityUpdated && modelEntityUpdated) && DateTime.Now - start < TimeSpan.FromSeconds(5))
         {
         }
 
