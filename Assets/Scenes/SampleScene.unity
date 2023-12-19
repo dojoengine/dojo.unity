@@ -325,6 +325,7 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
+  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -406,6 +407,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 69.465, y: 0, z: 0}
+--- !u!114 &963194229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9601f4ab467894a87a34f22f6b453eb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  worldManager: {fileID: 2019443015}
+  height: 10
+  damping: 1
+  speed: 10
 --- !u!1 &998234499
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,6 +480,7 @@ GameObject:
   - component: {fileID: 1603019350}
   - component: {fileID: 1603019349}
   - component: {fileID: 1603019348}
+  - component: {fileID: 1603019352}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -551,12 +569,29 @@ Transform:
   m_GameObject: {fileID: 1603019347}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.059999, y: -0.05, z: -0.089867}
-  m_LocalScale: {x: 4.482111, y: 1, z: 3.7630765}
+  m_LocalPosition: {x: 0.059959, y: -0.05, z: -0.089834}
+  m_LocalScale: {x: 579.44196, y: 1, z: 204.42252}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1603019352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1603019347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab13a05e740f84a6d9c745e33f5bd407, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 256
+  height: 256
+  scale: 20
+  offsetX: 100
+  offsetY: 100
 --- !u!1 &2019443014
 GameObject:
   m_ObjectHideFlags: 0
@@ -639,6 +674,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   x: 0
   y: 0
+  textTag: {fileID: 0}
+  shortPlayerAddress: 
 --- !u!114 &2019443019
 MonoBehaviour:
   m_ObjectHideFlags: 0

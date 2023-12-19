@@ -1,3 +1,6 @@
 [submodule "c2cs"]
 	path = c2cs
 	url = https://github.com/Larkooo/c2cs
+[submodule "Bindings/dojo.c"]
+	path = Bindings/dojo.c
+	url = https://github.com/dojoengine/dojo.c
