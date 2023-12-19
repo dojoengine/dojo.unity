@@ -1,6 +1,6 @@
 {
   "inputFilePath": "./ast/cross-platform.json",
-  "outputFileDirectory": "./client",
+  "outputFileDirectory": "../Packages/Dojo/Runtime/bindings/client",
   "namespaceName": "dojo_bindings",
   "libraryName": "torii_c",
   "className": "dojo",
