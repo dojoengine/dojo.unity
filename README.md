@@ -22,8 +22,6 @@
 
 </div>
 
-Here's an improved version of your text, with clearer formatting, additional guidance, and a more professional tone.
-
 ---
 
 # Dojo.Unity SDK Guide
