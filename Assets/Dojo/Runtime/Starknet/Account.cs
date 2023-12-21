@@ -6,10 +6,13 @@ namespace Dojo.Starknet
 {
     public unsafe class Account
     {
+        private JsonRpcClient provider;
         private dojo.Account* account;
             
         public Account(JsonRpcClient provider, SigningKey privateKey, string address)
         {
+            this.provider = provider;
+
             var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey(),
                 CString.FromString(address));
             if (resultAccount.tag == dojo.Result_____Account_Tag.Err_____Account)
@@ -18,6 +21,11 @@ namespace Dojo.Starknet
             }
             
             account = resultAccount._ok;
+        }
+
+        public Account(dojo.Account* account)
+        {
+            this.account = account;
         }
             
         ~Account()
@@ -57,6 +65,19 @@ namespace Dojo.Starknet
             {
                 throw new Exception(result.err.message);
             }
+        }
+
+        // This will synchroneously wait for the transaction to be confirmed.
+        // Use BurnerManager for async execution.
+        public Account DeployBurner()
+        {
+            var result = dojo.account_deploy_burner(provider.client, account);
+            if (result.tag == dojo.Result_____Account_Tag.Err_____Account)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            return new Account(result._ok);
         }
     }
 }

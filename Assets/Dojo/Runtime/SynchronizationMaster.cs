@@ -3,6 +3,7 @@ using System.Linq;
 using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Dojo
 {
@@ -16,7 +17,7 @@ namespace Dojo
         // Handle entities that get synchronized
         public ModelInstance[] models;
         
-        public event Action<GameObject> OnEntitySpawned;
+        public UnityEvent<GameObject> OnEntitySpawned;
 
         // Start is called before the first frame update
         void Start()
