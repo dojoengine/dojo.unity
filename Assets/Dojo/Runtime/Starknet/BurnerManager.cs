@@ -10,6 +10,7 @@ namespace Dojo.Starknet {
         private Account currentBurner;
         private List<Account> burners = new();
 
+        public Account CurrentBurner => currentBurner;
         public List<Account> Burners => burners;
 
         public BurnerManager(JsonRpcClient provider, Account masterAccount) {

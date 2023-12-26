@@ -72,8 +72,8 @@ public class Position : ModelInstance
         }
     }
 
-    public override void OnUpdated(Model model)
+    public override void OnUpdate(Model model)
     {
-        base.OnUpdated(model);
+        base.OnUpdate(model);
     }
 }

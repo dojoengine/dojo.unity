@@ -104,7 +104,7 @@ namespace Dojo
                 }
 
                 // update component with new model data
-                ((ModelInstance)component).OnUpdated(entityModel);
+                ((ModelInstance)component).OnUpdate(entityModel);
             }
         }
 
