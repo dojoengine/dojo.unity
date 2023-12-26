@@ -452,7 +452,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 607a463b8a907498380786d00fd65442, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  masterPrivateKey: 0x1800000000300000180000000000030000000000003006001800006600
+  masterAddress: 0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
   worldManager: {fileID: 2019443015}
+  worldActionsAddress: 0x152dcff993befafe5001975149d2c50bd9621da7cbaed74f68e7d5e54e65abc
 --- !u!4 &998234501
 Transform:
   m_ObjectHideFlags: 0
@@ -587,11 +590,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab13a05e740f84a6d9c745e33f5bd407, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 256
-  height: 256
-  scale: 20
-  offsetX: 100
-  offsetY: 100
 --- !u!1 &2019443014
 GameObject:
   m_ObjectHideFlags: 0
@@ -660,6 +658,9 @@ MonoBehaviour:
   models:
   - {fileID: 2019443019}
   - {fileID: 2019443018}
+  OnEntitySpawned:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2019443018
 MonoBehaviour:
   m_ObjectHideFlags: 0

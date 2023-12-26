@@ -22,12 +22,15 @@ public class CameraFollow : MonoBehaviour
             transform.LookAt(centerPoint);
         }
 
-        // Camera control
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        // Camera control with mouse
+        if (Input.GetMouseButton(1))
+        {
+            float mouseX = Input.GetAxis("Mouse X");
+            float mouseY = Input.GetAxis("Mouse Y");
 
-        Vector3 movement = new Vector3(moveHorizontal, 0.0f, moveVertical);
-        transform.Translate(movement * speed * Time.deltaTime, Space.World);
+            transform.RotateAround(GetCenterPoint(), Vector3.up, mouseX * speed);
+            transform.RotateAround(GetCenterPoint(), transform.right, -mouseY * speed);
+        }
     }
 
     Vector3 GetCenterPoint()

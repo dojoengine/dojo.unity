@@ -36,6 +36,19 @@ public class Position : ModelInstance
         var shortString = hexString.Substring(0, 8).TrimStart('0');
 
         shortPlayerAddress = $"0x{shortString}";
+        
+        // create a new GameObject for the text
+        GameObject textObject = new GameObject("TextTag");
+        textObject.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        textObject.transform.parent = transform;
+        textObject.transform.localPosition = new Vector3(-1, 2, 0);
+
+        // add a Text component to the new GameObject
+        textTag = textObject.AddComponent<TextMesh>();
+
+        // set the properties of the Text component
+        textTag.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        textTag.color = Color.black;
     }
 
     void Update()
@@ -59,8 +72,8 @@ public class Position : ModelInstance
         }
     }
 
-    public override void OnUpdated(Model model)
+    public override void OnUpdate(Model model)
     {
-        base.OnUpdated(model);
+        base.OnUpdate(model);
     }
 }
