@@ -20,6 +20,7 @@ namespace Dojo.Torii
         public dojo.Primitive primitive => _ty->ty_primitive;
         public Span<dojo.Ty> tuple => _ty->ty_tuple;
 
+        // This is potentially dangerous. If Ty is copied, we will double free.
         ~Ty()
         {
             dojo.ty_free(_ty);

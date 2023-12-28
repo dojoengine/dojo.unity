@@ -23,6 +23,8 @@ namespace Dojo.Torii
             _key = member.key;
         }
 
+        // freeing the member is naive. if we copy the member we will double free
+        // and seg fault.
         // ~Member()
         // {
         //     dojo.ty_free(_ty);

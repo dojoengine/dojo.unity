@@ -4,6 +4,7 @@ using dojo_bindings;
 
 namespace Dojo.Starknet
 {
+    // Wraps a FieldElement and provides helper methods for verifying signatures.
     public class VerifyingKey
     {
         private dojo.FieldElement inner;
@@ -24,6 +25,7 @@ namespace Dojo.Starknet
             inner = publicKey;
         }
         
+        // Return the inner FieldElement.
         public dojo.FieldElement PublicKey()
         {
             return inner;

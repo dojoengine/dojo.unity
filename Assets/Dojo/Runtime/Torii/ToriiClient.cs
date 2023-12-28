@@ -37,6 +37,8 @@ namespace Dojo.Torii
             client = result._ok;
         }
 
+        // We assume the torii client won't be copied around.
+        // So we can free the underlying c client when the managed client is garbage collected.
         ~ToriiClient()
         {
             dojo.client_free(client);

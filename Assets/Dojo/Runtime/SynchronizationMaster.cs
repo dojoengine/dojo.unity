@@ -22,6 +22,8 @@ namespace Dojo
         // Start is called before the first frame update
         void Start()
         {
+            // We don't want our model definitions to be active.
+            // Only used as templates for the actual entities to use.
             foreach (var model in models)
             {
                 model.enabled = false;
@@ -33,6 +35,7 @@ namespace Dojo
         {
         }
 
+        // Fetch all entities from the dojo world and spawn them.
         public int SynchronizeEntities()
         {
             var query = new dojo.Query
@@ -53,6 +56,7 @@ namespace Dojo
             return entities.Count;
         }
         
+        // Spawn an Entity game object from a dojo.Entity
         private GameObject SpawnEntity(dojo.FieldElement felt, Model[] entityModels)
         {
             // bytes to hex string
@@ -75,6 +79,7 @@ namespace Dojo
             return entityGameObject;
         }
 
+        // Handles spawning / updating entities as they are updated from the dojo world
         private void HandleEntityUpdate(dojo.FieldElement key, Model[] entityModels)
         {
             var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
@@ -108,6 +113,7 @@ namespace Dojo
             }
         }
 
+        // Register our entity callbacks
         public void RegisterEntityCallbacks()
         {
             worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[]{});

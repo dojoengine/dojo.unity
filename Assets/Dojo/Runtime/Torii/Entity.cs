@@ -23,9 +23,11 @@ namespace Dojo.Torii
         public dojo.FieldElement hashed_keys => _hashed_keys;
         public Dictionary<string, Model> models => _models;
 
-        ~Entity()
-        {
-            // dojo.entity_free(_entity);
-        }
+        // freeing the entity is naive. if we copy the entity we will double free
+        // and seg fault.
+        // ~Entity()
+        // {
+        //     dojo.entity_free(_entity);
+        // }
     }
 }

@@ -38,6 +38,8 @@ namespace Dojo
         }
 
 
+        // Get a child entity from the WorldManager game object.
+        // Name is usually the hashed_keys of the entity as a hex string.
         public GameObject Entity(string name)
         {
             var entity = transform.Find(name);
@@ -50,7 +52,7 @@ namespace Dojo
             return entity.gameObject;
         }
 
-        // return all children
+        // Return all children entities.
         public GameObject[] Entities()
         {
             return transform.Cast<Transform>()
@@ -58,6 +60,7 @@ namespace Dojo
                 .ToArray();
         }
 
+        // Add a new entity game object as a child of the WorldManager game object.
         public GameObject AddEntity(string key)
         {
             // check if entity already exists
@@ -74,6 +77,7 @@ namespace Dojo
             return entity;
         }
 
+        // Remove an entity game object from the WorldManager game object.
         public void RemoveEntity(string key)
         {
             var entity = transform.Find(key);

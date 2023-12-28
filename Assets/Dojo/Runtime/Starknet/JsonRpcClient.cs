@@ -25,22 +25,22 @@ namespace Dojo.Starknet
             dojo.jsonrpc_client_free(client);
         }
 
-        public unsafe void WaitForTransactionSync(string transactionHash)
+        // Wait for the transaction to be confirmed. Synchronously.
+        // This doesn't guarantee that the torii client has updated its state
+        // if an entity is updated.
+        public unsafe void WaitForTransactionSync(dojo.FieldElement transactionHash)
         {
-            var hash = dojo.felt_from_hex_be(CString.FromString(transactionHash));
-            if (hash.tag == dojo.Result_FieldElement_Tag.Err_FieldElement)
-            {
-                throw new Exception(hash.err.message);
-            }
-
-            var result = dojo.wait_for_transaction(client, hash.ok);
+            var result = dojo.wait_for_transaction(client, transactionHash);
             if (result.tag == dojo.Result_bool_Tag.Err_bool)
             {
                 throw new Exception(result.err.message);
             }
         }
 
-        public async Task WaitForTransaction(string transactionHash)
+        // Wait for the transaction to be confirmed. Asynchronously.
+        // This doesn't guarantee that the torii client has updated its state
+        // if an entity is updated.
+        public async Task WaitForTransaction(dojo.FieldElement transactionHash)
         {
             await Task.Run(() => WaitForTransactionSync(transactionHash));
         }
