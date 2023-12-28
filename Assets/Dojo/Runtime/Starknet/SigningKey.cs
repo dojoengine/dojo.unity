@@ -36,6 +36,7 @@ namespace Dojo.Starknet
             return new VerifyingKey(publicKey);
         }
         
+        // Sign a message.
         public dojo.Signature Sign(dojo.FieldElement message)
         {
             var result = dojo.signing_key_sign(inner, message);

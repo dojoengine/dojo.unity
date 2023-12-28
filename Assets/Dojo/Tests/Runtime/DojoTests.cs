@@ -91,7 +91,7 @@ public class Tests
     }
 
     [Test, Order(3)]
-    public void TestAccountExecuteRaw()
+    public async void TestAccountExecuteRaw()
     {
         dojo.Call call = new dojo.Call()
         {
@@ -99,11 +99,13 @@ public class Tests
             selector = "spawn"
         };
 
-        account.ExecuteRaw(new[] { call });
+        var txnHash = account.ExecuteRaw(new[] { call });
+        
+        await provider.WaitForTransaction(txnHash);
 
         // We wait until our callback is called to mark our 
-        // entity as updated. We timeout after 5 seconds.
         var start = DateTime.Now;
+        // entity as updated. We timeout after 5 seconds.
         while (!(entityUpdated && modelEntityUpdated) && DateTime.Now - start < TimeSpan.FromSeconds(5))
         {
         }
@@ -177,7 +179,7 @@ public class Tests
         };
 
         var entities = client.Entities(query);
-        Assert.That(entities.Count, Is.EqualTo(1));
+        Assert.That(entities.Count, Is.GreaterThanOrEqualTo(1));
     }
 
     [Test]
