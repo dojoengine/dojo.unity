@@ -3,10 +3,10 @@
 
 targets=("x86_64-unknown-linux-gnu" "x86_64-apple-darwin" "aarch64-apple-darwin" "x86_64-pc-windows-gnu")
 
-if [[ "$1" == "release" ]]; then
-  build="release"
-else
+if [[ "$1" == "debug" ]]; then
   build="debug"
+else
+  build="release"
 fi
 
 export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc

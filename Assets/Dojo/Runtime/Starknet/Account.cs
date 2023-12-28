@@ -52,7 +52,7 @@ namespace Dojo.Starknet
             dojo.account_set_block_id(account, blockId);
         }
     
-        public void ExecuteRaw(dojo.Call[] calls)
+        public dojo.FieldElement ExecuteRaw(dojo.Call[] calls)
         {
             dojo.Call* callsPtr;
             fixed (dojo.Call* ptr = &calls[0])
@@ -61,10 +61,12 @@ namespace Dojo.Starknet
             }
     
             var result = dojo.account_execute_raw(account, callsPtr, (nuint) calls.Length);
-            if (result.tag == dojo.Result_bool_Tag.Err_bool)
+            if (result.tag == dojo.Result_FieldElement_Tag.Err_FieldElement)
             {
                 throw new Exception(result.err.message);
             }
+
+            return result.ok;
         }
 
         // This will synchroneously wait for the transaction to be confirmed.
