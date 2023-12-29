@@ -131,6 +131,10 @@
 #endif
       loadingBar.style.display = "block";
 
+      var dojoScript = document.createElement("script");
+      dojoScript.src = "TemplateData/dojo.js/torii_client_wasm.js";
+      document.body.appendChild(dojoScript);
+
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
