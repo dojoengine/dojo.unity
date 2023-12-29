@@ -103,27 +103,21 @@ mergeInto(LibraryManager.library, {
 
     client.removeModelsToSync(modelsArray);
   },
-//   OnSyncModelChange: function (
-//     clientPtr,
-//     model,
-//     callbackObjectName,
-//     callbackMethodName
-//   ) {
-//     var client = wasm_bindgen.Client.__wrap(clientPtr);
+  OnSyncModelChange: function (
+    clientPtr,
+    models,
+    callbackObjectName,
+    callbackMethodName
+  ) {
+    var client = wasm_bindgen.Client.__wrap(clientPtr);
+    var modelsString = UTF8ToString(models);
+    var modelsArray = JSON.parse(modelsString);
 
-//     client.onSyncModelChange(UTF8ToString(model), () => {
-//         // stringify the model value
-//         var modelValueString = JSON.stringify(modelValue);
-//         // return buffer
-//         var bufferSize = lengthBytesUTF8(modelValueString) + 1;
-//         var buffer = _malloc(bufferSize);
-//         stringToUTF8(modelValueString, buffer, bufferSize);
-    
-//         gameInstance.SendMessage(
-//           UTF8ToString(callbackObjectName),
-//           UTF8ToString(callbackMethodName),
-//             buffer
-//         );
-//     });
-//   },
+    client.onSyncModelChange(modelsArray, () => {
+      gameInstance.SendMessage(
+        UTF8ToString(callbackObjectName),
+        UTF8ToString(callbackMethodName),
+      );
+    });
+  },
 });
