@@ -4,13 +4,8 @@
   "files": [
     "torii_client_wasm_bg.wasm",
     "torii_client_wasm.js",
-    "torii_client_wasm_bg.js",
     "torii_client_wasm.d.ts"
   ],
-  "module": "torii_client_wasm.js",
-  "types": "torii_client_wasm.d.ts",
-  "sideEffects": [
-    "./torii_client_wasm.js",
-    "./snippets/*"
-  ]
+  "browser": "torii_client_wasm.js",
+  "types": "torii_client_wasm.d.ts"
 }
