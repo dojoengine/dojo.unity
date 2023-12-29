@@ -135,12 +135,14 @@
       dojoScript.src = "TemplateData/dojo.js/torii_client_wasm.js";
       document.body.appendChild(dojoScript);
 
+      var gameInstance = null;
       var script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
               }).then((unityInstance) => {
+                gameInstance = unityInstance;
                 loadingBar.style.display = "none";
 #if SHOW_DIAGNOSTICS
                 diagnostics_icon.onclick = () => {
