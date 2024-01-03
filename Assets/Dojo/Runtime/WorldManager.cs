@@ -19,7 +19,7 @@ namespace Dojo
         void Awake()
         {
             // create the torii client and start subscription service
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress, new dojo.KeysClause[] { });
+            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress);
             // start subscription service
             toriiClient.StartSubscription();
 

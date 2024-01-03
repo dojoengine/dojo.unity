@@ -32,16 +32,7 @@ public class Tests
     [SetUp]
     public void SetupTorii()
     {
-        var entities = new dojo.KeysClause[]
-        {
-            new()
-            {
-                model = "Moves",
-                keys = new string[]{ playerAddress }
-            }
-        };
-
-        client = new ToriiClient(toriiUrl, rpcUrl, worldAddress, entities);
+        client = new ToriiClient(toriiUrl, rpcUrl, worldAddress);
 
         if (client == null) throw new Exception("client is null");
 

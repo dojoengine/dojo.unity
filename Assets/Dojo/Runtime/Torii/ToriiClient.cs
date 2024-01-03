@@ -7,6 +7,7 @@ using dojo_bindings;
 using JetBrains.Annotations;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Unity.Plastic.Newtonsoft.Json;
 
 namespace Dojo.Torii
 {
@@ -15,20 +16,25 @@ namespace Dojo.Torii
         private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate entityStateUpdateHandler;
         private dojo.FnPtr_Void.@delegate syncModelUpdateHandler;
         private dojo.ToriiClient* client;
+        private IntPtr wasmClientPtr;
 
-        public ToriiClient(string toriiUrl, string rpcUrl, string world, dojo.KeysClause[] entities)
+        public ToriiClient(string toriiUrl, string rpcUrl, string world)
         {
+            // if we're in a webgl context
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                // intiialize wasm runtime                
+                ToriiWasmInterop.WasmBindgen();
+                wasmClientPtr = ToriiWasmInterop.CreateClient(toriiUrl, rpcUrl, world);
+
+                return;
+            }
+
             CString ctoriiUrl = CString.FromString(toriiUrl);
             CString crpcUrl = CString.FromString(rpcUrl);
             CString cworld = CString.FromString(world);
-            dojo.KeysClause* entitiesPtr;
 
-            fixed (dojo.KeysClause* ptr = entities)
-            {
-                entitiesPtr = ptr;
-            }
-
-            var result = dojo.client_new(ctoriiUrl, crpcUrl, cworld, entitiesPtr, (nuint)entities.Length);
+            var result = dojo.client_new(ctoriiUrl, crpcUrl, cworld, (dojo.KeysClause*)0, (UIntPtr)0);
             if (result.tag == dojo.Result_____ToriiClient_Tag.Err_____ToriiClient)
             {
                 throw new Exception(result.err.message);
@@ -46,6 +52,9 @@ namespace Dojo.Torii
 
         public dojo.WorldMetadata WorldMetadata()
         {
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+                throw new Exception("WorldMetadata is not supported in webgl");
+
             // TODO: implement a managed type for WorldMetadata too
             dojo.WorldMetadata worldMetadata = dojo.client_metadata(client);
 
@@ -55,6 +64,16 @@ namespace Dojo.Torii
         [CanBeNull]
         public Ty Model(dojo.KeysClause query)
         {
+            if (Application.platform == RuntimePlatform.WebGLPlayer) {
+                var value = ToriiWasmInterop.GetModelValue(wasmClientPtr, query.model, JsonConvert.SerializeObject(query.keys.ToArray()));
+                if (value == null) {
+                    return null;
+                }
+
+                var model = new Model(result);
+                return new Ty(model.ty);
+            }
+
             dojo.Result_COption_____Ty result = dojo.client_model(client, &query);
             if (result.tag == dojo.Result_COption_____Ty_Tag.Err_COption_____Ty)
             {
