@@ -20,7 +20,7 @@ namespace Dojo.Torii
             CString cworld = CString.FromString(world);
             
             var result = dojo.client_new(ctoriiUrl, crpcUrl, cworld, (dojo.KeysClause*)0, (UIntPtr)0);
-            if (result.tag == dojo.Result_____ToriiClient_Tag.Err_____ToriiClient)
+            if (result.tag == dojo.ResultToriiClient_Tag.ErrToriiClient)
             {
                 throw new Exception(result.err.message);
             }
@@ -46,14 +46,14 @@ namespace Dojo.Torii
         [CanBeNull]
         public Ty Model(dojo.KeysClause query)
         {
-            dojo.Result_COption_____Ty result = dojo.client_model(client, &query);
-            if (result.tag == dojo.Result_COption_____Ty_Tag.Err_COption_____Ty)
+            dojo.ResultCOptionTy result = dojo.client_model(client, &query);
+            if (result.tag == dojo.ResultCOptionTy_Tag.ErrCOptionTy)
             {
                 throw new Exception(result.err.message);
             }
 
             // can be None - nullable
-            if (result.ok.tag == dojo.COption_____Ty_Tag.None_____Ty)
+            if (result.ok.tag == dojo.COptionTy_Tag.NoneTy)
             {
                 return null;
             }
@@ -65,8 +65,8 @@ namespace Dojo.Torii
 
         public List<Entity> Entities(dojo.Query query)
         {
-            dojo.Result_CArray_Entity result = dojo.client_entities(client, &query);
-            if (result.tag == dojo.Result_CArray_Entity_Tag.Err_CArray_Entity)
+            dojo.ResultCArrayEntity result = dojo.client_entities(client, &query);
+            if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
             {
                 throw new Exception(result.err.message);
             }
@@ -84,7 +84,7 @@ namespace Dojo.Torii
 
         public ReadOnlySpan<dojo.KeysClause> SubscribedModels()
         {
-            dojo.CArray_KeysClause models = dojo.client_subscribed_models(client);
+            dojo.CArrayKeysClause models = dojo.client_subscribed_models(client);
             // NOTE: we could copy the data into a managed array
             // and free the c array from rust.
             // however, it is slower
@@ -109,7 +109,7 @@ namespace Dojo.Torii
             }
 
             var result = dojo.client_add_models_to_sync(client, modelsPtr, (nuint)models.Length);
-            if (result.tag == dojo.Result_bool_Tag.Err_bool)
+            if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);
             }
@@ -125,7 +125,7 @@ namespace Dojo.Torii
             }
 
             var result = dojo.client_remove_models_to_sync(client, modelsPtr, (nuint)models.Length);
-            if (result.tag == dojo.Result_bool_Tag.Err_bool)
+            if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);
             }
@@ -145,8 +145,8 @@ namespace Dojo.Torii
                 }
             };
 
-            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(syncModelUpdateHandler));
-            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            dojo.Resultbool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(syncModelUpdateHandler));
+            if (res.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(res.err.message);
             }
@@ -186,8 +186,8 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(entityStateUpdateHandler));
-            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            dojo.Resultbool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(entityStateUpdateHandler));
+            if (res.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(res.err.message);
             }
@@ -202,8 +202,8 @@ namespace Dojo.Torii
                 entitiesPtr = ptr;
             }
 
-            dojo.Result_bool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callbackHandler));
-            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            dojo.Resultbool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(callbackHandler));
+            if (res.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(res.err.message);
             }
@@ -211,8 +211,8 @@ namespace Dojo.Torii
 
         public void OnSyncModelUpdateRaw(dojo.KeysClause model, dojo.FnPtr_Void.@delegate callbackHandler)
         {
-            dojo.Result_bool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(callbackHandler));
-            if (res.tag == dojo.Result_bool_Tag.Err_bool)
+            dojo.Resultbool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(callbackHandler));
+            if (res.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(res.err.message);
             }
@@ -221,7 +221,7 @@ namespace Dojo.Torii
         public void StartSubscription()
         {
             var result = dojo.client_start_subscription(client);
-            if (result.tag == dojo.Result_bool_Tag.Err_bool)
+            if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);
             }

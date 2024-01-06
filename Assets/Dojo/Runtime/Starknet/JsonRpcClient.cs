@@ -12,7 +12,7 @@ namespace Dojo.Starknet
         public unsafe JsonRpcClient(string rpcUrl)
         {
             var result = dojo.jsonrpc_client_new(CString.FromString(rpcUrl));
-            if (result.tag == dojo.Result_____CJsonRpcClient_Tag.Err_____CJsonRpcClient)
+            if (result.tag == dojo.ResultCJsonRpcClient_Tag.ErrCJsonRpcClient)
             {
                 throw new Exception(result.err.message);
             }
@@ -31,7 +31,7 @@ namespace Dojo.Starknet
         public unsafe void WaitForTransactionSync(dojo.FieldElement transactionHash)
         {
             var result = dojo.wait_for_transaction(client, transactionHash);
-            if (result.tag == dojo.Result_bool_Tag.Err_bool)
+            if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);
             }

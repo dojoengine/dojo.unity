@@ -58,19 +58,19 @@ namespace Dojo.Torii
                 // struct
                 // "struct" => 
                 // enum
-                "enum" => new dojo.Ty { tag = dojo.Ty_Tag.TyEnum, ty_enum = new dojo.Enum { option = value.ToObject<byte>() } },
+                "enum" => new dojo.Ty { tag = dojo.Ty_Tag.Enum_, enum_ = new dojo.Enum { option = value.ToObject<byte>() } },
                 // primitives
-                "bool" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.PBool, p_bool = value.ToObject<bool>() } },
-                "u8" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U8, u8 = value.ToObject<byte>() } },
-                "u16" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U16, u16 = value.ToObject<ushort>() } },
-                "u32" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U32, u32 = value.ToObject<uint>() } },
-                "u64" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U64, u64 = value.ToObject<ulong>() } },
-                "u128" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U128, u128 = hexToU128(value.ToObject<string>()) } },
-                "u256" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U256, u256 = hexToU256(value.ToObject<string>()) } },
-                "usize" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.USize, u_size = value.ToObject<uint>() } },
-                "felt252" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.Felt252, felt252 = new FieldElement(value.ToObject<string>()).Inner() } },
-                "class_hash" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.ClassHash, class_hash = new FieldElement(value.ToObject<string>()).Inner() } },
-                "contract_address" => new dojo.Ty { tag = dojo.Ty_Tag.TyPrimitive, ty_primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.ContractAddress, contract_address = new FieldElement(value.ToObject<string>()).Inner() } },
+                "bool" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.Bool, bool_ = value.ToObject<bool>() } },
+                "u8" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U8, u8 = value.ToObject<byte>() } },
+                "u16" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U16, u16 = value.ToObject<ushort>() } },
+                "u32" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U32, u32 = value.ToObject<uint>() } },
+                "u64" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U64, u64 = value.ToObject<ulong>() } },
+                "u128" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U128, u128 = hexToU128(value.ToObject<string>()) } },
+                "u256" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U256, u256 = hexToU256(value.ToObject<string>()) } },
+                "usize" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.USize, u_size = value.ToObject<uint>() } },
+                "felt252" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.Felt252, felt252 = new FieldElement(value.ToObject<string>()).Inner() } },
+                "class_hash" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.ClassHash, class_hash = new FieldElement(value.ToObject<string>()).Inner() } },
+                "contract_address" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.ContractAddress, contract_address = new FieldElement(value.ToObject<string>()).Inner() } },
             };
         }
 

@@ -132,10 +132,10 @@ public class Tests
                 case "Moves":
                     movesExists = true;
 
-                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.TyStruct));
-                    Assert.That(modelMetadata.schema.ty_struct.children[0].name, Is.EqualTo("player"));
-                    Assert.That(modelMetadata.schema.ty_struct.children[1].name, Is.EqualTo("remaining"));
-                    Assert.That(modelMetadata.schema.ty_struct.children[2].name, Is.EqualTo("last_direction"));
+                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.Struct_));
+                    Assert.That(modelMetadata.schema.struct_.children[0].name, Is.EqualTo("player"));
+                    Assert.That(modelMetadata.schema.struct_.children[1].name, Is.EqualTo("remaining"));
+                    Assert.That(modelMetadata.schema.struct_.children[2].name, Is.EqualTo("last_direction"));
 
                     // maybe worth verifying the field types?
 
@@ -143,9 +143,9 @@ public class Tests
                 case "Position":
                     positionExists = true;
 
-                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.TyStruct));
-                    Assert.That(modelMetadata.schema.ty_struct.children[0].name, Is.EqualTo("player"));
-                    Assert.That(modelMetadata.schema.ty_struct.children[1].name, Is.EqualTo("vec"));
+                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.Struct_));
+                    Assert.That(modelMetadata.schema.struct_.children[0].name, Is.EqualTo("player"));
+                    Assert.That(modelMetadata.schema.struct_.children[1].name, Is.EqualTo("vec"));
 
                     // maybe worth verifying the field types?
 
@@ -164,8 +164,8 @@ public class Tests
         var query = new dojo.Query
         {
             limit = 5,
-            clause = new dojo.COption_Clause{
-                tag = dojo.COption_Clause_Tag.None_Clause,
+            clause = new dojo.COptionClause{
+                tag = dojo.COptionClause_Tag.NoneClause,
             }
         };
 
@@ -192,7 +192,7 @@ public class Tests
     public void TestAddModelsToSync()
     {
         var models = new dojo.KeysClause[]
-            { new() { _model = CString.FromString("Moves"), keys = new[] { playerAddress } } };
+            { new() { model_ = CString.FromString("Moves"), keys = new[] { playerAddress } } };
         client.AddModelsToSync(models);
 
         var subscribedModels = client.SubscribedModels();

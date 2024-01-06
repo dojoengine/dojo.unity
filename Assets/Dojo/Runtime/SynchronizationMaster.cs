@@ -41,9 +41,9 @@ namespace Dojo
         {
             var query = new dojo.Query
             {
-                clause = new dojo.COption_Clause
+                clause = new dojo.COptionClause
                 {
-                    tag = dojo.COption_Clause_Tag.None_Clause,
+                    tag = dojo.COptionClause_Tag.NoneClause,
                 },
                 limit = limit,
             };

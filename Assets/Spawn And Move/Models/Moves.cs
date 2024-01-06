@@ -23,8 +23,8 @@ public class Moves : ModelInstance
         // player = model.Members["player"].Value;
         // remaining = model.Members["remaining"].Value;
         // lastDirection = (Direction)model.Members["last_direction"].Value;
-        player = model.Members["player"].Value.ty_primitive.contract_address;
-        remaining = model.Members["remaining"].Value.ty_primitive.u8;
-        lastDirection = (Direction)model.Members["last_direction"].Value.ty_primitive.u8;
+        player = model.Members["player"].Value.primitive.contract_address;
+        remaining = model.Members["remaining"].Value.primitive.u8;
+        lastDirection = (Direction)model.Members["last_direction"].Value.primitive.u8;
     }
 }

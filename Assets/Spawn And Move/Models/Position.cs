@@ -24,9 +24,9 @@ public class Position : ModelInstance
         // player = model.Members["player"].Value;
         // x = model.Members["vec"].Value["x"].Value;
         // y = model.Members["vec"].Value["y"].Value;
-        player = model.Members["player"].Value.ty_primitive.contract_address;
-        x = model.Members["vec"].Value.ty_struct.children[0].ty.ty_primitive.u32;
-        y = model.Members["vec"].Value.ty_struct.children[1].ty.ty_primitive.u32;
+        player = model.Members["player"].Value.primitive.contract_address;
+        x = model.Members["vec"].Value.struct_.children[0].ty.primitive.u32;
+        y = model.Members["vec"].Value.struct_.children[1].ty.primitive.u32;
     }
 
     void Start()
