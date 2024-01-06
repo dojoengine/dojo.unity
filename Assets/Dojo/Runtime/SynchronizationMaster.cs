@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
@@ -17,7 +19,8 @@ namespace Dojo
 
         // Handle entities that get synchronized
         public ModelInstance[] models;
-        
+
+        public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
 
         // Start is called before the first frame update
@@ -37,7 +40,11 @@ namespace Dojo
         }
 
         // Fetch all entities from the dojo world and spawn them.
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public async Task<int> SynchronizeEntities()
+#else
         public int SynchronizeEntities()
+#endif
         {
             var query = new dojo.Query
             {
@@ -48,15 +55,22 @@ namespace Dojo
                 limit = limit,
             };
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+            var entities = await worldManager.wasmClient.Entities((int)limit, 0);
+#else
             var entities = worldManager.toriiClient.Entities(query);
+#endif
+
+            var entityGameObjects = new List<GameObject>();
             foreach (var entity in entities)
             {
-                SpawnEntity(entity.HashedKeys, entity.Models.Values.ToArray());
+                entityGameObjects.Add(SpawnEntity(entity.HashedKeys, entity.Models.Values.ToArray()));
             }
 
+            OnSynchronized?.Invoke(entityGameObjects);
             return entities.Count;
         }
-        
+
         // Spawn an Entity game object from a dojo.Entity
         private GameObject SpawnEntity(FieldElement felt, Model[] entityModels)
         {
@@ -88,7 +102,7 @@ namespace Dojo
                 // should we fetch the entity here?
                 entity = SpawnEntity(key, entityModels);
             }
-            
+
             foreach (var entityModel in entityModels)
             {
                 var component = entity.GetComponent(entityModel.Name);
@@ -101,7 +115,7 @@ namespace Dojo
                         Debug.LogError($"Model {entityModel.Name} not found");
                         continue;
                     }
-                        
+
                     // we dont need to initialize the component
                     // because it'll get updated
                     component = (ModelInstance)entity.AddComponent(model.GetType());
@@ -115,7 +129,11 @@ namespace Dojo
         // Register our entity callbacks
         public void RegisterEntityCallbacks()
         {
-            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[]{});
+            #if UNITY_WEBGL && !UNITY_EDITOR
+            worldManager.wasmClient.RegisterEntityStateUpdates(new FieldElement[] { });
+            #else
+            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[] { });
+            #endif
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }

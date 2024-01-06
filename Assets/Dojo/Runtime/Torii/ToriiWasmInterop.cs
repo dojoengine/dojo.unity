@@ -36,9 +36,9 @@ namespace Dojo.Torii
             }
         }
 
-        public static Task<IntPtr> CreateClientAsync(IntPtr rpcUrl, IntPtr toriiUrl, IntPtr worldAddress)
+        public static Task<IntPtr> CreateClientAsync(string rpcUrl, string toriiUrl, string worldAddress)
         {
-            CreateClient(rpcUrl, toriiUrl, worldAddress, CreateClientHelper.Callback);
+            CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(worldAddress), CreateClientHelper.Callback);
             return CreateClientHelper.Tcs.Task;
         }
 
@@ -65,7 +65,7 @@ namespace Dojo.Torii
                             model.Key,
                             model.Value.ToDictionary(
                                 m => m.Key,
-                                m => new Member(m.Key, m.Value.type, m.Value.value)
+                                m => m.Value
                             )
                         ));
                     }
@@ -73,8 +73,6 @@ namespace Dojo.Torii
                     entityList.Add(new Entity(new FieldElement(entity.Key), models));
                 }
 
-                Debug.Log(parsedEntities["0x28cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20"]["Moves"]["player"].value.ToString());
-                // Debug.Log(entityList[0].Models["Moves"].Members["Moves"].Value["remaining"]);
                 Tcs.SetResult(entityList);
             }
         }
@@ -96,7 +94,33 @@ namespace Dojo.Torii
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
-        public static extern void OnEntityUpdated(IntPtr clientPtr, string ids, string callbackObjectName, string callbackMethodName);
+        private static extern void OnEntityUpdated(IntPtr clientPtr, IntPtr ids, Action<string> cb);
+
+        private static class OnEntityUpdatedHelper
+        {
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string entity)
+            {
+                var parsedEntity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entity).First();
+                var models = new Dictionary<string, Model>();
+                
+                foreach (var model in parsedEntity.Value)
+                {
+                    models.Add(model.Key, new Model(
+                        model.Key,
+                        model.Value
+                    ));
+                }
+
+                ToriiEvents.Instance.EntityUpdated(new FieldElement(parsedEntity.Key), models.Values.ToArray());
+            }
+        }
+
+        public static void OnEntityUpdated(IntPtr clientPtr, FieldElement[] ids)
+        {
+            OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(ids)), OnEntityUpdatedHelper.Callback);
+        }
 
         // Add models to sync
         [DllImport("__Internal")]

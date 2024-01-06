@@ -23,26 +23,24 @@ namespace Dojo
 #if UNITY_WEBGL && !UNITY_EDITOR
             wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, worldAddress);
             await wasmClient.CreateClient();
-            
-            var entities = await wasmClient.Entities(100, 0);
-            foreach (var entity in entities)
-            {
-                Debug.Log(entity.HashedKeys);
-            }
 #else
-            // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress);
             // start subscription service
             toriiClient.StartSubscription();
+#endif
+
 
             // fetch entities from the world
             // TODO: maybe do in the start function of the SynchronizationMaster?
             // problem is when to start the subscription service
+#if UNITY_WEBGL && !UNITY_EDITOR
+            await synchronizationMaster.SynchronizeEntities();
+#else
             synchronizationMaster.SynchronizeEntities();
+#endif
 
             // listen for entity updates
             synchronizationMaster.RegisterEntityCallbacks();
-#endif
         }
 
         // Update is called once per frame

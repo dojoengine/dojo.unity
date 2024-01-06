@@ -25,11 +25,14 @@ public class InitEntities : MonoBehaviour
 
     void Awake()
     {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        #else
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, masterAddress);
 
         burnerManager = new BurnerManager(provider, account);
+        #endif
     }
 
     // Start is called before the first frame update
@@ -106,7 +109,8 @@ public class InitEntities : MonoBehaviour
         }
     }
 
-    private void Move(Direction direction) {
+    private void Move(Direction direction)
+    {
         if (burnerManager.CurrentBurner == null)
         {
             Debug.LogWarning("No burner selected");

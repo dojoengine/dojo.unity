@@ -14,7 +14,7 @@ namespace Dojo.Torii
     {
         public string Name { get; }
 
-        public dojo.Ty Value { get; }
+        public object Value { get; }
 
         // public bool Key { get; }
         
@@ -27,28 +27,28 @@ namespace Dojo.Torii
             
             // Dynamically sets the value of the member
             // Not supported in AOT
-            // Value = member.ty.tag switch
-            // {
-            //     dojo.Ty_Tag.TyStruct => HandleStruct(member.ty.ty_struct),
-            //     dojo.Ty_Tag.TyEnum => member.ty.ty_enum.option,
-            //     dojo.Ty_Tag.TyPrimitive => member.ty.ty_primitive.tag switch {
-            //         dojo.Primitive_Tag.PBool => member.ty.ty_primitive.p_bool,
-            //         dojo.Primitive_Tag.U8 => member.ty.ty_primitive.u8,
-            //         dojo.Primitive_Tag.U16 => member.ty.ty_primitive.u16,
-            //         dojo.Primitive_Tag.U32 => member.ty.ty_primitive.u32,
-            //         dojo.Primitive_Tag.U64 => member.ty.ty_primitive.u64,
-            //         dojo.Primitive_Tag.U128 => member.ty.ty_primitive.u128.ToArray(),
-            //         dojo.Primitive_Tag.U256 => member.ty.ty_primitive.u256.ToArray(),
-            //         dojo.Primitive_Tag.USize => member.ty.ty_primitive.u_size,
-            //         dojo.Primitive_Tag.Felt252 => member.ty.ty_primitive.felt252,
-            //         dojo.Primitive_Tag.ClassHash => member.ty.ty_primitive.class_hash,
-            //         dojo.Primitive_Tag.ContractAddress => member.ty.ty_primitive.contract_address,
-            //         _ => throw new Exception("Unknown primitive type")
+            Value = member.ty.tag switch
+            {
+                dojo.Ty_Tag.Struct_ => HandleCStruct(member.ty.struct_),
+                dojo.Ty_Tag.Enum_ => member.ty.enum_.option,
+                dojo.Ty_Tag.Primitive_ => member.ty.primitive.tag switch {
+                    dojo.Primitive_Tag.Bool => member.ty.primitive.bool_,
+                    dojo.Primitive_Tag.U8 => member.ty.primitive.u8,
+                    dojo.Primitive_Tag.U16 => member.ty.primitive.u16,
+                    dojo.Primitive_Tag.U32 => member.ty.primitive.u32,
+                    dojo.Primitive_Tag.U64 => member.ty.primitive.u64,
+                    dojo.Primitive_Tag.U128 => member.ty.primitive.u128.ToArray(),
+                    dojo.Primitive_Tag.U256 => member.ty.primitive.u256.ToArray(),
+                    dojo.Primitive_Tag.USize => member.ty.primitive.u_size,
+                    dojo.Primitive_Tag.Felt252 => member.ty.primitive.felt252,
+                    dojo.Primitive_Tag.ClassHash => member.ty.primitive.class_hash,
+                    dojo.Primitive_Tag.ContractAddress => member.ty.primitive.contract_address,
+                    _ => throw new Exception("Unknown primitive type")
                 
-            //     },
-            //     dojo.Ty_Tag.TyTuple => throw new Exception("Tuple not supported"),
-            //     _ => throw new Exception("Unknown type")
-            // };
+                },
+                dojo.Ty_Tag.Tuple_ => throw new Exception("Tuple not supported"),
+                _ => throw new Exception("Unknown type")
+            };
 
         }
 
@@ -56,21 +56,22 @@ namespace Dojo.Torii
             Name = name;
             Value = type switch {
                 // struct
-                // "struct" => 
+                "struct" => HandleJSStruct(value.ToObject<Dictionary<string, JToken>>()),
                 // enum
-                "enum" => new dojo.Ty { tag = dojo.Ty_Tag.Enum_, enum_ = new dojo.Enum { option = value.ToObject<byte>() } },
+                "enum" => value.ToObject<byte>(),
                 // primitives
-                "bool" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.Bool, bool_ = value.ToObject<bool>() } },
-                "u8" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U8, u8 = value.ToObject<byte>() } },
-                "u16" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U16, u16 = value.ToObject<ushort>() } },
-                "u32" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U32, u32 = value.ToObject<uint>() } },
-                "u64" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U64, u64 = value.ToObject<ulong>() } },
-                "u128" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U128, u128 = hexToU128(value.ToObject<string>()) } },
-                "u256" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.U256, u256 = hexToU256(value.ToObject<string>()) } },
-                "usize" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.USize, u_size = value.ToObject<uint>() } },
-                "felt252" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.Felt252, felt252 = new FieldElement(value.ToObject<string>()).Inner() } },
-                "class_hash" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.ClassHash, class_hash = new FieldElement(value.ToObject<string>()).Inner() } },
-                "contract_address" => new dojo.Ty { tag = dojo.Ty_Tag.Primitive_, primitive = new dojo.Primitive { tag = dojo.Primitive_Tag.ContractAddress, contract_address = new FieldElement(value.ToObject<string>()).Inner() } },
+                "bool" => value.ToObject<bool>(),
+                "u8" => value.ToObject<byte>(),
+                "u16" => value.ToObject<ushort>(),
+                "u32" => value.ToObject<uint>(),
+                "u64" => value.ToObject<ulong>(),
+                "u128" => hexToU128(value.ToObject<string>()).ToArray(),
+                "u256" => hexToU256(value.ToObject<string>()).ToArray(),
+                "usize" => value.ToObject<uint>(),
+                "felt252" => new FieldElement(value.ToObject<string>()).Inner(),
+                "class_hash" => new FieldElement(value.ToObject<string>()).Inner(),
+                "contract_address" => new FieldElement(value.ToObject<string>()).Inner(),
+                _ => throw new Exception("Unknown primitive type")
             };
         }
 
@@ -100,10 +101,13 @@ namespace Dojo.Torii
             return bytes;
         }
 
-        // Dynamic is not supported in AOT
-        private Dictionary<string, Member> HandleStruct(dojo.Struct str)
+        private Dictionary<string, Member> HandleCStruct(dojo.Struct str)
         {
             return str.children.ToArray().Select(m => new KeyValuePair<string, Member>(m.name, new Member(m))).ToDictionary(k => k.Key, v => v.Value);
+        }
+
+        private Dictionary<string, Member> HandleJSStruct(Dictionary<string, JToken> str) {
+            return str.Select(m => new KeyValuePair<string, Member>(m.Key, new Member(m.Key, m.Value["type"].ToObject<string>(), m.Value["value"]))).ToDictionary(k => k.Key, v => v.Value);
         }
 
         // public dynamic value => _ty.tag switch

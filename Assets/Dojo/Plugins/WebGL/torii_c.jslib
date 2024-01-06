@@ -84,8 +84,7 @@ mergeInto(LibraryManager.library, {
   OnEntityUpdated: function (
     clientPtr,
     ids,
-    callbackObjectName,
-    callbackMethodName
+    cb
   ) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     var idsString = UTF8ToString(ids);
@@ -99,11 +98,7 @@ mergeInto(LibraryManager.library, {
       var buffer = _malloc(bufferSize);
       stringToUTF8(entitiesString, buffer, bufferSize);
 
-      gameInstance.SendMessage(
-        UTF8ToString(callbackObjectName),
-        UTF8ToString(callbackMethodName),
-        buffer
-      );
+      dynCall_vi(cb, buffer);
     });
   },
   AddModelsToSync: function (clientPtr, models) {
