@@ -20,8 +20,11 @@ public class Moves : ModelInstance
     public Direction lastDirection;
 
     public override void Initialize(Model model) {
-        player = model.members["player"].ty.ty_primitive.contract_address;
-        remaining = model.members["remaining"].ty.ty_primitive.u8;
-        lastDirection = (Direction)model.members["last_direction"].ty.ty_primitive.u8;
+        player = (dojo.FieldElement)model.Members["player"];
+        remaining = (byte)model.Members["remaining"];
+        lastDirection = (Direction)(byte)model.Members["last_direction"];
+        // player = model.Members["player"].Value.primitive.contract_address;
+        // remaining = model.Members["remaining"].Value.primitive.u8;
+        // lastDirection = (Direction)model.Members["last_direction"].Value.primitive.u8;
     }
 }

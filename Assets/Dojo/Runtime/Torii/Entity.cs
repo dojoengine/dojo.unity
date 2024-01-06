@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Dojo.Starknet;
 using dojo_bindings;
 
 namespace Dojo.Torii
@@ -10,18 +11,20 @@ namespace Dojo.Torii
     // Frees the underlying dojo.Entity when the object is garbage collected
     public class Entity
     {
-        private Dictionary<string, Model> _models;
-        private dojo.FieldElement _hashed_keys;
-        
-        public Entity(dojo.Entity entity)
+        public Dictionary<string, Model> Models { get; }
+        public FieldElement HashedKeys { get; }
+        public Entity(FieldElement hashedKeys, Dictionary<string, Model> models)
         {
-            _hashed_keys = entity.hashed_keys;
-            _models = new Dictionary<string, Model>(entity.models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))));
-            
+            HashedKeys = hashedKeys;
+            Models = models;
         }
 
-        public dojo.FieldElement hashed_keys => _hashed_keys;
-        public Dictionary<string, Model> models => _models;
+        public Entity(dojo.Entity entity)
+        {
+            HashedKeys = new FieldElement(entity.hashed_keys);
+            Models = new Dictionary<string, Model>(entity.models.ToArray().Select(m => new KeyValuePair<string, Model>(m.name, new Model(m))));
+
+        }
 
         // freeing the entity is naive. if we copy the entity we will double free
         // and seg fault.

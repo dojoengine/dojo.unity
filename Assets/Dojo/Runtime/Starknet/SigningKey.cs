@@ -11,7 +11,7 @@ namespace Dojo.Starknet
         public SigningKey(string privateKey)
         {
             var result = dojo.felt_from_hex_be(CString.FromString(privateKey));
-            if (result.tag == dojo.Result_FieldElement_Tag.Err_FieldElement)
+            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
             {
                 throw new Exception(result.err.message);
             }
@@ -40,7 +40,7 @@ namespace Dojo.Starknet
         public dojo.Signature Sign(dojo.FieldElement message)
         {
             var result = dojo.signing_key_sign(inner, message);
-            if (result.tag == dojo.Result_Signature_Tag.Err_Signature)
+            if (result.tag == dojo.ResultSignature_Tag.ErrSignature)
             {
                 throw new Exception(result.err.message);
             }

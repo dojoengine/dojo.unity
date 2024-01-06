@@ -1,27 +1,123 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Dojo.Starknet;
 using dojo_bindings;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Dojo.Torii
 {
     public class Member
     {
-        private string _name;
-        public string name => _name;
+        public string Name { get; }
 
-        private dojo.Ty _ty;
-        public dojo.Ty ty => _ty; 
+        public object Value { get; }
 
-        private bool _key;
-        public bool key => _key;
+        // public bool Key { get; }
+        
 
         public Member(dojo.Member member)
         {
-            _name = member.name;
-            _ty = member.ty;
-            _key = member.key;
+            Name = member.name;
+            Value = member.ty;
+            // Key = member.key;
+            
+            // Dynamically sets the value of the member
+            // Not supported in AOT
+            Value = member.ty.tag switch
+            {
+                dojo.Ty_Tag.Struct_ => HandleCStruct(member.ty.struct_),
+                dojo.Ty_Tag.Enum_ => member.ty.enum_.option,
+                dojo.Ty_Tag.Primitive_ => member.ty.primitive.tag switch {
+                    dojo.Primitive_Tag.Bool => member.ty.primitive.bool_,
+                    dojo.Primitive_Tag.U8 => member.ty.primitive.u8,
+                    dojo.Primitive_Tag.U16 => member.ty.primitive.u16,
+                    dojo.Primitive_Tag.U32 => member.ty.primitive.u32,
+                    dojo.Primitive_Tag.U64 => member.ty.primitive.u64,
+                    dojo.Primitive_Tag.U128 => member.ty.primitive.u128.ToArray(),
+                    dojo.Primitive_Tag.U256 => member.ty.primitive.u256.ToArray(),
+                    dojo.Primitive_Tag.USize => member.ty.primitive.u_size,
+                    dojo.Primitive_Tag.Felt252 => member.ty.primitive.felt252,
+                    dojo.Primitive_Tag.ClassHash => member.ty.primitive.class_hash,
+                    dojo.Primitive_Tag.ContractAddress => member.ty.primitive.contract_address,
+                    _ => throw new Exception("Unknown primitive type")
+                
+                },
+                dojo.Ty_Tag.Tuple_ => throw new Exception("Tuple not supported"),
+                _ => throw new Exception("Unknown type")
+            };
+
         }
+
+        public Member(string name, string type, JToken value) {
+            Name = name;
+            Value = type switch {
+                // struct
+                "struct" => HandleJSStruct(value.ToObject<Dictionary<string, JToken>>()),
+                // enum
+                "enum" => value.ToObject<byte>(),
+                // primitives
+                "bool" => value.ToObject<bool>(),
+                "u8" => value.ToObject<byte>(),
+                "u16" => value.ToObject<ushort>(),
+                "u32" => value.ToObject<uint>(),
+                "u64" => value.ToObject<ulong>(),
+                "u128" => hexToU128(value.ToObject<string>()).ToArray(),
+                "u256" => hexToU256(value.ToObject<string>()).ToArray(),
+                "usize" => value.ToObject<uint>(),
+                "felt252" => new FieldElement(value.ToObject<string>()).Inner(),
+                "class_hash" => new FieldElement(value.ToObject<string>()).Inner(),
+                "contract_address" => new FieldElement(value.ToObject<string>()).Inner(),
+                _ => throw new Exception("Unknown primitive type")
+            };
+        }
+
+        private Span<byte> hexToU128(string hex) {
+            // remove 0x
+            hex = hex.Substring(2);
+            // add leading zeros
+            hex = hex.PadLeft(32, '0');
+
+            var bytes = new byte[16];
+            for (var i = 0; i < 16; i++) {
+                bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+            }
+            return bytes;
+        }
+
+        private Span<ulong> hexToU256(string hex) {
+            // remove 0x
+            hex = hex.Substring(2);
+            // add leading zeros
+            hex = hex.PadLeft(64, '0');
+
+            var bytes = new ulong[4];
+            for (var i = 0; i < 4; i++) {
+                bytes[i] = Convert.ToUInt64(hex.Substring(i * 16, 16), 16);
+            }
+            return bytes;
+        }
+
+        private Dictionary<string, Member> HandleCStruct(dojo.Struct str)
+        {
+            return str.children.ToArray().Select(m => new KeyValuePair<string, Member>(m.name, new Member(m))).ToDictionary(k => k.Key, v => v.Value);
+        }
+
+        private Dictionary<string, Member> HandleJSStruct(Dictionary<string, JToken> str) {
+            return str.Select(m => new KeyValuePair<string, Member>(m.Key, new Member(m.Key, m.Value["type"].ToObject<string>(), m.Value["value"]))).ToDictionary(k => k.Key, v => v.Value);
+        }
+
+        // public dynamic value => _ty.tag switch
+        // {
+        //     dojo.Ty_Tag.TyStruct => _ty.ty_struct,
+        //     dojo.Ty_Tag.TyEnum => new Enum(_ty.ty_enum),
+        //     dojo.Ty_Tag.TyPrimitive => _ty.ty_primitive,
+        //     dojo.Ty_Tag.TyTuple => _ty.ty_tuple.ToArray().Select(t => new Member(t)).ToArray(),
+        //     _ => throw new Exception("Unknown type")
+        // };
 
         // freeing the member is naive. if we copy the member we will double free
         // and seg fault.

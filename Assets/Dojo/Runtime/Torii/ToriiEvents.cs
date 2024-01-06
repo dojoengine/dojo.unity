@@ -1,3 +1,4 @@
+using Dojo.Starknet;
 using dojo_bindings;
 
 namespace Dojo.Torii
@@ -20,12 +21,12 @@ namespace Dojo.Torii
         }
         
         public delegate void OnSyncModelUpdateDelegate();
-        public delegate void OnEntityStateUpdateDelegate(dojo.FieldElement key, Model[] models);
+        public delegate void OnEntityStateUpdateDelegate(FieldElement key, Model[] models);
         
         public event OnEntityStateUpdateDelegate OnEntityUpdated;
         public event OnSyncModelUpdateDelegate OnSyncModelUpdated;
         
-        public void EntityUpdated(dojo.FieldElement key, Model[] models)
+        public void EntityUpdated(FieldElement key, Model[] models)
         {
             OnEntityUpdated?.Invoke(key, models);
         }

@@ -15,10 +15,10 @@ namespace Dojo.Torii
         }
 
         public dojo.Ty_Tag tag => _ty->tag;
-        public dojo.Struct struct_ => _ty->ty_struct;
-        public dojo.Enum enum_ => _ty->ty_enum;
-        public dojo.Primitive primitive => _ty->ty_primitive;
-        public Span<dojo.Ty> tuple => _ty->ty_tuple;
+        public dojo.Struct struct_ => _ty->struct_;
+        public dojo.Enum enum_ => _ty->enum_;
+        public dojo.Primitive primitive => _ty->primitive;
+        public Span<dojo.Ty> tuple => _ty->tuple;
 
         // This is potentially dangerous. If Ty is copied, we will double free.
         ~Ty()

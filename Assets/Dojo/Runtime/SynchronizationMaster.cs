@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
@@ -16,7 +19,8 @@ namespace Dojo
 
         // Handle entities that get synchronized
         public ModelInstance[] models;
-        
+
+        public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
 
         // Start is called before the first frame update
@@ -36,38 +40,48 @@ namespace Dojo
         }
 
         // Fetch all entities from the dojo world and spawn them.
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public async Task<int> SynchronizeEntities()
+#else
         public int SynchronizeEntities()
+#endif
         {
             var query = new dojo.Query
             {
-                clause = new dojo.COption_Clause
+                clause = new dojo.COptionClause
                 {
-                    tag = dojo.COption_Clause_Tag.None_Clause,
+                    tag = dojo.COptionClause_Tag.NoneClause,
                 },
                 limit = limit,
             };
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+            var entities = await worldManager.wasmClient.Entities((int)limit, 0);
+#else
             var entities = worldManager.toriiClient.Entities(query);
+#endif
+
+            var entityGameObjects = new List<GameObject>();
             foreach (var entity in entities)
             {
-                SpawnEntity(entity.hashed_keys, entity.models.Values.ToArray());
+                entityGameObjects.Add(SpawnEntity(entity.HashedKeys, entity.Models.Values.ToArray()));
             }
 
+            OnSynchronized?.Invoke(entityGameObjects);
             return entities.Count;
         }
-        
+
         // Spawn an Entity game object from a dojo.Entity
-        private GameObject SpawnEntity(dojo.FieldElement felt, Model[] entityModels)
+        private GameObject SpawnEntity(FieldElement felt, Model[] entityModels)
         {
             // bytes to hex string
-            var key = "0x" + BitConverter.ToString(felt.data.ToArray()).Replace("-", "").ToLower();
-            var entityGameObject = worldManager.AddEntity(key);
+            var entityGameObject = worldManager.AddEntity(felt.Hex());
             foreach (var entityModel in entityModels)
             {
-                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                 if (model == null)
                 {
-                    Debug.LogError($"Model {entityModel.name} not found");
+                    Debug.LogError($"Model {entityModel.Name} not found");
                     continue;
                 }
 
@@ -80,29 +94,28 @@ namespace Dojo
         }
 
         // Handles spawning / updating entities as they are updated from the dojo world
-        private void HandleEntityUpdate(dojo.FieldElement key, Model[] entityModels)
+        private void HandleEntityUpdate(FieldElement key, Model[] entityModels)
         {
-            var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
-            var entity = GameObject.Find(name);
+            var entity = GameObject.Find(key.Hex());
             if (entity == null)
             {
                 // should we fetch the entity here?
                 entity = SpawnEntity(key, entityModels);
             }
-            
+
             foreach (var entityModel in entityModels)
             {
-                var component = entity.GetComponent(entityModel.name);
+                var component = entity.GetComponent(entityModel.Name);
                 if (component == null)
                 {
                     // TODO: decouple?
-                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                     if (model == null)
                     {
-                        Debug.LogError($"Model {entityModel.name} not found");
+                        Debug.LogError($"Model {entityModel.Name} not found");
                         continue;
                     }
-                        
+
                     // we dont need to initialize the component
                     // because it'll get updated
                     component = (ModelInstance)entity.AddComponent(model.GetType());
@@ -116,7 +129,11 @@ namespace Dojo
         // Register our entity callbacks
         public void RegisterEntityCallbacks()
         {
-            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[]{});
+            #if UNITY_WEBGL && !UNITY_EDITOR
+            worldManager.wasmClient.RegisterEntityStateUpdates(new FieldElement[] { });
+            #else
+            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[] { });
+            #endif
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }

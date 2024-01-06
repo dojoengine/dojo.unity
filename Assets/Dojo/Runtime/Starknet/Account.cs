@@ -15,7 +15,7 @@ namespace Dojo.Starknet
 
             var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey(),
                 CString.FromString(address));
-            if (resultAccount.tag == dojo.Result_____Account_Tag.Err_____Account)
+            if (resultAccount.tag == dojo.ResultAccount_Tag.ErrAccount)
             {
                 throw new Exception(resultAccount.err.message);
             }
@@ -61,7 +61,7 @@ namespace Dojo.Starknet
             }
     
             var result = dojo.account_execute_raw(account, callsPtr, (nuint) calls.Length);
-            if (result.tag == dojo.Result_FieldElement_Tag.Err_FieldElement)
+            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
             {
                 throw new Exception(result.err.message);
             }
@@ -74,7 +74,7 @@ namespace Dojo.Starknet
         public Account DeployBurner()
         {
             var result = dojo.account_deploy_burner(provider.client, account);
-            if (result.tag == dojo.Result_____Account_Tag.Err_____Account)
+            if (result.tag == dojo.ResultAccount_Tag.ErrAccount)
             {
                 throw new Exception(result.err.message);
             }

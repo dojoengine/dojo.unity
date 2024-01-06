@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Dojo;
 using Dojo.Torii;
@@ -21,9 +22,12 @@ public class Position : ModelInstance
 
     public override void Initialize(Model model)
     {
-        player = model.members["player"].ty.ty_primitive.contract_address;
-        x = model.members["vec"].ty.ty_struct.children[0].ty.ty_primitive.u32;
-        y = model.members["vec"].ty.ty_struct.children[1].ty.ty_primitive.u32;
+        player = (dojo.FieldElement)model.Members["player"];
+        x = (UInt32)((Dictionary<string, object>)model.Members["vec"])["x"];
+        y = (UInt32)((Dictionary<string, object>)model.Members["vec"])["y"];
+        // player = model.Members["player"].Value.primitive.contract_address;
+        // x = model.Members["vec"].Value.struct_.children[0].ty.primitive.u32;
+        // y = model.Members["vec"].Value.struct_.children[1].ty.primitive.u32;
     }
 
     void Start()
