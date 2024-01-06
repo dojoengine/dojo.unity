@@ -21,9 +21,12 @@ public class Position : ModelInstance
 
     public override void Initialize(Model model)
     {
-        player = model.members["player"].ty.ty_primitive.contract_address;
-        x = model.members["vec"].ty.ty_struct.children[0].ty.ty_primitive.u32;
-        y = model.members["vec"].ty.ty_struct.children[1].ty.ty_primitive.u32;
+        // player = model.Members["player"].Value;
+        // x = model.Members["vec"].Value["x"].Value;
+        // y = model.Members["vec"].Value["y"].Value;
+        player = model.Members["player"].Value.ty_primitive.contract_address;
+        x = model.Members["vec"].Value.ty_struct.children[0].ty.ty_primitive.u32;
+        y = model.Members["vec"].Value.ty_struct.children[1].ty.ty_primitive.u32;
     }
 
     void Start()

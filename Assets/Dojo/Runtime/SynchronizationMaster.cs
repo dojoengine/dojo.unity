@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
@@ -50,24 +51,23 @@ namespace Dojo
             var entities = worldManager.toriiClient.Entities(query);
             foreach (var entity in entities)
             {
-                SpawnEntity(entity.hashed_keys, entity.models.Values.ToArray());
+                SpawnEntity(entity.HashedKeys, entity.Models.Values.ToArray());
             }
 
             return entities.Count;
         }
         
         // Spawn an Entity game object from a dojo.Entity
-        private GameObject SpawnEntity(dojo.FieldElement felt, Model[] entityModels)
+        private GameObject SpawnEntity(FieldElement felt, Model[] entityModels)
         {
             // bytes to hex string
-            var key = "0x" + BitConverter.ToString(felt.data.ToArray()).Replace("-", "").ToLower();
-            var entityGameObject = worldManager.AddEntity(key);
+            var entityGameObject = worldManager.AddEntity(felt.Hex());
             foreach (var entityModel in entityModels)
             {
-                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                 if (model == null)
                 {
-                    Debug.LogError($"Model {entityModel.name} not found");
+                    Debug.LogError($"Model {entityModel.Name} not found");
                     continue;
                 }
 
@@ -80,10 +80,9 @@ namespace Dojo
         }
 
         // Handles spawning / updating entities as they are updated from the dojo world
-        private void HandleEntityUpdate(dojo.FieldElement key, Model[] entityModels)
+        private void HandleEntityUpdate(FieldElement key, Model[] entityModels)
         {
-            var name = "0x" + BitConverter.ToString(key.data.ToArray()).Replace("-", "").ToLower();
-            var entity = GameObject.Find(name);
+            var entity = GameObject.Find(key.Hex());
             if (entity == null)
             {
                 // should we fetch the entity here?
@@ -92,14 +91,14 @@ namespace Dojo
             
             foreach (var entityModel in entityModels)
             {
-                var component = entity.GetComponent(entityModel.name);
+                var component = entity.GetComponent(entityModel.Name);
                 if (component == null)
                 {
                     // TODO: decouple?
-                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.name);
+                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                     if (model == null)
                     {
-                        Debug.LogError($"Model {entityModel.name} not found");
+                        Debug.LogError($"Model {entityModel.Name} not found");
                         continue;
                     }
                         

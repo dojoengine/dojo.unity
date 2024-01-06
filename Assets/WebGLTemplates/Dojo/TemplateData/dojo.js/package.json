@@ -1,11 +1,11 @@
 {
-  "name": "torii-client-wasm",
-  "version": "0.3.1",
+  "name": "torii-c",
+  "version": "0.0.9",
   "files": [
-    "torii_client_wasm_bg.wasm",
-    "torii_client_wasm.js",
-    "torii_client_wasm.d.ts"
+    "torii_c_bg.wasm",
+    "torii_c.js",
+    "torii_c.d.ts"
   ],
-  "browser": "torii_client_wasm.js",
-  "types": "torii_client_wasm.d.ts"
+  "browser": "torii_c.js",
+  "types": "torii_c.d.ts"
 }

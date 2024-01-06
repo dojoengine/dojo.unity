@@ -1,0 +1,11 @@
+{
+  "name": "torii-c",
+  "version": "0.0.9",
+  "files": [
+    "torii_c_bg.wasm",
+    "torii_c.js",
+    "torii_c.d.ts"
+  ],
+  "browser": "torii_c.js",
+  "types": "torii_c.d.ts"
+}

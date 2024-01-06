@@ -1,13 +1,10 @@
-This crate includes a basic usage for the WASM module.
+# dojo.c
 
-1. Run the build script to compile the crate to WASM
+This package provides C bindings for the Torii Client SDK. The approach is to generate a C client using `cbindgen`.
 
-```sh
-./build.sh
+## Running
+
 ```
-
-2. Start the HTTP server (make sure [`simple-http-server`](https://github.com/TheWaWaR/simple-http-server) is installed)
-
-```sh
-simple-http-server .
+cargo build --release
+gcc example/main.c -L target/release -l torii_c -I ..
 ```

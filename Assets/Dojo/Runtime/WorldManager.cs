@@ -2,6 +2,8 @@ using System.Linq;
 using dojo_bindings;
 using UnityEngine;
 using Dojo.Torii;
+using System;
+using Dojo.Starknet;
 
 namespace Dojo
 {
@@ -14,10 +16,20 @@ namespace Dojo
         public string worldAddress;
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
+        public ToriiWasmClient wasmClient;
 
-        // Start is called before the first frame update
-        void Awake()
+        async void Awake()
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, worldAddress);
+            await wasmClient.CreateClient();
+            
+            var entities = await wasmClient.Entities(100, 0);
+            foreach (var entity in entities)
+            {
+                Debug.Log(entity.HashedKeys);
+            }
+#else
             // create the torii client and start subscription service
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress);
             // start subscription service
@@ -30,6 +42,7 @@ namespace Dojo
 
             // listen for entity updates
             synchronizationMaster.RegisterEntityCallbacks();
+#endif
         }
 
         // Update is called once per frame
@@ -37,6 +50,25 @@ namespace Dojo
         {
         }
 
+
+        // #if UNITY_WEBGL && !UNITY_EDITOR
+        //         // internal callback to be called for when the client is created
+        //         // on the wasm sdk. 
+        //         public void OnClientCreated(float clientPtr)
+        //         {
+        //             toriiClient.wasmClientPtr = (IntPtr)clientPtr;
+        //             // we dont start the subscription service
+        //             // because wasm already does it.
+
+        //             // fetch entities from the world
+        //             // TODO: maybe do in the start function of the SynchronizationMaster?
+        //             // problem is when to start the subscription service
+        //             synchronizationMaster.SynchronizeEntities();
+
+        //             // listen for entity updates
+        //             synchronizationMaster.RegisterEntityCallbacks();
+        //         }
+        // #endif
 
         // Get a child entity from the WorldManager game object.
         // Name is usually the hashed_keys of the entity as a hex string.
