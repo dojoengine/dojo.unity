@@ -30,6 +30,7 @@ namespace Dojo
         // Uses the ModelField attribute to map the model fields to the class fields
         // One can override this method to do custom initialization
         // If reflection isn't an option.
+        // Called upon instantiation and model update
         public virtual void Initialize(Model model)
         {
             var fields = GetType().GetFields();
@@ -49,6 +50,9 @@ namespace Dojo
             }
         }
 
+        // Handles the initialization of a field
+        // of a model instance. Uses reflection to set the field
+        // to the value of the model member.
         private static void HandleField(object instance, System.Reflection.FieldInfo field, object value)
         {
             // if the field is an enum, we need to convert the value to the enum type
@@ -91,6 +95,7 @@ namespace Dojo
             }
         }
 
+        // Called when the model is updated
         public virtual void OnUpdate(Model model)
         {
             Initialize(model);
