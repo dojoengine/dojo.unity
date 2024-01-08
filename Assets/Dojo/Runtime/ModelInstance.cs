@@ -35,6 +35,7 @@ namespace Dojo
             var fields = GetType().GetFields();
             foreach (var field in fields)
             {
+                // Check if the field has the ModelField attribute
                 var attribute = field.GetCustomAttributes(typeof(ModelField), false);
                 if (attribute.Length == 0)
                 {
@@ -44,45 +45,49 @@ namespace Dojo
                 var modelField = (ModelField)attribute[0];
                 var value = model.Members[modelField.Name];
 
-                // if the field is an enum, we need to convert the value to the enum type
-                if (field.FieldType.IsEnum)
-                {
-                    field.SetValue(this, Enum.ToObject(field.FieldType, value));
-                }
-                // if the field is a primitive, we can just set it
-                // fieldelement is included as a primitive because its a class
-                // but its already instantiated
-                else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement))
-                {
-                    field.SetValue(this, Convert.ChangeType(value, field.FieldType));
-                }
-                // if the field is a struct/class. we check if our member is a dictionary
-                // and we go through each of its keys and values and set them to the fields
-                // of the instantiated struct/class
-                else
-                {
-                    if (!(value is Dictionary<string, object> dict))
-                    {
-                        throw new Exception($"Expected a dictionary for field {field.Name} but got {value.GetType()}. Cannot cast primitive types to structs/classes.");
-                    }
+                HandleField(this, field, value);
+            }
+        }
 
-                    // we create an instance of the type
-                    var instance = Activator.CreateInstance(field.FieldType);
-                    // we set our dict values to the instance fields
-                    foreach (var kvp in dict)
-                    {
-                        var instanceField = field.FieldType.GetField(kvp.Key);
-                        if (instanceField == null)
-                        {
-                            throw new Exception($"Field {kvp.Key} not found in type {field.FieldType}");
-                        }
-                        Debug.Log($"Setting {kvp.Key} to {kvp.Value}");
-                        instanceField.SetValue(instance, Convert.ChangeType(kvp.Value, instanceField.FieldType));
-                    }
-
-                    // we set the instance to the field
-                    field.SetValue(this, instance);
+        private static void HandleField(object instance, System.Reflection.FieldInfo field, object value)
+        {
+            // if the field is an enum, we need to convert the value to the enum type
+            if (field.FieldType.IsEnum)
+            {
+                field.SetValue(instance, Enum.ToObject(field.FieldType, value));
+            }
+            // if the field is a primitive, we can just set it
+            // fieldelement is included as a primitive because its a class
+            // but its already instantiated
+            else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement))
+            {
+                field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
+            }
+            // if the field is a struct/class. we check if our member is a dictionary
+            // and we go through each of its keys and values and set them to the fields
+            // of the instantiated struct/class
+            else
+            {
+                if (!(value is Dictionary<string, object> dict))
+                {
+                    throw new Exception($"Expected a dictionary for field {field.Name} but got {value.GetType()}. Cannot cast primitive types to structs/classes.");
                 }
+
+                // we create an instance of the type
+                var fieldInstance = Activator.CreateInstance(field.FieldType);
+                // we set our dict values to the instance fields
+                foreach (var kvp in dict)
+                {
+                    var instanceField = field.FieldType.GetField(kvp.Key);
+                    if (instanceField == null)
+                    {
+                        throw new Exception($"Field {kvp.Key} not found in type {field.FieldType}");
+                    }
+                    HandleField(fieldInstance, instanceField, kvp.Value);
+                }
+
+                // we set the instance to the field
+                field.SetValue(instance, fieldInstance);
             }
         }
 

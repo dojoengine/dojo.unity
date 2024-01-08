@@ -7,8 +7,8 @@ using UnityEngine;
 [Serializable]
 public struct Vec2
 {
-    public UInt32 x;
-    public UInt32 y;
+    public uint x;
+    public uint y;
 }
 
 public class Position : ModelInstance
