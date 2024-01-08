@@ -624,7 +624,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toriiUrl: http://localhost:8080
   rpcUrl: http://localhost:5050
-  worldAddress: 0x05010c31f127114c6198df8a5239e2b7a5151e1156fb43791e37e7385faa8138
+  worldAddress: 0x28f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a
   synchronizationMaster: {fileID: 2019443017}
 --- !u!4 &2019443016
 Transform:
@@ -658,6 +658,9 @@ MonoBehaviour:
   models:
   - {fileID: 2019443019}
   - {fileID: 2019443018}
+  OnSynchronized:
+    m_PersistentCalls:
+      m_Calls: []
   OnEntitySpawned:
     m_PersistentCalls:
       m_Calls: []
@@ -676,8 +679,6 @@ MonoBehaviour:
   OnUpdated:
     m_PersistentCalls:
       m_Calls: []
-  x: 0
-  y: 0
   textTag: {fileID: 0}
   shortPlayerAddress: 
 --- !u!114 &2019443019

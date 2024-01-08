@@ -1,4 +1,5 @@
 using Dojo;
+using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
@@ -15,16 +16,10 @@ public enum Direction
 
 public class Moves : ModelInstance
 {
-    public dojo.FieldElement player;
+    [ModelField("player")]
+    public FieldElement player;
+    [ModelField("remaining")]
     public byte remaining;
+    [ModelField("last_direction")]
     public Direction lastDirection;
-
-    public override void Initialize(Model model) {
-        player = (dojo.FieldElement)model.Members["player"];
-        remaining = (byte)model.Members["remaining"];
-        lastDirection = (Direction)(byte)model.Members["last_direction"];
-        // player = model.Members["player"].Value.primitive.contract_address;
-        // remaining = model.Members["remaining"].Value.primitive.u8;
-        // lastDirection = (Direction)model.Members["last_direction"].Value.primitive.u8;
-    }
 }
