@@ -28,11 +28,7 @@ public class Position : ModelInstance
         var target = new Vector3(position.x, 1, position.y);
         gameObject.transform.position = target;
 
-        // convert bytes array to hex string
         shortPlayerAddress = player.Hex().Substring(0, 8);
-
-        Debug.Log(position.x);
-        Debug.Log(position.y);
 
         // create a new GameObject for the text
         GameObject textObject = new GameObject("TextTag");
