@@ -5,6 +5,7 @@ using bottlenoselabs.C2CS.Runtime;
 using UnityEngine;
 using dojo_bindings;
 using JetBrains.Annotations;
+using Dojo.Starknet;
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
@@ -176,11 +177,11 @@ namespace Dojo.Torii
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(new Starknet.FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EntityUpdated(new Starknet.FieldElement(key), mappedModels);
+                    ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels);
                 }
             };
 

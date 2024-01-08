@@ -28,9 +28,9 @@ namespace Dojo.Starknet
         // Wait for the transaction to be confirmed. Synchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
-        public unsafe void WaitForTransactionSync(dojo.FieldElement transactionHash)
+        public unsafe void WaitForTransactionSync(FieldElement transactionHash)
         {
-            var result = dojo.wait_for_transaction(client, transactionHash);
+            var result = dojo.wait_for_transaction(client, transactionHash.Inner());
             if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);
@@ -40,7 +40,7 @@ namespace Dojo.Starknet
         // Wait for the transaction to be confirmed. Asynchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
-        public async Task WaitForTransaction(dojo.FieldElement transactionHash)
+        public async Task WaitForTransaction(FieldElement transactionHash)
         {
             await Task.Run(() => WaitForTransactionSync(transactionHash));
         }

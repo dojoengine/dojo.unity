@@ -1,8 +1,6 @@
 using Dojo;
 using Dojo.Starknet;
 using Dojo.Torii;
-using dojo_bindings;
-using UnityEngine;
 
 public enum Direction
 {
