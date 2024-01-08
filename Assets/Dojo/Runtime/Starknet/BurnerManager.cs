@@ -35,7 +35,7 @@ namespace Dojo.Starknet {
             return currentBurner;
         }
 
-        public Account UseBurner(dojo.FieldElement address) {
+        public Account UseBurner(FieldElement address) {
             foreach (var burner in burners) {
                 if (burner.Address().Equals(address)) {
                     currentBurner = burner;

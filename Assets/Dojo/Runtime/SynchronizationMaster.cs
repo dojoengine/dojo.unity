@@ -72,12 +72,14 @@ namespace Dojo
         }
 
         // Spawn an Entity game object from a dojo.Entity
-        private GameObject SpawnEntity(FieldElement felt, Model[] entityModels)
+        private GameObject SpawnEntity(FieldElement hashedKeys, Model[] entityModels)
         {
-            // bytes to hex string
-            var entityGameObject = worldManager.AddEntity(felt.Hex());
+            // Add the entity to the world.
+            var entityGameObject = worldManager.AddEntity(hashedKeys.Hex());
+            // Initialize each one of the entity models
             foreach (var entityModel in entityModels)
             {
+                // Check if we have a model definition for this entity model
                 var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                 if (model == null)
                 {
@@ -85,6 +87,7 @@ namespace Dojo
                     continue;
                 }
 
+                // Add the model component to the entity
                 var component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
                 component.Initialize(entityModel);
             }
@@ -94,15 +97,17 @@ namespace Dojo
         }
 
         // Handles spawning / updating entities as they are updated from the dojo world
-        private void HandleEntityUpdate(FieldElement key, Model[] entityModels)
+        private void HandleEntityUpdate(FieldElement hashedKeys, Model[] entityModels)
         {
-            var entity = GameObject.Find(key.Hex());
+            // Get the entity game object
+            var entity = GameObject.Find(hashedKeys.Hex());
             if (entity == null)
             {
                 // should we fetch the entity here?
-                entity = SpawnEntity(key, entityModels);
+                entity = SpawnEntity(hashedKeys, entityModels);
             }
 
+            // Update each one of the entity models
             foreach (var entityModel in entityModels)
             {
                 var component = entity.GetComponent(entityModel.Name);

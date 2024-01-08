@@ -13,7 +13,7 @@ namespace Dojo.Starknet
         {
             this.provider = provider;
 
-            var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey(),
+            var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey.Inner(),
                 CString.FromString(address));
             if (resultAccount.tag == dojo.ResultAccount_Tag.ErrAccount)
             {
@@ -33,18 +33,18 @@ namespace Dojo.Starknet
             dojo.account_free(account);
         }
             
-        public dojo.FieldElement Address()
+        public FieldElement Address()
         {
             dojo.FieldElement address = dojo.account_address(account);
                 
-            return address;
+            return new FieldElement(address);
         }
             
-        public dojo.FieldElement ChainId()
+        public FieldElement ChainId()
         {
             dojo.FieldElement chainId = dojo.account_chain_id(account);
                 
-            return chainId;
+            return new FieldElement(chainId);
         }
             
         public void SetBlockId(dojo.BlockId blockId)
@@ -52,7 +52,7 @@ namespace Dojo.Starknet
             dojo.account_set_block_id(account, blockId);
         }
     
-        public dojo.FieldElement ExecuteRaw(dojo.Call[] calls)
+        public FieldElement ExecuteRaw(dojo.Call[] calls)
         {
             dojo.Call* callsPtr;
             fixed (dojo.Call* ptr = &calls[0])
@@ -66,7 +66,7 @@ namespace Dojo.Starknet
                 throw new Exception(result.err.message);
             }
 
-            return result.ok;
+            return new FieldElement(result.ok);
         }
 
         // This will synchroneously wait for the transaction to be confirmed.

@@ -21,7 +21,7 @@ public class InitEntities : MonoBehaviour
     public WorldManager worldManager;
     public string worldActionsAddress;
     private BurnerManager burnerManager;
-    private Dictionary<dojo.FieldElement, string> spawnedBurners = new();
+    private Dictionary<FieldElement, string> spawnedBurners = new();
 
     void Awake()
     {

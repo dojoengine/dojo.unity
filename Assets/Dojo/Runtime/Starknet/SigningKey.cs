@@ -1,51 +1,56 @@
 using System;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
+using JetBrains.Annotations;
 
 namespace Dojo.Starknet
 {
     public class SigningKey
     {
-        private dojo.FieldElement inner;
-        
+        // The inner FieldElement for the private key.
+        public FieldElement PrivateKey { get; }
+        // Return the public key corresponding to the private key.
+        private VerifyingKey PublicKey
+        {
+            get
+            {
+                if (PublicKey == null)
+                {
+                    PublicKey = new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner()));
+                }
+
+                return PublicKey;
+
+            }
+
+            set => PublicKey = value;
+        }
+
         public SigningKey(string privateKey)
         {
-            var result = dojo.felt_from_hex_be(CString.FromString(privateKey));
-            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
-            {
-                throw new Exception(result.err.message);
-            }
-            
-            inner = result.ok;
+            PrivateKey = new FieldElement(privateKey);
         }
-        
+
         public SigningKey(dojo.FieldElement privateKey)
         {
-            inner = privateKey;
+            PrivateKey = new FieldElement(privateKey);
         }
-        
-        public dojo.FieldElement PrivateKey()
+
+        public SigningKey(FieldElement privateKey)
         {
-            return inner;
+            PrivateKey = privateKey;
         }
-        
-        public VerifyingKey PublicKey()
-        {
-            dojo.FieldElement publicKey = dojo.verifying_key_new(inner);
-                
-            return new VerifyingKey(publicKey);
-        }
-        
+
         // Sign a message.
-        public dojo.Signature Sign(dojo.FieldElement message)
+        public Signature Sign(FieldElement message)
         {
-            var result = dojo.signing_key_sign(inner, message);
+            var result = dojo.signing_key_sign(PrivateKey.Inner(), message.Inner());
             if (result.tag == dojo.ResultSignature_Tag.ErrSignature)
             {
                 throw new Exception(result.err.message);
             }
-                
-            return result.ok;
+
+            return new Signature(result.ok);
         }
     }
 }

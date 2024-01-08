@@ -41,9 +41,9 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.U128 => ty.primitive.u128.ToArray(),
                     dojo.Primitive_Tag.U256 => ty.primitive.u256.ToArray(),
                     dojo.Primitive_Tag.USize => ty.primitive.u_size,
-                    dojo.Primitive_Tag.Felt252 => ty.primitive.felt252,
-                    dojo.Primitive_Tag.ClassHash => ty.primitive.class_hash,
-                    dojo.Primitive_Tag.ContractAddress => ty.primitive.contract_address,
+                    dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
+                    dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
+                    dojo.Primitive_Tag.ContractAddress => new FieldElement(ty.primitive.contract_address),
                     _ => throw new Exception("Unknown primitive type")
 
                 },

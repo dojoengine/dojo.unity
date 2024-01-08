@@ -53,12 +53,8 @@ public class Tests
     public void TestAccountAddress()
     {
         var address = account.Address();
-        var playerAddressBytes = Enumerable.Range(2, playerAddress.Length - 2)
-            .Where(x => x % 2 == 0)
-            .Select(x => Convert.ToByte(playerAddress.Substring(x, 2), 16))
-            .ToArray();
 
-        Assert.That(address.data.ToArray(), Is.EqualTo(playerAddressBytes));
+        Assert.That(address.Hex(), Is.EqualTo(playerAddress));
     }
 
     [Test]

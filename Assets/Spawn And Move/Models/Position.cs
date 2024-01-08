@@ -1,46 +1,35 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Dojo;
+using Dojo.Starknet;
 using Dojo.Torii;
-using dojo_bindings;
 using UnityEngine;
-using UnityEngine.UI;
+
+[Serializable]
+public struct Vec2
+{
+    public uint x;
+    public uint y;
+}
 
 public class Position : ModelInstance
 {
-    // model fields
-    public dojo.FieldElement player;
-    // public Vector2Int position => new Vector2Int((int)x, (int)y);
-    public UInt32 x;
-    public UInt32 y;
+    [ModelField("player")]
+    public FieldElement player;
+    [ModelField("vec")]
+    public Vec2 position;
 
 
     // component fields
     public TextMesh textTag;
     public string shortPlayerAddress;
 
-    public override void Initialize(Model model)
-    {
-        player = (dojo.FieldElement)model.Members["player"];
-        x = (UInt32)((Dictionary<string, object>)model.Members["vec"])["x"];
-        y = (UInt32)((Dictionary<string, object>)model.Members["vec"])["y"];
-        // player = model.Members["player"].Value.primitive.contract_address;
-        // x = model.Members["vec"].Value.struct_.children[0].ty.primitive.u32;
-        // y = model.Members["vec"].Value.struct_.children[1].ty.primitive.u32;
-    }
-
     void Start()
     {
-        var target = new Vector3(x, 1, y);
+        var target = new Vector3(position.x, 1, position.y);
         gameObject.transform.position = target;
 
-        // convert bytes array to hex string
-        var hexString = BitConverter.ToString(player.data.ToArray()).Replace("-", "").ToLower();
-        var shortString = hexString.Substring(0, 8).TrimStart('0');
+        shortPlayerAddress = player.Hex().Substring(0, 8);
 
-        shortPlayerAddress = $"0x{shortString}";
-        
         // create a new GameObject for the text
         GameObject textObject = new GameObject("TextTag");
         textObject.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
@@ -62,7 +51,7 @@ public class Position : ModelInstance
         var step = 3.0f * Time.deltaTime;
         // scale down our positions
         Vector3 oldPosition = gameObject.transform.position;
-        var target = new Vector3(x, oldPosition.y, y);
+        var target = new Vector3(position.x, oldPosition.y, position.y);
         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, target, step);
 
         // calculate and display velocity
