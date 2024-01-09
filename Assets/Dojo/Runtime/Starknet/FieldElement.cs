@@ -1,13 +1,18 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 using dojo_bindings;
+using UnityEngine;
 
 namespace Dojo.Starknet
 {
-    public class FieldElement
+    [Serializable]
+    public class FieldElement : ISerializationCallbackReceiver
     {
         private dojo.FieldElement inner;
+        // Serialized as a hex string.
+        [SerializeField] private string hex;
 
         public FieldElement(string hex)
         {
@@ -82,6 +87,16 @@ namespace Dojo.Starknet
         public dojo.FieldElement Inner()
         {
             return inner;
+        }
+
+        public void OnAfterDeserialize()
+        {
+            inner = new FieldElement(hex).inner;
+        }
+
+        public void OnBeforeSerialize()
+        {
+            hex = Hex();
         }
     }
 }

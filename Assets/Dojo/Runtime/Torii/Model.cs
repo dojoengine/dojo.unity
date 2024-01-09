@@ -71,9 +71,9 @@ namespace Dojo.Torii
                 "u256" => hexToU256(value.value.ToObject<string>()).ToArray(),
                 "usize" => value.value.ToObject<uint>(),
                 // these should be fine
-                "felt252" => new FieldElement(value.value.ToObject<string>()).Inner(),
-                "class_hash" => new FieldElement(value.value.ToObject<string>()).Inner(),
-                "contract_address" => new FieldElement(value.value.ToObject<string>()).Inner(),
+                "felt252" => new FieldElement(value.value.ToObject<string>()),
+                "class_hash" => new FieldElement(value.value.ToObject<string>()),
+                "contract_address" => new FieldElement(value.value.ToObject<string>()),
                 _ => throw new Exception("Unknown primitive type")
             };
         }

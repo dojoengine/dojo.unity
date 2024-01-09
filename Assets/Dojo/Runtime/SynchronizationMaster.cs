@@ -23,8 +23,8 @@ namespace Dojo
         public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
 
-        // Start is called before the first frame update
-        void Start()
+        // Awake is called when the script instance is being loaded.
+        void Awake()
         {
             // We don't want our model definitions to be active.
             // Only used as templates for the actual entities to use.
@@ -32,11 +32,6 @@ namespace Dojo
             {
                 model.enabled = false;
             }
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
         }
 
         // Fetch all entities from the dojo world and spawn them.
