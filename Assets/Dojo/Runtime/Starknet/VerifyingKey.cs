@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
+using Newtonsoft.Json;
 
 namespace Dojo.Starknet
 {
@@ -30,9 +32,17 @@ namespace Dojo.Starknet
             return inner;
         }
         
-        public bool Verify(FieldElement message, dojo.Signature signature)
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        // webgl js interop starknet bindings
+        public bool Verify(FieldElement message, Signature signature)
         {
-            var result = dojo.verifying_key_verify(inner.Inner(), message.Inner(), signature);
+            return StarknetInterop.Verify(new CString(signature.R().Hex()), new CString(signature.S().Hex()), new CString(message.Hex()), new CString(inner.Hex()));
+        }
+        #else
+        // dojo.c starknet-rs bindings
+        public bool Verify(FieldElement message, Signature signature)
+        {
+            var result = dojo.verifying_key_verify(inner.Inner(), message.Inner(), signature.Inner());
             if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);
@@ -40,5 +50,6 @@ namespace Dojo.Starknet
             
             return result.ok;
         }
+        #endif
     }
 }

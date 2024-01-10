@@ -10,16 +10,16 @@ mergeInto(LibraryManager.library, {
     Sign: function (msgHash, privateKey) {
         var signature = stark.ec.starkCurve.sign(UTF8ToString(msgHash), UTF8ToString(privateKey));
 
-        var signatureString = JSON.stringify(signature);
-        var bufferSize = lengthBytesUTF8(signatureString) + 1;
+        var signatureCompact = signature.toCompactHex();
+        var bufferSize = lengthBytesUTF8(signatureCompact) + 1;
         var buffer = _malloc(bufferSize);
-        stringToUTF8(signatureString, buffer, bufferSize);
+        stringToUTF8(signatureCompact, buffer, bufferSize);
         return buffer;
 
     },
-    Verify: function (signatureCompactHex, msgHash, publicKey) {
-        var signatureObject = stark.ec.starkCurve.Signature.fromCompact(UTF8ToString(signature));
-        var result = stark.ec.starkCurve.verify(UTF8ToString(msgHash), signatureObject, UTF8ToString(publicKey));
+    Verify: function (signatureCompact, msgHash, publicKey) {
+        var signature = stark.ec.starkCurve.Signature.fromCompact(UTF8ToString(signatureCompact));
+        var result = stark.ec.starkCurve.verify(UTF8ToString(msgHash), signature, UTF8ToString(publicKey));
         return result;
     },
     NewRpcProvider: function (nodeUrl) {

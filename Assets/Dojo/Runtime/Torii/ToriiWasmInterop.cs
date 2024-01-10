@@ -23,7 +23,7 @@ namespace Dojo.Torii
     {
         // Creates a new client and returns the pointer to it
         [DllImport("__Internal")]
-        public static extern void CreateClient(IntPtr rpcUrl, IntPtr toriiUrl, IntPtr worldAddress, Action<IntPtr> cb);
+        public static extern void CreateClient(CString rpcUrl, CString toriiUrl, CString worldAddress, Action<IntPtr> cb);
 
         private static class CreateClientHelper
         {

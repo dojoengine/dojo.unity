@@ -42,6 +42,14 @@ namespace Dojo.Starknet
         }
 
         // Sign a message.
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        // webgl js interop starknet bindings
+        public Signature Sign(FieldElement message)
+        {
+            var signature = StarknetInterop.Sign(new CString(PrivateKey.Hex()), new CString(message.Hex()));
+            return new Signature(signature);
+        }
+        #else
         public Signature Sign(FieldElement message)
         {
             var result = dojo.signing_key_sign(PrivateKey.Inner(), message.Inner());
@@ -52,5 +60,6 @@ namespace Dojo.Starknet
 
             return new Signature(result.ok);
         }
+        #endif
     }
 }
