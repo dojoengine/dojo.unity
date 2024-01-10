@@ -25,14 +25,23 @@ public class InitEntities : MonoBehaviour
 
     void Awake()
     {
-        #if UNITY_WEBGL && !UNITY_EDITOR
-        #else
+#if UNITY_WEBGL && !UNITY_EDITOR
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, masterAddress);
 
-        burnerManager = new BurnerManager(provider, account);
-        #endif
+        burnerManager = new BurnerManager(account);
+        Debug.Log(signer.PublicKey.Verify(new FieldElement("0x01"), signer.Sign(new FieldElement("0x01"))));
+#else
+        var provider = new JsonRpcClient(worldManager.rpcUrl);
+        var signer = new SigningKey(masterPrivateKey);
+        var account = new Account(provider, signer, masterAddress);
+
+        burnerManager = new BurnerManager(account);
+        Debug.Log(signer.PublicKey.Inner.Hex());
+        Debug.Log(signer.Sign(new FieldElement("0x01")).ToCompactHex());
+        Debug.Log(signer.PublicKey.Verify(new FieldElement("0x01"), signer.Sign(new FieldElement("0x01"))));
+#endif
     }
 
     // Start is called before the first frame update

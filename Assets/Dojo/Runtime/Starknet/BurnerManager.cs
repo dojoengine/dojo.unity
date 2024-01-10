@@ -5,7 +5,6 @@ using dojo_bindings;
 
 namespace Dojo.Starknet {
     public class BurnerManager {
-        private JsonRpcClient provider;
         private Account masterAccount;
         private Account currentBurner;
         private List<Account> burners = new();
@@ -13,8 +12,7 @@ namespace Dojo.Starknet {
         public Account CurrentBurner => currentBurner;
         public List<Account> Burners => burners;
 
-        public BurnerManager(JsonRpcClient provider, Account masterAccount) {
-            this.provider = provider;
+        public BurnerManager(Account masterAccount) {
             this.masterAccount = masterAccount;
         }
 

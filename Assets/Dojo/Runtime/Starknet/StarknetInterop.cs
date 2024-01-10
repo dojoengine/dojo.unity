@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AOT;
 using bottlenoselabs.C2CS.Runtime;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Dojo.Starknet
@@ -57,8 +59,10 @@ namespace Dojo.Starknet
         [DllImport("__Internal")]
         public static extern string AccountChainId(CString accountStr);
 
+        // Calls should be a stringified array of Call objects
+        // Calldata is RawCalladata - should be a stringified array of Felts
         [DllImport("__Internal")]
-        public static extern string AccountExecuteRaw(CString accountStr, CString contractAddress, CString entrypoint, CString calldata, Action<string> cb);
+        public static extern string AccountExecuteRaw(CString accountStr, CString calls, Action<string> cb);
 
         private static class AccountExecuteRawHelper
         {
@@ -71,10 +75,38 @@ namespace Dojo.Starknet
             }
         }
 
-        public static Task<string> AccountExecuteRawAsync(string accountStr, string contractAddress, string entrypoint, string calldata)
+        public struct Call
         {
-            AccountExecuteRaw(new CString(accountStr), new CString(contractAddress), new CString(entrypoint), new CString(calldata), AccountExecuteRawHelper.Callback);
+            public string contractAddress;
+            public string entrypoint;
+            // array of hex strings
+            public string[] calldata;
+        }
+
+        public static Task<string> AccountExecuteRawAsync(string accountStr, Call[] calls)
+        {
+            AccountExecuteRaw(new CString(accountStr), new CString(JsonConvert.SerializeObject(calls)), AccountExecuteRawHelper.Callback);
             return AccountExecuteRawHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
+        public static extern string AccountDeployBurner(CString accountStr, Action<string> cb);
+
+        private static class AccountDeployBurnerHelper
+        {
+            public static TaskCompletionSource<string> Tcs { get; } = new TaskCompletionSource<string>();
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string result)
+            {
+                Tcs.SetResult(result);
+            }
+        }
+
+        public static Task<string> AccountDeployBurnerAsync(string accountStr)
+        {
+            AccountDeployBurner(new CString(accountStr), AccountDeployBurnerHelper.Callback);
+            return AccountDeployBurnerHelper.Tcs.Task;
         }
     }
 }

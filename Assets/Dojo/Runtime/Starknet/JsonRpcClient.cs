@@ -7,8 +7,17 @@ namespace Dojo.Starknet
 {
     public class JsonRpcClient
     {
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        public string rpcJsObject;
+        #else
         public unsafe dojo.CJsonRpcClient* client;
-        
+        #endif
+
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        public JsonRpcClient(string rpcUrl) {
+            rpcJsObject = StarknetInterop.NewRpcProvider(new CString(rpcUrl));
+        }
+        #else
         public unsafe JsonRpcClient(string rpcUrl)
         {
             var result = dojo.jsonrpc_client_new(CString.FromString(rpcUrl));
@@ -19,16 +28,22 @@ namespace Dojo.Starknet
             
             client = result._ok;
         }
+        #endif
 
         unsafe ~JsonRpcClient()
         {
+            #if UNITY_WEBGL && !UNITY_EDITOR
+            #else
             dojo.jsonrpc_client_free(client);
+            #endif
         }
 
         // Wait for the transaction to be confirmed. Synchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
-        public unsafe void WaitForTransactionSync(FieldElement transactionHash)
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        #else
+        private unsafe void WaitForTransactionSync(FieldElement transactionHash)
         {
             var result = dojo.wait_for_transaction(client, transactionHash.Inner());
             if (result.tag == dojo.Resultbool_Tag.Errbool)
@@ -36,13 +51,21 @@ namespace Dojo.Starknet
                 throw new Exception(result.err.message);
             }
         }
+        #endif
 
         // Wait for the transaction to be confirmed. Asynchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
+        #if UNITY_WEBGL && !UNITY_EDITOR
+        public async Task WaitForTransaction(FieldElement transactionHash)
+        {
+            await StarknetInterop.WaitForTransactionAsync(rpcJsObject, transactionHash.Hex());
+        }
+        #else
         public async Task WaitForTransaction(FieldElement transactionHash)
         {
             await Task.Run(() => WaitForTransactionSync(transactionHash));
         }
+        #endif
     }
 }
