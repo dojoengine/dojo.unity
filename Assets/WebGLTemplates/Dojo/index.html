@@ -138,6 +138,10 @@
       };
       document.body.appendChild(dojoScript);
 
+      var starknetScript = document.createElement("script");
+      starknetScript.src = "TemplateData/starknet-5.24.3.js";
+      document.body.appendChild(starknetScript);
+
       var gameInstance = null;
       var script = document.createElement("script");
       script.src = loaderUrl;
