@@ -6,26 +6,22 @@ using dojo_bindings;
 
 namespace Dojo.Starknet
 {
-
-#if UNITY_WEBGL && !UNITY_EDITOR
     public class Account
-#else
-    public unsafe class Account
-#endif
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         private string accountJsObject;
 #else
-        private dojo.Account* account;
+        private unsafe dojo.Account* account;
 #endif
 
-        #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
         public Account(JsonRpcClient provider, SigningKey privateKey, string address)
         {
-            accountJsObject = StarknetInterop.NewAccount(new CString(provider.rpcJsObject), new CString(address), new CString(privateKey.PrivateKey.Hex()));
+            accountJsObject =
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               StarknetInterop.NewAccount(new CString(provider.rpcJsObject), new CString(address), new CString(privateKey.PrivateKey.Hex()));
         }
-        #else
-        public Account(JsonRpcClient provider, SigningKey privateKey, string address)
+#else
+        public unsafe Account(JsonRpcClient provider, SigningKey privateKey, string address)
         {
             var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey.Inner(),
                 CString.FromString(address));
@@ -36,7 +32,7 @@ namespace Dojo.Starknet
 
             account = resultAccount._ok;
         }
-        #endif
+#endif
 
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -44,13 +40,13 @@ namespace Dojo.Starknet
             this.accountJsObject = accountJsObject;
         }
 #else
-        public Account(dojo.Account* account)
+        private unsafe Account(dojo.Account* account)
         {
             this.account = account;
         }
 #endif
 
-        ~Account()
+        unsafe ~Account()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
 #else
@@ -58,41 +54,42 @@ namespace Dojo.Starknet
 #endif
         }
 
-        public FieldElement Address()
+        public unsafe FieldElement Address()
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             var address = StarknetInterop.AccountAddress(new CString(accountJsObject));
-            #else
+#else
             var address = dojo.account_address(account);
-            #endif
+#endif
 
             return new FieldElement(address);
         }
 
-        public FieldElement ChainId()
+        public unsafe FieldElement ChainId()
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             var chainId = StarknetInterop.AccountChainId(new CString(accountJsObject));
-            #else
+#else
             var chainId = dojo.account_chain_id(account);
-            #endif
+#endif
 
             return new FieldElement(chainId);
         }
 
-        public void SetBlockId(dojo.BlockId blockId)
+        public unsafe void SetBlockId(dojo.BlockId blockId)
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
-            #else
+#if UNITY_WEBGL && !UNITY_EDITOR
+#else
             dojo.account_set_block_id(account, blockId);
-            #endif
+#endif
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings
         public FieldElement ExecuteRaw(dojo.Call[] calls)
         {
-            var res = StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
+            var res =
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
                 contractAddress = call.to.ToString(),
                 entrypoint = call.selector.ToString(),
                 calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
@@ -101,7 +98,7 @@ namespace Dojo.Starknet
             return new FieldElement(res);
         }
 #else
-        public FieldElement ExecuteRaw(dojo.Call[] calls)
+        public unsafe FieldElement ExecuteRaw(dojo.Call[] calls)
         {
             dojo.Call* callsPtr;
             fixed (dojo.Call* ptr = &calls[0])
@@ -119,14 +116,9 @@ namespace Dojo.Starknet
         }
 #endif
 
-        // This will synchroneously wait for the transaction to be confirmed.
-        // Use BurnerManager for async execution.
-        #if UNITY_WEBGL && !UNITY_EDITOR
-        public Account DeployBurner() {
-            return new Account(StarknetInterop.AccountDeployBurnerAsync(accountJsObject).Result);
-        }
-        #else
-        public Account DeployBurner()
+        // This will synchroneously wait for the burner to be deployed.
+        // Implemented for C bindings that arent async.
+        private unsafe Account DeployBurnerSync()
         {
             var result = dojo.account_deploy_burner(account);
             if (result.tag == dojo.ResultAccount_Tag.ErrAccount)
@@ -136,6 +128,15 @@ namespace Dojo.Starknet
 
             return new Account(result._ok);
         }
-        #endif
+
+        // Deploy a burner and return the account once it is deployed.
+        public async Task<Account> DeployBurner()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return await StarknetInterop.AccountDeployBurnerAsync(accountJsObject);
+#else
+            return await Task.Run(DeployBurnerSync);
+#endif
+        }
     }
 }

@@ -455,7 +455,7 @@ MonoBehaviour:
   masterPrivateKey: 0x1800000000300000180000000000030000000000003006001800006600
   masterAddress: 0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
   worldManager: {fileID: 2019443015}
-  worldActionsAddress: 0x152dcff993befafe5001975149d2c50bd9621da7cbaed74f68e7d5e54e65abc
+  worldActionsAddress: 0x3e274b7d85fd0415bec56a5d831c3854f7308bbb26d486993cfc49e5a5fb788
 --- !u!4 &998234501
 Transform:
   m_ObjectHideFlags: 0

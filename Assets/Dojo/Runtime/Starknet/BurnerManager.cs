@@ -16,8 +16,9 @@ namespace Dojo.Starknet {
             this.masterAccount = masterAccount;
         }
 
-        async public Task<Account> DeployBurner() {
-            var account = await Task.Run(() => masterAccount.DeployBurner());
+        public async Task<Account> DeployBurner()
+        {
+            var account = await masterAccount.DeployBurner();
             burners.Add(account);
             currentBurner = account;
 
@@ -25,12 +26,9 @@ namespace Dojo.Starknet {
         }
 
         // This will deploy a new burner if there is no current burner.
-        async public Task<Account> UseBurner() {
-            if (currentBurner == null) {
-                currentBurner = await DeployBurner();
-            }
-
-            return currentBurner;
+        public async Task<Account> UseBurner()
+        {
+            return currentBurner ??= await DeployBurner();
         }
 
         public Account UseBurner(FieldElement address) {
