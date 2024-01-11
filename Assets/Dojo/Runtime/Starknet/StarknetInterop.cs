@@ -34,7 +34,7 @@ namespace Dojo.Starknet
 
         private static class WaitForTransactionHelper
         {
-            public static TaskCompletionSource<string> Tcs { get; } = new TaskCompletionSource<string>();
+            public static TaskCompletionSource<string> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string txHash)
@@ -45,6 +45,7 @@ namespace Dojo.Starknet
 
         public static Task<string> WaitForTransactionAsync(string providerStr, string txHash)
         {
+            WaitForTransactionHelper.Tcs = new TaskCompletionSource<string>();
             WaitForTransaction(new CString(providerStr), new CString(txHash), WaitForTransactionHelper.Callback);
             return WaitForTransactionHelper.Tcs.Task;
         }
@@ -66,7 +67,7 @@ namespace Dojo.Starknet
 
         private static class AccountExecuteRawHelper
         {
-            public static TaskCompletionSource<string> Tcs { get; } = new TaskCompletionSource<string>();
+            public static TaskCompletionSource<string> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string result)
@@ -85,6 +86,7 @@ namespace Dojo.Starknet
 
         public static Task<string> AccountExecuteRawAsync(string accountStr, Call[] calls)
         {
+            AccountExecuteRawHelper.Tcs = new TaskCompletionSource<string>();
             AccountExecuteRaw(new CString(accountStr), new CString(JsonConvert.SerializeObject(calls)), AccountExecuteRawHelper.Callback);
             return AccountExecuteRawHelper.Tcs.Task;
         }
@@ -94,7 +96,7 @@ namespace Dojo.Starknet
 
         private static class AccountDeployBurnerHelper
         {
-            public static TaskCompletionSource<string> Tcs { get; } = new TaskCompletionSource<string>();
+            public static TaskCompletionSource<string> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string result)
@@ -105,6 +107,7 @@ namespace Dojo.Starknet
 
         public static Task<string> AccountDeployBurnerAsync(string accountStr)
         {
+            AccountDeployBurnerHelper.Tcs = new TaskCompletionSource<string>();
             AccountDeployBurner(new CString(accountStr), AccountDeployBurnerHelper.Callback);
             return AccountDeployBurnerHelper.Tcs.Task;
         }

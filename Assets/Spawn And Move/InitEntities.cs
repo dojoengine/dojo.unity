@@ -30,13 +30,13 @@ public class InitEntities : MonoBehaviour
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, masterAddress);
 
-        burnerManager = new BurnerManager(account);
+        burnerManager = new BurnerManager(provider, account);
 #else
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, masterAddress);
 
-        burnerManager = new BurnerManager(account);
+        burnerManager = new BurnerManager(provider, account);
 #endif
     }
 
@@ -57,7 +57,7 @@ public class InitEntities : MonoBehaviour
         {
             var burner = await burnerManager.DeployBurner();
             spawnedBurners[burner.Address()] = null;
-            burner.ExecuteRaw(new dojo.Call[]
+            var txHash = await burner.ExecuteRaw(new dojo.Call[]
             {
                 new dojo.Call
                 {
@@ -65,6 +65,7 @@ public class InitEntities : MonoBehaviour
                     to = worldActionsAddress,
                 }
             });
+            // Debug.Log($"Deployed burner {burner.Address().Hex()} and spawned with tx hash {txHash.Hex()}");
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -114,7 +115,7 @@ public class InitEntities : MonoBehaviour
         }
     }
 
-    private void Move(Direction direction)
+    private async void Move(Direction direction)
     {
         if (burnerManager.CurrentBurner == null)
         {
@@ -122,12 +123,12 @@ public class InitEntities : MonoBehaviour
             return;
         }
 
-        burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
+        var tx = await burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
         {
             new dojo.Call
             {
                 calldata = new dojo.FieldElement[] {
-                    dojo.felt_from_hex_be(new CString($"0x{(int)direction}")).ok,
+                    new FieldElement($"0x{(int)direction}").Inner()
                 },
                 selector = "move",
                 to = worldActionsAddress,

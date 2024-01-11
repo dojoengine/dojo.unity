@@ -61,7 +61,7 @@ mergeInto(LibraryManager.library, {
         dynCall_vi(cb);
     },
     NewAccount: function (providerStr, address, privateKey) {
-        var provider = JSON.parse(UTF8ToString(providerStr));
+        var provider = new stark.RpcProvider(JSON.parse(UTF8ToString(providerStr)));
         var account = new stark.Account(provider, UTF8ToString(address), UTF8ToString(privateKey));
 
         var accountString = JSON.stringify(account);
@@ -90,7 +90,7 @@ mergeInto(LibraryManager.library, {
     },
     AccountExecuteRaw: async function (accountStr, calls, cb) {
         var accountObject = JSON.parse(UTF8ToString(accountStr));
-        var account = new stark.Account(new stark.RpcProvider(accountObject.provider), accountObject.address, accountObject.signer);
+        var account = new stark.Account(new stark.RpcProvider(accountObject.provider), accountObject.address, new stark.Signer(accountObject.signer.pk));
 
         var calls = JSON.parse(UTF8ToString(calls));
         var txHash = await account.execute(calls.map((c) => ({
@@ -102,25 +102,27 @@ mergeInto(LibraryManager.library, {
         var bufferSize = lengthBytesUTF8(txString) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(txString, buffer, bufferSize);
-        dynCall_vi(cb, txString);
+        dynCall_vi(cb, buffer);
     },
     AccountDeployBurner: async function (accountStr, cb) {
         var accountObject = JSON.parse(UTF8ToString(accountStr));
-        var account = new stark.Account(new stark.RpcProvider(accountObject.provider), accountObject.address, accountObject.signer);
+        var account = new stark.Account(new stark.RpcProvider(accountObject.provider), accountObject.address, accountObject.signer.pk);
 
         // new random private key
-        const signer = new stark.Signer();
+        const pk = stark.stark.randomAddress();
+        const publicKey = stark.ec.starkCurve.getStarkKey(pk);
         var deployData = await account.deployContract({
             classHash: "0x04d07e40e93398ed3c76981e72dd1fd22557a78ce36c0515f679e27f0bb5bc5f",
-            salt: await signer.getPubKey(),
+            salt: publicKey,
             unique: false,
-            constructorCalldata: [await signer.getPubKey()]
+            constructorCalldata: stark.CallData.compile({publicKey}),
         });
 
-        var accountString = JSON.stringify(new stark.Account(new stark.RpcProvider(accountObject.provider), deployData.contract_address, signer));
+        var accountString = JSON.stringify(new stark.Account(new stark.RpcProvider(accountObject.provider), deployData.contract_address, pk));
         var bufferSize = lengthBytesUTF8(accountString) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(accountString, buffer, bufferSize);
         dynCall_vi(cb, buffer);
+
     },
 });

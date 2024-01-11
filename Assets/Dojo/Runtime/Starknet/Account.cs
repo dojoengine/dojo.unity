@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
+using Debug = UnityEngine.Debug;
 
 namespace Dojo.Starknet
 {
@@ -86,19 +87,23 @@ namespace Dojo.Starknet
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings
-        public FieldElement ExecuteRaw(dojo.Call[] calls)
+        public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
         {
-            var res =
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
+            // var res =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
+            //     contractAddress = call.to.ToString(),
+            //     entrypoint = call.selector.ToString(),
+            //     calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
+            // }).ToArray()).Result;
+            var res = await StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
                 contractAddress = call.to.ToString(),
                 entrypoint = call.selector.ToString(),
                 calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
-            }).ToArray()).Result;
+            }).ToArray());
 
             return new FieldElement(res);
         }
 #else
-        public unsafe FieldElement ExecuteRaw(dojo.Call[] calls)
+        public unsafe async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
         {
             dojo.Call* callsPtr;
             fixed (dojo.Call* ptr = &calls[0])
@@ -116,6 +121,7 @@ namespace Dojo.Starknet
         }
 #endif
 
+        #if !UNITY_WEBGL || UNITY_EDITOR
         // This will synchroneously wait for the burner to be deployed.
         // Implemented for C bindings that arent async.
         private unsafe Account DeployBurnerSync()
@@ -128,14 +134,15 @@ namespace Dojo.Starknet
 
             return new Account(result._ok);
         }
+        #endif
 
         // Deploy a burner and return the account once it is deployed.
         public async Task<Account> DeployBurner()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return await StarknetInterop.AccountDeployBurnerAsync(accountJsObject);
+            return new Account(await StarknetInterop.AccountDeployBurnerAsync(accountJsObject));
 #else
-            return await Task.Run(DeployBurnerSync);
+            return await Task.Run(() => DeployBurnerSync());
 #endif
         }
     }

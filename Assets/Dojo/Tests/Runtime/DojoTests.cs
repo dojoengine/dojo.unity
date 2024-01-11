@@ -86,7 +86,7 @@ public class Tests
             selector = "spawn"
         };
 
-        var txnHash = account.ExecuteRaw(new[] { call });
+        var txnHash = await account.ExecuteRaw(new[] { call });
         
         await provider.WaitForTransaction(txnHash);
 
