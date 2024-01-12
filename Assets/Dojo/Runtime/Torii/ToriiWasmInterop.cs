@@ -23,11 +23,11 @@ namespace Dojo.Torii
     {
         // Creates a new client and returns the pointer to it
         [DllImport("__Internal")]
-        public static extern void CreateClient(IntPtr rpcUrl, IntPtr toriiUrl, IntPtr worldAddress, Action<IntPtr> cb);
+        public static extern void CreateClient(CString rpcUrl, CString toriiUrl, CString worldAddress, Action<IntPtr> cb);
 
         private static class CreateClientHelper
         {
-            public static TaskCompletionSource<IntPtr> Tcs { get; } = new TaskCompletionSource<IntPtr>();
+            public static TaskCompletionSource<IntPtr> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<IntPtr>))]
             public static void Callback(IntPtr clientPtr)
@@ -38,6 +38,7 @@ namespace Dojo.Torii
 
         public static Task<IntPtr> CreateClientAsync(string rpcUrl, string toriiUrl, string worldAddress)
         {
+            CreateClientHelper.Tcs = new TaskCompletionSource<IntPtr>();
             CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(worldAddress), CreateClientHelper.Callback);
             return CreateClientHelper.Tcs.Task;
         }
@@ -48,7 +49,7 @@ namespace Dojo.Torii
 
         private static class GetEntitiesHelper
         {
-            public static TaskCompletionSource<List<Entity>> Tcs { get; } = new TaskCompletionSource<List<Entity>>();
+            public static TaskCompletionSource<List<Entity>> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string entities)
@@ -79,6 +80,7 @@ namespace Dojo.Torii
 
         public static Task<List<Entity>> GetEntitiesAsync(IntPtr clientPtr, int limit, int offset)
         {
+            GetEntitiesHelper.Tcs = new TaskCompletionSource<List<Entity>>();
             GetEntities(clientPtr, limit, offset, GetEntitiesHelper.Callback);
             return GetEntitiesHelper.Tcs.Task;
         }

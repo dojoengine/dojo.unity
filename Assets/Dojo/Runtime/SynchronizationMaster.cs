@@ -18,7 +18,9 @@ namespace Dojo
         public uint limit = 100;
 
         // Handle entities that get synchronized
-        public ModelInstance[] models;
+        private ModelInstance[] _models;
+        // Returns all of the model definitions
+        private ModelInstance[] models => _models ??= GetComponents<ModelInstance>();
 
         public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
@@ -129,11 +131,11 @@ namespace Dojo
         // Register our entity callbacks
         public void RegisterEntityCallbacks()
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
             worldManager.wasmClient.RegisterEntityStateUpdates(new FieldElement[] { });
-            #else
+#else
             worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[] { });
-            #endif
+#endif
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }

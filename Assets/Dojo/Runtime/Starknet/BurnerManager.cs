@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using dojo_bindings;
+using Debug = UnityEngine.Debug;
 
 namespace Dojo.Starknet {
     public class BurnerManager {
@@ -18,8 +19,9 @@ namespace Dojo.Starknet {
             this.masterAccount = masterAccount;
         }
 
-        async public Task<Account> DeployBurner() {
-            var account = await Task.Run(() => masterAccount.DeployBurner());
+        public async Task<Account> DeployBurner()
+        {
+            var account = await masterAccount.DeployBurner(provider);
             burners.Add(account);
             currentBurner = account;
 
@@ -27,17 +29,14 @@ namespace Dojo.Starknet {
         }
 
         // This will deploy a new burner if there is no current burner.
-        async public Task<Account> UseBurner() {
-            if (currentBurner == null) {
-                currentBurner = await DeployBurner();
-            }
-
-            return currentBurner;
+        public async Task<Account> UseBurner()
+        {
+            return currentBurner ??= await DeployBurner();
         }
 
         public Account UseBurner(FieldElement address) {
             foreach (var burner in burners) {
-                if (burner.Address().Equals(address)) {
+                if (burner.Address.Hex() == address.Hex()) {
                     currentBurner = burner;
                     return burner;
                 }

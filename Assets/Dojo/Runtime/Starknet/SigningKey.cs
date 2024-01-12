@@ -10,20 +10,25 @@ namespace Dojo.Starknet
         // The inner FieldElement for the private key.
         public FieldElement PrivateKey { get; }
         // Return the public key corresponding to the private key.
-        private VerifyingKey PublicKey
+        public VerifyingKey PublicKey
         {
             get
             {
-                if (PublicKey == null)
-                {
-                    PublicKey = new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner()));
-                }
+                // if (PublicKey == null)
+                // {
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    return new VerifyingKey(StarknetInterop.NewVerifyingKey(new CString(PrivateKey.Hex())));
+                    // PublicKey = new VerifyingKey("0x0");
+#else
+                    return new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner()));
+#endif
+                // }
 
-                return PublicKey;
+                // return PublicKey;
 
             }
 
-            set => PublicKey = value;
+            // set => PublicKey = value;
         }
 
         public SigningKey(string privateKey)
@@ -42,6 +47,14 @@ namespace Dojo.Starknet
         }
 
         // Sign a message.
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // webgl js interop starknet bindings
+        public Signature Sign(FieldElement message)
+        {
+            var signature = StarknetInterop.Sign(new CString(PrivateKey.Hex()), new CString(message.Hex()));
+            return new Signature(signature);
+        }
+#else
         public Signature Sign(FieldElement message)
         {
             var result = dojo.signing_key_sign(PrivateKey.Inner(), message.Inner());
@@ -52,5 +65,6 @@ namespace Dojo.Starknet
 
             return new Signature(result.ok);
         }
+#endif
     }
 }

@@ -16,7 +16,7 @@ public class Tests
     private readonly string rpcUrl = "http://0.0.0.0:5050";
     private readonly string playerKey = "0x028cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20";
     private readonly string playerAddress = "0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
-    private readonly string worldAddress = "0x033ac2f528bb97cc7b79148fd1756dc368be0e95d391d8c6d6473ecb60b4560e";
+    private readonly string worldAddress = "0x028f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a";
     private readonly string actionsAddress = "0x0152dcff993befafe5001975149d2c50bd9621da7cbaed74f68e7d5e54e65abc";
 
     private ToriiClient client;
@@ -46,36 +46,36 @@ public class Tests
 
         var signer = new SigningKey("0x1800000000300000180000000000030000000000003006001800006600");
 
-        account = new Account(provider, signer, playerAddress);
+        account = new Account(provider, signer, new FieldElement(playerAddress));
     }
 
     [Test]
-    public void TestAccountAddress()
+    public async void TestAccountAddress()
     {
-        var address = account.Address();
+        var address = account.Address;
 
         Assert.That(address.Hex(), Is.EqualTo(playerAddress));
     }
 
-    [Test]
-    public void TestAccountChainId()
-    {
-        var chainId = account.ChainId();
+    // [Test]
+    // public void TestAccountChainId()
+    // {
+    //     // var chainId = account.ChainId();
 
-        // check chainid?
-    }
+    //     // check chainid?
+    // }
 
-    [Test]
-    public void TestAccountSetBlockId()
-    {
-        var blockId = new dojo.BlockId
-        {
-            tag = dojo.BlockId_Tag.BlockTag_,
-            block_tag = dojo.BlockTag.Pending
-        };
+    // [Test]
+    // public void TestAccountSetBlockId()
+    // {
+    //     var blockId = new dojo.BlockId
+    //     {
+    //         tag = dojo.BlockId_Tag.BlockTag_,
+    //         block_tag = dojo.BlockTag.Pending
+    //     };
 
-        account.SetBlockId(blockId);
-    }
+    //     account.SetBlockId(blockId);
+    // }
 
     [Test, Order(3)]
     public async void TestAccountExecuteRaw()
@@ -86,7 +86,7 @@ public class Tests
             selector = "spawn"
         };
 
-        var txnHash = account.ExecuteRaw(new[] { call });
+        var txnHash = await account.ExecuteRaw(new[] { call });
         
         await provider.WaitForTransaction(txnHash);
 

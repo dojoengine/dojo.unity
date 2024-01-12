@@ -25,14 +25,11 @@ public class InitEntities : MonoBehaviour
 
     void Awake()
     {
-        #if UNITY_WEBGL && !UNITY_EDITOR
-        #else
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
-        var account = new Account(provider, signer, masterAddress);
+        var account = new Account(provider, signer, new FieldElement(masterAddress));
 
         burnerManager = new BurnerManager(provider, account);
-        #endif
     }
 
     // Start is called before the first frame update
@@ -51,8 +48,8 @@ public class InitEntities : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space))
         {
             var burner = await burnerManager.DeployBurner();
-            spawnedBurners[burner.Address()] = null;
-            burner.ExecuteRaw(new dojo.Call[]
+            spawnedBurners[burner.Address] = null;
+            var txHash = await burner.ExecuteRaw(new dojo.Call[]
             {
                 new dojo.Call
                 {
@@ -60,6 +57,7 @@ public class InitEntities : MonoBehaviour
                     to = worldActionsAddress,
                 }
             });
+            // Debug.Log($"Deployed burner {burner.Address().Hex()} and spawned with tx hash {txHash.Hex()}");
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -77,7 +75,7 @@ public class InitEntities : MonoBehaviour
                     var previousBurner = burnerManager.CurrentBurner;
                     if (previousBurner != null)
                     {
-                        worldManager.Entity(spawnedBurners[previousBurner.Address()])
+                        worldManager.Entity(spawnedBurners[previousBurner.Address])
                             .GetComponent<Position>().textTag.color = Color.black;
                     }
 
@@ -109,7 +107,7 @@ public class InitEntities : MonoBehaviour
         }
     }
 
-    private void Move(Direction direction)
+    private async void Move(Direction direction)
     {
         if (burnerManager.CurrentBurner == null)
         {
@@ -117,12 +115,12 @@ public class InitEntities : MonoBehaviour
             return;
         }
 
-        burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
+        await burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
         {
             new dojo.Call
             {
                 calldata = new dojo.FieldElement[] {
-                    dojo.felt_from_hex_be(new CString($"0x{(int)direction}")).ok,
+                    new FieldElement($"0x{(int)direction}").Inner()
                 },
                 selector = "move",
                 to = worldActionsAddress,

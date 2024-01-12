@@ -132,11 +132,15 @@
       loadingBar.style.display = "block";
 
       var dojoScript = document.createElement("script");
-      dojoScript.src = "TemplateData/dojo.js/torii_c.js";
+      dojoScript.src = "TemplateData/dojo.js/dojo_c.js";
       dojoScript.onload = async () => {
         await wasm_bindgen();
       };
       document.body.appendChild(dojoScript);
+
+      // var starknetScript = document.createElement("script");
+      // starknetScript.src = "TemplateData/starknet-5.24.3.js";
+      // document.body.appendChild(starknetScript);
 
       var gameInstance = null;
       var script = document.createElement("script");
