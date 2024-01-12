@@ -57,25 +57,25 @@ public class Tests
         Assert.That(address.Hex(), Is.EqualTo(playerAddress));
     }
 
-    [Test]
-    public void TestAccountChainId()
-    {
-        // var chainId = account.ChainId();
+    // [Test]
+    // public void TestAccountChainId()
+    // {
+    //     // var chainId = account.ChainId();
 
-        // check chainid?
-    }
+    //     // check chainid?
+    // }
 
-    [Test]
-    public void TestAccountSetBlockId()
-    {
-        var blockId = new dojo.BlockId
-        {
-            tag = dojo.BlockId_Tag.BlockTag_,
-            block_tag = dojo.BlockTag.Pending
-        };
+    // [Test]
+    // public void TestAccountSetBlockId()
+    // {
+    //     var blockId = new dojo.BlockId
+    //     {
+    //         tag = dojo.BlockId_Tag.BlockTag_,
+    //         block_tag = dojo.BlockTag.Pending
+    //     };
 
-        account.SetBlockId(blockId);
-    }
+    //     account.SetBlockId(blockId);
+    // }
 
     [Test, Order(3)]
     public async void TestAccountExecuteRaw()

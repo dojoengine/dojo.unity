@@ -2,7 +2,7 @@
   "inputFilePath": "./ast/cross-platform.json",
   "outputFileDirectory": "../Assets/Dojo/Runtime/bindings/client",
   "namespaceName": "dojo_bindings",
-  "libraryName": "torii_c",
+  "libraryName": "dojo_c",
   "className": "dojo",
   "isEnabledFileScopedNamespace": false,
   "isEnabledLibraryImport": false,

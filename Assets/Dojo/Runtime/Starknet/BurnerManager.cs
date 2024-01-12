@@ -6,6 +6,7 @@ using Debug = UnityEngine.Debug;
 
 namespace Dojo.Starknet {
     public class BurnerManager {
+        private JsonRpcClient provider;
         private Account masterAccount;
         private Account currentBurner;
         private List<Account> burners = new();
@@ -13,13 +14,14 @@ namespace Dojo.Starknet {
         public Account CurrentBurner => currentBurner;
         public List<Account> Burners => burners;
 
-        public BurnerManager(Account masterAccount) {
+        public BurnerManager(JsonRpcClient provider, Account masterAccount) {
+            this.provider = provider;
             this.masterAccount = masterAccount;
         }
 
         public async Task<Account> DeployBurner()
         {
-            var account = await masterAccount.DeployBurner();
+            var account = await masterAccount.DeployBurner(provider);
             burners.Add(account);
             currentBurner = account;
 

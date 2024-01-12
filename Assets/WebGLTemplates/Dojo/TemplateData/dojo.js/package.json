@@ -1,11 +1,11 @@
 {
-  "name": "torii-c",
-  "version": "0.1.0",
+  "name": "dojo-c",
+  "version": "0.1.1",
   "files": [
-    "torii_c_bg.wasm",
-    "torii_c.js",
-    "torii_c.d.ts"
+    "dojo_c_bg.wasm",
+    "dojo_c.js",
+    "dojo_c.d.ts"
   ],
-  "browser": "torii_c.js",
-  "types": "torii_c.d.ts"
+  "browser": "dojo_c.js",
+  "types": "dojo_c.d.ts"
 }

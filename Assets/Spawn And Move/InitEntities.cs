@@ -25,19 +25,11 @@ public class InitEntities : MonoBehaviour
 
     void Awake()
     {
-#if UNITY_WEBGL && !UNITY_EDITOR
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, new FieldElement(masterAddress));
 
-        burnerManager = new BurnerManager(account);
-#else
-        var provider = new JsonRpcClient(worldManager.rpcUrl);
-        var signer = new SigningKey(masterPrivateKey);
-        var account = new Account(provider, signer, new FieldElement(masterAddress));
-
-        burnerManager = new BurnerManager(account);
-#endif
+        burnerManager = new BurnerManager(provider, account);
     }
 
     // Start is called before the first frame update
@@ -123,7 +115,7 @@ public class InitEntities : MonoBehaviour
             return;
         }
 
-        var tx = await burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
+        await burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
         {
             new dojo.Call
             {

@@ -76,14 +76,14 @@ namespace Dojo.Starknet
 //             return new FieldElement(chainId);
 //         }
 
-        public unsafe void SetBlockId(dojo.BlockId blockId)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            // StarknetInterop.AccountSetBlockId(account, blockId.Hex());
-#else
-            dojo.account_set_block_id(account, blockId);
-#endif
-        }
+//         public unsafe void SetBlockId(dojo.BlockId blockId)
+//         {
+// // #if UNITY_WEBGL && !UNITY_EDITOR
+//             StarknetInterop.account(account, blockId.Hex());
+// #else
+//             dojo.account_set_block_id(account, blockId);
+// #endif
+//         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings
@@ -115,9 +115,9 @@ namespace Dojo.Starknet
 #if !UNITY_WEBGL || UNITY_EDITOR
         // This will synchroneously wait for the burner to be deployed.
         // Implemented for C bindings that arent async.
-        private unsafe Account DeployBurnerSync()
+        private unsafe Account DeployBurnerSync(JsonRpcClient provider)
         {
-            var result = dojo.account_deploy_burner(account);
+            var result = dojo.account_deploy_burner(provider.client, account);
             if (result.tag == dojo.ResultAccount_Tag.ErrAccount)
             {
                 throw new Exception(result.err.message);
@@ -128,12 +128,12 @@ namespace Dojo.Starknet
 #endif
 
         // Deploy a burner and return the account once it is deployed.
-        public async Task<Account> DeployBurner()
+        public async Task<Account> DeployBurner(JsonRpcClient provider)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             return new Account(await StarknetInterop.AccountDeployBurnerAsync(await account.Task));
 #else
-            return await Task.Run(() => DeployBurnerSync());
+            return await Task.Run(() => DeployBurnerSync(provider));
 #endif
         }
     }
