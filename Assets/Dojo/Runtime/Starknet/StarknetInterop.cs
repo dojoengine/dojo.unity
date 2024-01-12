@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using AOT;
 using bottlenoselabs.C2CS.Runtime;
 using dojo_bindings;
 using Newtonsoft.Json;
+using Debug = UnityEngine.Debug;
 
 namespace Dojo.Starknet {
     public class StarknetInterop {

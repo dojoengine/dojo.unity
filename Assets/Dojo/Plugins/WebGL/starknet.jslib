@@ -34,7 +34,8 @@ mergeInto(LibraryManager.library, {
         dynCall_vi(cb, buffer);
     },
     AccountDeployBurner: async function (account, cb) {
-        dynCall_vi(cb, await wasm_bindgen.accountDeployBurner(account));
+        const burner = await wasm_bindgen.accountDeployBurner(account);
+        dynCall_vi(cb, burner);
     },
     WaitForTransaction: async function (provider, txHash, cb) {
         const confirmed = await wasm_bindgen.waitForTransaction(provider, UTF8ToString(txHash));

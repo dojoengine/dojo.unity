@@ -28,17 +28,15 @@ public class InitEntities : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
-        var account = new Account(provider, signer, masterAddress);
+        var account = new Account(provider, signer, new FieldElement(masterAddress));
 
-        account.Address();
-
-        burnerManager = new BurnerManager(provider, account);
+        burnerManager = new BurnerManager(account);
 #else
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
-        var account = new Account(provider, signer, masterAddress);
+        var account = new Account(provider, signer, new FieldElement(masterAddress));
 
-        burnerManager = new BurnerManager(provider, account);
+        burnerManager = new BurnerManager(account);
 #endif
     }
 
@@ -58,7 +56,7 @@ public class InitEntities : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.Space))
         {
             var burner = await burnerManager.DeployBurner();
-            spawnedBurners[burner.Address()] = null;
+            spawnedBurners[burner.Address] = null;
             var txHash = await burner.ExecuteRaw(new dojo.Call[]
             {
                 new dojo.Call
@@ -85,7 +83,7 @@ public class InitEntities : MonoBehaviour
                     var previousBurner = burnerManager.CurrentBurner;
                     if (previousBurner != null)
                     {
-                        worldManager.Entity(spawnedBurners[previousBurner.Address()])
+                        worldManager.Entity(spawnedBurners[previousBurner.Address])
                             .GetComponent<Position>().textTag.color = Color.black;
                     }
 

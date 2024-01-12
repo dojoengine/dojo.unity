@@ -46,13 +46,13 @@ public class Tests
 
         var signer = new SigningKey("0x1800000000300000180000000000030000000000003006001800006600");
 
-        account = new Account(provider, signer, playerAddress);
+        account = new Account(provider, signer, new FieldElement(playerAddress));
     }
 
     [Test]
-    public void TestAccountAddress()
+    public async void TestAccountAddress()
     {
-        var address = account.Address();
+        var address = account.Address;
 
         Assert.That(address.Hex(), Is.EqualTo(playerAddress));
     }
@@ -60,7 +60,7 @@ public class Tests
     [Test]
     public void TestAccountChainId()
     {
-        var chainId = account.ChainId();
+        // var chainId = account.ChainId();
 
         // check chainid?
     }
