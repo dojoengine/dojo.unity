@@ -49,8 +49,6 @@ mergeInto(LibraryManager.library, {
         return buffer;
     },
     Sign: function (pk, hash) {
-        console.log(UTF8ToString(pk));
-        console.log(UTF8ToString(hash));
         var signature = wasm_bindgen.signingKeySign(UTF8ToString(pk), UTF8ToString(hash));
         var compactSig = signature.r.replace('0x', '').padStart(64, '0') + signature.s.replace('0x', '').padStart(64, '0');
         console.log(signature);
