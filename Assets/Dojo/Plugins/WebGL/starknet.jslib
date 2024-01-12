@@ -1,128 +1,75 @@
 mergeInto(LibraryManager.library, {
-    GetPublicKey: function (privateKey) {
-        var starkKey = stark.ec.starkCurve.getStarkKey(UTF8ToString(privateKey));
-
-        var bufferSize = lengthBytesUTF8(starkKey) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(starkKey, buffer, bufferSize);
-        return buffer;
+    NewProvider: function (rpcUrl) {
+        return wasm_bindgen.jsonrpcClientNew(UTF8ToString(rpcUrl));
     },
-    Sign: function (msgHash, privateKey) {
-        var signature = stark.ec.starkCurve.sign(UTF8ToString(msgHash), UTF8ToString(privateKey));
-
-        var signatureCompact = signature.toCompactHex();
-        var bufferSize = lengthBytesUTF8(signatureCompact) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(signatureCompact, buffer, bufferSize);
-        return buffer;
-
+    NewAccount: async function (provider, pk, address, cb) {
+        const account = await wasm_bindgen.accountNew(provider, UTF8ToString(pk), UTF8ToString(address));
+        dynCall_vi(cb, account);
     },
-    Verify: function (signatureCompact, msgHash, publicKey) {
-        const Fp = stark.ec.starkCurve.Fp251;
-        // if public key is starkkey, x coordinate of curve
-        const x = stark.num.toBigInt(UTF8ToString(publicKey));
-        // weierstrass equation
-        const { a, b } = stark.ec.starkCurve._starkCurve.CURVE;
-        const x2 = Fp.sqr(x);
-        const x3 = Fp.mul(x2, x);
-        // squared y
-        const y2 = Fp.add(Fp.add(x3, Fp.mul(x, a)), b);
-        // we get the y
-        const y = Fp.sqrt(y2);
-        // we get the point
-        const point = stark.ec.starkCurve._starkCurve.ProjectivePoint.fromAffine({
-            x,
-            y,
-        });
-        
-        var signature = stark.ec.starkCurve.Signature.fromCompact(UTF8ToString(signatureCompact));
-        var result = stark.ec.starkCurve.verify(signature, UTF8ToString(msgHash), point.toRawBytes());
-        return result;
-    },
-    NewRpcProvider: function (nodeUrl) {
-        var provider = new stark.RpcProvider({
-            nodeUrl: UTF8ToString(nodeUrl)
-        });
-
-        var providerString = JSON.stringify(provider);
-        var bufferSize = lengthBytesUTF8(providerString) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(providerString, buffer, bufferSize);
-        return buffer;
-    },
-    WaitForTransaction: async function (providerStr, txHash, cb) {
-        var provider = JSON.parse(UTF8ToString(providerStr));
-        var tx = await provider.waitForTransaction(UTF8ToString(txHash));
-
-        var txString = JSON.stringify(tx);
-        var bufferSize = lengthBytesUTF8(txString) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(txString, buffer, bufferSize);
-        dynCall_vi(cb);
-    },
-    NewAccount: function (providerStr, address, privateKey) {
-        var provider = new stark.RpcProvider(JSON.parse(UTF8ToString(providerStr)));
-        var account = new stark.Account(provider, UTF8ToString(address), UTF8ToString(privateKey));
-
-        var accountString = JSON.stringify(account);
-        var bufferSize = lengthBytesUTF8(accountString) + 1;
-        var buffer = _malloc(bufferSize);
-        stringToUTF8(accountString, buffer, bufferSize);
-        return buffer;
-    },
-    AccountAddress: function (accountStr) {
-        var account = JSON.parse(UTF8ToString(accountStr));
-        var address = account.address;
-
+    AccountAddress: function (account) {
+        var address = wasm_bindgen.accountAddress(account);
         var bufferSize = lengthBytesUTF8(address) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(address, buffer, bufferSize);
         return buffer;
     },
-    AccountChainId: function (accountStr) {
-        var account = JSON.parse(UTF8ToString(accountStr));
-        var chainId = account.chainId;
-
+    AccountChainId: function (account) {
+        var chainId = wasm_bindgen.accountChainId(account);
         var bufferSize = lengthBytesUTF8(chainId) + 1;
         var buffer = _malloc(bufferSize);
         stringToUTF8(chainId, buffer, bufferSize);
         return buffer;
     },
-    AccountExecuteRaw: async function (accountStr, calls, cb) {
-        var accountObject = JSON.parse(UTF8ToString(accountStr));
-        var account = new stark.Account(new stark.RpcProvider(accountObject.provider), accountObject.address, new stark.Signer(accountObject.signer.pk));
-
+    AccountSetBlockId: function (account, blockId) {
+        wasm_bindgen.accountSetBlockId(account, UTF8ToString(blockId));
+    },
+    AccountExecuteRaw: async function (account, calls, cb) {
         var calls = JSON.parse(UTF8ToString(calls));
-        var txHash = await account.execute(calls.map((c) => ({
-            ...c,
-            calldata: stark.CallData.compile(c.calldata)
-        })));
-
-        var txString = txHash.transaction_hash;
-        var bufferSize = lengthBytesUTF8(txString) + 1;
+        var txHash = await wasm_bindgen.accountExecuteRaw(account, {
+            calls
+        });
+        var bufferSize = lengthBytesUTF8(txHash) + 1;
         var buffer = _malloc(bufferSize);
-        stringToUTF8(txString, buffer, bufferSize);
+        stringToUTF8(txHash, buffer, bufferSize);
         dynCall_vi(cb, buffer);
     },
-    AccountDeployBurner: async function (accountStr, cb) {
-        var accountObject = JSON.parse(UTF8ToString(accountStr));
-        var account = new stark.Account(new stark.RpcProvider(accountObject.provider), accountObject.address, accountObject.signer.pk);
-
-        // new random private key
-        const pk = stark.stark.randomAddress();
-        const publicKey = stark.ec.starkCurve.getStarkKey(pk);
-        var deployData = await account.deployContract({
-            classHash: "0x04d07e40e93398ed3c76981e72dd1fd22557a78ce36c0515f679e27f0bb5bc5f",
-            salt: publicKey,
-            unique: false,
-            constructorCalldata: stark.CallData.compile({publicKey}),
-        });
-
-        var accountString = JSON.stringify(new stark.Account(new stark.RpcProvider(accountObject.provider), deployData.contract_address, pk));
-        var bufferSize = lengthBytesUTF8(accountString) + 1;
+    AccountDeployBurner: async function (account, cb) {
+        dynCall_vi(cb, await wasm_bindgen.accountDeployBurner(account));
+    },
+    WaitForTransaction: async function (provider, txHash, cb) {
+        const confirmed = await wasm_bindgen.waitForTransaction(provider, UTF8ToString(txHash));
+        dynCall_vi(cb, confirmed);
+    },
+    NewSigningKey: function () {
+        var pk = wasm_bindgen.signingKeyNew();
+        var bufferSize = lengthBytesUTF8(pk) + 1;
         var buffer = _malloc(bufferSize);
-        stringToUTF8(accountString, buffer, bufferSize);
-        dynCall_vi(cb, buffer);
-
+        stringToUTF8(pk, buffer, bufferSize);
+        return buffer;
+    },
+    Sign: function (pk, hash) {
+        console.log(UTF8ToString(pk));
+        console.log(UTF8ToString(hash));
+        var signature = wasm_bindgen.signingKeySign(UTF8ToString(pk), UTF8ToString(hash));
+        var compactSig = signature.r.replace('0x', '').padStart(64, '0') + signature.s.replace('0x', '').padStart(64, '0');
+        console.log(signature);
+        console.log(compactSig);
+        var bufferSize = lengthBytesUTF8(compactSig) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(compactSig, buffer, bufferSize);
+        return buffer;
+    },
+    NewVerifyingKey: function (pk) {
+        var verifyingKey = wasm_bindgen.verifyingKeyNew(UTF8ToString(pk));
+        var bufferSize = lengthBytesUTF8(verifyingKey) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(verifyingKey, buffer, bufferSize);
+        return buffer;
+    },
+    Verify: function (vk, hash, r, s) {
+        return wasm_bindgen.verifyingKeyVerify(UTF8ToString(vk), UTF8ToString(hash), {
+            r: UTF8ToString(r),
+            s: UTF8ToString(s)
+        });
     },
 });

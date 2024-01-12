@@ -17,7 +17,7 @@ namespace Dojo.Starknet
                 // if (PublicKey == null)
                 // {
 #if UNITY_WEBGL && !UNITY_EDITOR
-                    return new VerifyingKey(StarknetInterop.GetPublicKey(new CString(PrivateKey.Hex())));
+                    return new VerifyingKey(StarknetInterop.NewVerifyingKey(new CString(PrivateKey.Hex())));
                     // PublicKey = new VerifyingKey("0x0");
 #else
                     return new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner()));
@@ -51,7 +51,7 @@ namespace Dojo.Starknet
         // webgl js interop starknet bindings
         public Signature Sign(FieldElement message)
         {
-            var signature = StarknetInterop.Sign(new CString(message.Hex()), new CString(PrivateKey.Hex()));
+            var signature = StarknetInterop.Sign(new CString(PrivateKey.Hex()), new CString(message.Hex()));
             return new Signature(signature);
         }
 #else

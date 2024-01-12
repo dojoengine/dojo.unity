@@ -26,7 +26,6 @@ namespace Dojo.Torii
         public async Task CreateClient()
         {
             clientPtr = await ToriiWasmInterop.CreateClientAsync(rpcUrl, toriiUrl, world);
-            Debug.Log(clientPtr);
         }
 
         public async Task<List<Entity>> Entities(int limit, int offset)

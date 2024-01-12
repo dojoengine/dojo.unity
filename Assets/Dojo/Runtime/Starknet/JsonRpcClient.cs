@@ -8,14 +8,14 @@ namespace Dojo.Starknet
     public class JsonRpcClient
     {
         #if UNITY_WEBGL && !UNITY_EDITOR
-        public string rpcJsObject;
+        public IntPtr client;
         #else
         public unsafe dojo.CJsonRpcClient* client;
         #endif
 
         #if UNITY_WEBGL && !UNITY_EDITOR
         public JsonRpcClient(string rpcUrl) {
-            rpcJsObject = StarknetInterop.NewRpcProvider(new CString(rpcUrl));
+            client = StarknetInterop.NewProvider(new CString(rpcUrl));
         }
         #else
         public unsafe JsonRpcClient(string rpcUrl)
@@ -59,7 +59,7 @@ namespace Dojo.Starknet
         #if UNITY_WEBGL && !UNITY_EDITOR
         public async Task WaitForTransaction(FieldElement transactionHash)
         {
-            await StarknetInterop.WaitForTransactionAsync(rpcJsObject, transactionHash.Hex());
+            await StarknetInterop.WaitForTransactionAsync(client, transactionHash);
         }
         #else
         public async Task WaitForTransaction(FieldElement transactionHash)

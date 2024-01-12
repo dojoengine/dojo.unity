@@ -10,16 +10,19 @@ namespace Dojo.Starknet
     public class Account
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        private string accountJsObject;
+        private IntPtr account;
 #else
         private unsafe dojo.Account* account;
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
+        private async void NewAccount(JsonRpcClient provider, SigningKey privateKey, string address) {
+            account = await StarknetInterop.NewAccountAsync(provider.client, privateKey, address);
+        }
+
         public Account(JsonRpcClient provider, SigningKey privateKey, string address)
         {
-            accountJsObject =
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               StarknetInterop.NewAccount(new CString(provider.rpcJsObject), new CString(address), new CString(privateKey.PrivateKey.Hex()));
+            NewAccount(provider, privateKey, address);
         }
 #else
         public unsafe Account(JsonRpcClient provider, SigningKey privateKey, string address)
@@ -37,8 +40,8 @@ namespace Dojo.Starknet
 
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-        public Account(string accountJsObject) {
-            this.accountJsObject = accountJsObject;
+        public Account(IntPtr account) {
+            this.account = account;
         }
 #else
         private unsafe Account(dojo.Account* account)
@@ -58,7 +61,9 @@ namespace Dojo.Starknet
         public unsafe FieldElement Address()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            var address = StarknetInterop.AccountAddress(new CString(accountJsObject));
+            Debug.Log(account);
+            var address = StarknetInterop.AccountAddress(account);
+            Debug.Log(address);
 #else
             var address = dojo.account_address(account);
 #endif
@@ -69,7 +74,7 @@ namespace Dojo.Starknet
         public unsafe FieldElement ChainId()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            var chainId = StarknetInterop.AccountChainId(new CString(accountJsObject));
+            var chainId = StarknetInterop.AccountChainId(account);
 #else
             var chainId = dojo.account_chain_id(account);
 #endif
@@ -80,6 +85,7 @@ namespace Dojo.Starknet
         public unsafe void SetBlockId(dojo.BlockId blockId)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
+            // StarknetInterop.AccountSetBlockId(account, blockId.Hex());
 #else
             dojo.account_set_block_id(account, blockId);
 #endif
@@ -89,18 +95,9 @@ namespace Dojo.Starknet
         // webgl js interop starknet bindings
         public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
         {
-            // var res =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
-            //     contractAddress = call.to.ToString(),
-            //     entrypoint = call.selector.ToString(),
-            //     calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
-            // }).ToArray()).Result;
-            var res = await StarknetInterop.AccountExecuteRawAsync(accountJsObject, calls.Select(call => new StarknetInterop.Call{
-                contractAddress = call.to.ToString(),
-                entrypoint = call.selector.ToString(),
-                calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
-            }).ToArray());
+            var res = await StarknetInterop.AccountExecuteRawAsync(account, calls);
 
-            return new FieldElement(res);
+            return res;
         }
 #else
         public unsafe async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
@@ -140,7 +137,7 @@ namespace Dojo.Starknet
         public async Task<Account> DeployBurner()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return new Account(await StarknetInterop.AccountDeployBurnerAsync(accountJsObject));
+            return new Account(await StarknetInterop.AccountDeployBurnerAsync(account));
 #else
             return await Task.Run(() => DeployBurnerSync());
 #endif

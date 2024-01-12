@@ -31,7 +31,7 @@ namespace Dojo.Starknet
         // webgl js interop starknet bindings
         public bool Verify(FieldElement message, Signature signature)
         {
-            return StarknetInterop.Verify(new CString(signature.ToCompactHex()), new CString(message.Hex()), new CString(Inner.Hex()));
+            return StarknetInterop.Verify(new CString(Inner.Hex()), new CString(message.Hex()), new CString(signature.R().Hex()), new CString(signature.S().Hex()));
         }
 #else
         // dojo.c starknet-rs bindings

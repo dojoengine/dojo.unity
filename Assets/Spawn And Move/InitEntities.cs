@@ -30,6 +30,8 @@ public class InitEntities : MonoBehaviour
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, masterAddress);
 
+        account.Address();
+
         burnerManager = new BurnerManager(provider, account);
 #else
         var provider = new JsonRpcClient(worldManager.rpcUrl);

@@ -4,112 +4,114 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AOT;
 using bottlenoselabs.C2CS.Runtime;
+using dojo_bindings;
 using Newtonsoft.Json;
-using UnityEngine;
 
-namespace Dojo.Starknet
-{
-    public class StarknetInterop : MonoBehaviour
-    {
+namespace Dojo.Starknet {
+    public class StarknetInterop {
         [DllImport("__Internal")]
-        public static extern string GetPublicKey(CString privateKey);
-
-        // Returns a compact hex string of the signature
-        // string(r + s)
-        // 0x is not included
-        [DllImport("__Internal")]
-        public static extern string Sign(CString msgHash, CString privateKey);
-
-        // Returns true if the signature is valid
-        // compactHex is a compact hex string of the signature
-        [DllImport("__Internal")]
-        public static extern bool Verify(CString compactHex, CString msgHash, CString publicKey);
-
-        // Returns a stringified json object of the RpcProvider object
-        [DllImport("__Internal")]
-        public static extern string NewRpcProvider(CString nodeUrl);
+        public static extern IntPtr NewProvider(CString nodeUrl);
 
         [DllImport("__Internal")]
-        public static extern string WaitForTransaction(CString providerStr, CString txHash, Action<string> cb);
+        public static extern IntPtr NewAccount(IntPtr provider, CString privateKey, CString address, Action<IntPtr> cb);
 
-        private static class WaitForTransactionHelper
-        {
-            public static TaskCompletionSource<string> Tcs;
+        public class NewAccountHelper {
+            public static TaskCompletionSource<IntPtr> Tcs;
 
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string txHash)
-            {
-                Tcs.SetResult(txHash);
+            [MonoPInvokeCallback(typeof(Action<IntPtr>))]
+            public static void Callback(IntPtr result) {
+                Tcs.SetResult(result);
             }
         }
 
-        public static Task<string> WaitForTransactionAsync(string providerStr, string txHash)
-        {
-            WaitForTransactionHelper.Tcs = new TaskCompletionSource<string>();
-            WaitForTransaction(new CString(providerStr), new CString(txHash), WaitForTransactionHelper.Callback);
-            return WaitForTransactionHelper.Tcs.Task;
+        public static Task<IntPtr> NewAccountAsync(IntPtr provider, SigningKey privateKey, string address) {
+            NewAccountHelper.Tcs = new TaskCompletionSource<IntPtr>();
+            NewAccount(provider, new CString(privateKey.PrivateKey.Hex()), new CString(address), NewAccountHelper.Callback);
+            return NewAccountHelper.Tcs.Task;
         }
 
-        // Returns a stringified json object of the Account object
         [DllImport("__Internal")]
-        public static extern string NewAccount(CString providerStr, CString address, CString privateKey);
+        public static extern string AccountAddress(IntPtr account);
 
         [DllImport("__Internal")]
-        public static extern string AccountAddress(CString accountStr);
+        public static extern string AccountChainId(IntPtr account);
 
         [DllImport("__Internal")]
-        public static extern string AccountChainId(CString accountStr);
+        public static extern void AccountExecuteRaw(IntPtr account, CString calls, Action<string> cb);
 
-        // Calls should be a stringified array of Call objects
-        // Calldata is RawCalladata - should be a stringified array of Felts
-        [DllImport("__Internal")]
-        public static extern string AccountExecuteRaw(CString accountStr, CString calls, Action<string> cb);
-
-        private static class AccountExecuteRawHelper
-        {
-            public static TaskCompletionSource<string> Tcs;
+        public class AccountExecuteRawHelper {
+            public static TaskCompletionSource<FieldElement> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string result)
-            {
-                Tcs.SetResult(result);
+            public static void Callback(string result) {
+                Tcs.SetResult(new FieldElement(result));
             }
         }
 
         public struct Call
         {
-            public string contractAddress;
-            public string entrypoint;
+            public string to;
+            public string selector;
             // array of hex strings
             public string[] calldata;
         }
 
-        public static Task<string> AccountExecuteRawAsync(string accountStr, Call[] calls)
-        {
-            AccountExecuteRawHelper.Tcs = new TaskCompletionSource<string>();
-            AccountExecuteRaw(new CString(accountStr), new CString(JsonConvert.SerializeObject(calls)), AccountExecuteRawHelper.Callback);
+        public static Task<FieldElement> AccountExecuteRawAsync(IntPtr account, dojo.Call[] calls) {
+            AccountExecuteRawHelper.Tcs = new TaskCompletionSource<FieldElement>();
+            AccountExecuteRaw(account, new CString(JsonConvert.SerializeObject(calls.Select(call => new StarknetInterop.Call{
+                to = call.to.ToString(),
+                selector = call.selector.ToString(),
+                calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
+            }).ToArray())), AccountExecuteRawHelper.Callback);
             return AccountExecuteRawHelper.Tcs.Task;
         }
 
         [DllImport("__Internal")]
-        public static extern string AccountDeployBurner(CString accountStr, Action<string> cb);
+        public static extern void AccountDeployBurner(IntPtr account, Action<IntPtr> cb);
 
-        private static class AccountDeployBurnerHelper
-        {
-            public static TaskCompletionSource<string> Tcs;
+        public class AccountDeployBurnerHelper {
+            public static TaskCompletionSource<IntPtr> Tcs;
 
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string result)
-            {
+            [MonoPInvokeCallback(typeof(Action<IntPtr>))]
+            public static void Callback(IntPtr result) {
                 Tcs.SetResult(result);
             }
         }
 
-        public static Task<string> AccountDeployBurnerAsync(string accountStr)
-        {
-            AccountDeployBurnerHelper.Tcs = new TaskCompletionSource<string>();
-            AccountDeployBurner(new CString(accountStr), AccountDeployBurnerHelper.Callback);
+        public static Task<IntPtr> AccountDeployBurnerAsync(IntPtr account) {
+            AccountDeployBurnerHelper.Tcs = new TaskCompletionSource<IntPtr>();
+            AccountDeployBurner(account, AccountDeployBurnerHelper.Callback);
             return AccountDeployBurnerHelper.Tcs.Task;
         }
+
+        [DllImport("__Internal")]
+        public static extern void WaitForTransaction(IntPtr provider, CString transactionHash, Action<bool> cb);
+
+        public class WaitForTransactionHelper {
+            public static TaskCompletionSource<bool> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<bool>))]
+            public static void Callback(bool result) {
+                Tcs.SetResult(result);
+            }
+        }
+
+        public static Task<bool> WaitForTransactionAsync(IntPtr provider, FieldElement transactionHash) {
+            WaitForTransactionHelper.Tcs = new TaskCompletionSource<bool>();
+            WaitForTransaction(provider, new CString(transactionHash.Hex()), WaitForTransactionHelper.Callback);
+            return WaitForTransactionHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
+        public static extern string NewSigningKey();
+
+        [DllImport("__Internal")]
+        public static extern string Sign(CString privateKey, CString hash);
+
+        [DllImport("__Internal")]
+        public static extern string NewVerifyingKey(CString privateKey);
+
+        [DllImport("__Internal")]
+        public static extern bool Verify(CString publicKey, CString hash, CString r, CString s);
     }
 }

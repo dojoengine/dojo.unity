@@ -52,7 +52,7 @@ namespace Dojo.Starknet
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings
         public bool Verify(FieldElement verifying_key, FieldElement hash) {
-            return StarknetInterop.Verify(new CString(ToCompactHex()), new CString(hash.Hex()), new CString(verifying_key.Hex()));
+            return StarknetInterop.Verify(new CString(verifying_key.Hex()), new CString(hash.Hex()), new CString(R().Hex()), new CString(S().Hex()));
         }
 #else
         // dojo.c starknet-rs bindings
