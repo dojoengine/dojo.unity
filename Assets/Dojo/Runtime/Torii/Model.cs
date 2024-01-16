@@ -67,6 +67,9 @@ namespace Dojo.Torii
                 "u32" => value.value.ToObject<uint>(),
                 "u64" => value.value.ToObject<ulong>(),
                 // NOTE: UNTESTED
+                // NOTE: slow?
+                // use BigInteger parse instead maybe but seems a bit
+                // uninconvenient to use
                 "u128" => new BigInteger(hexToBytes(value.value.ToObject<string>(), 16)),
                 // NOTE: UNTESTED
                 "u256" => new BigInteger(hexToBytes(value.value.ToObject<string>(), 32)),

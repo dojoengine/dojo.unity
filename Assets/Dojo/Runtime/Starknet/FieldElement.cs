@@ -15,6 +15,8 @@ namespace Dojo.Starknet
         // Serialized as a hex string.
         [SerializeField] private string hex;
 
+        // These constructors are pretty slow as they involve a lot of copying.
+        // TODO: benchmark and optimize
         public FieldElement(string hex)
         {
 
@@ -36,6 +38,7 @@ namespace Dojo.Starknet
                 hex = hex.PadLeft(64, '0');
             }
 
+            // NOTE: Use BigInteger to parse instead?
             // Convert the hex string to a byte array.
             byte[] bytes = Enumerable.Range(0, hex.Length)
                 .Where(x => x % 2 == 0)
@@ -72,9 +75,11 @@ namespace Dojo.Starknet
             }
         }
 
+        // This handles BigIntegers as well as primitive types
         public FieldElement(BigInteger bigInteger)
         {
             var bytes = bigInteger.ToByteArray();
+
             if (bytes.Length > 32)
             {
                 throw new ArgumentException("BigInteger must be 32 bytes or less.", nameof(bigInteger));
@@ -84,26 +89,22 @@ namespace Dojo.Starknet
             {
                 fixed (byte* ptr = &inner._data[0])
                 {
-                    Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
+                    // we need to account bytes that are less than 32 bytes
+                    // and add leading zeros
+                    var offset = 32 - bytes.Length;
+                    Marshal.Copy(bytes, 0, (IntPtr)ptr + offset, bytes.Length);
                 }
             }
         }
 
+        // This convert the enum to a uint64 and uses the BigInteger constructor
         public FieldElement(Enum @enum) : this(Convert.ToUInt64(@enum))
         {
         }
 
         public string Hex()
         {
-            unsafe
-            {
-                byte[] bytes = new byte[32];
-                fixed (byte* ptr = &inner._data[0])
-                {
-                    Marshal.Copy((IntPtr)ptr, bytes, 0, bytes.Length);
-                }
-                return "0x" + BitConverter.ToString(bytes).Replace("-", "").ToLower();
-            }
+            return "0x" + BitConverter.ToString(inner.data.ToArray()).Replace("-", "").ToLower();
         }
 
         public dojo.FieldElement Inner()
