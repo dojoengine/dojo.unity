@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using dojo_bindings;
@@ -69,6 +70,27 @@ namespace Dojo.Starknet
                     Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
                 }
             }
+        }
+
+        public FieldElement(BigInteger bigInteger)
+        {
+            var bytes = bigInteger.ToByteArray();
+            if (bytes.Length > 32)
+            {
+                throw new ArgumentException("BigInteger must be 32 bytes or less.", nameof(bigInteger));
+            }
+
+            unsafe
+            {
+                fixed (byte* ptr = &inner._data[0])
+                {
+                    Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
+                }
+            }
+        }
+
+        public FieldElement(Enum @enum) : this(Convert.ToUInt64(@enum))
+        {
         }
 
         public string Hex()
