@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using Dojo.Starknet;
 using dojo_bindings;
@@ -38,8 +39,8 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.U16 => ty.primitive.u16,
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
                     dojo.Primitive_Tag.U64 => ty.primitive.u64,
-                    dojo.Primitive_Tag.U128 => ty.primitive.u128.ToArray(),
-                    dojo.Primitive_Tag.U256 => ty.primitive.u256.ToArray(),
+                    dojo.Primitive_Tag.U128 => new BigInteger(ty.primitive.u128.ToArray()),
+                    dojo.Primitive_Tag.U256 => new BigInteger(MemoryMarshal.AsBytes(ty.primitive.u256).ToArray()),
                     dojo.Primitive_Tag.USize => ty.primitive.u_size,
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
@@ -66,9 +67,12 @@ namespace Dojo.Torii
                 "u32" => value.value.ToObject<uint>(),
                 "u64" => value.value.ToObject<ulong>(),
                 // NOTE: UNTESTED
-                "u128" => hexToU128(value.value.ToObject<string>()).ToArray(),
+                // NOTE: slow?
+                // use BigInteger parse instead maybe but seems a bit
+                // uninconvenient to use
+                "u128" => new BigInteger(hexToBytes(value.value.ToObject<string>(), 16)),
                 // NOTE: UNTESTED
-                "u256" => hexToU256(value.value.ToObject<string>()).ToArray(),
+                "u256" => new BigInteger(hexToBytes(value.value.ToObject<string>(), 32)),
                 "usize" => value.value.ToObject<uint>(),
                 // these should be fine
                 "felt252" => new FieldElement(value.value.ToObject<string>()),
@@ -78,32 +82,17 @@ namespace Dojo.Torii
             };
         }
 
-        private Span<byte> hexToU128(string hex)
+        private Span<byte> hexToBytes(string hex, int length)
         {
             // remove 0x
             hex = hex.Substring(2);
             // add leading zeros
-            hex = hex.PadLeft(32, '0');
+            hex = hex.PadLeft(length * 2, '0');
 
-            var bytes = new byte[16];
-            for (var i = 0; i < 16; i++)
+            var bytes = new byte[length];
+            for (var i = 0; i < length; i++)
             {
                 bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
-            }
-            return bytes;
-        }
-
-        private Span<ulong> hexToU256(string hex)
-        {
-            // remove 0x
-            hex = hex.Substring(2);
-            // add leading zeros
-            hex = hex.PadLeft(64, '0');
-
-            var bytes = new ulong[4];
-            for (var i = 0; i < 4; i++)
-            {
-                bytes[i] = Convert.ToUInt64(hex.Substring(i * 16, 16), 16);
             }
             return bytes;
         }
