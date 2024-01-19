@@ -7,6 +7,7 @@ using Dojo.Torii;
 using dojo_bindings;
 using UnityEngine;
 using UnityEngine.Events;
+using System.Numerics;
 
 namespace Dojo
 {
@@ -63,7 +64,7 @@ namespace Dojo
             // if the field is a primitive, we can just set it
             // fieldelement is included as a primitive because its a class
             // but its already instantiated
-            else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement))
+            else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement) || field.FieldType == typeof(BigInteger))
             {
                 field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
             }
