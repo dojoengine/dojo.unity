@@ -120,7 +120,7 @@ public class InitEntities : MonoBehaviour
             new dojo.Call
             {
                 calldata = new dojo.FieldElement[] {
-                    new FieldElement($"0x{(int)direction}").Inner()
+                    new FieldElement(direction).Inner()
                 },
                 selector = "move",
                 to = worldActionsAddress,
