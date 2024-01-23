@@ -54,4 +54,4 @@
 3. **Refer to the Official Documentation**  
    For detailed guidance on using the Dojo.Unity SDK, please refer to the official documentation. It provides comprehensive instructions and examples to help you get started:
 
-   [Dojo.Unity SDK Documentation](https://book.dojoengine.org/client/sdk/unity.html)
+   [Dojo.Unity SDK Documentation](https://book.dojoengine.org/client/sdk/unity)
