@@ -87,7 +87,6 @@ namespace Dojo.Torii
             for (var i = 0; i < (int)result._ok.data_len; i++)
             {
                 entities.Add(new Entity(result._ok.data[i]));
-                dojo.entity_free(&result._ok.data[i]);
             }
 
             dojo.carray_free(result._ok.data, result._ok.data_len);
@@ -180,7 +179,7 @@ namespace Dojo.Torii
                 {
                     mappedModels[i] = new Model(models.data[i]);
                     // cleanup model
-                    dojo.model_free(&models.data[i]);
+                    // dojo.model_free(&models.data[i]);
                 }
 
                 // only run this when in unity play mode
