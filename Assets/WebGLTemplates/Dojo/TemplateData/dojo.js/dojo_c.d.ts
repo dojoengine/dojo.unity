@@ -92,6 +92,7 @@ declare namespace wasm_bindgen {
 	export interface ClientConfig {
 	    rpcUrl: string;
 	    toriiUrl: string;
+	    relayUrl: string;
 	    worldAddress: string;
 	}
 	
@@ -151,14 +152,37 @@ declare namespace wasm_bindgen {
 	* Register a callback to be called every time the specified synced entity's value changes.
 	* @param {EntityModel} model
 	* @param {Function} callback
+	* @returns {Promise<void>}
 	*/
-	  onSyncModelChange(model: EntityModel, callback: Function): void;
+	  onSyncModelChange(model: EntityModel, callback: Function): Promise<void>;
 	/**
 	* @param {(string)[] | undefined} ids
 	* @param {Function} callback
 	* @returns {Promise<void>}
 	*/
 	  onEntityUpdated(ids: (string)[] | undefined, callback: Function): Promise<void>;
+	/**
+	* @param {string} topic
+	* @param {Function} callback
+	* @returns {Promise<boolean>}
+	*/
+	  subscribeTopic(topic: string, callback: Function): Promise<boolean>;
+	/**
+	* @param {string} topic
+	* @returns {Promise<boolean>}
+	*/
+	  unsubscribeTopic(topic: string): Promise<boolean>;
+	/**
+	* @param {string} topic
+	* @param {Uint8Array} message
+	* @returns {Promise<Uint8Array>}
+	*/
+	  publishMessage(topic: string, message: Uint8Array): Promise<Uint8Array>;
+	/**
+	* @param {Function} callback
+	* @returns {Promise<void>}
+	*/
+	  onMessage(callback: Function): Promise<void>;
 	}
 	/**
 	*/
@@ -276,8 +300,12 @@ declare interface InitOutput {
   readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly client_addModelsToSync: (a: number, b: number, c: number) => number;
   readonly client_removeModelsToSync: (a: number, b: number, c: number) => number;
-  readonly client_onSyncModelChange: (a: number, b: number, c: number, d: number) => void;
+  readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
   readonly client_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly client_subscribeTopic: (a: number, b: number, c: number, d: number) => number;
+  readonly client_unsubscribeTopic: (a: number, b: number, c: number) => number;
+  readonly client_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly client_onMessage: (a: number, b: number) => number;
   readonly createClient: (a: number, b: number, c: number) => number;
   readonly __wbg_queuingstrategy_free: (a: number) => void;
   readonly queuingstrategy_highWaterMark: (a: number) => number;
@@ -304,12 +332,14 @@ declare interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__hf98f9cc6c53368fe: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h43d945927ecd0948: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__h0c9c710bbfadf1dc: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke0_mut__h5022508738de08e2: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__h3c219dc0b035f7df: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__hf7a65870f58b9527: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__h3515c005283ee1fc: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h49135c650ec5830a: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**

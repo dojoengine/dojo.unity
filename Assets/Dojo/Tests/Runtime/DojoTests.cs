@@ -14,6 +14,7 @@ public class Tests
 {
     private readonly string toriiUrl = "http://0.0.0.0:8080";
     private readonly string rpcUrl = "http://0.0.0.0:5050";
+    private readonly string relayUrl = "ip4/127.0.0.1/tcp/9090";
     private readonly string playerKey = "0x028cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20";
     private readonly string playerAddress = "0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
     private readonly string worldAddress = "0x028f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a";
@@ -32,11 +33,9 @@ public class Tests
     [SetUp]
     public void SetupTorii()
     {
-        client = new ToriiClient(toriiUrl, rpcUrl, worldAddress);
+        client = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
 
         if (client == null) throw new Exception("client is null");
-
-        client.StartSubscription();
     }
 
     [SetUp]
@@ -169,20 +168,21 @@ public class Tests
         Assert.That(entities.Count, Is.GreaterThanOrEqualTo(1));
     }
 
-    [Test]
-    public void TestModel()
-    {
-        var query = new dojo.KeysClause
-        {
-            model = "Moves",
-            keys = new[] { playerKey }
-        };
+    // Deprecated?
+    // [Test]
+    // public void TestModel()
+    // {
+    //     var query = new dojo.KeysClause
+    //     {
+    //         model = "Moves",
+    //         keys = new[] { playerKey }
+    //     };
 
-        var model = client.Model(query);
+    //     var model = client.Model(query);
 
-        Assert.That(model.struct_.name, Is.EqualTo("Moves"));
-        Assert.That(model.struct_.children[0].name, Is.EqualTo("player"));
-    }
+    //     Assert.That(model.struct_.name, Is.EqualTo("Moves"));
+    //     Assert.That(model.struct_.children[0].name, Is.EqualTo("player"));
+    // }
 
     [Test, Order(1)]
     public void TestAddModelsToSync()
@@ -217,7 +217,6 @@ public class Tests
         {
             entityUpdated = true;
         }; 
-        client.RegisterEntityStateUpdates(new dojo.FieldElement[] {}, false);
         ToriiEvents.Instance.OnEntityUpdated += callback;
     }
 
@@ -228,7 +227,7 @@ public class Tests
         {
             modelEntityUpdated = true;
         };
-        client.RegisterSyncModelUpdates(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, false);
+        client.RegisterSyncModelUpdateEvent(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, false);
         ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }

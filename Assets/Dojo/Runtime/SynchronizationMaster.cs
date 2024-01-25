@@ -131,11 +131,6 @@ namespace Dojo
         // Register our entity callbacks
         public void RegisterEntityCallbacks()
         {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            worldManager.wasmClient.RegisterEntityStateUpdates(new FieldElement[] { });
-#else
-            worldManager.toriiClient.RegisterEntityStateUpdates(new dojo.FieldElement[] { });
-#endif
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
         }
     }

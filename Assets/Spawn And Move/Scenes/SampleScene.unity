@@ -656,6 +656,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1648136030876143075, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
+      propertyPath: relayUrl
+      value: /ip4/127.0.0.1/tcp/9090
+      objectReference: {fileID: 0}
+    - target: {fileID: 1648136030876143075, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
       propertyPath: worldAddress
       value: 0x28f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a
       objectReference: {fileID: 0}

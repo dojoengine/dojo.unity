@@ -12,6 +12,7 @@ namespace Dojo
         [Header("RPC")]
         public string toriiUrl = "http://localhost:8080";
         public string rpcUrl = "http://localhost:5050";
+        public string relayUrl = "/ip4/127.0.0.1/tcp/9090";
         [Header("World")]
         public string worldAddress;
         public SynchronizationMaster synchronizationMaster;
@@ -24,9 +25,7 @@ namespace Dojo
             wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, worldAddress);
             await wasmClient.CreateClient();
 #else
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, worldAddress);
-            // start subscription service
-            toriiClient.StartSubscription();
+            toriiClient = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
 #endif
 
 

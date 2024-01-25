@@ -72,3 +72,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 .DS_Store
+
+# builds
+dojo-webgl
+dojo-ios
+dojo-macos
+dojo-windows

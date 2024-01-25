@@ -26,17 +26,13 @@ namespace Dojo.Torii
         public async Task CreateClient()
         {
             clientPtr = await ToriiWasmInterop.CreateClientAsync(rpcUrl, toriiUrl, world);
+            ToriiWasmInterop.OnEntityUpdated(clientPtr, new FieldElement[] { });
         }
 
         public async Task<List<Entity>> Entities(int limit, int offset)
         {
             var entities = await ToriiWasmInterop.GetEntitiesAsync(clientPtr, limit, offset);
             return entities;
-        }
-
-        public void RegisterEntityStateUpdates(FieldElement[] entities)
-        {
-            ToriiWasmInterop.OnEntityUpdated(clientPtr, entities);
         }
     }
 }
