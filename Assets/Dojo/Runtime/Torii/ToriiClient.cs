@@ -210,21 +210,27 @@ namespace Dojo.Torii
         {
             onMessage = (CString propagationSource, CString source, CString messageId, CString topic, dojo.CArrayu8 data) =>
             {
+                Action propagateAndClean = () => {
+                    ToriiEvents.Instance.Message(propagationSource.ToString(), source.ToString(), messageId.ToString(), topic.ToString(), new Span<byte>(data.data, (int)data.data_len).ToArray());
+
+                    // this is where cleanup needs to happen.
+                    dojo.string_free(propagationSource);
+                    dojo.string_free(source);
+                    dojo.string_free(messageId);
+                    dojo.string_free(topic);
+                    dojo.carray_free(data.data, data.data_len);
+                };
+
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.Message(propagationSource.ToString(), source.ToString(), messageId.ToString(), topic.ToString(), new Span<byte>(data.data, (int)data.data_len).ToArray()));
+                    UnityMainThreadDispatcher.Instance().Enqueue(propagateAndClean);
                 }
                 else
                 {
-                    ToriiEvents.Instance.Message(propagationSource.ToString(), source.ToString(), messageId.ToString(), topic.ToString(), new Span<byte>(data.data, (int)data.data_len).ToArray());
+                    propagateAndClean();
                 }
 
-                // cleanup
-                dojo.string_free(propagationSource);
-                dojo.string_free(source);
-                dojo.string_free(messageId);
-                dojo.string_free(topic);
-                dojo.carray_free(data.data, data.data_len);
+                // NOTE: can't do cleanup here. as data will be dispatched to main thread and maybe used after free..
             };
 
             dojo.Resultbool res = dojo.client_on_message(client, new dojo.FnPtr_CString_CString_CString_CString_CArrayu8_Void(onMessage));
@@ -248,5 +254,43 @@ namespace Dojo.Torii
             dojo.client_run_libp2p(client);
         }
 
+        public bool SubscribeTopic(string topic) {
+            var result = dojo.client_subscribe_topic(client, CString.FromString(topic));
+            if (result.tag == dojo.Resultbool_Tag.Errbool)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            return result.ok;
+        }
+
+        public bool UnsubscribeTopic(string topic) {
+            var result = dojo.client_unsubscribe_topic(client, CString.FromString(topic));
+            if (result.tag == dojo.Resultbool_Tag.Errbool)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            return result.ok;
+        }
+
+        public Span<byte> PublishMessage(string topic, Span<byte> data) {
+            var array = new dojo.CArrayu8{};
+
+            fixed (byte* ptr = data)
+            {
+                array.data = ptr;
+                array.data_len = (nuint)data.Length;
+            }
+
+            var result = dojo.client_publish_message(client, CString.FromString(topic), array);
+            if (result.tag == dojo.ResultCArrayu8_Tag.ErrCArrayu8)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            Debug.Log(new IntPtr(result._ok.data));
+            return result.ok;
+        }
     }
 }

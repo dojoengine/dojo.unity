@@ -22,7 +22,7 @@ export function client_addModelsToSync(a: number, b: number, c: number): number;
 export function client_removeModelsToSync(a: number, b: number, c: number): number;
 export function client_onSyncModelChange(a: number, b: number, c: number): number;
 export function client_onEntityUpdated(a: number, b: number, c: number, d: number): number;
-export function client_subscribeTopic(a: number, b: number, c: number, d: number): number;
+export function client_subscribeTopic(a: number, b: number, c: number): number;
 export function client_unsubscribeTopic(a: number, b: number, c: number): number;
 export function client_publishMessage(a: number, b: number, c: number, d: number, e: number): number;
 export function client_onMessage(a: number, b: number): number;

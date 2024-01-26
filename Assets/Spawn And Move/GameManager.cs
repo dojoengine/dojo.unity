@@ -13,13 +13,16 @@ using UnityEngine.UI;
 using Object = System.Object;
 using Random = UnityEngine.Random;
 
-public class InitEntities : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public string masterPrivateKey;
     public string masterAddress;
 
     public WorldManager worldManager;
     public string worldActionsAddress;
+
+    public ChatManager chatManager;
+
     private BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedBurners = new();
 
@@ -45,6 +48,9 @@ public class InitEntities : MonoBehaviour
     // Update is called once per frame
     async void Update()
     {
+        // dont register inputs if our chat is open
+        if (chatManager.chatOpen) return;
+
         if (Input.GetKeyUp(KeyCode.Space))
         {
             var burner = await burnerManager.DeployBurner();
@@ -57,7 +63,6 @@ public class InitEntities : MonoBehaviour
                     to = worldActionsAddress,
                 }
             });
-            // Debug.Log($"Deployed burner {burner.Address().Hex()} and spawned with tx hash {txHash.Hex()}");
         }
 
         if (Input.GetMouseButtonUp(0))
