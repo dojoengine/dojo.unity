@@ -43,8 +43,8 @@ cp -f "target/x86_64-unknown-linux-gnu/$build/libdojo_c.so" "../../Assets/Dojo/P
 mkdir -p "../../Assets/Dojo/Plugins/macOS"
 # we need to bundle the x86_64 and arm64 libraries into a single fat binary
 lipo -create -output "../../Assets/Dojo/Plugins/macOS/libdojo_c.bundle" \
-  "target/aarch64-apple-darwin/$build/libdojo_c.dylib" \
-  "target/x86_64-apple-darwin/$build/libdojo_c.dylib"
+  "target/x86_64-apple-darwin/$build/libdojo_c.dylib" \
+  "target/aarch64-apple-darwin/$build/libdojo_c.dylib" 
 
 # iOS
 mkdir -p "../../Assets/Dojo/Plugins/iOS"

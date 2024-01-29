@@ -2,7 +2,7 @@
   "inputFilePath": "./ast/cross-platform.json",
   "outputFileDirectory": "../Assets/Dojo/Runtime/bindings/client",
   "namespaceName": "dojo_bindings",
-  "libraryName": "dojo_c",
+  "libraryName": "libdojo_c",
   "className": "dojo",
   "isEnabledFileScopedNamespace": false,
   "isEnabledLibraryImport": false,

@@ -25,7 +25,7 @@ namespace dojo_bindings
 
     public static unsafe partial class dojo
     {
-        private const string LibraryName = "dojo_c";
+        private const string LibraryName = "libdojo_c";
 
         #region API
 
