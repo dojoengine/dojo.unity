@@ -20,9 +20,9 @@ public class ChatManager : MonoBehaviour
     private TMPro.TMP_InputField chatInput;
 
     // Start is called before the first frame update
-    void Start()
+    async void Start()
     {
-        worldManager.toriiClient.SubscribeTopic("chat");
+        await worldManager.Subscribe("chat");
         ToriiEvents.Instance.OnMessage += OnMessage;
 
         chatInput = GetComponentInChildren<TMPro.TMP_InputField>(true);
@@ -81,13 +81,13 @@ public class ChatManager : MonoBehaviour
         scrollRect.velocity = new Vector2(0, 1000);
     }
 
-    void SendMessage(string topic, string message)
+    async void SendMessage(string topic, string message)
     {
         var bytes = System.Text.Encoding.UTF8.GetBytes(message);
         // first 32 bytes are the wallet address of the author
         // remaining bytes is the message content
         var authorAddressBytes = new FieldElement(gameManager.masterAddress).Inner().data.ToArray().ToList();
         var messageBytes = authorAddressBytes.Concat(bytes).ToArray();
-        worldManager.toriiClient.PublishMessage(topic, messageBytes);
+        await worldManager.Publish(topic, messageBytes);
     }
 }

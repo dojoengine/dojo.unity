@@ -4,6 +4,7 @@ using UnityEngine;
 using Dojo.Torii;
 using System;
 using Dojo.Starknet;
+using System.Threading.Tasks;
 
 namespace Dojo
 {
@@ -22,7 +23,7 @@ namespace Dojo
         async void Awake()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, worldAddress);
+            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
             await wasmClient.CreateClient();
 #else
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
@@ -114,6 +115,33 @@ namespace Dojo
             {
                 Destroy(entity.gameObject);
             }
+        }
+
+        public async Task<bool> Subscribe(string topic)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return await wasmClient.SubscribeTopic(topic);
+#else
+            return toriiClient.SubscribeTopic(topic);
+#endif
+        }
+
+        public async Task<bool> Unsubscribe(string topic)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return await wasmClient.UnsubscribeTopic(topic);
+#else
+            return toriiClient.UnsubscribeTopic(topic);
+#endif
+        }
+
+        public async Task<byte[]> Publish(string topic, byte[] data)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return await wasmClient.PublishMessage(topic, data);
+#else
+            return toriiClient.PublishMessage(topic, data).ToArray();
+#endif
         }
     }
 }

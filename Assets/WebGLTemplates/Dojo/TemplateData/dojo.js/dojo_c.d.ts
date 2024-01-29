@@ -163,9 +163,10 @@ declare namespace wasm_bindgen {
 	  onEntityUpdated(ids: (string)[] | undefined, callback: Function): Promise<void>;
 	/**
 	* @param {string} topic
+	* @param {Function} callback
 	* @returns {Promise<boolean>}
 	*/
-	  subscribeTopic(topic: string): Promise<boolean>;
+	  subscribeTopic(topic: string, callback: Function): Promise<boolean>;
 	/**
 	* @param {string} topic
 	* @returns {Promise<boolean>}
@@ -301,7 +302,7 @@ declare interface InitOutput {
   readonly client_removeModelsToSync: (a: number, b: number, c: number) => number;
   readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
   readonly client_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly client_subscribeTopic: (a: number, b: number, c: number) => number;
+  readonly client_subscribeTopic: (a: number, b: number, c: number, d: number) => number;
   readonly client_unsubscribeTopic: (a: number, b: number, c: number) => number;
   readonly client_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly client_onMessage: (a: number, b: number) => number;

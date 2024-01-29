@@ -1,12 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using bottlenoselabs.C2CS.Runtime;
 using UnityEngine;
 using dojo_bindings;
-using JetBrains.Annotations;
 using Dojo.Starknet;
-using UnityEditor.AppleTV;
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
@@ -210,7 +207,8 @@ namespace Dojo.Torii
         {
             onMessage = (CString propagationSource, CString source, CString messageId, CString topic, dojo.CArrayu8 data) =>
             {
-                Action propagateAndClean = () => {
+                Action propagateAndClean = () =>
+                {
                     ToriiEvents.Instance.Message(propagationSource.ToString(), source.ToString(), messageId.ToString(), topic.ToString(), new Span<byte>(data.data, (int)data.data_len).ToArray());
 
                     // this is where cleanup needs to happen.
@@ -254,7 +252,8 @@ namespace Dojo.Torii
             dojo.client_run_libp2p(client);
         }
 
-        public bool SubscribeTopic(string topic) {
+        public bool SubscribeTopic(string topic)
+        {
             var result = dojo.client_subscribe_topic(client, CString.FromString(topic));
             if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
@@ -264,7 +263,8 @@ namespace Dojo.Torii
             return result.ok;
         }
 
-        public bool UnsubscribeTopic(string topic) {
+        public bool UnsubscribeTopic(string topic)
+        {
             var result = dojo.client_unsubscribe_topic(client, CString.FromString(topic));
             if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
@@ -274,8 +274,9 @@ namespace Dojo.Torii
             return result.ok;
         }
 
-        public Span<byte> PublishMessage(string topic, Span<byte> data) {
-            var array = new dojo.CArrayu8{};
+        public Span<byte> PublishMessage(string topic, Span<byte> data)
+        {
+            var array = new dojo.CArrayu8 { };
 
             fixed (byte* ptr = data)
             {

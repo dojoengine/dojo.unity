@@ -1298,6 +1298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4245acacf3c4f4b789faaee65493eedf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameManager: {fileID: 998234500}
   chatOpen: 0
   worldManager: {fileID: 2019443015}
 --- !u!1 &1436812976

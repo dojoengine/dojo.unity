@@ -34,7 +34,7 @@ namespace Dojo.Torii
     {
         // Creates a new client and returns the pointer to it
         [DllImport("__Internal")]
-        public static extern void CreateClient(CString rpcUrl, CString toriiUrl, CString worldAddress, Action<IntPtr> cb);
+        public static extern void CreateClient(CString rpcUrl, CString toriiUrl, CString relayUrl, CString worldAddress, Action<IntPtr> cb);
 
         private static class CreateClientHelper
         {
@@ -47,10 +47,10 @@ namespace Dojo.Torii
             }
         }
 
-        public static Task<IntPtr> CreateClientAsync(string rpcUrl, string toriiUrl, string worldAddress)
+        public static Task<IntPtr> CreateClientAsync(string rpcUrl, string toriiUrl, string relayUrl, string worldAddress)
         {
             CreateClientHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(worldAddress), CreateClientHelper.Callback);
+            CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(relayUrl), new CString(worldAddress), CreateClientHelper.Callback);
             return CreateClientHelper.Tcs.Task;
         }
 
@@ -148,7 +148,7 @@ namespace Dojo.Torii
         public static extern void OnSyncModelChange(IntPtr clientPtr, string model, string callbackObjectName, string callbackMethodName);
 
         [DllImport("__Internal")]
-        public static extern void SubscribeTopic(IntPtr clientPtr, string topic, Action<bool> cb);
+        public static extern void SubscribeTopic(IntPtr clientPtr, CString topic, Action<bool> cb);
 
         private static class SubscribeTopicHelper
         {
@@ -164,12 +164,12 @@ namespace Dojo.Torii
         public static Task<bool> SubscribeTopicAsync(IntPtr clientPtr, string topic)
         {
             SubscribeTopicHelper.Tcs = new TaskCompletionSource<bool>();
-            SubscribeTopic(clientPtr, topic, SubscribeTopicHelper.Callback);
+            SubscribeTopic(clientPtr, new CString(topic), SubscribeTopicHelper.Callback);
             return SubscribeTopicHelper.Tcs.Task;
         }
 
         [DllImport("__Internal")]
-        public static extern void UnsubscribeTopic(IntPtr clientPtr, string topic, Action<bool> cb);
+        public static extern void UnsubscribeTopic(IntPtr clientPtr, CString topic, Action<bool> cb);
 
         private static class UnsubscribeTopicHelper
         {
@@ -185,28 +185,28 @@ namespace Dojo.Torii
         public static Task<bool> UnsubscribeTopicAsync(IntPtr clientPtr, string topic)
         {
             UnsubscribeTopicHelper.Tcs = new TaskCompletionSource<bool>();
-            UnsubscribeTopic(clientPtr, topic, UnsubscribeTopicHelper.Callback);
+            UnsubscribeTopic(clientPtr, new CString(topic), UnsubscribeTopicHelper.Callback);
             return UnsubscribeTopicHelper.Tcs.Task;
         }
 
         [DllImport("__Internal")]
-        public static extern void PublishMessage(IntPtr clientPtr, string topic, string message, Action<string> cb);
+        public static extern void PublishMessage(IntPtr clientPtr, CString topic, CString message, Action<string> cb);
 
         private static class PublishMessageHelper
         {
-            public static TaskCompletionSource<string> Tcs;
+            public static TaskCompletionSource<byte[]> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string messagePtr)
+            public static void Callback(string messageId)
             {
-                Tcs.SetResult(messagePtr);
+                Tcs.SetResult(JsonConvert.DeserializeObject<byte[]>(messageId));
             }
         }
 
-        public static Task<string> PublishMessageAsync(IntPtr clientPtr, string topic, string message)
+        public static Task<byte[]> PublishMessageAsync(IntPtr clientPtr, string topic, byte[] message)
         {
-            PublishMessageHelper.Tcs = new TaskCompletionSource<string>();
-            PublishMessage(clientPtr, topic, message, PublishMessageHelper.Callback);
+            PublishMessageHelper.Tcs = new TaskCompletionSource<byte[]>();
+            PublishMessage(clientPtr, new CString(topic), new CString(JsonConvert.SerializeObject(message)), PublishMessageHelper.Callback);
             return PublishMessageHelper.Tcs.Task;
         }
 

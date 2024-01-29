@@ -3,6 +3,7 @@ mergeInto(LibraryManager.library, {
   CreateClient: async function (
     rpcUrl,
     toriiUrl,
+    relayUrl,
     worldAddress,
     // callbackObjectName,
     // callbackMethodName
@@ -11,6 +12,7 @@ mergeInto(LibraryManager.library, {
     var client = await wasm_bindgen.createClient([], {
       rpcUrl: UTF8ToString(rpcUrl),
       toriiUrl: UTF8ToString(toriiUrl),
+      relayUrl: UTF8ToString(relayUrl),
       worldAddress: UTF8ToString(worldAddress),
     });
 
@@ -143,9 +145,9 @@ mergeInto(LibraryManager.library, {
   // Publishes a message to topic and returns the message id
   PublishMessage: async function (clientPtr, topic, message, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
-    const published = await client
-      .publishMessage(UTF8ToString(topic), UTF8ToString(message))
-      .toString();
+    const published = JSON.stringify(
+      await client.publishMessage(UTF8ToString(topic), UTF8ToString(message))
+    );
     const bufferSize = lengthBytesUTF8(published) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(published, buffer, bufferSize);
