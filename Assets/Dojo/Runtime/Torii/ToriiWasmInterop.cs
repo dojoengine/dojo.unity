@@ -30,6 +30,7 @@ namespace Dojo.Torii
         public byte[] data;
     }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
     public class ToriiWasmInterop : MonoBehaviour
     {
         // Creates a new client and returns the pointer to it
@@ -234,4 +235,5 @@ namespace Dojo.Torii
             OnMessage(clientPtr, OnMessageHelper.Callback);
         }
     }
+#endif
 }

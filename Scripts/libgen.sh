@@ -49,3 +49,5 @@ lipo -create -output "../../Assets/Dojo/Plugins/macOS/libdojo_c.bundle" \
 # iOS
 mkdir -p "../../Assets/Dojo/Plugins/iOS"
 cp -f "target/aarch64-apple-ios/$build/libdojo_c.a" "../../Assets/Dojo/Plugins/iOS/libdojo_c.a"
+# cp -f "target/aarch64-apple-ios/$build/libdojo_c.dylib" "../../Assets/Dojo/Plugins/iOS/libdojo_c.dylib"
+cp -f "dojo.h" "../../Assets/Dojo/Plugins/iOS/dojo.h"

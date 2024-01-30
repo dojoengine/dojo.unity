@@ -25,8 +25,13 @@ namespace dojo_bindings
 
     public static unsafe partial class dojo
     {
+        #if UNITY_IOS && !UNITY_EDITOR
+        public const string LibraryName = "__Internal";
+        #else
         private const string LibraryName = "libdojo_c";
 
+        #endif
+        
         #region API
 
         [CNode(Kind = "Function")]

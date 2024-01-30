@@ -9,6 +9,7 @@ using dojo_bindings;
 using Newtonsoft.Json;
 using Debug = UnityEngine.Debug;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
 namespace Dojo.Starknet {
     public class StarknetInterop {
         [DllImport("__Internal")]
@@ -117,3 +118,4 @@ namespace Dojo.Starknet {
         public static extern bool Verify(CString publicKey, CString hash, CString r, CString s);
     }
 }
+#endif

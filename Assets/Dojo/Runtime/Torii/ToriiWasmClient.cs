@@ -7,6 +7,7 @@ using Dojo.Starknet;
 using Newtonsoft.Json;
 using UnityEngine;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
 namespace Dojo.Torii
 {
     public class ToriiWasmClient
@@ -54,3 +55,4 @@ namespace Dojo.Torii
         }
     }
 }
+#endif
