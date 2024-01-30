@@ -1,3 +1,4 @@
+using System.Numerics;
 using Dojo;
 using Dojo.Starknet;
 using Dojo.Torii;

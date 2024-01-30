@@ -3,6 +3,7 @@ mergeInto(LibraryManager.library, {
   CreateClient: async function (
     rpcUrl,
     toriiUrl,
+    relayUrl,
     worldAddress,
     // callbackObjectName,
     // callbackMethodName
@@ -11,6 +12,7 @@ mergeInto(LibraryManager.library, {
     var client = await wasm_bindgen.createClient([], {
       rpcUrl: UTF8ToString(rpcUrl),
       toriiUrl: UTF8ToString(toriiUrl),
+      relayUrl: UTF8ToString(relayUrl),
       worldAddress: UTF8ToString(worldAddress),
     });
 
@@ -81,11 +83,7 @@ mergeInto(LibraryManager.library, {
 
     dynCall_vi(cb, buffer);
   },
-  OnEntityUpdated: function (
-    clientPtr,
-    ids,
-    cb
-  ) {
+  OnEntityUpdated: function (clientPtr, ids, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     var idsString = UTF8ToString(ids);
     var idsArray = JSON.parse(idsString);
@@ -130,6 +128,47 @@ mergeInto(LibraryManager.library, {
         UTF8ToString(callbackObjectName),
         UTF8ToString(callbackMethodName)
       );
+    });
+  },
+  // Subscribes to a topic
+  SubscribeTopic: async function (clientPtr, topic, cb) {
+    var client = wasm_bindgen.Client.__wrap(clientPtr);
+    const subscribed = await client.subscribeTopic(UTF8ToString(topic));
+    dynCall_vi(cb, subscribed);
+  },
+  // Unsubscribes from a topic
+  UnsubscribeTopic: async function (clientPtr, topic, cb) {
+    var client = wasm_bindgen.Client.__wrap(clientPtr);
+    const unsubscribed = await client.unsubscribeTopic(UTF8ToString(topic));
+    dynCall_vi(cb, unsubscribed);
+  },
+  // Publishes a message to topic and returns the message id
+  PublishMessage: async function (clientPtr, topic, message, cb) {
+    var client = wasm_bindgen.Client.__wrap(clientPtr);
+    const published = await client.publishMessage(UTF8ToString(topic), JSON.parse(UTF8ToString(message)));
+    const publishedString = JSON.stringify(Array.from(published));
+    const bufferSize = lengthBytesUTF8(publishedString) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(publishedString, buffer, bufferSize);
+
+    dynCall_vi(cb, buffer);
+  },
+  OnMessage: async function (clientPtr, cb) {
+    var client = wasm_bindgen.Client.__wrap(clientPtr);
+    client.onMessage((propagationSource, source, messageId, topic, data) => {
+      const messageString = JSON.stringify({
+        propagationSource,
+        source,
+        messageId,
+        topic,
+        data: Array.from(data),
+      });
+
+      const bufferSize = lengthBytesUTF8(messageString) + 1;
+      const buffer = _malloc(bufferSize);
+      stringToUTF8(messageString, buffer, bufferSize);
+
+      dynCall_vi(cb, buffer);
     });
   },
 });

@@ -56,23 +56,20 @@ namespace Dojo.Starknet
 
         public FieldElement(dojo.FieldElement fieldElement)
         {
-            inner = fieldElement;
+            // We don't want to refer to the same memory as the original field element.
+            // As we might want to free it - potentially slower
+            // TODO: benchmark copies?
+            fieldElement.data.CopyTo(inner.data);
         }
 
-        public FieldElement(byte[] bytes)
+        public FieldElement(Span<byte> bytes)
         {
             if (bytes.Length != 32)
             {
                 throw new ArgumentException("Byte array must be 32 bytes.", nameof(bytes));
             }
 
-            unsafe
-            {
-                fixed (byte* ptr = &inner._data[0])
-                {
-                    Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
-                }
-            }
+            bytes.CopyTo(inner.data);
         }
 
         // This handles BigIntegers as well as primitive types

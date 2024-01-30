@@ -13,17 +13,28 @@ using Newtonsoft.Json.Linq;
 
 namespace Dojo.Torii
 {
-    [System.Serializable]
-    public struct WasmValue {
+    [Serializable]
+    public struct WasmValue
+    {
         public string type;
         public JToken value;
+    }
+
+    [Serializable]
+    public struct Message
+    {
+        public string propagationSource;
+        public string source;
+        public string messageId;
+        public string topic;
+        public byte[] data;
     }
 
     public class ToriiWasmInterop : MonoBehaviour
     {
         // Creates a new client and returns the pointer to it
         [DllImport("__Internal")]
-        public static extern void CreateClient(CString rpcUrl, CString toriiUrl, CString worldAddress, Action<IntPtr> cb);
+        public static extern void CreateClient(CString rpcUrl, CString toriiUrl, CString relayUrl, CString worldAddress, Action<IntPtr> cb);
 
         private static class CreateClientHelper
         {
@@ -36,10 +47,10 @@ namespace Dojo.Torii
             }
         }
 
-        public static Task<IntPtr> CreateClientAsync(string rpcUrl, string toriiUrl, string worldAddress)
+        public static Task<IntPtr> CreateClientAsync(string rpcUrl, string toriiUrl, string relayUrl, string worldAddress)
         {
             CreateClientHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(worldAddress), CreateClientHelper.Callback);
+            CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(relayUrl), new CString(worldAddress), CreateClientHelper.Callback);
             return CreateClientHelper.Tcs.Task;
         }
 
@@ -106,7 +117,7 @@ namespace Dojo.Torii
             {
                 var parsedEntity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entity).First();
                 var models = new Dictionary<string, Model>();
-                
+
                 foreach (var model in parsedEntity.Value)
                 {
                     models.Add(model.Key, new Model(
@@ -135,5 +146,92 @@ namespace Dojo.Torii
         // Calls the callback at [callbackObjectName].[callbackMethodName] on model change
         [DllImport("__Internal")]
         public static extern void OnSyncModelChange(IntPtr clientPtr, string model, string callbackObjectName, string callbackMethodName);
+
+        [DllImport("__Internal")]
+        public static extern void SubscribeTopic(IntPtr clientPtr, CString topic, Action<bool> cb);
+
+        private static class SubscribeTopicHelper
+        {
+            public static TaskCompletionSource<bool> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<bool>))]
+            public static void Callback(bool success)
+            {
+                Tcs.SetResult(success);
+            }
+        }
+
+        public static Task<bool> SubscribeTopicAsync(IntPtr clientPtr, string topic)
+        {
+            SubscribeTopicHelper.Tcs = new TaskCompletionSource<bool>();
+            SubscribeTopic(clientPtr, new CString(topic), SubscribeTopicHelper.Callback);
+            return SubscribeTopicHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
+        public static extern void UnsubscribeTopic(IntPtr clientPtr, CString topic, Action<bool> cb);
+
+        private static class UnsubscribeTopicHelper
+        {
+            public static TaskCompletionSource<bool> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<bool>))]
+            public static void Callback(bool success)
+            {
+                Tcs.SetResult(success);
+            }
+        }
+
+        public static Task<bool> UnsubscribeTopicAsync(IntPtr clientPtr, string topic)
+        {
+            UnsubscribeTopicHelper.Tcs = new TaskCompletionSource<bool>();
+            UnsubscribeTopic(clientPtr, new CString(topic), UnsubscribeTopicHelper.Callback);
+            return UnsubscribeTopicHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
+        public static extern void PublishMessage(IntPtr clientPtr, CString topic, CString message, Action<string> cb);
+
+        private static class PublishMessageHelper
+        {
+            public static TaskCompletionSource<byte[]> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string messageId)
+            {
+                Tcs.SetResult(JsonConvert.DeserializeObject<byte[]>(messageId));
+            }
+        }
+
+        public static Task<byte[]> PublishMessageAsync(IntPtr clientPtr, string topic, byte[] message)
+        {
+            PublishMessageHelper.Tcs = new TaskCompletionSource<byte[]>();
+            PublishMessage(clientPtr, new CString(topic), new CString(JsonConvert.SerializeObject(message.Select(b => (int)b).ToArray())), PublishMessageHelper.Callback);
+            return PublishMessageHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
+        private static extern void OnMessage(IntPtr clientPtr, Action<string> cb);
+
+        private static class OnMessageHelper
+        {
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string message)
+            {
+                var parsedMessage = JsonConvert.DeserializeObject<Message>(message);
+                ToriiEvents.Instance.Message(
+                    parsedMessage.propagationSource,
+                    parsedMessage.source,
+                    parsedMessage.messageId,
+                    parsedMessage.topic,
+                    parsedMessage.data
+                );
+            }
+        }
+
+        public static void OnMessage(IntPtr clientPtr)
+        {
+            OnMessage(clientPtr, OnMessageHelper.Callback);
+        }
     }
 }
