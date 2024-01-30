@@ -145,14 +145,11 @@ mergeInto(LibraryManager.library, {
   // Publishes a message to topic and returns the message id
   PublishMessage: async function (clientPtr, topic, message, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
-    console.log(UTF8ToString(message));
-    console.log(JSON.parse(UTF8ToString(message)));
-    const published = JSON.stringify(
-      await client.publishMessage(UTF8ToString(topic), JSON.parse(UTF8ToString(message)))
-    );
-    const bufferSize = lengthBytesUTF8(published) + 1;
+    const published = await client.publishMessage(UTF8ToString(topic), JSON.parse(UTF8ToString(message)));
+    const publishedString = JSON.stringify(Array.from(published));
+    const bufferSize = lengthBytesUTF8(publishedString) + 1;
     const buffer = _malloc(bufferSize);
-    stringToUTF8(published, buffer, bufferSize);
+    stringToUTF8(publishedString, buffer, bufferSize);
 
     dynCall_vi(cb, buffer);
   },
@@ -164,9 +161,9 @@ mergeInto(LibraryManager.library, {
         source,
         messageId,
         topic,
-        data,
+        data: Array.from(data),
       });
-      console.log("messageString", messageString);
+
       const bufferSize = lengthBytesUTF8(messageString) + 1;
       const buffer = _malloc(bufferSize);
       stringToUTF8(messageString, buffer, bufferSize);

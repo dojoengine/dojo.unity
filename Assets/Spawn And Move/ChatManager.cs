@@ -67,6 +67,8 @@ public class ChatManager : MonoBehaviour
         // add to scroll view
         var message = System.Text.Encoding.UTF8.GetString(data.Skip(32).ToArray());
 
+        Debug.Log($"Received message: {message}");
+
         var text = chatScrollView.GetComponent<TMPro.TextMeshProUGUI>();
         // format the message
         // author: message

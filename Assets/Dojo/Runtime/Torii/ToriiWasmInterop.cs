@@ -206,7 +206,7 @@ namespace Dojo.Torii
         public static Task<byte[]> PublishMessageAsync(IntPtr clientPtr, string topic, byte[] message)
         {
             PublishMessageHelper.Tcs = new TaskCompletionSource<byte[]>();
-            PublishMessage(clientPtr, new CString(topic), new CString(JsonConvert.SerializeObject(message)), PublishMessageHelper.Callback);
+            PublishMessage(clientPtr, new CString(topic), new CString(JsonConvert.SerializeObject(message.Select(b => (int)b).ToArray())), PublishMessageHelper.Callback);
             return PublishMessageHelper.Tcs.Task;
         }
 
