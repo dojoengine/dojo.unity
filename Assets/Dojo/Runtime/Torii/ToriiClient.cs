@@ -30,7 +30,7 @@ namespace Dojo.Torii
 
             // start event loops & register events
             StartSubscription();
-            RunLibp2p();
+            RunRelay();
 
             RegisterEntityStateUpdateEvent(new dojo.FieldElement[] { });
             RegisterOnMessageEvent();
@@ -247,9 +247,9 @@ namespace Dojo.Torii
             }
         }
 
-        public void RunLibp2p()
+        public void RunRelay()
         {
-            dojo.client_run_libp2p(client);
+            dojo.client_run_relay(client);
         }
 
         public bool SubscribeTopic(string topic)

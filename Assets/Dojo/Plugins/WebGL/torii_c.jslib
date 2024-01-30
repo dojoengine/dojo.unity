@@ -164,6 +164,7 @@ mergeInto(LibraryManager.library, {
         topic,
         data,
       });
+      console.log("messageString", messageString);
       const bufferSize = lengthBytesUTF8(messageString) + 1;
       const buffer = _malloc(bufferSize);
       stringToUTF8(messageString, buffer, bufferSize);

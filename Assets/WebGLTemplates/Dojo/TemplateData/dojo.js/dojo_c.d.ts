@@ -163,10 +163,9 @@ declare namespace wasm_bindgen {
 	  onEntityUpdated(ids: (string)[] | undefined, callback: Function): Promise<void>;
 	/**
 	* @param {string} topic
-	* @param {Function} callback
 	* @returns {Promise<boolean>}
 	*/
-	  subscribeTopic(topic: string, callback: Function): Promise<boolean>;
+	  subscribeTopic(topic: string): Promise<boolean>;
 	/**
 	* @param {string} topic
 	* @returns {Promise<boolean>}
@@ -302,7 +301,7 @@ declare interface InitOutput {
   readonly client_removeModelsToSync: (a: number, b: number, c: number) => number;
   readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
   readonly client_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly client_subscribeTopic: (a: number, b: number, c: number, d: number) => number;
+  readonly client_subscribeTopic: (a: number, b: number, c: number) => number;
   readonly client_unsubscribeTopic: (a: number, b: number, c: number) => number;
   readonly client_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly client_onMessage: (a: number, b: number) => number;
@@ -332,7 +331,7 @@ declare interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h0c9c710bbfadf1dc: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__h1bbff548ea78c42e: (a: number, b: number, c: number) => void;
   readonly wasm_bindgen__convert__closures__invoke0_mut__h5022508738de08e2: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures__invoke1_mut__h3c219dc0b035f7df: (a: number, b: number, c: number) => void;
   readonly wasm_bindgen__convert__closures__invoke1_mut__hf7a65870f58b9527: (a: number, b: number, c: number) => void;
