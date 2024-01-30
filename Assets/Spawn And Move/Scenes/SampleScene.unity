@@ -1987,6 +1987,10 @@ PrefabInstance:
       propertyPath: worldAddress
       value: 0x28f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a
       objectReference: {fileID: 0}
+    - target: {fileID: 1648136030876143075, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
+      propertyPath: relayWebrtcUrl
+      value: /ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiDx-luHsovHTHPuU5qzNHCCFkYYpFPirTn2p7ZIFP0Dig
+      objectReference: {fileID: 0}
     - target: {fileID: 3269270482660702203, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -145,8 +145,10 @@ mergeInto(LibraryManager.library, {
   // Publishes a message to topic and returns the message id
   PublishMessage: async function (clientPtr, topic, message, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
+    console.log(UTF8ToString(message));
+    console.log(JSON.parse(UTF8ToString(message)));
     const published = JSON.stringify(
-      await client.publishMessage(UTF8ToString(topic), UTF8ToString(message))
+      await client.publishMessage(UTF8ToString(topic), JSON.parse(UTF8ToString(message)))
     );
     const bufferSize = lengthBytesUTF8(published) + 1;
     const buffer = _malloc(bufferSize);

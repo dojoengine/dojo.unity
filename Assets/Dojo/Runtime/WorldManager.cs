@@ -14,6 +14,7 @@ namespace Dojo
         public string toriiUrl = "http://localhost:8080";
         public string rpcUrl = "http://localhost:5050";
         public string relayUrl = "/ip4/127.0.0.1/tcp/9090";
+        public string relayWebrtcUrl;
         [Header("World")]
         public string worldAddress;
         public SynchronizationMaster synchronizationMaster;
@@ -23,7 +24,7 @@ namespace Dojo
         async void Awake()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
+            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, relayWebrtcUrl, worldAddress);
             await wasmClient.CreateClient();
 #else
             toriiClient = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
