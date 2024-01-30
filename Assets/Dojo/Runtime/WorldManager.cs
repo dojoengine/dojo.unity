@@ -19,7 +19,10 @@ namespace Dojo
         public string worldAddress;
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
+
+#if UNITY_WEBGL && !UNITY_EDITOR
         public ToriiWasmClient wasmClient;
+#endif
 
         async void Awake()
         {

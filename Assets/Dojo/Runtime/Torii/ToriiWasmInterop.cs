@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
 namespace Dojo.Torii
 {
     [Serializable]
@@ -235,3 +236,4 @@ namespace Dojo.Torii
         }
     }
 }
+#endif
