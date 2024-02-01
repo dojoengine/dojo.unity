@@ -34,7 +34,7 @@ namespace Dojo.Torii
                 dojo.Ty_Tag.Enum_ => ty.enum_.option,
                 dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
                 {
-                    dojo.Primitive_Tag.Bool => ty.primitive.bool_,
+                    dojo.Primitive_Tag.Bool => ty.primitive.bool_.Value,
                     dojo.Primitive_Tag.U8 => ty.primitive.u8,
                     dojo.Primitive_Tag.U16 => ty.primitive.u16,
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
