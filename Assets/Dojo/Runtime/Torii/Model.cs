@@ -27,14 +27,15 @@ namespace Dojo.Torii
             Members = new Dictionary<string, object>(model.members.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))));
         }
 
-        private object HandleCValue(dojo.Ty ty) {
+        private object HandleCValue(dojo.Ty ty)
+        {
             return ty.tag switch
             {
                 dojo.Ty_Tag.Struct_ => HandleCStruct(ty.struct_),
                 dojo.Ty_Tag.Enum_ => ty.enum_.option,
                 dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
                 {
-                    dojo.Primitive_Tag.Bool => ty.primitive.bool_,
+                    dojo.Primitive_Tag.Bool => Convert.ToBoolean(ty.primitive.bool_.Value),
                     dojo.Primitive_Tag.U8 => ty.primitive.u8,
                     dojo.Primitive_Tag.U16 => ty.primitive.u16,
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
@@ -53,7 +54,8 @@ namespace Dojo.Torii
             };
         }
 
-        private object HandleWasmValue(WasmValue value) {
+        private object HandleWasmValue(WasmValue value)
+        {
             return value.type switch
             {
                 // struct
