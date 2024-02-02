@@ -290,7 +290,6 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            Debug.Log(result._ok.data_len);
             return result.ok;
         }
     }
