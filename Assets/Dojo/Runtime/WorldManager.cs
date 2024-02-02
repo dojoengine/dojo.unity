@@ -37,7 +37,7 @@ namespace Dojo
 #if UNITY_WEBGL && !UNITY_EDITOR
             await synchronizationMaster.SynchronizeEntities();
 #else
-            synchronizationMaster.SynchronizeEntities();
+            await Task.Run(() => synchronizationMaster.SynchronizeEntities());
 #endif
 
             // listen for entity updates
@@ -123,7 +123,7 @@ namespace Dojo
 #if UNITY_WEBGL && !UNITY_EDITOR
             return await wasmClient.SubscribeTopic(topic);
 #else
-            return toriiClient.SubscribeTopic(topic);
+            return await Task.Run(() => toriiClient.SubscribeTopic(topic));
 #endif
         }
 
@@ -132,7 +132,7 @@ namespace Dojo
 #if UNITY_WEBGL && !UNITY_EDITOR
             return await wasmClient.UnsubscribeTopic(topic);
 #else
-            return toriiClient.UnsubscribeTopic(topic);
+            return await Task.Run(() => toriiClient.UnsubscribeTopic(topic));
 #endif
         }
 
@@ -141,7 +141,7 @@ namespace Dojo
 #if UNITY_WEBGL && !UNITY_EDITOR
             return await wasmClient.PublishMessage(topic, data);
 #else
-            return toriiClient.PublishMessage(topic, data).ToArray();
+            return await Task.Run(() => toriiClient.PublishMessage(topic, data).ToArray());
 #endif
         }
     }

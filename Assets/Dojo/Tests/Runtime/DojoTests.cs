@@ -15,7 +15,7 @@ public class Tests
     private readonly string toriiUrl = "http://0.0.0.0:8080";
     private readonly string rpcUrl = "http://0.0.0.0:5050";
     private readonly string relayUrl = "ip4/127.0.0.1/tcp/9090";
-    private readonly string playerKey = "0x028cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20";
+    // private readonly string playerKey = "0x028cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20";
     private readonly string playerAddress = "0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
     private readonly string worldAddress = "0x028f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a";
     private readonly string actionsAddress = "0x0152dcff993befafe5001975149d2c50bd9621da7cbaed74f68e7d5e54e65abc";
@@ -49,7 +49,7 @@ public class Tests
     }
 
     [Test]
-    public async void TestAccountAddress()
+    public void TestAccountAddress()
     {
         var address = account.Address;
 

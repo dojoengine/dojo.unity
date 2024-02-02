@@ -94,7 +94,7 @@ namespace Dojo.Starknet
             return res;
         }
 #else
-        public unsafe async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
+        private unsafe FieldElement ExecuteRawSync(dojo.Call[] calls)
         {
             dojo.Call* callsPtr;
             fixed (dojo.Call* ptr = &calls[0])
@@ -109,6 +109,11 @@ namespace Dojo.Starknet
             }
 
             return new FieldElement(result.ok);
+        }
+
+        public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
+        {
+            return await Task.Run(() => ExecuteRawSync(calls));
         }
 #endif
 
