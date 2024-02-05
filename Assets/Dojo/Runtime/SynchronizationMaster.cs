@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Dojo.Starknet;
 using Dojo.Torii;
@@ -20,7 +21,7 @@ namespace Dojo
         // Handle entities that get synchronized
         private ModelInstance[] _models;
         // Returns all of the model definitions
-        private ModelInstance[] models => _models ??= GetComponents<ModelInstance>();
+        private ModelInstance[] models => _models ??= LoadModels();
 
         public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
@@ -132,6 +133,24 @@ namespace Dojo
         public void RegisterEntityCallbacks()
         {
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
+        }
+
+        private ModelInstance[] LoadModels()
+        {
+            List<ModelInstance> models = new();
+
+            Assembly assembly = Assembly.GetAssembly(typeof(ModelInstance));
+            var modelTypes = assembly.GetTypes()
+                .Where(t => typeof(ModelInstance).IsAssignableFrom(t) && t.IsAbstract == false);
+
+            GameObject go = new("Models");
+
+            foreach (Type modelType in modelTypes)
+            {
+                models.Add((ModelInstance)go.AddComponent(modelType));
+            }
+
+            return models.ToArray();
         }
     }
 }

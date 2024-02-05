@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748171, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1914,63 +1914,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1909232409}
   m_CullTransparentMesh: 1
---- !u!1 &2019443014 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4900589733936057544, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
-  m_PrefabInstance: {fileID: 1014796538906876319}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2019443015 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1648136030876143075, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
   m_PrefabInstance: {fileID: 1014796538906876319}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2019443014}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85bbcaeafdf5e41c6a2f48ff65820b7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2019443018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2019443014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 043ae0b8f2d5246499b92dea35147ab6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnUpdated:
-    m_PersistentCalls:
-      m_Calls: []
-  player:
-    hex: 0x0000000000000000000000000000000000000000000000000000000000000000
-  position:
-    x: 0
-    y: 0
-  textTag: {fileID: 0}
-  shortPlayerAddress: 
---- !u!114 &2019443019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2019443014}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74bbe268ed776435caae0a617a8832d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnUpdated:
-    m_PersistentCalls:
-      m_Calls: []
-  player:
-    hex: 0x0000000000000000000000000000000000000000000000000000000000000000
-  remaining: 0
-  lastDirection: 0
 --- !u!1001 &1014796538906876319
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2038,11 +1992,11 @@ PrefabInstance:
     - target: {fileID: 4477060482053654553, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
       propertyPath: models.Array.data[0]
       value: 
-      objectReference: {fileID: 2019443019}
+      objectReference: {fileID: 0}
     - target: {fileID: 4477060482053654553, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
       propertyPath: models.Array.data[1]
       value: 
-      objectReference: {fileID: 2019443018}
+      objectReference: {fileID: 0}
     - target: {fileID: 4900589733936057544, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
       propertyPath: m_Name
       value: WorldManager
@@ -2050,13 +2004,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 4900589733936057544, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2019443019}
-    - targetCorrespondingSourceObject: {fileID: 4900589733936057544, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2019443018}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d2e25933f4d69473a8994ee7470b2610, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
