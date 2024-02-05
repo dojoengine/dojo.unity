@@ -30,11 +30,7 @@ namespace Dojo
                 TODO: maybe do in the start function of the SynchronizationMaster?
                 problem is when to start the subscription service
             */
-#if UNITY_WEBGL && !UNITY_EDITOR
             await synchronizationMaster.SynchronizeEntities();
-#else
-            await Task.Run(() => synchronizationMaster.SynchronizeEntities());
-#endif
 
             // listen for entity updates
             synchronizationMaster.RegisterEntityCallbacks();

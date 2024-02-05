@@ -38,11 +38,7 @@ namespace Dojo
         }
 
         // Fetch all entities from the dojo world and spawn them.
-#if UNITY_WEBGL && !UNITY_EDITOR
         public async Task<int> SynchronizeEntities()
-#else
-        public int SynchronizeEntities()
-#endif
         {
             var query = new dojo.Query
             {
@@ -56,7 +52,7 @@ namespace Dojo
 #if UNITY_WEBGL && !UNITY_EDITOR
             var entities = await worldManager.wasmClient.Entities((int)limit, 0);
 #else
-            var entities = worldManager.toriiClient.Entities(query);
+            var entities = await Task.Run(() => worldManager.toriiClient.Entities(query));
 #endif
 
             var entityGameObjects = new List<GameObject>();

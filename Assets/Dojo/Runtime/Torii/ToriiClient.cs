@@ -28,10 +28,6 @@ namespace Dojo.Torii
 
             client = result._ok;
 
-            // start event loops & register events
-            StartSubscription();
-            RunRelay();
-
             RegisterEntityStateUpdateEvent(new dojo.FieldElement[] { });
             RegisterOnMessageEvent();
         }
@@ -236,20 +232,6 @@ namespace Dojo.Torii
             {
                 throw new Exception(res.err.message);
             }
-        }
-
-        public void StartSubscription()
-        {
-            var result = dojo.client_start_subscription(client);
-            if (result.tag == dojo.Resultbool_Tag.Errbool)
-            {
-                throw new Exception(result.err.message);
-            }
-        }
-
-        public void RunRelay()
-        {
-            dojo.client_run_relay(client);
         }
 
         public bool SubscribeTopic(string topic)
