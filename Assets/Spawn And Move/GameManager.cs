@@ -26,18 +26,15 @@ public class GameManager : MonoBehaviour
     private BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedBurners = new();
 
-    void Awake()
+    // Start is called before the first frame update
+    void Start()
     {
         var provider = new JsonRpcClient(worldManager.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, new FieldElement(masterAddress));
 
         burnerManager = new BurnerManager(provider, account);
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
         foreach (var entity in worldManager.Entities())
         {

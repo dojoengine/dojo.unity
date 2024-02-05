@@ -11,18 +11,33 @@ namespace Dojo
     public class WorldManager : MonoBehaviour
     {
         [Header("RPC")]
-        public string toriiUrl = "http://localhost:8080";
-        public string rpcUrl = "http://localhost:5050";
-        public string relayUrl = "/ip4/127.0.0.1/tcp/9090";
+        [HideInInspector]
+        public string toriiUrl;
+        [HideInInspector]
+        public string rpcUrl;
+        [HideInInspector]
+        public string relayUrl;
+        [HideInInspector]
         public string relayWebrtcUrl;
         [Header("World")]
+        [HideInInspector]
         public string worldAddress;
+        
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
         public ToriiWasmClient wasmClient;
 
+        [SerializeField] WorldManagerData dojoConfig;
+
+
         async void Awake()
         {
+            toriiUrl = dojoConfig.toriiUrl;
+            rpcUrl = dojoConfig.rpcUrl;
+            relayUrl = dojoConfig.relayUrl;
+            relayWebrtcUrl = dojoConfig.relayWebrtcUrl;
+            worldAddress = dojoConfig.worldAddress;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
             wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, relayWebrtcUrl, worldAddress);
             await wasmClient.CreateClient();

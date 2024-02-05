@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faed63f2427f3ed83a42d16bb3e73e6d, type: 3}
+  m_Name: WorldManagerLocalConfig
+  m_EditorClassIdentifier: 
+  toriiUrl: http://localhost:8080
+  rpcUrl: http://localhost:5050
+  relayUrl: /ip4/127.0.0.1/tcp/9090
+  relayWebrtcUrl: /ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiDx-luHsovHTHPuU5qzNHCCFkYYpFPirTn2p7ZIFP0Dig
+  limit: 100
+  worldAddress: 0x28f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a
