@@ -10,7 +10,6 @@ namespace Dojo
 {
     public class WorldManager : MonoBehaviour
     {
-        [Header("RPC")]
         [HideInInspector]
         public string toriiUrl;
         [HideInInspector]
@@ -19,7 +18,6 @@ namespace Dojo
         public string relayUrl;
         [HideInInspector]
         public string relayWebrtcUrl;
-        [Header("World")]
         [HideInInspector]
         public string worldAddress;
         

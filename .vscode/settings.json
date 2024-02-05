@@ -51,7 +51,7 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "dojounity.sln",
+    "dotnet.defaultSolution": "Dojo.sln",
     "rust-analyzer.linkedProjects": [
         "./Bindings/dojo.c/Cargo.toml"
     ]
