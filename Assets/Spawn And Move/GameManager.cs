@@ -15,29 +15,24 @@ using Random = UnityEngine.Random;
 
 public class GameManager : MonoBehaviour
 {
-    public string masterPrivateKey;
-    public string masterAddress;
+    [SerializeField] WorldManager worldManager;
+    [SerializeField] ChatManager chatManager;
 
-    public WorldManager worldManager;
-    public string worldActionsAddress;
-
-    public ChatManager chatManager;
+    [SerializeField] WorldManagerData dojoConfig;
+    [SerializeField] GameManagerData gameManagerData; 
 
     private BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedBurners = new();
 
-    void Awake()
-    {
-        var provider = new JsonRpcClient(worldManager.rpcUrl);
-        var signer = new SigningKey(masterPrivateKey);
-        var account = new Account(provider, signer, new FieldElement(masterAddress));
-
-        burnerManager = new BurnerManager(provider, account);
-    }
-
-    // Start is called before the first frame update
+    
     void Start()
     {
+        var provider = new JsonRpcClient(dojoConfig.rpcUrl);
+        var signer = new SigningKey(gameManagerData.masterPrivateKey);
+        var account = new Account(provider, signer, new FieldElement(gameManagerData.masterAddress));
+
+        burnerManager = new BurnerManager(provider, account);
+
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
         foreach (var entity in worldManager.Entities())
         {
@@ -45,7 +40,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     async void Update()
     {
         // dont register inputs if our chat is open
@@ -60,7 +54,7 @@ public class GameManager : MonoBehaviour
                 new dojo.Call
                 {
                     selector = "spawn",
-                    to = worldActionsAddress,
+                    to = gameManagerData.worldActionsAddress,
                 }
             });
         }
@@ -128,7 +122,7 @@ public class GameManager : MonoBehaviour
                     new FieldElement(direction).Inner()
                 },
                 selector = "move",
-                to = worldActionsAddress,
+                to = gameManagerData.worldActionsAddress,
             }
         });
     }

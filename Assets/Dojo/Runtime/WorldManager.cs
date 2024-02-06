@@ -9,31 +9,27 @@ using System.Threading.Tasks;
 namespace Dojo
 {
     public class WorldManager : MonoBehaviour
-    {
-        [Header("RPC")]
-        public string toriiUrl = "http://localhost:8080";
-        public string rpcUrl = "http://localhost:5050";
-        public string relayUrl = "/ip4/127.0.0.1/tcp/9090";
-        public string relayWebrtcUrl;
-        [Header("World")]
-        public string worldAddress;
+    {   
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
         public ToriiWasmClient wasmClient;
+        [SerializeField] WorldManagerData dojoConfig;
 
         async void Awake()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, relayWebrtcUrl, worldAddress);
+            wasmClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.rpcUrl,
+                                                dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
             await wasmClient.CreateClient();
 #else
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
+            toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.rpcUrl,
+                                            dojoConfig.relayUrl, dojoConfig.worldAddress);
 #endif
-
-
-            // fetch entities from the world
-            // TODO: maybe do in the start function of the SynchronizationMaster?
-            // problem is when to start the subscription service
+            
+            /*  fetch entities from the world
+                TODO: maybe do in the start function of the SynchronizationMaster?
+                problem is when to start the subscription service
+            */
 #if UNITY_WEBGL && !UNITY_EDITOR
             await synchronizationMaster.SynchronizeEntities();
 #else
@@ -43,12 +39,6 @@ namespace Dojo
             // listen for entity updates
             synchronizationMaster.RegisterEntityCallbacks();
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-        }
-
 
         // #if UNITY_WEBGL && !UNITY_EDITOR
         //         // internal callback to be called for when the client is created
@@ -69,8 +59,9 @@ namespace Dojo
         //         }
         // #endif
 
-        // Get a child entity from the WorldManager game object.
-        // Name is usually the hashed_keys of the entity as a hex string.
+        /*  Get a child entity from the WorldManager game object.
+            Name is usually the hashed_keys of the entity as a hex string.
+        */
         public GameObject Entity(string name)
         {
             var entity = transform.Find(name);

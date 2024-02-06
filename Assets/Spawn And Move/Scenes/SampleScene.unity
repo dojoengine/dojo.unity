@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657832, g: 0.49641222, b: 0.57481664, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1107,6 +1107,8 @@ MonoBehaviour:
   worldManager: {fileID: 2019443015}
   worldActionsAddress: 0x297bde19ca499fd8a39dd9bedbcd881a47f7b8f66c19478ce97d7de89e6112e
   chatManager: {fileID: 1082089485}
+  dojoConfig: {fileID: 11400000, guid: 1d6a5fa48aab79f0084b213f6fc768c5, type: 2}
+  gameManagerData: {fileID: 11400000, guid: ac99ac978699e9d6e9fe53247c9138c8, type: 2}
 --- !u!4 &998234501
 Transform:
   m_ObjectHideFlags: 0
@@ -1301,6 +1303,7 @@ MonoBehaviour:
   gameManager: {fileID: 998234500}
   chatOpen: 0
   worldManager: {fileID: 2019443015}
+  gameManagerData: {fileID: 11400000, guid: ac99ac978699e9d6e9fe53247c9138c8, type: 2}
 --- !u!1 &1436812976
 GameObject:
   m_ObjectHideFlags: 0
