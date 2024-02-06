@@ -7,17 +7,17 @@ namespace Dojo.Starknet
 {
     public class JsonRpcClient
     {
-        #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
         public IntPtr client;
-        #else
+#else
         public unsafe dojo.CJsonRpcClient* client;
-        #endif
+#endif
 
-        #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
         public JsonRpcClient(string rpcUrl) {
             client = StarknetInterop.NewProvider(new CString(rpcUrl));
         }
-        #else
+#else
         public unsafe JsonRpcClient(string rpcUrl)
         {
             var result = dojo.jsonrpc_client_new(CString.FromString(rpcUrl));
@@ -25,24 +25,24 @@ namespace Dojo.Starknet
             {
                 throw new Exception(result.err.message);
             }
-            
+
             client = result._ok;
         }
-        #endif
+#endif
 
         unsafe ~JsonRpcClient()
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
-            #else
+#if UNITY_WEBGL && !UNITY_EDITOR
+#else
             dojo.jsonrpc_client_free(client);
-            #endif
+#endif
         }
 
         // Wait for the transaction to be confirmed. Synchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
-        #if UNITY_WEBGL && !UNITY_EDITOR
-        #else
+#if UNITY_WEBGL && !UNITY_EDITOR
+#else
         private unsafe void WaitForTransactionSync(FieldElement transactionHash)
         {
             var result = dojo.wait_for_transaction(client, transactionHash.Inner());
@@ -51,21 +51,18 @@ namespace Dojo.Starknet
                 throw new Exception(result.err.message);
             }
         }
-        #endif
+#endif
 
         // Wait for the transaction to be confirmed. Asynchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
-        #if UNITY_WEBGL && !UNITY_EDITOR
         public async Task WaitForTransaction(FieldElement transactionHash)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             await StarknetInterop.WaitForTransactionAsync(client, transactionHash);
-        }
-        #else
-        public async Task WaitForTransaction(FieldElement transactionHash)
-        {
+#else
             await Task.Run(() => WaitForTransactionSync(transactionHash));
+#endif
         }
-        #endif
     }
 }

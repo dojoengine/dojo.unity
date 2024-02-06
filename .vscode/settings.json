@@ -53,6 +53,7 @@
     },
     "dotnet.defaultSolution": "Dojo.sln",
     "rust-analyzer.linkedProjects": [
+        "./Bindings/dojo.c/Cargo.toml",
         "./Bindings/dojo.c/Cargo.toml"
     ]
 }
