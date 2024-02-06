@@ -139,15 +139,17 @@ namespace Dojo
         {
             List<ModelInstance> models = new();
 
-            Assembly assembly = Assembly.GetAssembly(typeof(ModelInstance));
-            var modelTypes = assembly.GetTypes()
-                .Where(t => typeof(ModelInstance).IsAssignableFrom(t) && t.IsAbstract == false);
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-            GameObject go = new("Models");
-
-            foreach (Type modelType in modelTypes)
+            foreach (Assembly assembly in assemblies)
             {
-                models.Add((ModelInstance)go.AddComponent(modelType));
+                var modelTypes = assembly.GetTypes()
+                    .Where(t => typeof(ModelInstance).IsAssignableFrom(t) && !t.IsAbstract);
+
+                foreach (Type modelType in modelTypes)
+                {
+                    models.Add((ModelInstance)gameObject.AddComponent(modelType));
+                }
             }
 
             return models.ToArray();
