@@ -18,10 +18,12 @@ public class GameManager : MonoBehaviour
     public string masterPrivateKey;
     public string masterAddress;
 
-    public WorldManager worldManager;
-    public string worldActionsAddress;
+    [SerializeField] WorldManager worldManager;
+    [SerializeField] string worldActionsAddress;
 
-    public ChatManager chatManager;
+    [SerializeField] ChatManager chatManager;
+
+    [SerializeField] WorldManagerData dojoConfig;
 
     private BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedBurners = new();
@@ -29,7 +31,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var provider = new JsonRpcClient(worldManager.rpcUrl);
+        var provider = new JsonRpcClient(dojoConfig.rpcUrl);
         var signer = new SigningKey(masterPrivateKey);
         var account = new Account(provider, signer, new FieldElement(masterAddress));
 

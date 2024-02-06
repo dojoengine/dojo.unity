@@ -9,44 +9,27 @@ using System.Threading.Tasks;
 namespace Dojo
 {
     public class WorldManager : MonoBehaviour
-    {
-        [HideInInspector]
-        public string toriiUrl;
-        [HideInInspector]
-        public string rpcUrl;
-        [HideInInspector]
-        public string relayUrl;
-        [HideInInspector]
-        public string relayWebrtcUrl;
-        [HideInInspector]
-        public string worldAddress;
-        
+    {   
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
         public ToriiWasmClient wasmClient;
-
         [SerializeField] WorldManagerData dojoConfig;
-
 
         async void Awake()
         {
-            toriiUrl = dojoConfig.toriiUrl;
-            rpcUrl = dojoConfig.rpcUrl;
-            relayUrl = dojoConfig.relayUrl;
-            relayWebrtcUrl = dojoConfig.relayWebrtcUrl;
-            worldAddress = dojoConfig.worldAddress;
-
 #if UNITY_WEBGL && !UNITY_EDITOR
-            wasmClient = new ToriiWasmClient(toriiUrl, rpcUrl, relayWebrtcUrl, worldAddress);
+            wasmClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.rpcUrl,
+                                                dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
             await wasmClient.CreateClient();
 #else
-            toriiClient = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
+            toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.rpcUrl,
+                                            dojoConfig.relayUrl, dojoConfig.worldAddress);
 #endif
-
-
-            // fetch entities from the world
-            // TODO: maybe do in the start function of the SynchronizationMaster?
-            // problem is when to start the subscription service
+            
+            /*  fetch entities from the world
+                TODO: maybe do in the start function of the SynchronizationMaster?
+                problem is when to start the subscription service
+            */
 #if UNITY_WEBGL && !UNITY_EDITOR
             await synchronizationMaster.SynchronizeEntities();
 #else
@@ -56,12 +39,6 @@ namespace Dojo
             // listen for entity updates
             synchronizationMaster.RegisterEntityCallbacks();
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-        }
-
 
         // #if UNITY_WEBGL && !UNITY_EDITOR
         //         // internal callback to be called for when the client is created
@@ -82,8 +59,9 @@ namespace Dojo
         //         }
         // #endif
 
-        // Get a child entity from the WorldManager game object.
-        // Name is usually the hashed_keys of the entity as a hex string.
+        /*  Get a child entity from the WorldManager game object.
+            Name is usually the hashed_keys of the entity as a hex string.
+        */
         public GameObject Entity(string name)
         {
             var entity = transform.Find(name);
