@@ -3,6 +3,8 @@
 
 targets=("x86_64-unknown-linux-gnu" "x86_64-apple-darwin" "aarch64-apple-darwin" "x86_64-pc-windows-gnu" "aarch64-apple-ios")
 
+cd ./Bindings/dojo.c
+
 if [[ "$1" == "debug" ]]; then
   build="debug"
 else
@@ -18,7 +20,6 @@ export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
 export CARGO_TARGET_ARMV7_LINUX_ANDROIDEABI_LINKER="$(ls /Applications/Unity/Hub/Editor/*/PlaybackEngines/AndroidPlayer/NDK/toolchains/llvm/prebuilt/*/bin/armv7a-linux-androideabi*-clang | sort | tail -n 1)"
 # Arm64 android linker
 export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER="$(ls /Applications/Unity/Hub/Editor/*/PlaybackEngines/AndroidPlayer/NDK/toolchains/llvm/prebuilt/*/bin/aarch64-linux-android*-clang | sort | tail -n 1)"
-cd ./Bindings/dojo.c
 # Loop over the targets
 for target in "${targets[@]}"; do
   rm -rf "../../Assets/Dojo/Libraries/$target"
