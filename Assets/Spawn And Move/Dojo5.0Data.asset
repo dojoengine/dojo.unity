@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   masterPrivateKey: 0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a
   masterAddress: 0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca
-  worldActionsAddress: 0x4bc39aa90510ea204e24910cc18e2fe9027292b49d465ca1d1832e41752b840
+  worldActionsAddress: 0x5024efa0bbd4ec33a2f56251a5d67d8ed2b1e88cbdba566cbce6d3d757db21f

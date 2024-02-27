@@ -1897,7 +1897,7 @@ MonoBehaviour:
   chatManager: {fileID: 1082089485}
   dojoConfig: {fileID: 11400000, guid: 1d6a5fa48aab79f0084b213f6fc768c5, type: 2}
   gameManagerData: {fileID: 11400000, guid: ac99ac978699e9d6e9fe53247c9138c8, type: 2}
-  actions: {fileID: 0}
+  actions: {fileID: 2019443021}
 --- !u!114 &2019443021
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1910,7 +1910,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b18adcaf2b047e6b2b01ff15e6aea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contractAddress: 0x4bc39aa90510ea204e24910cc18e2fe9027292b49d465ca1d1832e41752b840
+  contractAddress: 0x5024efa0bbd4ec33a2f56251a5d67d8ed2b1e88cbdba566cbce6d3d757db21f
 --- !u!1001 &1014796538906876319
 PrefabInstance:
   m_ObjectHideFlags: 0

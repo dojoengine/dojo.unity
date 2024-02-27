@@ -5,5 +5,4 @@ public class GameManagerData : ScriptableObject
 {
     public string masterPrivateKey;
     public string masterAddress;
-    public string worldActionsAddress;
 }
