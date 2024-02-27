@@ -21,4 +21,17 @@ public class Moves : ModelInstance
     public byte remaining;
     [ModelField("last_direction")]
     public Direction lastDirection;
+
+    void Start() {
+
+    }
+
+    void Update() {
+
+    }
+
+    public override void OnUpdate(Model model)
+    {
+        base.OnUpdate(model);
+    }
 }

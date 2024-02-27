@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     private BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedBurners = new();
+    public Actions actions;
 
     
     void Start()
@@ -49,14 +50,7 @@ public class GameManager : MonoBehaviour
         {
             var burner = await burnerManager.DeployBurner();
             spawnedBurners[burner.Address] = null;
-            var txHash = await burner.ExecuteRaw(new dojo.Call[]
-            {
-                new dojo.Call
-                {
-                    selector = "spawn",
-                    to = gameManagerData.worldActionsAddress,
-                }
-            });
+            var txHash = await actions.Spawn(burner);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -114,17 +108,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        await burnerManager.CurrentBurner.ExecuteRaw(new dojo.Call[]
-        {
-            new dojo.Call
-            {
-                calldata = new dojo.FieldElement[] {
-                    new FieldElement(direction).Inner()
-                },
-                selector = "move",
-                to = gameManagerData.worldActionsAddress,
-            }
-        });
+        await actions.Move(burnerManager.CurrentBurner, direction);
     }
 
     private void InitEntity(GameObject entity)
