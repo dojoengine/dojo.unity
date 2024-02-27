@@ -17,4 +17,4 @@ MonoBehaviour:
   relayUrl: /ip4/127.0.0.1/tcp/9090
   relayWebrtcUrl: /ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiDx-luHsovHTHPuU5qzNHCCFkYYpFPirTn2p7ZIFP0Dig
   limit: 100
-  worldAddress: 0x28f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a
+  worldAddress: 0xc26dfdc00af6798af8add1ee5d99a716ce9a5766d81218c4fd675ab9889dc4
