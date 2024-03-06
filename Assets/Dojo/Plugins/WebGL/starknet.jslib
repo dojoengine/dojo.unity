@@ -7,38 +7,54 @@ mergeInto(LibraryManager.library, {
         dynCall_vi(cb, account);
     },
     AccountAddress: function (account) {
-        var address = wasm_bindgen.accountAddress(account);
-        var bufferSize = lengthBytesUTF8(address) + 1;
-        var buffer = _malloc(bufferSize);
+        const account = wasm_bindgen.Account.__wrap(account);
+        const address = account.address();
+        const bufferSize = lengthBytesUTF8(address) + 1;
+        const buffer = _malloc(bufferSize);
         stringToUTF8(address, buffer, bufferSize);
         return buffer;
     },
     AccountChainId: function (account) {
-        var chainId = wasm_bindgen.accountChainId(account);
-        var bufferSize = lengthBytesUTF8(chainId) + 1;
-        var buffer = _malloc(bufferSize);
+        const account = wasm_bindgen.Account.__wrap(account);
+        const chainId = wasm_bindgen.chainId();
+        const bufferSize = lengthBytesUTF8(chainId) + 1;
+        const buffer = _malloc(bufferSize);
         stringToUTF8(chainId, buffer, bufferSize);
         return buffer;
     },
     AccountSetBlockId: function (account, blockId) {
-        wasm_bindgen.accountSetBlockId(account, UTF8ToString(blockId));
+        const account = wasm_bindgen.Account.__wrap(account);
+        wasm_bindgen.setBlockId(UTF8ToString(blockId));
     },
     AccountExecuteRaw: async function (account, calls, cb) {
-        var calls = JSON.parse(UTF8ToString(calls));
-        var txHash = await wasm_bindgen.accountExecuteRaw(account, {
+        const account = wasm_bindgen.Account.__wrap(account);
+        const calls = JSON.parse(UTF8ToString(calls));
+        const txHash = await wasm_bindgen.executeRaw({
             calls
         });
-        var bufferSize = lengthBytesUTF8(txHash) + 1;
-        var buffer = _malloc(bufferSize);
+        const bufferSize = lengthBytesUTF8(txHash) + 1;
+        const buffer = _malloc(bufferSize);
         stringToUTF8(txHash, buffer, bufferSize);
         dynCall_vi(cb, buffer);
     },
     AccountDeployBurner: async function (account, cb) {
-        const burner = await wasm_bindgen.accountDeployBurner(account);
+        const account = wasm_bindgen.Account.__wrap(account);
+        const burner = await wasm_bindgen.deployBurner(account);
         dynCall_vi(cb, burner);
     },
+    Call: async function (provider, call, blockId, cb) {
+        const provider = wasm_bindgen.Provider.__wrap(provider);
+        const call = JSON.parse(UTF8ToString(call));
+        const blockId = JSON.parse(UTF8ToString(blockId));
+        const result = await provider.call(call);
+        const bufferSize = lengthBytesUTF8(result) + 1;
+        const buffer = _malloc(bufferSize);
+        stringToUTF8(result, buffer, bufferSize);
+        dynCall_vi(cb, buffer);
+    },
     WaitForTransaction: async function (provider, txHash, cb) {
-        const confirmed = await wasm_bindgen.waitForTransaction(provider, UTF8ToString(txHash));
+        const provider = wasm_bindgen.Provider.__wrap(provider);
+        const confirmed = await provider.waitForTransaction(UTF8ToString(txHash));
         dynCall_vi(cb, confirmed);
     },
     NewSigningKey: function () {

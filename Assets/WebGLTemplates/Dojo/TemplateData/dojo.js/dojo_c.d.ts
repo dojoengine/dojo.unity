@@ -27,41 +27,7 @@ declare namespace wasm_bindgen {
 	* @param {string} rpc_url
 	* @returns {number}
 	*/
-	export function jsonrpcClientNew(rpc_url: string): number;
-	/**
-	* @param {number} rpc
-	* @param {string} private_key
-	* @param {string} address
-	* @returns {Promise<number>}
-	*/
-	export function accountNew(rpc: number, private_key: string, address: string): Promise<number>;
-	/**
-	* @param {number} account
-	* @returns {string}
-	*/
-	export function accountAddress(account: number): string;
-	/**
-	* @param {number} account
-	* @returns {string}
-	*/
-	export function accountChainId(account: number): string;
-	/**
-	* @param {number} account
-	* @param {string} block_id
-	*/
-	export function accountSetBlockId(account: number, block_id: string): void;
-	/**
-	* @param {number} account
-	* @param {JsCalls} calldata
-	* @returns {Promise<string>}
-	*/
-	export function accountExecuteRaw(account: number, calldata: JsCalls): Promise<string>;
-	/**
-	* @param {number} rpc
-	* @param {string} txn_hash
-	* @returns {Promise<boolean>}
-	*/
-	export function waitForTransaction(rpc: number, txn_hash: string): Promise<boolean>;
+	export function createProvider(rpc_url: string): number;
 	/**
 	* @param {string} class_hash
 	* @param {string} salt
@@ -71,24 +37,12 @@ declare namespace wasm_bindgen {
 	*/
 	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
 	/**
-	* @param {number} master_account
-	* @returns {Promise<number>}
-	*/
-	export function accountDeployBurner(master_account: number): Promise<number>;
-	/**
 	* Create the a client with the given configurations.
-	* @param {(EntityModel)[]} initialModelsToSync
+	* @param {KeysClauses} initialModelsToSync
 	* @param {ClientConfig} config
 	* @returns {Promise<Client>}
 	*/
-	export function createClient(initialModelsToSync: (EntityModel)[], config: ClientConfig): Promise<Client>;
-	
-	export interface EntityModel {
-	    model: string;
-	    keys: string[];
-	}
-	
-	
+	export function createClient(initialModelsToSync: KeysClauses, config: ClientConfig): Promise<Client>;
 	export interface ClientConfig {
 	    rpcUrl: string;
 	    toriiUrl: string;
@@ -101,60 +55,120 @@ declare namespace wasm_bindgen {
 	    s: string;
 	}
 	
-	export interface JsCalls {
-	    calls: JsCall[];
-	}
+	export type Calls = Call[];
 	
-	export interface JsCall {
+	export interface Call {
 	    to: string;
 	    selector: string;
 	    calldata: string[];
 	}
 	
+	export type BlockTag = "Latest" | "Pending";
+	
+	export type BlockId = { Hash: string } | { Number: number } | { BlockTag: BlockTag };
+	
+	export interface Query {
+	    limit: number;
+	    offset: number;
+	    clause: Clause | null;
+	}
+	
+	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
+	
+	export type KeysClauses = KeysClause[];
+	
+	export interface KeysClause {
+	    model: string;
+	    keys: string[];
+	}
+	
+	export interface MemberClause {
+	    model: string;
+	    member: string;
+	    operator: ComparisonOperator;
+	    value: Value;
+	}
+	
+	export interface CompositeClause {
+	    model: string;
+	    operator: LogicalOperator;
+	    clauses: Clause[];
+	}
+	
+	export type LogicalOperator = "And" | "Or";
+	
+	export type ComparisonOperator = "Eq" | "Neq" | "Gt" | "Gte" | "Lt" | "Lte";
+	
+	export interface Value {
+	    primitive_type: Primitive;
+	    value_type: ValueType;
+	}
+	
+	export type ValueType = { String: string } | { Int: number } | { UInt: number } | { VBool: boolean } | { Bytes: number[] };
+	
+	export type Primitive = { U8: number | null } | { U16: number | null } | { U32: number | null } | { U64: number | null } | { U128: string | null } | { U256: string | null } | { USize: number | null } | { Bool: boolean | null } | { Felt252: string | null } | { ClassHash: string | null } | { ContractAddress: string | null };
+	
+	/**
+	*/
+	export class Account {
+	  free(): void;
+	/**
+	* @returns {string}
+	*/
+	  address(): string;
+	/**
+	* @returns {string}
+	*/
+	  chainId(): string;
+	/**
+	* @param {string} block_id
+	*/
+	  setBlockId(block_id: string): void;
+	/**
+	* @param {Calls} calldata
+	* @returns {Promise<string>}
+	*/
+	  executeRaw(calldata: Calls): Promise<string>;
+	/**
+	* @returns {Promise<number>}
+	*/
+	  deployBurner(): Promise<number>;
+	}
 	/**
 	*/
 	export class Client {
 	  free(): void;
 	/**
-	* @param {number} limit
-	* @param {number} offset
+	* @param {Query} query
 	* @returns {Promise<any>}
 	*/
-	  getEntities(limit: number, offset: number): Promise<any>;
-	/**
-	* @param {string} model
-	* @param {any[]} keys
-	* @param {number} limit
-	* @param {number} offset
-	* @returns {Promise<any>}
-	*/
-	  getEntitiesByKeys(model: string, keys: any[], limit: number, offset: number): Promise<any>;
+	  getEntities(query: Query): Promise<any>;
 	/**
 	* Retrieves the model value of an entity. Will fetch from remote if the requested entity is not one of the entities that are being synced.
 	* @param {string} model
-	* @param {any[]} keys
+	* @param {(string)[]} keys
 	* @returns {Promise<any>}
 	*/
-	  getModelValue(model: string, keys: any[]): Promise<any>;
+	  getModelValue(model: string, keys: (string)[]): Promise<any>;
 	/**
 	* Register new entities to be synced.
-	* @param {(EntityModel)[]} models
+	* @param {KeysClauses} models
 	* @returns {Promise<void>}
 	*/
-	  addModelsToSync(models: (EntityModel)[]): Promise<void>;
+	  addModelsToSync(models: KeysClauses): Promise<void>;
 	/**
 	* Remove the entities from being synced.
-	* @param {(EntityModel)[]} models
+	* @param {KeysClauses} models
 	* @returns {Promise<void>}
 	*/
-	  removeModelsToSync(models: (EntityModel)[]): Promise<void>;
+	  removeModelsToSync(models: KeysClauses): Promise<void>;
 	/**
 	* Register a callback to be called every time the specified synced entity's value changes.
-	* @param {EntityModel} model
+	* @param {KeysClause} model
 	* @param {Function} callback
 	* @returns {Promise<void>}
 	*/
-	  onSyncModelChange(model: EntityModel, callback: Function): Promise<void>;
+	  onSyncModelChange(model: KeysClause, callback: Function): Promise<void>;
 	/**
 	* @param {(string)[] | undefined} ids
 	* @param {Function} callback
@@ -258,6 +272,28 @@ declare namespace wasm_bindgen {
 	}
 	/**
 	*/
+	export class Provider {
+	  free(): void;
+	/**
+	* @param {string} private_key
+	* @param {string} address
+	* @returns {Promise<number>}
+	*/
+	  createAccount(private_key: string, address: string): Promise<number>;
+	/**
+	* @param {Call} call
+	* @param {BlockId} block_id
+	* @returns {Promise<Array<any>>}
+	*/
+	  call(call: Call, block_id: BlockId): Promise<Array<any>>;
+	/**
+	* @param {string} txn_hash
+	* @returns {Promise<boolean>}
+	*/
+	  waitForTransaction(txn_hash: string): Promise<boolean>;
+	}
+	/**
+	*/
 	export class QueuingStrategy {
 	  free(): void;
 	/**
@@ -280,47 +316,46 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_provider_free: (a: number) => void;
+  readonly __wbg_account_free: (a: number) => void;
   readonly __wbg_client_free: (a: number) => void;
   readonly signingKeyNew: (a: number) => void;
   readonly signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly verifyingKeyNew: (a: number, b: number, c: number) => void;
   readonly verifyingKeyVerify: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
-  readonly jsonrpcClientNew: (a: number, b: number, c: number) => void;
-  readonly accountNew: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly accountAddress: (a: number, b: number) => void;
-  readonly accountChainId: (a: number, b: number) => void;
-  readonly accountSetBlockId: (a: number, b: number, c: number, d: number) => void;
-  readonly accountExecuteRaw: (a: number, b: number) => number;
-  readonly waitForTransaction: (a: number, b: number, c: number) => number;
+  readonly createProvider: (a: number, b: number, c: number) => void;
+  readonly provider_createAccount: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly provider_call: (a: number, b: number, c: number) => number;
+  readonly provider_waitForTransaction: (a: number, b: number, c: number) => number;
+  readonly account_address: (a: number, b: number) => void;
+  readonly account_chainId: (a: number, b: number) => void;
+  readonly account_setBlockId: (a: number, b: number, c: number, d: number) => void;
+  readonly account_executeRaw: (a: number, b: number) => number;
+  readonly account_deployBurner: (a: number) => number;
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
-  readonly accountDeployBurner: (a: number) => number;
-  readonly client_getEntities: (a: number, b: number, c: number) => number;
-  readonly client_getEntitiesByKeys: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => number;
+  readonly client_getEntities: (a: number, b: number) => number;
   readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly client_addModelsToSync: (a: number, b: number, c: number) => number;
-  readonly client_removeModelsToSync: (a: number, b: number, c: number) => number;
+  readonly client_addModelsToSync: (a: number, b: number) => number;
+  readonly client_removeModelsToSync: (a: number, b: number) => number;
   readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
   readonly client_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
   readonly client_subscribeTopic: (a: number, b: number, c: number) => number;
   readonly client_unsubscribeTopic: (a: number, b: number, c: number) => number;
   readonly client_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly client_onMessage: (a: number, b: number) => number;
-  readonly createClient: (a: number, b: number, c: number) => number;
+  readonly createClient: (a: number, b: number) => number;
   readonly __wbg_queuingstrategy_free: (a: number) => void;
   readonly queuingstrategy_highWaterMark: (a: number) => number;
-  readonly __wbg_intounderlyingsource_free: (a: number) => void;
-  readonly intounderlyingsource_pull: (a: number, b: number) => number;
-  readonly intounderlyingsource_cancel: (a: number) => void;
+  readonly __wbg_intounderlyingsink_free: (a: number) => void;
+  readonly intounderlyingsink_write: (a: number, b: number) => number;
+  readonly intounderlyingsink_close: (a: number) => number;
+  readonly intounderlyingsink_abort: (a: number, b: number) => number;
   readonly __wbg_intounderlyingbytesource_free: (a: number) => void;
   readonly intounderlyingbytesource_type: (a: number, b: number) => void;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_start: (a: number, b: number) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: number) => number;
   readonly intounderlyingbytesource_cancel: (a: number) => void;
-  readonly __wbg_intounderlyingsink_free: (a: number) => void;
-  readonly intounderlyingsink_write: (a: number, b: number) => number;
-  readonly intounderlyingsink_close: (a: number) => number;
-  readonly intounderlyingsink_abort: (a: number, b: number) => number;
   readonly __wbg_readablestreamgetreaderoptions_free: (a: number) => void;
   readonly readablestreamgetreaderoptions_mode: (a: number) => number;
   readonly __wbg_pipeoptions_free: (a: number) => void;
@@ -328,17 +363,20 @@ declare interface InitOutput {
   readonly pipeoptions_preventCancel: (a: number) => number;
   readonly pipeoptions_preventAbort: (a: number) => number;
   readonly pipeoptions_signal: (a: number) => number;
+  readonly __wbg_intounderlyingsource_free: (a: number) => void;
+  readonly intounderlyingsource_pull: (a: number, b: number) => number;
+  readonly intounderlyingsource_cancel: (a: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h1bbff548ea78c42e: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke0_mut__h5022508738de08e2: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h3c219dc0b035f7df: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__hf7a65870f58b9527: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h6a81129acb643393: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke0_mut__hd574114c4d9cf57f: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__h802007b5f737ac1e: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h68313b65f95fdd11: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__h49135c650ec5830a: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h8a502170c0201eea: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**
