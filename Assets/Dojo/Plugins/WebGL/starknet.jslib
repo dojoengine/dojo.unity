@@ -1,44 +1,74 @@
 mergeInto(LibraryManager.library, {
     NewProvider: function (rpcUrl) {
-        return wasm_bindgen.jsonrpcClientNew(UTF8ToString(rpcUrl));
+        return wasm_bindgen.createProvider(UTF8ToString(rpcUrl)).__destroy_into_raw();
     },
-    NewAccount: async function (provider, pk, address, cb) {
-        const account = await wasm_bindgen.accountNew(provider, UTF8ToString(pk), UTF8ToString(address));
-        dynCall_vi(cb, account);
+    NewAccount: async function (providerPtr, pk, address, cb) {
+        const provider = wasm_bindgen.Provider.__wrap(providerPtr);
+        const account = await provider.createAccount(UTF8ToString(pk), UTF8ToString(address));
+
+        dynCall_vi(cb, account.__destroy_into_raw());
     },
-    AccountAddress: function (account) {
-        var address = wasm_bindgen.accountAddress(account);
-        var bufferSize = lengthBytesUTF8(address) + 1;
-        var buffer = _malloc(bufferSize);
+    AccountAddress: function (accountPtr) {
+        const account = wasm_bindgen.Account.__wrap(accountPtr);
+        const address = account.address();
+        const bufferSize = lengthBytesUTF8(address) + 1;
+        const buffer = _malloc(bufferSize);
         stringToUTF8(address, buffer, bufferSize);
+
+        account.__destroy_into_raw();
         return buffer;
     },
-    AccountChainId: function (account) {
-        var chainId = wasm_bindgen.accountChainId(account);
-        var bufferSize = lengthBytesUTF8(chainId) + 1;
-        var buffer = _malloc(bufferSize);
+    AccountChainId: function (accountPtr) {
+        const account = wasm_bindgen.Account.__wrap(accountPtr);
+        const chainId = account.chainId();
+        const bufferSize = lengthBytesUTF8(chainId) + 1;
+        const buffer = _malloc(bufferSize);
         stringToUTF8(chainId, buffer, bufferSize);
+
+        account.__destroy_into_raw();
         return buffer;
     },
-    AccountSetBlockId: function (account, blockId) {
-        wasm_bindgen.accountSetBlockId(account, UTF8ToString(blockId));
+    AccountSetBlockId: function (accountPtr, blockId) {
+        const account = wasm_bindgen.Account.__wrap(accountPtr);
+
+        account.__destroy_into_raw();
+        account.setBlockId(UTF8ToString(blockId));
     },
-    AccountExecuteRaw: async function (account, calls, cb) {
-        var calls = JSON.parse(UTF8ToString(calls));
-        var txHash = await wasm_bindgen.accountExecuteRaw(account, {
-            calls
-        });
-        var bufferSize = lengthBytesUTF8(txHash) + 1;
-        var buffer = _malloc(bufferSize);
+    AccountExecuteRaw: async function (accountPtr, callsStr, cb) {
+        const account = wasm_bindgen.Account.__wrap(accountPtr);
+        const calls = JSON.parse(UTF8ToString(callsStr));
+        const txHash = await account.executeRaw(calls);
+        const bufferSize = lengthBytesUTF8(txHash) + 1;
+        const buffer = _malloc(bufferSize);
         stringToUTF8(txHash, buffer, bufferSize);
+
+        account.__destroy_into_raw();
         dynCall_vi(cb, buffer);
     },
-    AccountDeployBurner: async function (account, cb) {
-        const burner = await wasm_bindgen.accountDeployBurner(account);
-        dynCall_vi(cb, burner);
+    AccountDeployBurner: async function (accountPtr, cb) {
+        const account = wasm_bindgen.Account.__wrap(accountPtr);
+        const burner = await account.deployBurner();
+
+        account.__destroy_into_raw();
+        dynCall_vi(cb, burner.__destroy_into_raw());
     },
-    WaitForTransaction: async function (provider, txHash, cb) {
-        const confirmed = await wasm_bindgen.waitForTransaction(provider, UTF8ToString(txHash));
+    Call: async function (providerPtr, callStr, blockIdStr, cb) {
+        const provider = wasm_bindgen.Provider.__wrap(providerPtr);
+        const call = JSON.parse(UTF8ToString(callStr));
+        const blockId = JSON.parse(UTF8ToString(blockIdStr));
+        const result = await provider.call(call, blockId);
+        const bufferSize = lengthBytesUTF8(result) + 1;
+        const buffer = _malloc(bufferSize);
+        stringToUTF8(result, buffer, bufferSize);
+
+        provider.__destroy_into_raw();
+        dynCall_vi(cb, buffer);
+    },
+    WaitForTransaction: async function (providerPtr, txHash, cb) {
+        const provider = wasm_bindgen.Provider.__wrap(providerPtr);
+        const confirmed = await provider.waitForTransaction(UTF8ToString(txHash));
+
+        provider.__destroy_into_raw();
         dynCall_vi(cb, confirmed);
     },
     NewSigningKey: function () {

@@ -6,10 +6,11 @@ using System.Runtime.InteropServices;
 using Dojo.Starknet;
 using dojo_bindings;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace Dojo.Torii
 {
-    public unsafe class Model
+    public class Model
     {
         public string Name { get; }
         public Dictionary<string, object> Members { get; }
@@ -41,7 +42,10 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
                     dojo.Primitive_Tag.U64 => ty.primitive.u64,
                     dojo.Primitive_Tag.U128 => new BigInteger(ty.primitive.u128.ToArray()),
-                    dojo.Primitive_Tag.U256 => new BigInteger(MemoryMarshal.AsBytes(ty.primitive.u256).ToArray()),
+                    dojo.Primitive_Tag.U256 => new Dictionary<string, object>(){
+                        {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
+                        {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
+                    },
                     dojo.Primitive_Tag.USize => ty.primitive.u_size,
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
@@ -72,9 +76,13 @@ namespace Dojo.Torii
                 // NOTE: slow?
                 // use BigInteger parse instead maybe but seems a bit
                 // uninconvenient to use
-                "u128" => new BigInteger(hexToBytes(value.value.ToObject<string>(), 16)),
-                // NOTE: UNTESTED
-                "u256" => new BigInteger(hexToBytes(value.value.ToObject<string>(), 32)),
+                "u128" => new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
+                // convert a 64 character hex string to a BigInteger
+                // IMPLEMNET
+                "u256" => new Dictionary<string, object>(){
+                    {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(0, 32)).Reverse().ToArray())},
+                    {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(32, 32)).Reverse().ToArray())}
+                },
                 "usize" => value.value.ToObject<uint>(),
                 // these should be fine
                 "felt252" => new FieldElement(value.value.ToObject<string>()),
@@ -84,18 +92,13 @@ namespace Dojo.Torii
             };
         }
 
-        private Span<byte> hexToBytes(string hex, int length)
+        private byte[] hexStringToByteArray(string hex)
         {
-            // remove 0x
-            hex = hex.Substring(2);
-            // add leading zeros
-            hex = hex.PadLeft(length * 2, '0');
+            var bytes = Enumerable.Range(0, hex.Length)
+                .Where(x => x % 2 == 0)
+                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
+                .ToArray();
 
-            var bytes = new byte[length];
-            for (var i = 0; i < length; i++)
-            {
-                bytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
-            }
             return bytes;
         }
 

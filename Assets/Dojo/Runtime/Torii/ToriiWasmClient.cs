@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using bottlenoselabs.C2CS.Runtime;
 using Dojo.Starknet;
+using dojo_bindings;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -32,9 +33,9 @@ namespace Dojo.Torii
             ToriiWasmInterop.OnMessage(clientPtr);
         }
 
-        public async Task<List<Entity>> Entities(int limit, int offset)
+        public async Task<List<Entity>> Entities(dojo.Query query)
         {
-            var entities = await ToriiWasmInterop.GetEntitiesAsync(clientPtr, limit, offset);
+            var entities = await ToriiWasmInterop.GetEntitiesAsync(clientPtr, new Query(query));
             return entities;
         }
 

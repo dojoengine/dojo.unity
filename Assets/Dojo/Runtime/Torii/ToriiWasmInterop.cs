@@ -56,7 +56,7 @@ namespace Dojo.Torii
 
         // Returns a dictionary of all of the entities
         [DllImport("__Internal")]
-        public static extern void GetEntities(IntPtr clientPtr, int limit, int offset, Action<string> cb);
+        public static extern void GetEntities(IntPtr clientPtr, CString query, Action<string> cb);
 
         private static class GetEntitiesHelper
         {
@@ -89,17 +89,12 @@ namespace Dojo.Torii
             }
         }
 
-        public static Task<List<Entity>> GetEntitiesAsync(IntPtr clientPtr, int limit, int offset)
+        public static Task<List<Entity>> GetEntitiesAsync(IntPtr clientPtr, Query query)
         {
             GetEntitiesHelper.Tcs = new TaskCompletionSource<List<Entity>>();
-            GetEntities(clientPtr, limit, offset, GetEntitiesHelper.Callback);
+            GetEntities(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetEntitiesHelper.Callback);
             return GetEntitiesHelper.Tcs.Task;
         }
-
-        // Returns a dictionary of all of the entities corresponding
-        // to the model and keys
-        [DllImport("__Internal")]
-        public static extern string GetEntitiesByKeys(IntPtr clientPtr, string model, string keys, int limit, int offset);
 
         // Get the value of a model for a specific set of keys
         [DllImport("__Internal")]

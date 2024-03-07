@@ -5,28 +5,34 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using AOT;
 using bottlenoselabs.C2CS.Runtime;
-using dojo_bindings;
 using Newtonsoft.Json;
 using Debug = UnityEngine.Debug;
+using dojo_bindings;
+using System.Text.RegularExpressions;
 
-namespace Dojo.Starknet {
-    public class StarknetInterop {
+namespace Dojo.Starknet
+{
+    public class StarknetInterop
+    {
         [DllImport("__Internal")]
         public static extern IntPtr NewProvider(CString nodeUrl);
 
         [DllImport("__Internal")]
         public static extern IntPtr NewAccount(IntPtr provider, CString privateKey, CString address, Action<IntPtr> cb);
 
-        public class NewAccountHelper {
+        public class NewAccountHelper
+        {
             public static TaskCompletionSource<IntPtr> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<IntPtr>))]
-            public static void Callback(IntPtr result) {
+            public static void Callback(IntPtr result)
+            {
                 Tcs.SetResult(result);
             }
         }
 
-        public static Task<IntPtr> NewAccountAsync(IntPtr provider, SigningKey privateKey, string address) {
+        public static Task<IntPtr> NewAccountAsync(IntPtr provider, SigningKey privateKey, string address)
+        {
             NewAccountHelper.Tcs = new TaskCompletionSource<IntPtr>();
             NewAccount(provider, new CString(privateKey.PrivateKey.Hex()), new CString(address), NewAccountHelper.Callback);
             return NewAccountHelper.Tcs.Task;
@@ -41,64 +47,137 @@ namespace Dojo.Starknet {
         [DllImport("__Internal")]
         public static extern void AccountExecuteRaw(IntPtr account, CString calls, Action<string> cb);
 
-        public class AccountExecuteRawHelper {
+        public class AccountExecuteRawHelper
+        {
             public static TaskCompletionSource<FieldElement> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string result) {
+            public static void Callback(string result)
+            {
                 Tcs.SetResult(new FieldElement(result));
             }
         }
 
-        public struct Call
+        struct SerializedCall
         {
+            public SerializedCall(string to, string selector, dojo.FieldElement[] calldata)
+            {
+                this.to = to;
+                this.selector = selector;
+                this.calldata = calldata.Select(f => new FieldElement(f).Hex()).ToArray();
+            }
+
             public string to;
             public string selector;
             // array of hex strings
             public string[] calldata;
         }
 
-        public static Task<FieldElement> AccountExecuteRawAsync(IntPtr account, dojo.Call[] calls) {
+        class SerializedBlockId
+        {
+            public static object Serialize(dojo.BlockId blockId)
+            {
+                return blockId.tag switch
+                {
+                    dojo.BlockId_Tag.Hash => new BlockIdHash { Hash = new FieldElement(blockId.hash).Hex() },
+                    dojo.BlockId_Tag.Number => new BlockIdNumber { Number = blockId.number.ToString() },
+                    dojo.BlockId_Tag.BlockTag_ => new BlockIdTag
+                    {
+                        BlockTag = blockId.block_tag switch
+                        {
+                            dojo.BlockTag.Latest => "Latest",
+                            dojo.BlockTag.Pending => "Pending",
+                            _ => throw new Exception("Unknown block tag")
+                        }
+                    },
+                    _ => throw new Exception("Unknown block id type")
+                };
+            }
+
+            public struct BlockIdHash
+            {
+                public string Hash;
+            }
+
+            public struct BlockIdNumber
+            {
+                public string Number;
+            }
+
+            public struct BlockIdTag
+            {
+                public string BlockTag;
+            }
+        }
+
+        public static Task<FieldElement> AccountExecuteRawAsync(IntPtr account, dojo.Call[] calls)
+        {
             AccountExecuteRawHelper.Tcs = new TaskCompletionSource<FieldElement>();
-            AccountExecuteRaw(account, new CString(JsonConvert.SerializeObject(calls.Select(call => new StarknetInterop.Call{
-                to = call.to.ToString(),
-                selector = call.selector.ToString(),
-                calldata = call.calldata.ToArray().Select(f => new FieldElement(f).Hex()).ToArray(),
-            }).ToArray())), AccountExecuteRawHelper.Callback);
+            AccountExecuteRaw(account, new CString(JsonConvert.SerializeObject(calls.Select(call => new SerializedCall(call.to, call.selector, call.calldata.ToArray())).ToArray())), AccountExecuteRawHelper.Callback);
             return AccountExecuteRawHelper.Tcs.Task;
         }
 
         [DllImport("__Internal")]
         public static extern void AccountDeployBurner(IntPtr account, Action<IntPtr> cb);
 
-        public class AccountDeployBurnerHelper {
+        public class AccountDeployBurnerHelper
+        {
             public static TaskCompletionSource<IntPtr> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<IntPtr>))]
-            public static void Callback(IntPtr result) {
+            public static void Callback(IntPtr result)
+            {
                 Tcs.SetResult(result);
             }
         }
 
-        public static Task<IntPtr> AccountDeployBurnerAsync(IntPtr account) {
+        public static Task<IntPtr> AccountDeployBurnerAsync(IntPtr account)
+        {
             AccountDeployBurnerHelper.Tcs = new TaskCompletionSource<IntPtr>();
             AccountDeployBurner(account, AccountDeployBurnerHelper.Callback);
             return AccountDeployBurnerHelper.Tcs.Task;
         }
 
         [DllImport("__Internal")]
+        public static extern void Call(IntPtr provider, CString call, CString blockId, Action<string> cb);
+
+        public class CallHelper
+        {
+            public static TaskCompletionSource<FieldElement[]> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<FieldElement[]>))]
+            public static void Callback(string result)
+            {
+                Tcs.SetResult(JsonConvert.DeserializeObject<string[]>(result).Select(f => new FieldElement(f)).ToArray());
+            }
+        }
+
+        public static Task<FieldElement[]> CallAsync(IntPtr provider, dojo.Call call, dojo.BlockId blockId)
+        {
+            WaitForTransactionHelper.Tcs = new TaskCompletionSource<bool>();
+            var serializedCall = new SerializedCall(call.to, call.selector, call.calldata.ToArray());
+            object serializedBlockId = SerializedBlockId.Serialize(blockId);
+
+            Call(provider, new CString(JsonConvert.SerializeObject(serializedCall)), new CString(JsonConvert.SerializeObject(serializedBlockId)), CallHelper.Callback);
+            return CallHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
         public static extern void WaitForTransaction(IntPtr provider, CString transactionHash, Action<bool> cb);
 
-        public class WaitForTransactionHelper {
+        public class WaitForTransactionHelper
+        {
             public static TaskCompletionSource<bool> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<bool>))]
-            public static void Callback(bool result) {
+            public static void Callback(bool result)
+            {
                 Tcs.SetResult(result);
             }
         }
 
-        public static Task<bool> WaitForTransactionAsync(IntPtr provider, FieldElement transactionHash) {
+        public static Task<bool> WaitForTransactionAsync(IntPtr provider, FieldElement transactionHash)
+        {
             WaitForTransactionHelper.Tcs = new TaskCompletionSource<bool>();
             WaitForTransaction(provider, new CString(transactionHash.Hex()), WaitForTransactionHelper.Callback);
             return WaitForTransactionHelper.Tcs.Task;

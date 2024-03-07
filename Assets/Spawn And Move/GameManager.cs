@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
         var signer = new SigningKey(gameManagerData.masterPrivateKey);
         var account = new Account(provider, signer, new FieldElement(gameManagerData.masterAddress));
 
+        Debug.Log(account.Address);
+
         burnerManager = new BurnerManager(provider, account);
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);

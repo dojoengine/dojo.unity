@@ -50,7 +50,7 @@ namespace Dojo
             };
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-            var entities = await worldManager.wasmClient.Entities((int)limit, 0);
+            var entities = await worldManager.wasmClient.Entities(query);
 #else
             var entities = await Task.Run(() => worldManager.toriiClient.Entities(query));
 #endif
