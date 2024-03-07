@@ -16,14 +16,7 @@ mergeInto(LibraryManager.library, {
       worldAddress: UTF8ToString(worldAddress),
     });
 
-    window.toriiClient = client;
-
-    // gameInstance.SendMessage(
-    //   UTF8ToString(callbackObjectName),
-    //   UTF8ToString(callbackMethodName),
-    //   client.__wbg_ptr
-    // );
-    dynCall_vi(cb, client.__wbg_ptr);
+    dynCall_vi(cb, client.__destroy_into_raw());
   },
   // Returns a dictionary of all of the entities
   GetEntities: async function (clientPtr, queryString, cb) {
@@ -39,6 +32,7 @@ mergeInto(LibraryManager.library, {
     var buffer = _malloc(bufferSize);
     stringToUTF8(entitiesString, buffer, bufferSize);
 
+    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Get the value of a model for a specific set of keys
@@ -56,6 +50,7 @@ mergeInto(LibraryManager.library, {
     var buffer = _malloc(bufferSize);
     stringToUTF8(modelValueString, buffer, bufferSize);
 
+    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   OnEntityUpdated: function (clientPtr, ids, cb) {
@@ -71,6 +66,7 @@ mergeInto(LibraryManager.library, {
       var buffer = _malloc(bufferSize);
       stringToUTF8(entitiesString, buffer, bufferSize);
 
+      client.__destroy_into_raw();
       dynCall_vi(cb, buffer);
     });
   },
@@ -79,6 +75,7 @@ mergeInto(LibraryManager.library, {
     var modelsString = UTF8ToString(models);
     var modelsArray = JSON.parse(modelsString);
 
+    client.__destroy_into_raw();
     client.addModelsToSync(modelsArray);
   },
   RemoveModelsToSync: function (clientPtr, models) {
@@ -86,6 +83,7 @@ mergeInto(LibraryManager.library, {
     var modelsString = UTF8ToString(models);
     var modelsArray = JSON.parse(modelsString);
 
+    client.__destroy_into_raw();
     client.removeModelsToSync(modelsArray);
   },
   OnSyncModelChange: function (
@@ -98,6 +96,7 @@ mergeInto(LibraryManager.library, {
     var modelsString = UTF8ToString(models);
     var modelsArray = JSON.parse(modelsString);
 
+    client.__destroy_into_raw();
     client.onSyncModelChange(modelsArray, () => {
       gameInstance.SendMessage(
         UTF8ToString(callbackObjectName),
@@ -109,12 +108,16 @@ mergeInto(LibraryManager.library, {
   SubscribeTopic: async function (clientPtr, topic, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     const subscribed = await client.subscribeTopic(UTF8ToString(topic));
+
+    client.__destroy_into_raw();
     dynCall_vi(cb, subscribed);
   },
   // Unsubscribes from a topic
   UnsubscribeTopic: async function (clientPtr, topic, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     const unsubscribed = await client.unsubscribeTopic(UTF8ToString(topic));
+
+    client.__destroy_into_raw();
     dynCall_vi(cb, unsubscribed);
   },
   // Publishes a message to topic and returns the message id
@@ -126,6 +129,7 @@ mergeInto(LibraryManager.library, {
     const buffer = _malloc(bufferSize);
     stringToUTF8(publishedString, buffer, bufferSize);
 
+    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   OnMessage: async function (clientPtr, cb) {
@@ -143,6 +147,7 @@ mergeInto(LibraryManager.library, {
       const buffer = _malloc(bufferSize);
       stringToUTF8(messageString, buffer, bufferSize);
 
+      client.__destroy_into_raw();
       dynCall_vi(cb, buffer);
     });
   },

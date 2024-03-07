@@ -130,9 +130,9 @@ declare namespace wasm_bindgen {
 	*/
 	  executeRaw(calldata: Calls): Promise<string>;
 	/**
-	* @returns {Promise<number>}
+	* @returns {Promise<Account>}
 	*/
-	  deployBurner(): Promise<number>;
+	  deployBurner(): Promise<Account>;
 	}
 	/**
 	*/

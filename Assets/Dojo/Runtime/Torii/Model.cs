@@ -99,11 +99,6 @@ namespace Dojo.Torii
                 .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                 .ToArray();
 
-            foreach (var b in bytes)
-            {
-                Debug.Log(b);
-            }
-
             return bytes;
         }
 
