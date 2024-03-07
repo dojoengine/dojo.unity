@@ -58,7 +58,7 @@ namespace Dojo.Starknet
             }
         }
 
-        public struct SerializedCall
+        struct SerializedCall
         {
             public SerializedCall(string to, string selector, dojo.FieldElement[] calldata)
             {

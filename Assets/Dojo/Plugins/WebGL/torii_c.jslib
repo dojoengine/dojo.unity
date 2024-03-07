@@ -26,36 +26,11 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, client.__wbg_ptr);
   },
   // Returns a dictionary of all of the entities
-  GetEntities: async function (clientPtr, limit, offset, cb) {
-    var client = wasm_bindgen.Client.__wrap(clientPtr);
-    var entities = await client.getEntities(limit, offset);
-
-    // stringify the entities
-    var entitiesString = JSON.stringify(entities);
-    // return buffer
-    var bufferSize = lengthBytesUTF8(entitiesString) + 1;
-    var buffer = _malloc(bufferSize);
-    stringToUTF8(entitiesString, buffer, bufferSize);
-
-    dynCall_vi(cb, buffer);
-  },
-  // Returns a dictionary of all of the entities corresponding
-  // to the model and keys
-  GetEntitiesByKeys: async function (
-    clientPtr,
-    model,
-    keys,
-    limit,
-    offset,
-    cb
-  ) {
-    var client = wasm_bindgen.Client.__wrap(clientPtr);
-    var entities = await client.getEntitiesByKeys(
-      UTF8ToString(model),
-      UTF8ToString(keys),
-      limit,
-      offset
-    );
+  GetEntities: async function (clientPtr, queryString, cb) {
+    const client = wasm_bindgen.Client.__wrap(clientPtr);
+    const query = JSON.parse(UTF8ToString(queryString));
+    var entities = await client.getEntities(query);
+    console.log(entities);
 
     // stringify the entities
     var entitiesString = JSON.stringify(entities);

@@ -25,9 +25,9 @@ declare namespace wasm_bindgen {
 	export function verifyingKeyVerify(verifying_key: string, hash: string, signature: JsSignature): boolean;
 	/**
 	* @param {string} rpc_url
-	* @returns {number}
+	* @returns {Provider}
 	*/
-	export function createProvider(rpc_url: string): number;
+	export function createProvider(rpc_url: string): Provider;
 	/**
 	* @param {string} class_hash
 	* @param {string} salt
@@ -277,9 +277,9 @@ declare namespace wasm_bindgen {
 	/**
 	* @param {string} private_key
 	* @param {string} address
-	* @returns {Promise<number>}
+	* @returns {Promise<Account>}
 	*/
-	  createAccount(private_key: string, address: string): Promise<number>;
+	  createAccount(private_key: string, address: string): Promise<Account>;
 	/**
 	* @param {Call} call
 	* @param {BlockId} block_id
