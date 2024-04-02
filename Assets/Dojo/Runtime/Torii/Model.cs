@@ -10,46 +10,123 @@ using UnityEngine;
 
 namespace Dojo.Torii
 {
+    public struct Member
+    {
+        public object value;
+        public bool key;
+        public string cairoType;
+    }
+
     public class Model
     {
         public string Name { get; }
-        public Dictionary<string, object> Members { get; }
+        public Dictionary<string, Member> Members { get; }
 
         public Model(string name, Dictionary<string, WasmValue> members)
         {
             Name = name;
 
-            Members = members.ToDictionary(k => k.Key, v => HandleWasmValue(v.Value));
+            Members = members.ToDictionary(k => k.Key, v => new Member
+            {
+                value = HandleWasmValue(v.Value),
+                cairoType = v.Value.type,
+                key = v.Value.key
+            });
         }
 
         public Model(dojo.Model model)
         {
             Name = model.name;
-            Members = new Dictionary<string, object>(model.members.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))));
+            Members = new Dictionary<string, Member>(model.members.ToArray().Select(m => new KeyValuePair<string, Member>(m.name, HandleCValue(m))));
         }
 
-        private object HandleCValue(dojo.Ty ty)
+        private Member HandleCValue(dojo.Member member)
         {
-            return ty.tag switch
+            return member.ty.tag switch
             {
-                dojo.Ty_Tag.Struct_ => HandleCStruct(ty.struct_),
-                dojo.Ty_Tag.Enum_ => ty.enum_.option,
-                dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
+                dojo.Ty_Tag.Struct_ => new Member
                 {
-                    dojo.Primitive_Tag.Bool => Convert.ToBoolean(ty.primitive.bool_.Value),
-                    dojo.Primitive_Tag.U8 => ty.primitive.u8,
-                    dojo.Primitive_Tag.U16 => ty.primitive.u16,
-                    dojo.Primitive_Tag.U32 => ty.primitive.u32,
-                    dojo.Primitive_Tag.U64 => ty.primitive.u64,
-                    dojo.Primitive_Tag.U128 => new BigInteger(ty.primitive.u128.ToArray()),
-                    dojo.Primitive_Tag.U256 => new Dictionary<string, object>(){
-                        {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
-                        {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
+                    value = HandleCStruct(member.ty.struct_),
+                    cairoType = "struct",
+                    key = member.key
+                },
+                dojo.Ty_Tag.Enum_ => new Member
+                {
+                    value = member.ty.enum_.option,
+                    cairoType = "enum",
+                    key = member.key
+                },
+                dojo.Ty_Tag.Primitive_ => member.ty.primitive.tag switch
+                {
+                    dojo.Primitive_Tag.Bool => new Member
+                    {
+                        value = Convert.ToBoolean(member.ty.primitive.bool_.Value),
+                        cairoType = "bool",
+                        key = member.key
                     },
-                    dojo.Primitive_Tag.USize => ty.primitive.u_size,
-                    dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
-                    dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
-                    dojo.Primitive_Tag.ContractAddress => new FieldElement(ty.primitive.contract_address),
+                    dojo.Primitive_Tag.U8 => new Member
+                    {
+                        value = member.ty.primitive.u8,
+                        cairoType = "u8",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.U16 => new Member
+                    {
+                        value = member.ty.primitive.u16,
+                        cairoType = "u16",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.U32 => new Member
+                    {
+                        value = member.ty.primitive.u32,
+                        cairoType = "u32",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.U64 => new Member
+                    {
+                        value = member.ty.primitive.u64,
+                        cairoType = "u64",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.U128 => new Member
+                    {
+                        value = new BigInteger(member.ty.primitive.u128.ToArray()),
+                        cairoType = "u128",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.U256 => new Member
+                    {
+                        value = new Dictionary<string, object>(){
+                        {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(member.ty.primitive.u256).Slice(16, 16).ToArray())},
+                        {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(member.ty.primitive.u256).Slice(0, 16).ToArray())}
+                    },
+                        cairoType = "u256",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.USize => new Member
+                    {
+                        value = member.ty.primitive.u_size,
+                        cairoType = "usize",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.Felt252 => new Member
+                    {
+                        value = new FieldElement(member.ty.primitive.felt252),
+                        cairoType = "felt252",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.ClassHash => new Member
+                    {
+                        value = new FieldElement(member.ty.primitive.class_hash),
+                        cairoType = "class_hash",
+                        key = member.key
+                    },
+                    dojo.Primitive_Tag.ContractAddress => new Member
+                    {
+                        value = new FieldElement(member.ty.primitive.contract_address),
+                        cairoType = "contract_address",
+                        key = member.key
+                    },
                     _ => throw new Exception("Unknown primitive type")
 
                 },
@@ -102,9 +179,9 @@ namespace Dojo.Torii
             return bytes;
         }
 
-        private Dictionary<string, object> HandleCStruct(dojo.Struct str)
+        private Dictionary<string, Member> HandleCStruct(dojo.Struct str)
         {
-            return str.children.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))).ToDictionary(k => k.Key, v => v.Value);
+            return str.children.ToArray().Select(m => new KeyValuePair<string, Member>(m.name, HandleCValue(m))).ToDictionary(k => k.Key, v => v.Value);
         }
 
         private Dictionary<string, object> HandleJSStruct(Dictionary<string, WasmValue> str)

@@ -18,6 +18,7 @@ namespace Dojo.Torii
     {
         public string type;
         public JToken value;
+        public bool key;
     }
 
     [Serializable]

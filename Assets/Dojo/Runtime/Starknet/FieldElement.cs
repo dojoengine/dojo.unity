@@ -11,7 +11,7 @@ namespace Dojo.Starknet
     [Serializable]
     public class FieldElement : ISerializationCallbackReceiver
     {
-        private dojo.FieldElement inner;
+        public dojo.FieldElement Inner { get; private set; }
         // Serialized as a hex string.
         [SerializeField] private string hex;
 
@@ -47,7 +47,7 @@ namespace Dojo.Starknet
 
             unsafe
             {
-                fixed (byte* ptr = &inner._data[0])
+                fixed (byte* ptr = &Inner.data[0])
                 {
                     Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
                 }
@@ -59,7 +59,7 @@ namespace Dojo.Starknet
             // We don't want to refer to the same memory as the original field element.
             // As we might want to free it - potentially slower
             // TODO: benchmark copies?
-            fieldElement.data.CopyTo(inner.data);
+            fieldElement.data.CopyTo(Inner.data);
         }
 
         public FieldElement(Span<byte> bytes)
@@ -69,7 +69,7 @@ namespace Dojo.Starknet
                 throw new ArgumentException("Byte array must be 32 bytes.", nameof(bytes));
             }
 
-            bytes.CopyTo(inner.data);
+            bytes.CopyTo(Inner.data);
         }
 
         // This handles BigIntegers as well as primitive types
@@ -84,7 +84,7 @@ namespace Dojo.Starknet
 
             unsafe
             {
-                fixed (byte* ptr = &inner._data[0])
+                fixed (byte* ptr = &Inner.data[0])
                 {
                     // we need to account bytes that are less than 32 bytes
                     // and add leading zeros
@@ -101,17 +101,12 @@ namespace Dojo.Starknet
 
         public string Hex()
         {
-            return "0x" + BitConverter.ToString(inner.data.ToArray()).Replace("-", "").ToLower();
-        }
-
-        public dojo.FieldElement Inner()
-        {
-            return inner;
+            return "0x" + BitConverter.ToString(Inner.data.ToArray()).Replace("-", "").ToLower();
         }
 
         public void OnAfterDeserialize()
         {
-            inner = new FieldElement(hex).inner;
+            Inner = new FieldElement(hex).Inner;
         }
 
         public void OnBeforeSerialize()

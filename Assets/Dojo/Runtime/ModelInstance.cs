@@ -26,6 +26,7 @@ namespace Dojo
     public abstract class ModelInstance : MonoBehaviour
     {
         public UnityEvent OnUpdated = new UnityEvent();
+        public Model Model { get; private set; }
 
         // Initialize the model instance with the model
         // Uses the ModelField attribute to map the model fields to the class fields
@@ -34,6 +35,8 @@ namespace Dojo
         // Called upon instantiation and model update
         public virtual void Initialize(Model model)
         {
+            Model = model;
+
             var fields = GetType().GetFields();
             foreach (var field in fields)
             {
@@ -45,7 +48,7 @@ namespace Dojo
                 }
 
                 var modelField = (ModelField)attribute[0];
-                var value = model.Members[modelField.Name];
+                var value = model.Members[modelField.Name].value;
 
                 HandleField(this, field, value);
             }
