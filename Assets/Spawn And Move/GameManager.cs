@@ -25,16 +25,19 @@ public class GameManager : MonoBehaviour
     private Dictionary<FieldElement, string> spawnedBurners = new();
     public Actions actions;
 
+    public JsonRpcClient provider;
+    public SigningKey masterSigner;
+    public Account masterAccount;
+
+
     
     void Start()
     {
-        var provider = new JsonRpcClient(dojoConfig.rpcUrl);
-        var signer = new SigningKey(gameManagerData.masterPrivateKey);
-        var account = new Account(provider, signer, new FieldElement(gameManagerData.masterAddress));
+        provider = new JsonRpcClient(dojoConfig.rpcUrl);
+        masterSigner = new SigningKey(gameManagerData.masterPrivateKey);
+        masterAccount = new Account(provider, masterSigner, new FieldElement(gameManagerData.masterAddress));
 
-        Debug.Log(account.Address);
-
-        burnerManager = new BurnerManager(provider, account);
+        burnerManager = new BurnerManager(provider, masterAccount);
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
         foreach (var entity in worldManager.Entities())

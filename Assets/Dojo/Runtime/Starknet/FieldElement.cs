@@ -4,14 +4,36 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using dojo_bindings;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Dojo.Starknet
 {
+
+    class FieldElementConverter : JsonConverter {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(FieldElement);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var fieldElement = (FieldElement)value;
+            writer.WriteValue(fieldElement.Hex());
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var hex = (string)reader.Value;
+            return new FieldElement(hex);
+        }
+    }
     [Serializable]
+    [JsonConverter(typeof(FieldElementConverter))]
     public class FieldElement : ISerializationCallbackReceiver
     {
-        public dojo.FieldElement Inner { get; private set; }
+        private dojo.FieldElement inner;
+        public dojo.FieldElement Inner => inner;
         // Serialized as a hex string.
         [SerializeField] private string hex;
 
@@ -47,7 +69,7 @@ namespace Dojo.Starknet
 
             unsafe
             {
-                fixed (byte* ptr = &Inner.data[0])
+                fixed (byte* ptr = &inner._data[0])
                 {
                     Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
                 }
@@ -59,7 +81,7 @@ namespace Dojo.Starknet
             // We don't want to refer to the same memory as the original field element.
             // As we might want to free it - potentially slower
             // TODO: benchmark copies?
-            fieldElement.data.CopyTo(Inner.data);
+            fieldElement.data.CopyTo(inner.data);
         }
 
         public FieldElement(Span<byte> bytes)
@@ -69,7 +91,7 @@ namespace Dojo.Starknet
                 throw new ArgumentException("Byte array must be 32 bytes.", nameof(bytes));
             }
 
-            bytes.CopyTo(Inner.data);
+            bytes.CopyTo(inner.data);
         }
 
         // This handles BigIntegers as well as primitive types
@@ -84,7 +106,7 @@ namespace Dojo.Starknet
 
             unsafe
             {
-                fixed (byte* ptr = &Inner.data[0])
+                fixed (byte* ptr = &inner._data[0])
                 {
                     // we need to account bytes that are less than 32 bytes
                     // and add leading zeros
@@ -101,12 +123,12 @@ namespace Dojo.Starknet
 
         public string Hex()
         {
-            return "0x" + BitConverter.ToString(Inner.data.ToArray()).Replace("-", "").ToLower();
+            return "0x" + BitConverter.ToString(inner.data.ToArray()).Replace("-", "").ToLower();
         }
 
         public void OnAfterDeserialize()
         {
-            Inner = new FieldElement(hex).Inner;
+            inner = new FieldElement(hex).inner;
         }
 
         public void OnBeforeSerialize()

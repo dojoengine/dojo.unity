@@ -48,37 +48,37 @@ namespace Dojo
                 }
 
                 var modelField = (ModelField)attribute[0];
-                var value = model.Members[modelField.Name].value;
+                var member = model.Members[modelField.Name];
 
-                HandleField(this, field, value);
+                HandleField(this, field, member);
             }
         }
 
         // Handles the initialization of a field
         // of a model instance. Uses reflection to set the field
         // to the value of the model member.
-        private static void HandleField(object instance, System.Reflection.FieldInfo field, object value)
+        private static void HandleField(object instance, System.Reflection.FieldInfo field, Member member)
         {
             // if the field is an enum, we need to convert the value to the enum type
             if (field.FieldType.IsEnum)
             {
-                field.SetValue(instance, Enum.ToObject(field.FieldType, value));
+                field.SetValue(instance, Enum.ToObject(field.FieldType, member.value));
             }
             // if the field is a primitive, we can just set it
             // fieldelement is included as a primitive because its a class
             // but its already instantiated
             else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement) || field.FieldType == typeof(BigInteger))
             {
-                field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
+                field.SetValue(instance, Convert.ChangeType(member.value, field.FieldType));
             }
             // if the field is a struct/class. we check if our member is a dictionary
             // and we go through each of its keys and values and set them to the fields
             // of the instantiated struct/class
             else
             {
-                if (!(value is Dictionary<string, object> dict))
+                if (!(member.value is Dictionary<string, Member> dict))
                 {
-                    throw new Exception($"Expected a dictionary for field {field.Name} but got {value.GetType()}. Cannot cast primitive types to structs/classes.");
+                    throw new Exception($"Expected a dictionary for field {field.Name} but got {member.value.GetType()}. Cannot cast primitive types to structs/classes.");
                 }
 
                 // we create an instance of the type

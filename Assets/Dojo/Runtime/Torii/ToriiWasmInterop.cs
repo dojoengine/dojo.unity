@@ -205,29 +205,5 @@ namespace Dojo.Torii
             PublishMessage(clientPtr, new CString(topic), new CString(JsonConvert.SerializeObject(message.Select(b => (int)b).ToArray())), PublishMessageHelper.Callback);
             return PublishMessageHelper.Tcs.Task;
         }
-
-        [DllImport("__Internal")]
-        private static extern void OnMessage(IntPtr clientPtr, Action<string> cb);
-
-        private static class OnMessageHelper
-        {
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string message)
-            {
-                var parsedMessage = JsonConvert.DeserializeObject<Message>(message);
-                ToriiEvents.Instance.Message(
-                    parsedMessage.propagationSource,
-                    parsedMessage.source,
-                    parsedMessage.messageId,
-                    parsedMessage.topic,
-                    parsedMessage.data
-                );
-            }
-        }
-
-        public static void OnMessage(IntPtr clientPtr)
-        {
-            OnMessage(clientPtr, OnMessageHelper.Callback);
-        }
     }
 }

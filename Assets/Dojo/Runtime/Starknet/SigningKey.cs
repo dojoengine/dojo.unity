@@ -20,7 +20,7 @@ namespace Dojo.Starknet
                     return new VerifyingKey(StarknetInterop.NewVerifyingKey(new CString(PrivateKey.Hex())));
                     // PublicKey = new VerifyingKey("0x0");
 #else
-                    return new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner()));
+                    return new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner));
 #endif
                 // }
 
@@ -57,7 +57,7 @@ namespace Dojo.Starknet
 #else
         public Signature Sign(FieldElement message)
         {
-            var result = dojo.signing_key_sign(PrivateKey.Inner(), message.Inner());
+            var result = dojo.signing_key_sign(PrivateKey.Inner, message.Inner);
             if (result.tag == dojo.ResultSignature_Tag.ErrSignature)
             {
                 throw new Exception(result.err.message);

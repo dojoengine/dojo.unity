@@ -31,7 +31,7 @@ namespace Dojo.Starknet
 #else
         public unsafe Account(JsonRpcClient provider, SigningKey privateKey, FieldElement address)
         {
-            var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey.Inner(),
+            var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey.Inner,
                 CString.FromString(address.Hex()));
             if (resultAccount.tag == dojo.ResultAccount_Tag.ErrAccount)
             {

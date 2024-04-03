@@ -105,30 +105,12 @@ namespace Dojo
             }
         }
 
-        public async Task<bool> Subscribe(string topic)
+        public async Task<byte[]> Publish(TypedData typedData, Signature signature)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return await wasmClient.SubscribeTopic(topic);
+            // return await wasmClient.PublishMessage(topic, data);
 #else
-            return await Task.Run(() => toriiClient.SubscribeTopic(topic));
-#endif
-        }
-
-        public async Task<bool> Unsubscribe(string topic)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return await wasmClient.UnsubscribeTopic(topic);
-#else
-            return await Task.Run(() => toriiClient.UnsubscribeTopic(topic));
-#endif
-        }
-
-        public async Task<byte[]> Publish(string topic, byte[] data)
-        {
-#if UNITY_WEBGL && !UNITY_EDITOR
-            return await wasmClient.PublishMessage(topic, data);
-#else
-            return await Task.Run(() => toriiClient.PublishMessage(topic, data).ToArray());
+            return await Task.Run(() => toriiClient.PublishMessage(typedData, signature).ToArray());
 #endif
         }
     }

@@ -23,11 +23,9 @@ namespace Dojo.Torii
 
         public delegate void OnSyncModelUpdateDelegate();
         public delegate void OnEntityStateUpdateDelegate(FieldElement key, Model[] models);
-        public delegate void OnMessageDelegate(string propagationSource, string source, string messageId, string topic, byte[] data);
 
         public event OnEntityStateUpdateDelegate OnEntityUpdated;
         public event OnSyncModelUpdateDelegate OnSyncModelUpdated;
-        public event OnMessageDelegate OnMessage;
 
         public void EntityUpdated(FieldElement key, Model[] models)
         {
@@ -37,11 +35,6 @@ namespace Dojo.Torii
         public void SyncModelUpdated()
         {
             OnSyncModelUpdated?.Invoke();
-        }
-
-        public void Message(string propagationSource, string source, string messageId, string topic, byte[] data)
-        {
-            OnMessage?.Invoke(propagationSource, source, messageId, topic, data);
         }
     }
 }

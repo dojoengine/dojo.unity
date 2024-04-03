@@ -35,7 +35,7 @@ public class Actions : MonoBehaviour {
                 to = contractAddress,
                 selector = "move",
                 calldata = new dojo.FieldElement[] {
-                    new FieldElement(direction).Inner()
+                    new FieldElement(direction).Inner
                 }
             }
         });
@@ -51,8 +51,8 @@ public class Actions : MonoBehaviour {
                 to = contractAddress,
                 selector = "move_to",
                 calldata = new dojo.FieldElement[] {
-                    new FieldElement(vec.x).Inner(),
-                    new FieldElement(vec.y).Inner()
+                    new FieldElement(vec.x).Inner,
+                    new FieldElement(vec.y).Inner
                 }
             }
         });

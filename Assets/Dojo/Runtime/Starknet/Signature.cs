@@ -20,8 +20,8 @@ namespace Dojo.Starknet
 
             Inner = new dojo.Signature
             {
-                r = r.Inner(),
-                s = s.Inner()
+                r = r.Inner,
+                s = s.Inner
             };
         }
 
@@ -29,8 +29,8 @@ namespace Dojo.Starknet
         {
             Inner = new dojo.Signature
             {
-                r = r.Inner(),
-                s = s.Inner()
+                r = r.Inner,
+                s = s.Inner
             };
         }
 
@@ -58,7 +58,7 @@ namespace Dojo.Starknet
         // dojo.c starknet-rs bindings
         public bool Verify(FieldElement verifying_key, FieldElement hash)
         {
-            var result = dojo.verifying_key_verify(verifying_key.Inner(), hash.Inner(), Inner);
+            var result = dojo.verifying_key_verify(verifying_key.Inner, hash.Inner, Inner);
             if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new System.Exception(result.err.message);

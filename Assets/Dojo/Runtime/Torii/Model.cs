@@ -15,12 +15,25 @@ namespace Dojo.Torii
         public object value;
         public bool key;
         public string cairoType;
+
+        public Member(object value, bool key, string cairoType)
+        {
+            this.value = value;
+            this.key = key;
+            this.cairoType = cairoType;
+        }
     }
 
     public class Model
     {
         public string Name { get; }
         public Dictionary<string, Member> Members { get; }
+
+        public Model(string name, Dictionary<string, Member> members)
+        {
+            Name = name;
+            Members = members;
+        }
 
         public Model(string name, Dictionary<string, WasmValue> members)
         {
