@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using bottlenoselabs.C2CS.Runtime;
 using Dojo.Torii;
 using dojo_bindings;
@@ -36,7 +38,7 @@ namespace Dojo.Starknet
             this.domain = domain;
             this.message = message;
         }
-        
+
         struct TypedDataType
         {
             public string name;
@@ -82,44 +84,53 @@ namespace Dojo.Starknet
             var members = new Dictionary<string, object>();
             foreach (var member in model.Members)
             {
-                members.Add(member.Key, member.Value.value);
+                members.Add(member.Key, member.Value);
             }
 
             message.Add(model.Name, members);
         }
 
-        object[] getMembersTypes(ref Dictionary<string, object[]> types, Dictionary<string, Member> members)
+        object[] getMembersTypes(ref Dictionary<string, object[]> types, Dictionary<string, object> members)
         {
             var result = new List<object>();
 
             foreach (var member in members)
             {
-                string type = member.Value.cairoType;
-
-                switch (type)
+                switch (member.Value)
                 {
-                    case "struct":
-                        var structMembers = getMembersTypes(ref types, member.Value.value as Dictionary<string, Member>);
+                    case byte _:
+                        result.Add(new TypedDataType(member.Key, "u8"));
+                        break;
+                    case bool _:
+                        result.Add(new TypedDataType(member.Key, "bool"));
+                        break;
+                    case short _:
+                        result.Add(new TypedDataType(member.Key, "u16"));
+                        break;
+                    case int _:
+                        result.Add(new TypedDataType(member.Key, "u32"));
+                        break;
+                    case long _:
+                        result.Add(new TypedDataType(member.Key, "u64"));
+                        break;
+                    case BigInteger _:
+                        result.Add(new TypedDataType(member.Key, "u128"));
+                        break;
+                    case FieldElement _:
+                        result.Add(new TypedDataType(member.Key, "felt"));
+                        break;
+                    case Enum _:
+                        result.Add(new TypedDataType(member.Key, "u8"));
+                        break;
+                    case Dictionary<string, object> struct_:
+                        var structMembers = getMembersTypes(ref types, struct_);
                         types.Add(member.Key, structMembers);
-                        type = member.Key;
+                        result.Add(new TypedDataType(member.Key, member.Key));
                         break;
-                    case "array":
-                        throw new System.Exception("Array type not supported");
-                    case "enum":
-                        type = "u8";
-                        break;
-                    case "felt252":
-                        type = "felt";
-                        break;
-                    case "class_hash":
-                        type = "ClassHash";
-                        break;
-                    case "contract_address":
-                        type = "ContractAddress";
-                        break;
+                    default:
+                        throw new System.Exception($"Unknown type {member.Value.GetType()}");
                 }
 
-                result.Add(new TypedDataType(member.Key, type));
             }
 
             return result.ToArray();

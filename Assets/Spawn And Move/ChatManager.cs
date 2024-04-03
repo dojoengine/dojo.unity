@@ -44,7 +44,7 @@ public class ChatManager : MonoBehaviour
         // if we press enter, send message
         if (Input.GetKeyUp(KeyCode.Return))
         {
-            SendEmote(Emote.Happy);
+            SendEmote(Emote.Sad);
             chatInput.gameObject.SetActive(false);
             chatInput.text = "";
             chatOpen = false;
@@ -61,10 +61,10 @@ public class ChatManager : MonoBehaviour
 
     async void SendEmote(Emote emote)
     {
-        var model = new Model("EmoteMessage", new Dictionary<string, Member>
+        var model = new Model("EmoteMessage", new Dictionary<string, object>
         {
-            { "identity", new Member(gameManager.masterAccount.Address, true, "contract_address") },
-            { "emote", new Member(emote, false, "enum") }
+            { "identity", gameManager.masterAccount.Address },
+            { "emote", emote }
         });
 
         var typed_data = new TypedData(model);

@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Dojo.Starknet
 {
-
     class FieldElementConverter : JsonConverter {
         public override bool CanConvert(Type objectType)
         {
