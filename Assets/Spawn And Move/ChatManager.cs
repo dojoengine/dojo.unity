@@ -71,8 +71,6 @@ public class ChatManager : MonoBehaviour
         FieldElement messageHash = typed_data.encode(gameManager.masterAccount.Address);
         Signature signature = gameManager.masterSigner.Sign(messageHash);
 
-        Debug.Log($"Sending emote {emote} with hash {messageHash.Hex()} and signature {signature.ToCompactHex()}");
-
         await worldManager.Publish(typed_data, signature);
     }
 }

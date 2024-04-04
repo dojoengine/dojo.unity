@@ -25,7 +25,7 @@ public class Position : ModelInstance
 
     void Start()
     {
-        var target = new Vector3(position.x, 1, position.y);
+        var target = new Vector3(position.x, 0, position.y);
         gameObject.transform.position = target;
 
         shortPlayerAddress = player.Hex().Substring(0, 8);

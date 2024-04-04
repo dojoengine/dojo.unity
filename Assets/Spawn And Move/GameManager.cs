@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameManagerData gameManagerData; 
 
     private BurnerManager burnerManager;
-    private Dictionary<FieldElement, string> spawnedBurners = new();
+    private Dictionary<FieldElement, string> spawnedAccounts = new();
     public Actions actions;
 
     public JsonRpcClient provider;
@@ -51,10 +51,15 @@ public class GameManager : MonoBehaviour
         // dont register inputs if our chat is open
         if (chatManager.chatOpen) return;
 
+        if (Input.GetKeyUp(KeyCode.Return)) {
+            spawnedAccounts[masterAccount.Address] = null;
+            var txHash = await actions.Spawn(masterAccount);
+        }
+
         if (Input.GetKeyUp(KeyCode.Space))
         {
             var burner = await burnerManager.DeployBurner();
-            spawnedBurners[burner.Address] = null;
+            spawnedAccounts[burner.Address] = null;
             var txHash = await actions.Spawn(burner);
         }
 
@@ -68,16 +73,16 @@ public class GameManager : MonoBehaviour
                 Position position;
                 entity.TryGetComponent(out position);
 
-                if (position && spawnedBurners.ContainsValue(entity.name))
+                if (position && spawnedAccounts.ContainsValue(entity.name))
                 {
                     var previousBurner = burnerManager.CurrentBurner;
                     if (previousBurner != null)
                     {
-                        worldManager.Entity(spawnedBurners[previousBurner.Address])
+                        worldManager.Entity(spawnedAccounts[previousBurner.Address])
                             .GetComponent<Position>().textTag.color = Color.black;
                     }
 
-                    var burner = spawnedBurners.First(b => b.Value == entity.name);
+                    var burner = spawnedAccounts.First(b => b.Value == entity.name);
                     var burnerAddress = burner.Key;
                     var burnerInstance = burnerManager.UseBurner(burnerAddress);
 
@@ -107,13 +112,7 @@ public class GameManager : MonoBehaviour
 
     private async void Move(Direction direction)
     {
-        if (burnerManager.CurrentBurner == null)
-        {
-            Debug.LogWarning("No burner selected");
-            return;
-        }
-
-        await actions.Move(burnerManager.CurrentBurner, direction);
+        await actions.Move(burnerManager.CurrentBurner ?? masterAccount, direction);
     }
 
     private void InitEntity(GameObject entity)
@@ -123,11 +122,11 @@ public class GameManager : MonoBehaviour
         capsule.GetComponent<Renderer>().material.color = Random.ColorHSV();
         capsule.transform.parent = entity.transform;
 
-        foreach (var burner in spawnedBurners)
+        foreach (var account in spawnedAccounts)
         {
-            if (burner.Value == null)
+            if (account.Value == null)
             {
-                spawnedBurners[burner.Key] = entity.name;
+                spawnedAccounts[account.Key] = entity.name;
                 break;
             }
         }

@@ -2,6 +2,8 @@
 using System;
 using Dojo;
 using Dojo.Starknet;
+using Dojo.Torii;
+using UnityEngine;
 
 // Type definition for `dojo_examples::models::Emote` enum
 public enum Emote {
@@ -21,12 +23,43 @@ public class EmoteMessage : ModelInstance {
     [ModelField("emote")]
     public Emote emote;
 
+    MeshRenderer meshRenderer;
+
     // Start is called before the first frame update
     void Start() {
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
+        UpdateColor();
     }
 
     // Update is called once per frame
     void Update() {
+    }
+
+    public override void OnUpdate(Model model)
+    {
+        base.OnUpdate(model);
+        UpdateColor();
+    }
+
+    void UpdateColor() {
+        switch (emote)
+        {
+            case Emote.None:
+                meshRenderer.material.color = Color.white;
+                break;
+            case Emote.Happy:
+                meshRenderer.material.color = Color.yellow;
+                break;
+            case Emote.Sad:
+                meshRenderer.material.color = Color.black;
+                break;
+            case Emote.Angry:
+                meshRenderer.material.color = Color.red;
+                break;
+            case Emote.Love:
+                meshRenderer.material.color = Color.magenta;
+                break;
+        }
     }
 }
         
