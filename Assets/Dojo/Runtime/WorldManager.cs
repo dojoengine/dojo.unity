@@ -108,7 +108,7 @@ namespace Dojo
         public async Task<byte[]> Publish(TypedData typedData, Signature signature)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            // return await wasmClient.PublishMessage(topic, data);
+            return await wasmClient.PublishMessage(typedData, signature);
 #else
             return await Task.Run(() => toriiClient.PublishMessage(typedData, signature).ToArray());
 #endif

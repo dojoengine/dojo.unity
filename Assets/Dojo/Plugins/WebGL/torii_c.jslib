@@ -104,26 +104,28 @@ mergeInto(LibraryManager.library, {
       );
     });
   },
-  // Subscribes to a topic
-  SubscribeTopic: async function (clientPtr, topic, cb) {
-    var client = wasm_bindgen.Client.__wrap(clientPtr);
-    const subscribed = await client.subscribeTopic(UTF8ToString(topic));
+  // Encode typed data with the corresponding address and return the message hash
+  // typedData: JSON string
+  // address: string
+  EncodeTypedData: function (typedData, address) {
+    var encodedTypedData = wasm_bindgen.typedDataEncode(
+      UTF8ToString(typedData),
+      UTF8ToString(address)
+    );
 
-    client.__destroy_into_raw();
-    dynCall_vi(cb, subscribed);
-  },
-  // Unsubscribes from a topic
-  UnsubscribeTopic: async function (clientPtr, topic, cb) {
-    var client = wasm_bindgen.Client.__wrap(clientPtr);
-    const unsubscribed = await client.unsubscribeTopic(UTF8ToString(topic));
+    // return buffer
+    var bufferSize = lengthBytesUTF8(encodedTypedData) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(encodedTypedData, buffer, bufferSize);
 
-    client.__destroy_into_raw();
-    dynCall_vi(cb, unsubscribed);
+    return buffer;
   },
-  // Publishes a message to topic and returns the message id
-  PublishMessage: async function (clientPtr, topic, message, cb) {
+  // Publishes a message and returns its ID
+  // message: typed data JSON string
+  // signature: JSON string { r: string, s: string }
+  PublishMessage: async function (clientPtr, message, signature, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
-    const published = await client.publishMessage(UTF8ToString(topic), JSON.parse(UTF8ToString(message)));
+    const published = await client.publishMessage(UTF8ToString(message), JSON.parse(UTF8ToString(signature)));
     const publishedString = JSON.stringify(Array.from(published));
     const bufferSize = lengthBytesUTF8(publishedString) + 1;
     const buffer = _malloc(bufferSize);
@@ -131,24 +133,5 @@ mergeInto(LibraryManager.library, {
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
-  },
-  OnMessage: async function (clientPtr, cb) {
-    var client = wasm_bindgen.Client.__wrap(clientPtr);
-    client.onMessage((propagationSource, source, messageId, topic, data) => {
-      const messageString = JSON.stringify({
-        propagationSource,
-        source,
-        messageId,
-        topic,
-        data: Array.from(data),
-      });
-
-      const bufferSize = lengthBytesUTF8(messageString) + 1;
-      const buffer = _malloc(bufferSize);
-      stringToUTF8(messageString, buffer, bufferSize);
-
-      client.__destroy_into_raw();
-      dynCall_vi(cb, buffer);
-    });
   },
 });

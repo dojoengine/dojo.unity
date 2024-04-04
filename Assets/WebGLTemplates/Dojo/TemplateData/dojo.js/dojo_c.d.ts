@@ -2,6 +2,12 @@ declare namespace wasm_bindgen {
 	/* tslint:disable */
 	/* eslint-disable */
 	/**
+	* @param {string} typed_data
+	* @param {string} address
+	* @returns {string}
+	*/
+	export function typedDataEncode(typed_data: string, address: string): string;
+	/**
 	* @returns {string}
 	*/
 	export function signingKeyNew(): string;
@@ -176,26 +182,11 @@ declare namespace wasm_bindgen {
 	*/
 	  onEntityUpdated(ids: (string)[] | undefined, callback: Function): Promise<void>;
 	/**
-	* @param {string} topic
-	* @returns {Promise<boolean>}
-	*/
-	  subscribeTopic(topic: string): Promise<boolean>;
-	/**
-	* @param {string} topic
-	* @returns {Promise<boolean>}
-	*/
-	  unsubscribeTopic(topic: string): Promise<boolean>;
-	/**
-	* @param {string} topic
-	* @param {Uint8Array} message
+	* @param {string} message
+	* @param {JsSignature} signature
 	* @returns {Promise<Uint8Array>}
 	*/
-	  publishMessage(topic: string, message: Uint8Array): Promise<Uint8Array>;
-	/**
-	* @param {Function} callback
-	* @returns {Promise<void>}
-	*/
-	  onMessage(callback: Function): Promise<void>;
+	  publishMessage(message: string, signature: JsSignature): Promise<Uint8Array>;
 	}
 	/**
 	*/
@@ -319,6 +310,7 @@ declare interface InitOutput {
   readonly __wbg_provider_free: (a: number) => void;
   readonly __wbg_account_free: (a: number) => void;
   readonly __wbg_client_free: (a: number) => void;
+  readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
   readonly signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly verifyingKeyNew: (a: number, b: number, c: number) => void;
@@ -339,10 +331,7 @@ declare interface InitOutput {
   readonly client_removeModelsToSync: (a: number, b: number) => number;
   readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
   readonly client_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly client_subscribeTopic: (a: number, b: number, c: number) => number;
-  readonly client_unsubscribeTopic: (a: number, b: number, c: number) => number;
-  readonly client_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly client_onMessage: (a: number, b: number) => number;
+  readonly client_publishMessage: (a: number, b: number, c: number, d: number) => number;
   readonly createClient: (a: number, b: number) => number;
   readonly __wbg_queuingstrategy_free: (a: number) => void;
   readonly queuingstrategy_highWaterMark: (a: number) => number;
@@ -369,14 +358,14 @@ declare interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h6a81129acb643393: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke0_mut__hd574114c4d9cf57f: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h802007b5f737ac1e: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h68313b65f95fdd11: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h2456271129fa2f85: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke0_mut__h5df90305e59895b0: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__ha4811fb43309d621: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h064ef8f2d62bf7a9: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__h8a502170c0201eea: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h2f9674e82b7ab10e: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**

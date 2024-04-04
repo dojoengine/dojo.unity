@@ -4,7 +4,6 @@ using System.Numerics;
 using bottlenoselabs.C2CS.Runtime;
 using Dojo.Torii;
 using dojo_bindings;
-using log4net.Config;
 using Newtonsoft.Json;
 
 namespace Dojo.Starknet
@@ -148,7 +147,7 @@ namespace Dojo.Starknet
         public FieldElement encode(FieldElement address)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-// TODO
+            return new FieldElement(ToriiWasmInterop.EncodeTypedData(new CString(JsonConvert.SerializeObject(this)), new CString(address.Hex())));
 #else
             var result = dojo.typed_data_encode(new CString(JsonConvert.SerializeObject(this)), address.Inner);
             if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)

@@ -38,19 +38,9 @@ namespace Dojo.Torii
             return entities;
         }
 
-        public async Task<bool> SubscribeTopic(string topic)
+        public async Task<byte[]> PublishMessage(TypedData message, Signature signature)
         {
-            return await ToriiWasmInterop.SubscribeTopicAsync(clientPtr, topic);
-        }
-
-        public async Task<bool> UnsubscribeTopic(string topic)
-        {
-            return await ToriiWasmInterop.UnsubscribeTopicAsync(clientPtr, topic);
-        }
-
-        public async Task<byte[]> PublishMessage(string topic, byte[] data)
-        {
-            return await ToriiWasmInterop.PublishMessageAsync(clientPtr, topic, data);
+            return await ToriiWasmInterop.PublishMessageAsync(clientPtr, message, signature);
         }
     }
 }

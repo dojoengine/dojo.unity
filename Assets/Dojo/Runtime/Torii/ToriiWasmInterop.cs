@@ -21,16 +21,6 @@ namespace Dojo.Torii
         public bool key;
     }
 
-    [Serializable]
-    public struct Message
-    {
-        public string propagationSource;
-        public string source;
-        public string messageId;
-        public string topic;
-        public byte[] data;
-    }
-
     public class ToriiWasmInterop : MonoBehaviour
     {
         // Creates a new client and returns the pointer to it
@@ -144,49 +134,11 @@ namespace Dojo.Torii
         public static extern void OnSyncModelChange(IntPtr clientPtr, string model, string callbackObjectName, string callbackMethodName);
 
         [DllImport("__Internal")]
-        public static extern void SubscribeTopic(IntPtr clientPtr, CString topic, Action<bool> cb);
+        public static extern string EncodeTypedData(CString typedData, CString address);
 
-        private static class SubscribeTopicHelper
-        {
-            public static TaskCompletionSource<bool> Tcs;
-
-            [MonoPInvokeCallback(typeof(Action<bool>))]
-            public static void Callback(bool success)
-            {
-                Tcs.SetResult(success);
-            }
-        }
-
-        public static Task<bool> SubscribeTopicAsync(IntPtr clientPtr, string topic)
-        {
-            SubscribeTopicHelper.Tcs = new TaskCompletionSource<bool>();
-            SubscribeTopic(clientPtr, new CString(topic), SubscribeTopicHelper.Callback);
-            return SubscribeTopicHelper.Tcs.Task;
-        }
 
         [DllImport("__Internal")]
-        public static extern void UnsubscribeTopic(IntPtr clientPtr, CString topic, Action<bool> cb);
-
-        private static class UnsubscribeTopicHelper
-        {
-            public static TaskCompletionSource<bool> Tcs;
-
-            [MonoPInvokeCallback(typeof(Action<bool>))]
-            public static void Callback(bool success)
-            {
-                Tcs.SetResult(success);
-            }
-        }
-
-        public static Task<bool> UnsubscribeTopicAsync(IntPtr clientPtr, string topic)
-        {
-            UnsubscribeTopicHelper.Tcs = new TaskCompletionSource<bool>();
-            UnsubscribeTopic(clientPtr, new CString(topic), UnsubscribeTopicHelper.Callback);
-            return UnsubscribeTopicHelper.Tcs.Task;
-        }
-
-        [DllImport("__Internal")]
-        public static extern void PublishMessage(IntPtr clientPtr, CString topic, CString message, Action<string> cb);
+        public static extern void PublishMessage(IntPtr clientPtr, CString typedData, CString signature, Action<string> cb);
 
         private static class PublishMessageHelper
         {
@@ -199,10 +151,14 @@ namespace Dojo.Torii
             }
         }
 
-        public static Task<byte[]> PublishMessageAsync(IntPtr clientPtr, string topic, byte[] message)
+        public static Task<byte[]> PublishMessageAsync(IntPtr clientPtr, TypedData typedData, Signature signature)
         {
             PublishMessageHelper.Tcs = new TaskCompletionSource<byte[]>();
-            PublishMessage(clientPtr, new CString(topic), new CString(JsonConvert.SerializeObject(message.Select(b => (int)b).ToArray())), PublishMessageHelper.Callback);
+            PublishMessage(clientPtr, new CString(JsonConvert.SerializeObject(typedData)), new CString(JsonConvert.SerializeObject(new
+            {
+                r = signature.R().Hex(),
+                s = signature.S().Hex()
+            })), PublishMessageHelper.Callback);
             return PublishMessageHelper.Tcs.Task;
         }
     }

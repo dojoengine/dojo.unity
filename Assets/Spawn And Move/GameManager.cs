@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
         // dont register inputs if our chat is open
         if (chatManager.chatOpen) return;
 
-        if (Input.GetKeyUp(KeyCode.Return)) {
+        if (Input.GetKeyUp(KeyCode.E)) {
             spawnedAccounts[masterAccount.Address] = null;
             var txHash = await actions.Spawn(masterAccount);
         }

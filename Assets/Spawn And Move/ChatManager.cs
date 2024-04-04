@@ -68,6 +68,8 @@ public class ChatManager : MonoBehaviour
             emote = emote,
         });
 
+        Debug.Log(JsonConvert.SerializeObject(typed_data));
+
         FieldElement messageHash = typed_data.encode(gameManager.masterAccount.Address);
         Signature signature = gameManager.masterSigner.Sign(messageHash);
 
