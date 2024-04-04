@@ -46,7 +46,7 @@ namespace Dojo.Starknet
 #else
                 private unsafe void WaitForTransactionSync(FieldElement transactionHash)
                 {
-                        var result = dojo.wait_for_transaction(client, transactionHash.Inner());
+                        var result = dojo.wait_for_transaction(client, transactionHash.Inner);
                         if (result.tag == dojo.Resultbool_Tag.Errbool)
                         {
                                 throw new Exception(result.err.message);

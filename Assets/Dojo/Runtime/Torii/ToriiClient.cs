@@ -4,13 +4,14 @@ using bottlenoselabs.C2CS.Runtime;
 using UnityEngine;
 using dojo_bindings;
 using Dojo.Starknet;
+using Newtonsoft.Json;
+using System.Linq;
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
     {
         private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate onEntityStateUpdate;
         private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
-        private dojo.FnPtr_CString_CString_CString_CString_CArrayu8_Void.@delegate onMessage;
         private dojo.ToriiClient* client;
 
         public ToriiClient(string toriiUrl, string rpcUrl, string relayUrl, string world)
@@ -29,7 +30,6 @@ namespace Dojo.Torii
             client = result._ok;
 
             RegisterEntityStateUpdateEvent(new dojo.FieldElement[] { });
-            RegisterOnMessageEvent();
         }
 
         // We assume the torii client won't be copied around.
@@ -199,74 +199,10 @@ namespace Dojo.Torii
                 throw new Exception(res.err.message);
             }
         }
-        private void RegisterOnMessageEvent(bool dispatchToMainThread = true)
+        
+        public Span<byte> PublishMessage(TypedData typedData, Signature signature)
         {
-            onMessage = (CString propagationSource, CString source, CString messageId, CString topic, dojo.CArrayu8 data) =>
-            {
-                Action propagateAndClean = () =>
-                {
-                    ToriiEvents.Instance.Message(propagationSource.ToString(), source.ToString(), messageId.ToString(), topic.ToString(), new Span<byte>(data.data, (int)data.data_len).ToArray());
-
-                    // this is where cleanup needs to happen.
-                    dojo.string_free(propagationSource);
-                    dojo.string_free(source);
-                    dojo.string_free(messageId);
-                    dojo.string_free(topic);
-                    dojo.carray_free(data.data, data.data_len);
-                };
-
-                if (dispatchToMainThread)
-                {
-                    UnityMainThreadDispatcher.Instance().Enqueue(propagateAndClean);
-                }
-                else
-                {
-                    propagateAndClean();
-                }
-
-                // NOTE: can't do cleanup here. as data will be dispatched to main thread and maybe used after free..
-            };
-
-            dojo.Resultbool res = dojo.client_on_message(client, new dojo.FnPtr_CString_CString_CString_CString_CArrayu8_Void(onMessage));
-            if (res.tag == dojo.Resultbool_Tag.Errbool)
-            {
-                throw new Exception(res.err.message);
-            }
-        }
-
-        public bool SubscribeTopic(string topic)
-        {
-            var result = dojo.client_subscribe_topic(client, CString.FromString(topic));
-            if (result.tag == dojo.Resultbool_Tag.Errbool)
-            {
-                throw new Exception(result.err.message);
-            }
-
-            return result.ok;
-        }
-
-        public bool UnsubscribeTopic(string topic)
-        {
-            var result = dojo.client_unsubscribe_topic(client, CString.FromString(topic));
-            if (result.tag == dojo.Resultbool_Tag.Errbool)
-            {
-                throw new Exception(result.err.message);
-            }
-
-            return result.ok;
-        }
-
-        public Span<byte> PublishMessage(string topic, Span<byte> data)
-        {
-            var array = new dojo.CArrayu8 { };
-
-            fixed (byte* ptr = data)
-            {
-                array.data = ptr;
-                array.data_len = (nuint)data.Length;
-            }
-
-            var result = dojo.client_publish_message(client, CString.FromString(topic), array);
+            var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signature.Inner);
             if (result.tag == dojo.ResultCArrayu8_Tag.ErrCArrayu8)
             {
                 throw new Exception(result.err.message);

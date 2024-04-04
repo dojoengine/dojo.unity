@@ -42,7 +42,7 @@ namespace Starknet {
             return await account.ExecuteRaw(calls.Select(call => new dojo.Call {
                 to = call.contractAddress,
                 selector = call.selector,
-                calldata = call.calldata.Select(field => field.Inner()).ToArray()
+                calldata = call.calldata.Select(field => field.Inner).ToArray()
             }).ToArray());
         }
     }

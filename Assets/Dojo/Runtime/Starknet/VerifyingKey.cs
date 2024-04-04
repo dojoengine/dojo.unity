@@ -37,7 +37,7 @@ namespace Dojo.Starknet
         // dojo.c starknet-rs bindings
         public bool Verify(FieldElement message, Signature signature)
         {
-            var result = dojo.verifying_key_verify(Inner.Inner(), message.Inner(), signature.Inner);
+            var result = dojo.verifying_key_verify(Inner.Inner, message.Inner, signature.Inner);
             if (result.tag == dojo.Resultbool_Tag.Errbool)
             {
                 throw new Exception(result.err.message);

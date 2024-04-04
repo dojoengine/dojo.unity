@@ -15,23 +15,25 @@ namespace Dojo.Starknet
         private unsafe dojo.Account* account;
 #endif
 
-        public FieldElement Address{ get; }
+        public FieldElement Address { get; }
+        public SigningKey Signer { get; }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         private async void createAccount(JsonRpcClient provider, SigningKey privateKey, FieldElement address)
         {
-            account.SetResult(await StarknetInterop.NewAccountAsync(provider.client, privateKey, address.Hex()));
+            account.SetResult(await StarknetInterop.NewAccountAsync(provider.client, privateKey, address));
         }
 
         public Account(JsonRpcClient provider, SigningKey privateKey, FieldElement address)
         {
             createAccount(provider, privateKey, address);
             Address = address;
+            Signer = privateKey;
         }
 #else
         public unsafe Account(JsonRpcClient provider, SigningKey privateKey, FieldElement address)
         {
-            var resultAccount = dojo.account_new(provider.client, privateKey.PrivateKey.Inner(),
+            var resultAccount = dojo.account_new(provider.client, privateKey.Inner.Inner,
                 CString.FromString(address.Hex()));
             if (resultAccount.tag == dojo.ResultAccount_Tag.ErrAccount)
             {
@@ -40,20 +42,23 @@ namespace Dojo.Starknet
 
             account = resultAccount._ok;
             Address = address;
+            Signer = privateKey;
         }
 #endif
 
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-        public Account(IntPtr account) {
+        public Account(IntPtr account, SigningKey signingKey) {
             this.account.SetResult(account);
             Address = new FieldElement(StarknetInterop.AccountAddress(account));
+            Signer = signingKey;
         }
 #else
-        private unsafe Account(dojo.Account* account)
+        private unsafe Account(dojo.Account* account, SigningKey signingKey)
         {
             this.account = account;
             Address = new FieldElement(dojo.account_address(account));
+            Signer = signingKey;
         }
 #endif
 
@@ -65,25 +70,25 @@ namespace Dojo.Starknet
 #endif
         }
 
-//         public async unsafe Task<FieldElement> ChainId()
-//         {
-// #if UNITY_WEBGL && !UNITY_EDITOR
-//             var chainId = StarknetInterop.AccountChainId(await account.Task);
-// #else
-//             var chainId = dojo.account_chain_id(account);
-// #endif
+        //         public async unsafe Task<FieldElement> ChainId()
+        //         {
+        // #if UNITY_WEBGL && !UNITY_EDITOR
+        //             var chainId = StarknetInterop.AccountChainId(await account.Task);
+        // #else
+        //             var chainId = dojo.account_chain_id(account);
+        // #endif
 
-//             return new FieldElement(chainId);
-//         }
+        //             return new FieldElement(chainId);
+        //         }
 
-//         public unsafe void SetBlockId(dojo.BlockId blockId)
-//         {
-// // #if UNITY_WEBGL && !UNITY_EDITOR
-//             StarknetInterop.account(account, blockId.Hex());
-// #else
-//             dojo.account_set_block_id(account, blockId);
-// #endif
-//         }
+        //         public unsafe void SetBlockId(dojo.BlockId blockId)
+        //         {
+        // // #if UNITY_WEBGL && !UNITY_EDITOR
+        //             StarknetInterop.account(account, blockId.Hex());
+        // #else
+        //             dojo.account_set_block_id(account, blockId);
+        // #endif
+        //         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings
@@ -120,25 +125,25 @@ namespace Dojo.Starknet
 #if !UNITY_WEBGL || UNITY_EDITOR
         // This will synchroneously wait for the burner to be deployed.
         // Implemented for C bindings that arent async.
-        private unsafe Account DeployBurnerSync(JsonRpcClient provider)
+        private unsafe Account DeployBurnerSync(JsonRpcClient provider, SigningKey signingKey)
         {
-            var result = dojo.account_deploy_burner(provider.client, account);
+            var result = dojo.account_deploy_burner(provider.client, account, signingKey.Inner.Inner);
             if (result.tag == dojo.ResultAccount_Tag.ErrAccount)
             {
                 throw new Exception(result.err.message);
             }
 
-            return new Account(result._ok);
+            return new Account(result._ok, signingKey);
         }
 #endif
 
         // Deploy a burner and return the account once it is deployed.
-        public async Task<Account> DeployBurner(JsonRpcClient provider)
+        public async Task<Account> DeployBurner(JsonRpcClient provider, SigningKey signingKey)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return new Account(await StarknetInterop.AccountDeployBurnerAsync(await account.Task));
+            return new Account(await StarknetInterop.AccountDeployBurnerAsync(await account.Task, signingKey), signingKey);
 #else
-            return await Task.Run(() => DeployBurnerSync(provider));
+            return await Task.Run(() => DeployBurnerSync(provider, signingKey));
 #endif
         }
     }

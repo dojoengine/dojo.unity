@@ -10,6 +10,25 @@ using UnityEngine;
 
 namespace Dojo.Torii
 {
+    // Member metadata doesn't seem to be needed.
+    // Seems like the better devX is to just have a
+     // hashmap of the values themselves, without any
+     // wrapper around them.
+
+    // public struct Member
+    // {
+    //     public object value;
+    //     public bool key;
+    //     public string cairoType;
+
+    //     public Member(object value, bool key, string cairoType)
+    //     {
+    //         this.value = value;
+    //         this.key = key;
+    //         this.cairoType = cairoType;
+    //     }
+    // }
+
     public class Model
     {
         public string Name { get; }
@@ -20,6 +39,12 @@ namespace Dojo.Torii
             Name = name;
 
             Members = members.ToDictionary(k => k.Key, v => HandleWasmValue(v.Value));
+        }
+
+        public Model(string name, Dictionary<string, object> members)
+        {
+            Name = name;
+            Members = members;
         }
 
         public Model(dojo.Model model)

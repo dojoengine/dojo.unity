@@ -4,14 +4,35 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using dojo_bindings;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Dojo.Starknet
 {
+    class FieldElementConverter : JsonConverter {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(FieldElement);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            var fieldElement = (FieldElement)value;
+            writer.WriteValue(fieldElement.Hex());
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            var hex = (string)reader.Value;
+            return new FieldElement(hex);
+        }
+    }
     [Serializable]
+    [JsonConverter(typeof(FieldElementConverter))]
     public class FieldElement : ISerializationCallbackReceiver
     {
         private dojo.FieldElement inner;
+        public dojo.FieldElement Inner => inner;
         // Serialized as a hex string.
         [SerializeField] private string hex;
 
@@ -102,11 +123,6 @@ namespace Dojo.Starknet
         public string Hex()
         {
             return "0x" + BitConverter.ToString(inner.data.ToArray()).Replace("-", "").ToLower();
-        }
-
-        public dojo.FieldElement Inner()
-        {
-            return inner;
         }
 
         public void OnAfterDeserialize()

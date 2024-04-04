@@ -8,42 +8,45 @@ namespace Dojo.Starknet
     public class SigningKey
     {
         // The inner FieldElement for the private key.
-        public FieldElement PrivateKey { get; }
+        public FieldElement Inner
+        {
+            get;
+        }
         // Return the public key corresponding to the private key.
         public VerifyingKey PublicKey
         {
             get
             {
-                // if (PublicKey == null)
-                // {
 #if UNITY_WEBGL && !UNITY_EDITOR
-                    return new VerifyingKey(StarknetInterop.NewVerifyingKey(new CString(PrivateKey.Hex())));
-                    // PublicKey = new VerifyingKey("0x0");
+                return new VerifyingKey(StarknetInterop.NewVerifyingKey(new CString(Inner.Hex())));
 #else
-                    return new VerifyingKey(dojo.verifying_key_new(PrivateKey.Inner()));
+                return new VerifyingKey(dojo.verifying_key_new(Inner.Inner));
 #endif
-                // }
-
-                // return PublicKey;
-
             }
+        }
 
-            // set => PublicKey = value;
+        public SigningKey()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            Inner = new FieldElement(StarknetInterop.NewSigningKey());
+#else
+            Inner = new FieldElement(dojo.signing_key_new());
+#endif
         }
 
         public SigningKey(string privateKey)
         {
-            PrivateKey = new FieldElement(privateKey);
+            Inner = new FieldElement(privateKey);
         }
 
         public SigningKey(dojo.FieldElement privateKey)
         {
-            PrivateKey = new FieldElement(privateKey);
+            Inner = new FieldElement(privateKey);
         }
 
         public SigningKey(FieldElement privateKey)
         {
-            PrivateKey = privateKey;
+            Inner = privateKey;
         }
 
         // Sign a message.
@@ -51,13 +54,13 @@ namespace Dojo.Starknet
         // webgl js interop starknet bindings
         public Signature Sign(FieldElement message)
         {
-            var signature = StarknetInterop.Sign(new CString(PrivateKey.Hex()), new CString(message.Hex()));
+            var signature = StarknetInterop.Sign(new CString(Inner.Hex()), new CString(message.Hex()));
             return new Signature(signature);
         }
 #else
         public Signature Sign(FieldElement message)
         {
-            var result = dojo.signing_key_sign(PrivateKey.Inner(), message.Inner());
+            var result = dojo.signing_key_sign(Inner.Inner, message.Inner);
             if (result.tag == dojo.ResultSignature_Tag.ErrSignature)
             {
                 throw new Exception(result.err.message);
