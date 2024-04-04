@@ -53,20 +53,29 @@ namespace Dojo.Starknet
 
         public TypedData(Model model)
         {
-            types = new Dictionary<string, object[]>() {
-            { "StarknetDomain", new object[] {
-                new TypedDataType("name", "shortstring"),
-                new TypedDataType("version", "shortstring"),
-                new TypedDataType("chainId", "shortstring"),
-                new TypedDataType("revision", "shortstring")
-             } },
+            types = new Dictionary<string, object[]>
+            {
+                // starknet domain type
+                {
+                    "StarknetDomain",
+                    new object[] {
+                        new TypedDataType("name", "shortstring"),
+                        new TypedDataType("version", "shortstring"),
+                        new TypedDataType("chainId", "shortstring"),
+                        new TypedDataType("revision", "shortstring")
+                    }
+                },
+                // primary type
+                {
+                    "OffchainMessage",
+                    new object[] {
+                        // model name
+                        new TypedDataType("model", "shortstring"),
+                        // model type
+                        new TypedDataType(model.Name, "Model")
+                    }
+                }
             };
-
-            // main type
-            types.Add("OffchainMessage", new object[] {
-                new TypedDataType("model", "shortstring"),
-                new TypedDataType(model.Name, "Model")
-            });
 
             // model members types
             types.Add("Model", getMembersTypes(ref types, model.Members));
@@ -104,13 +113,13 @@ namespace Dojo.Starknet
                     case bool _:
                         result.Add(new TypedDataType(member.Key, "bool"));
                         break;
-                    case short _:
+                    case ushort _:
                         result.Add(new TypedDataType(member.Key, "u16"));
                         break;
-                    case int _:
+                    case uint _:
                         result.Add(new TypedDataType(member.Key, "u32"));
                         break;
-                    case long _:
+                    case ulong _:
                         result.Add(new TypedDataType(member.Key, "u64"));
                         break;
                     case BigInteger _:
@@ -150,5 +159,10 @@ namespace Dojo.Starknet
             return new FieldElement(result.ok);
 #endif
         }
+
+        public static TypedData From<T>(T model) where T : ModelInstance
+        {
+            return new TypedData(model.ToModel());
+        } 
     }
 }

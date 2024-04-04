@@ -99,6 +99,29 @@ namespace Dojo
             }
         }
 
+        public static Model ToModel<T>(T model) where T : ModelInstance
+        {
+            var members = new Dictionary<string, object>();
+            foreach (var field in model.GetType().GetFields())
+            {
+                var attribute = field.GetCustomAttributes(typeof(ModelField), false);
+                if (attribute.Length == 0)
+                {
+                    continue;
+                }
+
+                var modelField = (ModelField)attribute[0];
+                members.Add(modelField.Name, field.GetValue(model));
+            }
+
+            return new Model(model.GetType().Name, members);
+        }
+
+        public Model ToModel()
+        {
+            return ToModel(this);
+        }
+
         // Called when the model is updated
         public virtual void OnUpdate(Model model)
         {
