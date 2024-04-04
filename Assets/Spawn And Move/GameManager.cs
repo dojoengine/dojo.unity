@@ -21,21 +21,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] WorldManagerData dojoConfig;
     [SerializeField] GameManagerData gameManagerData; 
 
-    private BurnerManager burnerManager;
+    public BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedAccounts = new();
     public Actions actions;
 
     public JsonRpcClient provider;
-    public SigningKey masterSigner;
     public Account masterAccount;
-
 
     
     void Start()
     {
         provider = new JsonRpcClient(dojoConfig.rpcUrl);
-        masterSigner = new SigningKey(gameManagerData.masterPrivateKey);
-        masterAccount = new Account(provider, masterSigner, new FieldElement(gameManagerData.masterAddress));
+        masterAccount = new Account(provider, new SigningKey(gameManagerData.masterPrivateKey), new FieldElement(gameManagerData.masterAddress));
 
         burnerManager = new BurnerManager(provider, masterAccount);
 
@@ -58,7 +55,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            var burner = await burnerManager.DeployBurner();
+            var burner = await burnerManager.DeployBurner(new SigningKey());
             spawnedAccounts[burner.Address] = null;
             var txHash = await actions.Spawn(burner);
         }

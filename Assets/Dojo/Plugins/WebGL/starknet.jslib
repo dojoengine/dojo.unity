@@ -45,9 +45,10 @@ mergeInto(LibraryManager.library, {
         account.__destroy_into_raw();
         dynCall_vi(cb, buffer);
     },
-    AccountDeployBurner: async function (accountPtr, cb) {
+    AccountDeployBurner: async function (accountPtr, privateKey, cb) {
+        console.log(UTF8ToString(privateKey));
         const account = wasm_bindgen.Account.__wrap(accountPtr);
-        const burner = await account.deployBurner();
+        const burner = await account.deployBurner(UTF8ToString(privateKey));
 
         account.__destroy_into_raw();
         dynCall_vi(cb, burner.__destroy_into_raw());

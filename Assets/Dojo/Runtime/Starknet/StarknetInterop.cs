@@ -31,10 +31,10 @@ namespace Dojo.Starknet
             }
         }
 
-        public static Task<IntPtr> NewAccountAsync(IntPtr provider, SigningKey privateKey, string address)
+        public static Task<IntPtr> NewAccountAsync(IntPtr provider, SigningKey privateKey, FieldElement address)
         {
             NewAccountHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            NewAccount(provider, new CString(privateKey.PrivateKey.Hex()), new CString(address), NewAccountHelper.Callback);
+            NewAccount(provider, new CString(privateKey.Inner.Hex()), new CString(address.Hex()), NewAccountHelper.Callback);
             return NewAccountHelper.Tcs.Task;
         }
 
@@ -118,7 +118,7 @@ namespace Dojo.Starknet
         }
 
         [DllImport("__Internal")]
-        public static extern void AccountDeployBurner(IntPtr account, Action<IntPtr> cb);
+        public static extern void AccountDeployBurner(IntPtr account, CString privateKey, Action<IntPtr> cb);
 
         public class AccountDeployBurnerHelper
         {
@@ -131,10 +131,10 @@ namespace Dojo.Starknet
             }
         }
 
-        public static Task<IntPtr> AccountDeployBurnerAsync(IntPtr account)
+        public static Task<IntPtr> AccountDeployBurnerAsync(IntPtr account, SigningKey signingKey)
         {
             AccountDeployBurnerHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            AccountDeployBurner(account, AccountDeployBurnerHelper.Callback);
+            AccountDeployBurner(account, new CString(signingKey.Inner.Hex()), AccountDeployBurnerHelper.Callback);
             return AccountDeployBurnerHelper.Tcs.Task;
         }
 

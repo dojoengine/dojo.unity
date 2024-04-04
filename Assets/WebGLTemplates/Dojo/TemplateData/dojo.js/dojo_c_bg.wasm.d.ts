@@ -17,7 +17,7 @@ export function account_address(a: number, b: number): void;
 export function account_chainId(a: number, b: number): void;
 export function account_setBlockId(a: number, b: number, c: number, d: number): void;
 export function account_executeRaw(a: number, b: number): number;
-export function account_deployBurner(a: number): number;
+export function account_deployBurner(a: number, b: number, c: number): number;
 export function hashGetContractAddress(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number): void;
 export function client_getEntities(a: number, b: number): number;
 export function client_getModelValue(a: number, b: number, c: number, d: number, e: number): number;

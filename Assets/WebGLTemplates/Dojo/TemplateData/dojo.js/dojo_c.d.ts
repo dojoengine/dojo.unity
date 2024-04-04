@@ -136,9 +136,10 @@ declare namespace wasm_bindgen {
 	*/
 	  executeRaw(calldata: Calls): Promise<string>;
 	/**
+	* @param {string} private_key
 	* @returns {Promise<Account>}
 	*/
-	  deployBurner(): Promise<Account>;
+	  deployBurner(private_key: string): Promise<Account>;
 	}
 	/**
 	*/
@@ -323,7 +324,7 @@ declare interface InitOutput {
   readonly account_chainId: (a: number, b: number) => void;
   readonly account_setBlockId: (a: number, b: number, c: number, d: number) => void;
   readonly account_executeRaw: (a: number, b: number) => number;
-  readonly account_deployBurner: (a: number) => number;
+  readonly account_deployBurner: (a: number, b: number, c: number) => number;
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
   readonly client_getEntities: (a: number, b: number) => number;
   readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;

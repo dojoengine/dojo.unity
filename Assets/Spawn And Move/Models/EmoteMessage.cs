@@ -6,7 +6,8 @@ using Dojo.Torii;
 using UnityEngine;
 
 // Type definition for `dojo_examples::models::Emote` enum
-public enum Emote {
+public enum Emote
+{
     None,
     Happy,
     Sad,
@@ -16,7 +17,8 @@ public enum Emote {
 
 
 // Model definition for `dojo_examples::models::EmoteMessage` model
-public class EmoteMessage : ModelInstance {
+public class EmoteMessage : ModelInstance
+{
     [ModelField("identity")]
     public FieldElement identity;
 
@@ -25,41 +27,58 @@ public class EmoteMessage : ModelInstance {
 
     MeshRenderer meshRenderer;
 
+    string shortAddress;
+    TextMesh textTag;
+
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
         meshRenderer = GetComponentInChildren<MeshRenderer>();
-        UpdateColor();
+
+        shortAddress = identity.Hex().Substring(0, 8);
+
+        // create a new GameObject for the text
+        GameObject textObject = new GameObject("TextTag");
+        textObject.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        textObject.transform.parent = transform;
+        textObject.transform.localPosition = new Vector3(-1, 2, 0);
+
+
+        // add a Text component to the new GameObject
+        textTag = textObject.AddComponent<TextMesh>();
+
+        // set the properties of the Text component
+        textTag.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        textTag.color = Color.black;
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
+        switch (emote)
+        {
+            case Emote.None:
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.white, Time.deltaTime);
+                break;
+            case Emote.Happy:
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.green, Time.deltaTime);
+                break;
+            case Emote.Sad:
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.black, Time.deltaTime);
+                break;
+            case Emote.Angry:
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.red, Time.deltaTime);
+                break;
+            case Emote.Love:
+                meshRenderer.material.color = Color.Lerp(meshRenderer.material.color, Color.magenta, Time.deltaTime);
+                break;
+        }
+
+        textTag.text = $"{shortAddress}\nFeeling: {emote}";
     }
 
     public override void OnUpdate(Model model)
     {
         base.OnUpdate(model);
-        UpdateColor();
-    }
-
-    void UpdateColor() {
-        switch (emote)
-        {
-            case Emote.None:
-                meshRenderer.material.color = Color.white;
-                break;
-            case Emote.Happy:
-                meshRenderer.material.color = Color.yellow;
-                break;
-            case Emote.Sad:
-                meshRenderer.material.color = Color.black;
-                break;
-            case Emote.Angry:
-                meshRenderer.material.color = Color.red;
-                break;
-            case Emote.Love:
-                meshRenderer.material.color = Color.magenta;
-                break;
-        }
     }
 }
-        

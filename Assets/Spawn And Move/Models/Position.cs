@@ -27,21 +27,6 @@ public class Position : ModelInstance
     {
         var target = new Vector3(position.x, 0, position.y);
         gameObject.transform.position = target;
-
-        shortPlayerAddress = player.Hex().Substring(0, 8);
-
-        // create a new GameObject for the text
-        GameObject textObject = new GameObject("TextTag");
-        textObject.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-        textObject.transform.parent = transform;
-        textObject.transform.localPosition = new Vector3(-1, 2, 0);
-
-        // add a Text component to the new GameObject
-        textTag = textObject.AddComponent<TextMesh>();
-
-        // set the properties of the Text component
-        textTag.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        textTag.color = Color.black;
     }
 
     void Update()
@@ -53,10 +38,6 @@ public class Position : ModelInstance
         Vector3 oldPosition = gameObject.transform.position;
         var target = new Vector3(position.x, oldPosition.y, position.y);
         gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, target, step);
-
-        // calculate and display velocity
-        Vector3 velocity = (gameObject.transform.position - oldPosition) / Time.deltaTime;
-        textTag.text = $"{shortPlayerAddress}\nVelocity: {velocity.magnitude}";
 
         // if we are close enough to the target position, snap to it
         if (Vector3.Distance(gameObject.transform.position, target) < 0.001f)

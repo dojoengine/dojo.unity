@@ -8,22 +8,19 @@ namespace Dojo.Starknet {
     public class BurnerManager {
         private JsonRpcClient provider;
         private Account masterAccount;
-        private Account currentBurner;
-        private List<Account> burners = new();
-
-        public Account CurrentBurner => currentBurner;
-        public List<Account> Burners => burners;
+        public Account CurrentBurner { get; private set; }
+        public List<Account> Burners { get; } = new();
 
         public BurnerManager(JsonRpcClient provider, Account masterAccount) {
             this.provider = provider;
             this.masterAccount = masterAccount;
         }
 
-        public async Task<Account> DeployBurner()
+        public async Task<Account> DeployBurner(SigningKey signingKey)
         {
-            var account = await masterAccount.DeployBurner(provider);
-            burners.Add(account);
-            currentBurner = account;
+            var account = await masterAccount.DeployBurner(provider, signingKey);
+            Burners.Add(account);
+            CurrentBurner = account;
 
             return account;
         }
@@ -31,13 +28,13 @@ namespace Dojo.Starknet {
         // This will deploy a new burner if there is no current burner.
         public async Task<Account> UseBurner()
         {
-            return currentBurner ??= await DeployBurner();
+            return CurrentBurner ??= await DeployBurner(new SigningKey());
         }
 
         public Account UseBurner(FieldElement address) {
-            foreach (var burner in burners) {
+            foreach (var burner in Burners) {
                 if (burner.Address.Hex() == address.Hex()) {
-                    currentBurner = burner;
+                    CurrentBurner = burner;
                     return burner;
                 }
             }

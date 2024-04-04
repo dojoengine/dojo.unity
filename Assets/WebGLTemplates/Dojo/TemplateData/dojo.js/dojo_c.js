@@ -584,10 +584,13 @@ class Account {
         return takeObject(ret);
     }
     /**
+    * @param {string} private_key
     * @returns {Promise<Account>}
     */
-    deployBurner() {
-        const ret = wasm.account_deployBurner(this.__wbg_ptr);
+    deployBurner(private_key) {
+        const ptr0 = passStringToWasm0(private_key, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.account_deployBurner(this.__wbg_ptr, ptr0, len0);
         return takeObject(ret);
     }
 }
@@ -1074,6 +1077,10 @@ function __wbg_get_imports() {
         getInt32Memory0()[arg0 / 4 + 1] = len1;
         getInt32Memory0()[arg0 / 4 + 0] = ptr1;
     };
+    imports.wbg.__wbindgen_is_undefined = function(arg0) {
+        const ret = getObject(arg0) === undefined;
+        return ret;
+    };
     imports.wbg.__wbindgen_cb_drop = function(arg0) {
         const obj = takeObject(arg0).original;
         if (obj.cnt-- == 1) {
@@ -1081,10 +1088,6 @@ function __wbg_get_imports() {
             return true;
         }
         const ret = false;
-        return ret;
-    };
-    imports.wbg.__wbindgen_is_undefined = function(arg0) {
-        const ret = getObject(arg0) === undefined;
         return ret;
     };
     imports.wbg.__wbg_clearTimeout_76877dbc010e786d = function(arg0) {

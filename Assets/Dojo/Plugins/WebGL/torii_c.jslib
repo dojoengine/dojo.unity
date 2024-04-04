@@ -66,9 +66,10 @@ mergeInto(LibraryManager.library, {
       var buffer = _malloc(bufferSize);
       stringToUTF8(entitiesString, buffer, bufferSize);
 
-      client.__destroy_into_raw();
       dynCall_vi(cb, buffer);
     });
+
+    client.__destroy_into_raw();
   },
   AddModelsToSync: function (clientPtr, models) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
@@ -96,13 +97,13 @@ mergeInto(LibraryManager.library, {
     var modelsString = UTF8ToString(models);
     var modelsArray = JSON.parse(modelsString);
 
-    client.__destroy_into_raw();
     client.onSyncModelChange(modelsArray, () => {
       gameInstance.SendMessage(
         UTF8ToString(callbackObjectName),
         UTF8ToString(callbackMethodName)
       );
     });
+    client.__destroy_into_raw();
   },
   // Encode typed data with the corresponding address and return the message hash
   // typedData: JSON string
@@ -126,6 +127,7 @@ mergeInto(LibraryManager.library, {
   PublishMessage: async function (clientPtr, message, signature, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     const published = await client.publishMessage(UTF8ToString(message), JSON.parse(UTF8ToString(signature)));
+    console.log(published);
     const publishedString = JSON.stringify(Array.from(published));
     const bufferSize = lengthBytesUTF8(publishedString) + 1;
     const buffer = _malloc(bufferSize);

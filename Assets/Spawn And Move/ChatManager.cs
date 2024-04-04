@@ -63,15 +63,15 @@ public class ChatManager : MonoBehaviour
 
     async void SendEmote(Emote emote)
     {
+        var account = gameManager.burnerManager.CurrentBurner ?? gameManager.masterAccount;
+
         var typed_data = TypedData.From(new EmoteMessage {
-            identity = gameManager.masterAccount.Address,
+            identity = account.Address,
             emote = emote,
         });
 
-        Debug.Log(JsonConvert.SerializeObject(typed_data));
-
-        FieldElement messageHash = typed_data.encode(gameManager.masterAccount.Address);
-        Signature signature = gameManager.masterSigner.Sign(messageHash);
+        FieldElement messageHash = typed_data.encode(account.Address);
+        Signature signature = account.Signer.Sign(messageHash);
 
         await worldManager.Publish(typed_data, signature);
     }
