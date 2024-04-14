@@ -41,14 +41,44 @@ namespace Dojo
         public async Task<int> SynchronizeEntities()
         {
             var query = new dojo.Query
+    {
+        clause = new dojo.COptionClause
+        {
+            tag = dojo.COptionClause_Tag.SomeClause,
+            some = new dojo.Clause
             {
-                clause = new dojo.COptionClause
+                tag = dojo.Clause_Tag.Keys,
+                keys = new dojo.KeysClause
                 {
-                    tag = dojo.COptionClause_Tag.NoneClause,
-                },
-                limit = limit,
-            };
+                    // Use model_name instead of model
+                    model_name = modelName,
+                    keys = keys
+                }
+            },
+        },
+        limit = 1,
+        offset = 0,
+    };
+    try
+    {
+        // Use Task.Run for WebGL builds
+        var entities = await Task.Run(() => worldManager.wasmClient.Entities(query));
+        var entityGameObjects = new List<GameObject>();
 
+        foreach (var entity in entities)
+        {
+            entityGameObjects.Add(SpawnEntity(entity.HashedKeys, entity.Models.Values.ToArray()));
+        }
+
+        OnSynchronized?.Invoke(entityGameObjects);
+        return entities.Count;
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError($"Error synchronizing entities: {ex}");
+        return -1; // Return an error code or handle the error as appropriate
+    }
+}
 #if UNITY_WEBGL && !UNITY_EDITOR
             var entities = await worldManager.wasmClient.Entities(query);
 #else
