@@ -96,8 +96,7 @@ namespace Dojo.Starknet
         // This handles BigIntegers as well as primitive types
         public FieldElement(BigInteger bigInteger)
         {
-            var bytes = bigInteger.ToByteArray();
-
+            var bytes = bigInteger.ToByteArray(false, true);
             if (bytes.Length > 32)
             {
                 throw new ArgumentException("BigInteger must be 32 bytes or less.", nameof(bigInteger));
