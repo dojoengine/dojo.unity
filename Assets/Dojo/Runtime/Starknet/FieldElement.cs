@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -36,43 +37,30 @@ namespace Dojo.Starknet
         // Serialized as a hex string.
         [SerializeField] private string hex;
 
+        public static BigInteger StarkField = BigInteger.Parse("3618502788666131213697322783095070105623107215331596699973092056135872020481");
+
         // These constructors are pretty slow as they involve a lot of copying.
         // TODO: benchmark and optimize
-        public FieldElement(string hex)
+        public FieldElement(string input)
         {
+            BigInteger value;
 
-            // Remove the 0x prefix if it exists.
-            if (hex.StartsWith("0x"))
+            if (input.StartsWith("0x"))
             {
-                hex = hex.Substring(2);
-            }
-
-            // Check that the hex string is 64 characters or less.
-            if (hex.Length > 64)
-            {
-                throw new ArgumentException("Hex string must be 64 characters or less.", nameof(hex));
-            }
-
-            // Pad the hex string with leading zeros until it is 64 characters long.
-            if (hex.Length < 64)
-            {
-                hex = hex.PadLeft(64, '0');
-            }
-
-            // NOTE: Use BigInteger to parse instead?
-            // Convert the hex string to a byte array.
-            byte[] bytes = Enumerable.Range(0, hex.Length)
-                .Where(x => x % 2 == 0)
-                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                .ToArray();
-
-            unsafe
-            {
-                fixed (byte* ptr = &inner._data[0])
+                if (!BigInteger.TryParse("0" + input.Substring(2), NumberStyles.HexNumber, null, out value))
                 {
-                    Marshal.Copy(bytes, 0, (IntPtr)ptr, bytes.Length);
+                    throw new ArgumentException("Invalid hex string.", nameof(input));
                 }
             }
+            else
+            {
+                if (!BigInteger.TryParse(input, out value))
+                {
+                    throw new ArgumentException("Invalid decimal string.", nameof(input));
+                }
+            }
+
+            inner = new FieldElement(value).inner;
         }
 
         public FieldElement(dojo.FieldElement fieldElement)
@@ -96,6 +84,10 @@ namespace Dojo.Starknet
         // This handles BigIntegers as well as primitive types
         public FieldElement(BigInteger bigInteger)
         {
+            if (bigInteger.Sign < 0) {
+                bigInteger = StarkField - bigInteger;
+            }
+
             var bytes = bigInteger.ToByteArray(false, true);
             if (bytes.Length > 32)
             {
