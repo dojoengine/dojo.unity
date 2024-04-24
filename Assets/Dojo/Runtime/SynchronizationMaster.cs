@@ -25,6 +25,7 @@ namespace Dojo
 
         public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
+        public UnityEvent<ModelInstance> OnEventMessage;
 
         // Awake is called when the script instance is being loaded.
         void Awake()
@@ -125,10 +126,32 @@ namespace Dojo
             }
         }
 
+        private void HandleEventMessage(FieldElement hashedKeys, Model[] entityModels)
+        {
+            foreach (var entityModel in entityModels)
+            {
+                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
+                if (model == null)
+                {
+                    Debug.LogError($"Model {entityModel.Name} not found");
+                    continue;
+                }
+
+                model.OnUpdate(entityModel);
+                OnEventMessage?.Invoke(model);
+            }
+        }
+
         // Register our entity callbacks
         public void RegisterEntityCallbacks()
         {
             ToriiEvents.Instance.OnEntityUpdated += HandleEntityUpdate;
+        }
+
+        // Register event message callbacks
+        public void RegisterEventMessageCallbacks()
+        {
+            ToriiEvents.Instance.OnEventMessageUpdated += HandleEventMessage;
         }
 
         private ModelInstance[] LoadModels()
