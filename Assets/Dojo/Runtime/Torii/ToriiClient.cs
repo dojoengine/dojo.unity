@@ -11,6 +11,7 @@ namespace Dojo.Torii
     public unsafe class ToriiClient
     {
         private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate onEntityStateUpdate;
+        private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate onEventMessagesUpdate;
         private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
         private dojo.ToriiClient* client;
 
@@ -30,6 +31,7 @@ namespace Dojo.Torii
             client = result._ok;
 
             RegisterEntityStateUpdateEvent(new dojo.FieldElement[] { });
+            RegisterEventMessageUpdateEvent(new dojo.FieldElement[] { });
         }
 
         // We assume the torii client won't be copied around.
@@ -71,6 +73,24 @@ namespace Dojo.Torii
         public List<Entity> Entities(dojo.Query query)
         {
             dojo.ResultCArrayEntity result = dojo.client_entities(client, &query);
+            if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            var entities = new List<Entity>();
+            for (var i = 0; i < (int)result._ok.data_len; i++)
+            {
+                entities.Add(new Entity(result._ok.data[i]));
+            }
+
+            dojo.carray_free(result._ok.data, result._ok.data_len);
+            return entities;
+        }
+
+        public List<Entity> EventMessages(dojo.Query query)
+        {
+            dojo.ResultCArrayEntity result = dojo.client_event_messages(client, &query);
             if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
             {
                 throw new Exception(result.err.message);
@@ -149,8 +169,8 @@ namespace Dojo.Torii
                 }
             };
 
-            dojo.Resultbool res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(onSyncModelUpdate));
-            if (res.tag == dojo.Resultbool_Tag.Errbool)
+            dojo.ResultSubscription res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(onSyncModelUpdate));
+            if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }
@@ -193,8 +213,52 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.Resultbool res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
-            if (res.tag == dojo.Resultbool_Tag.Errbool)
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
+            if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
+            {
+                throw new Exception(res.err.message);
+            }
+        }
+
+        private void RegisterEventMessageUpdateEvent(dojo.FieldElement[] entities, bool dispatchToMainThread = true)
+        {
+            dojo.FieldElement* entitiesPtr;
+
+            fixed (dojo.FieldElement* ptr = entities)
+            {
+                entitiesPtr = ptr;
+            }
+
+            onEntityStateUpdate = (key, models) =>
+            {
+                var mappedModels = new Model[(int)models.data_len];
+                for (var i = 0; i < (int)models.data_len; i++)
+                {
+                    mappedModels[i] = new Model(models.data[i]);
+                    // cleanup model
+                    // dojo.model_free(&models.data[i]);
+                }
+
+                // only run this when in unity play mode
+                // we need our unity main thread dispatcher to run this on the main thread
+                if (dispatchToMainThread)
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels));
+                }
+                else
+                {
+                    ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels);
+                }
+
+                // cleanup
+                dojo.carray_free(models.data, models.data_len);
+                // TODO: free field element
+            };
+
+
+            // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
+            if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }

@@ -1,6 +1,7 @@
 using System;
 using Dojo.Starknet;
 using dojo_bindings;
+using UnityEngine;
 
 namespace Dojo.Torii
 {
@@ -25,7 +26,13 @@ namespace Dojo.Torii
         public delegate void OnEntityStateUpdateDelegate(FieldElement key, Model[] models);
 
         public event OnEntityStateUpdateDelegate OnEntityUpdated;
+        public event OnEntityStateUpdateDelegate OnEventMessageUpdated;
         public event OnSyncModelUpdateDelegate OnSyncModelUpdated;
+
+        public void EventMessageUpdated(FieldElement key, Model[] models)
+        {
+            OnEventMessageUpdated?.Invoke(key, models);
+        }
 
         public void EntityUpdated(FieldElement key, Model[] models)
         {
