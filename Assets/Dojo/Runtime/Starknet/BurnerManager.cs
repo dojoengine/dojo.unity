@@ -15,7 +15,15 @@ namespace Dojo.Starknet
     {
         private JsonRpcClient provider;
         private Account masterAccount;
-        public Account CurrentBurner { get; private set; }
+        private int currentBurnerIndex = 0;
+        public Account CurrentBurner
+        {
+            get
+            {
+                if (Burners.Count == 0) return null;
+                return Burners[currentBurnerIndex];
+            }
+        }
         public List<Account> Burners { get; } = new();
         public bool UseStorage { get; set; }
 
@@ -38,8 +46,9 @@ namespace Dojo.Starknet
                 signingKey = new SigningKey();
             }
 
-            CurrentBurner = await masterAccount.DeployBurner(provider, signingKey);
-            Burners.Add(CurrentBurner);
+            Burners.Add(await masterAccount.DeployBurner(provider, signingKey));
+            currentBurnerIndex = Burners.Count - 1;
+            
 
             if (UseStorage)
             {
@@ -54,15 +63,6 @@ namespace Dojo.Starknet
         // This will be called automatically if useStorage is set to true.
         public void TryLoadFromStorage()
         {
-            // Load the current burner
-            var currentBurner = PlayerPrefs.GetString($"burnermanagers.{masterAccount.Address.Hex()}.current");
-            if (!string.IsNullOrEmpty(currentBurner))
-            {
-                var burnerData = JsonConvert.DeserializeObject<Dictionary<string, string>>(currentBurner);
-                var address = new FieldElement(burnerData["address"]);
-                var privateKey = burnerData["privateKey"];
-                CurrentBurner = new Account(provider, new SigningKey(privateKey), address);
-            }
 
             // Load all burners
             var burnersData = PlayerPrefs.GetString($"burnermanagers.{masterAccount.Address.Hex()}.burners");
@@ -76,6 +76,13 @@ namespace Dojo.Starknet
                     Burners.Add(new Account(provider, new SigningKey(privateKey), address));
                 }
             }
+
+            // Load the current burner
+            var currentBurnerIndex = PlayerPrefs.GetInt($"burnermanagers.{masterAccount.Address.Hex()}.current", -1);
+            if (currentBurnerIndex >= 0 && currentBurnerIndex < Burners.Count)
+            {
+                this.currentBurnerIndex = currentBurnerIndex;
+            }
         }
 
         // Save the burners to disk.
@@ -85,13 +92,7 @@ namespace Dojo.Starknet
             // Save the current burner
             if (CurrentBurner != null)
             {
-                string burnerData = JsonConvert.SerializeObject(new
-                {
-                    address = CurrentBurner.Address.Hex(),
-                    privateKey = CurrentBurner.Signer.Inner.Hex()
-                });
-
-                PlayerPrefs.SetString($"burnermanagers.{masterAccount.Address.Hex()}.current", burnerData);
+                PlayerPrefs.SetInt($"burnermanagers.{masterAccount.Address.Hex()}.current", currentBurnerIndex);
             }
 
             // Save all burners

@@ -31,19 +31,18 @@ namespace Dojo.Starknet
                 }
 #endif
 
-                unsafe ~JsonRpcClient()
-                {
 #if UNITY_WEBGL && !UNITY_EDITOR
 #else
+                unsafe ~JsonRpcClient()
+                {
                         dojo.provider_free(client);
-#endif
                 }
-
+#endif
+#if UNITY_WEBGL && !UNITY_EDITOR
+#else
                 // Wait for the transaction to be confirmed. Synchronously.
                 // This doesn't guarantee that the torii client has updated its state
                 // if an entity is updated.
-#if UNITY_WEBGL && !UNITY_EDITOR
-#else
                 private unsafe void WaitForTransactionSync(FieldElement transactionHash)
                 {
                         var result = dojo.wait_for_transaction(client, transactionHash.Inner);
