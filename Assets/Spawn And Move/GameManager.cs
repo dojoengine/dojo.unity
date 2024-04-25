@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] ChatManager chatManager;
 
     [SerializeField] WorldManagerData dojoConfig;
-    [SerializeField] GameManagerData gameManagerData; 
+    [SerializeField] GameManagerData gameManagerData;
 
     public BurnerManager burnerManager;
     private Dictionary<FieldElement, string> spawnedAccounts = new();
@@ -28,12 +28,11 @@ public class GameManager : MonoBehaviour
     public JsonRpcClient provider;
     public Account masterAccount;
 
-    
+
     void Start()
     {
         provider = new JsonRpcClient(dojoConfig.rpcUrl);
         masterAccount = new Account(provider, new SigningKey(gameManagerData.masterPrivateKey), new FieldElement(gameManagerData.masterAddress));
-
         burnerManager = new BurnerManager(provider, masterAccount);
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
@@ -48,14 +47,15 @@ public class GameManager : MonoBehaviour
         // dont register inputs if our chat is open
         if (chatManager.chatOpen) return;
 
-        if (Input.GetKeyUp(KeyCode.E)) {
+        if (Input.GetKeyUp(KeyCode.E))
+        {
             spawnedAccounts[masterAccount.Address] = null;
             var txHash = await actions.Spawn(masterAccount);
         }
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            var burner = await burnerManager.DeployBurner(new SigningKey());
+            var burner = await burnerManager.DeployBurner();
             spawnedAccounts[burner.Address] = null;
             var txHash = await actions.Spawn(burner);
         }
@@ -81,7 +81,7 @@ public class GameManager : MonoBehaviour
 
                     var burner = spawnedAccounts.First(b => b.Value == entity.name);
                     var burnerAddress = burner.Key;
-                    var burnerInstance = burnerManager.UseBurner(burnerAddress);
+                    var burnerInstance = burnerManager.Burners.First(b => b.Address == burnerAddress);
 
                     position.textTag.color = Color.blue;
                 }

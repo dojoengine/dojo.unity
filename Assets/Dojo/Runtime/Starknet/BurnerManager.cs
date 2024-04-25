@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using dojo_bindings;
 using Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Debug = UnityEngine.Debug;
 
 namespace Dojo.Starknet
@@ -26,60 +27,41 @@ namespace Dojo.Starknet
 
             if (UseStorage)
             {
-                TryLoad();
+                TryLoadFromStorage();
             }
         }
 
-        ~BurnerManager()
+        public async Task<Account> DeployBurner(SigningKey signingKey = null)
         {
+            if (signingKey == null)
+            {
+                signingKey = new SigningKey();
+            }
+
+            CurrentBurner = await masterAccount.DeployBurner(provider, signingKey);
+            Burners.Add(CurrentBurner);
+
             if (UseStorage)
             {
                 Save();
             }
+
+            return CurrentBurner;
         }
 
-        public async Task<Account> DeployBurner(SigningKey signingKey)
-        {
-            var account = await masterAccount.DeployBurner(provider, signingKey);
-            Burners.Add(account);
-            CurrentBurner = account;
-
-            return account;
-        }
-
-        // This will deploy a new burner if there is no current burner.
-        public async Task<Account> UseBurner()
-        {
-            return CurrentBurner ??= await DeployBurner(new SigningKey());
-        }
-
-        public Account UseBurner(FieldElement address)
-        {
-            foreach (var burner in Burners)
-            {
-                if (burner.Address.Hex() == address.Hex())
-                {
-                    CurrentBurner = burner;
-                    return burner;
-                }
-            }
-
-            return null;
-        }
 
         // Load the burners from disk.
         // This will be called automatically if useStorage is set to true.
-        public void TryLoad()
+        public void TryLoadFromStorage()
         {
             // Load the current burner
-            var currentBurnerAddress = PlayerPrefs.GetString($"burnermanagers.{masterAccount.Address.Hex()}.current.address");
-            if (!string.IsNullOrEmpty(currentBurnerAddress))
+            var currentBurner = PlayerPrefs.GetString($"burnermanagers.{masterAccount.Address.Hex()}.current");
+            if (!string.IsNullOrEmpty(currentBurner))
             {
-                var currentBurnerPrivateKey = PlayerPrefs.GetString($"burnermanagers.{masterAccount.Address.Hex()}.current.private_key");
-                if (!string.IsNullOrEmpty(currentBurnerPrivateKey))
-                {
-                    CurrentBurner = new Account(provider, new SigningKey(currentBurnerPrivateKey), new FieldElement(currentBurnerAddress));
-                }
+                var burnerData = JsonConvert.DeserializeObject<Dictionary<string, string>>(currentBurner);
+                var address = new FieldElement(burnerData["address"]);
+                var privateKey = burnerData["privateKey"];
+                CurrentBurner = new Account(provider, new SigningKey(privateKey), address);
             }
 
             // Load all burners
@@ -90,12 +72,11 @@ namespace Dojo.Starknet
                 foreach (var burnerData in burners)
                 {
                     var address = new FieldElement(burnerData["address"]);
-                    var privateKey = burnerData["private_key"];
+                    var privateKey = burnerData["privateKey"];
                     Burners.Add(new Account(provider, new SigningKey(privateKey), address));
                 }
             }
         }
-
 
         // Save the burners to disk.
         // This will be called automatically if useStorage is set to true.
@@ -104,18 +85,23 @@ namespace Dojo.Starknet
             // Save the current burner
             if (CurrentBurner != null)
             {
-                PlayerPrefs.SetString($"burnermanagers.{masterAccount.Address.Hex()}.current.address", CurrentBurner.Address.Hex());
-                PlayerPrefs.SetString($"burnermanagers.{masterAccount.Address.Hex()}.current.private_key", CurrentBurner.Signer.Inner.Hex());
+                string burnerData = JsonConvert.SerializeObject(new
+                {
+                    address = CurrentBurner.Address.Hex(),
+                    privateKey = CurrentBurner.Signer.Inner.Hex()
+                });
+
+                PlayerPrefs.SetString($"burnermanagers.{masterAccount.Address.Hex()}.current", burnerData);
             }
 
             // Save all burners
-            var burnersData = Burners.Select((b) => new Dictionary<string, string>
+            var burnersData = JsonConvert.SerializeObject(Burners.Select(burner => new
             {
-                {"address", b.Address.Hex()},
-                {"private_key", b.Signer.Inner.Hex()}
-            }).ToList();
+                address = burner.Address.Hex(),
+                privateKey = burner.Signer.Inner.Hex()
+            }));
 
-            PlayerPrefs.SetString($"burnermanagers.{masterAccount.Address.Hex()}.burners", JsonConvert.SerializeObject(burnersData));
+            PlayerPrefs.SetString($"burnermanagers.{masterAccount.Address.Hex()}.burners", burnersData);
 
             PlayerPrefs.Save();
         }
