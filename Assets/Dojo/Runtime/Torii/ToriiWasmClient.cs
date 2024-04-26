@@ -30,6 +30,7 @@ namespace Dojo.Torii
         {
             clientPtr = await ToriiWasmInterop.CreateClientAsync(rpcUrl, toriiUrl, relayUrl, world);
             ToriiWasmInterop.OnEntityUpdated(clientPtr, new FieldElement[] { });
+            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new FieldElement[] { });
         }
 
         public async Task<List<Entity>> Entities(dojo.Query query)
