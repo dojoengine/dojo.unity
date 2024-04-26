@@ -39,6 +39,12 @@ namespace Dojo.Torii
             return entities;
         }
 
+        public async Task<List<Entity>> EventMessages(dojo.Query query)
+        {
+            var entities = await ToriiWasmInterop.GetEventMessagesAsync(clientPtr, new Query(query));
+            return entities;
+        }
+
         public async Task<byte[]> PublishMessage(TypedData message, Signature signature)
         {
             return await ToriiWasmInterop.PublishMessageAsync(clientPtr, message, signature);

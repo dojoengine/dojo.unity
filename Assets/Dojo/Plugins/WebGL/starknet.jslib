@@ -52,7 +52,6 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   AccountDeployBurner: async function (accountPtr, privateKey, cb) {
-    console.log(UTF8ToString(privateKey));
     const account = wasm_bindgen.Account.__wrap(accountPtr);
     const burner = await account.deployBurner(UTF8ToString(privateKey));
 
@@ -93,8 +92,6 @@ mergeInto(LibraryManager.library, {
     var compactSig =
       signature.r.replace("0x", "").padStart(64, "0") +
       signature.s.replace("0x", "").padStart(64, "0");
-    console.log(signature);
-    console.log(compactSig);
     var bufferSize = lengthBytesUTF8(compactSig) + 1;
     var buffer = _malloc(bufferSize);
     stringToUTF8(compactSig, buffer, bufferSize);
