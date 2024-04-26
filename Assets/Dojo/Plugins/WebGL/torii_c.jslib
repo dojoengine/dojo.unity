@@ -23,7 +23,22 @@ mergeInto(LibraryManager.library, {
     const client = wasm_bindgen.Client.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
     var entities = await client.getEntities(query);
-    console.log(entities);
+
+    // stringify the entities
+    var entitiesString = JSON.stringify(entities);
+    // return buffer
+    var bufferSize = lengthBytesUTF8(entitiesString) + 1;
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(entitiesString, buffer, bufferSize);
+
+    client.__destroy_into_raw();
+    dynCall_vi(cb, buffer);
+  },
+  // Returns a dictionary of all of the eventmessages
+  GetEventMessages: async function (clientPtr, queryString, cb) {
+    const client = wasm_bindgen.Client.__wrap(clientPtr);
+    const query = JSON.parse(UTF8ToString(queryString));
+    var entities = await client.getEventMessages(query);
 
     // stringify the entities
     var entitiesString = JSON.stringify(entities);
@@ -149,7 +164,6 @@ mergeInto(LibraryManager.library, {
   PublishMessage: async function (clientPtr, message, signature, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     const published = await client.publishMessage(UTF8ToString(message), JSON.parse(UTF8ToString(signature)));
-    console.log(published);
     const publishedString = JSON.stringify(Array.from(published));
     const bufferSize = lengthBytesUTF8(publishedString) + 1;
     const buffer = _malloc(bufferSize);

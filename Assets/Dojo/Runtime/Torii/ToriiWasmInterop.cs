@@ -87,6 +87,47 @@ namespace Dojo.Torii
             return GetEntitiesHelper.Tcs.Task;
         }
 
+        [DllImport("__Internal")]
+        public static extern void GetEventMessages(IntPtr clientPtr, CString query, Action<string> cb);
+
+        private static class GetEventMessagesHelper
+        {
+            public static TaskCompletionSource<List<Entity>> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string entities)
+            {
+                var parsedEntities = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entities);
+                var entityList = new List<Entity>();
+
+                foreach (var entity in parsedEntities)
+                {
+                    var models = new Dictionary<string, Model>();
+                    foreach (var model in entity.Value)
+                    {
+                        models.Add(model.Key, new Model(
+                            model.Key,
+                            model.Value.ToDictionary(
+                                m => m.Key,
+                                m => m.Value
+                            )
+                        ));
+                    }
+
+                    entityList.Add(new Entity(new FieldElement(entity.Key), models));
+                }
+
+                Tcs.SetResult(entityList);
+            }
+        }
+
+        public static Task<List<Entity>> GetEventMessagesAsync(IntPtr clientPtr, Query query)
+        {
+            GetEventMessagesHelper.Tcs = new TaskCompletionSource<List<Entity>>();
+            GetEventMessages(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetEventMessagesHelper.Callback);
+            return GetEventMessagesHelper.Tcs.Task;
+        }
+
         // Get the value of a model for a specific set of keys
         [DllImport("__Internal")]
         public static extern string GetModelValue(IntPtr clientPtr, string model, string keys);
