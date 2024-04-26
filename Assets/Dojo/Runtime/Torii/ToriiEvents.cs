@@ -24,9 +24,10 @@ namespace Dojo.Torii
 
         public delegate void OnSyncModelUpdateDelegate();
         public delegate void OnEntityStateUpdateDelegate(FieldElement key, Model[] models);
+        public delegate void OnEventMessageUpdateDelegate(FieldElement key, Model[] models);
 
         public event OnEntityStateUpdateDelegate OnEntityUpdated;
-        public event OnEntityStateUpdateDelegate OnEventMessageUpdated;
+        public event OnEventMessageUpdateDelegate OnEventMessageUpdated;
         public event OnSyncModelUpdateDelegate OnSyncModelUpdated;
 
         public void EventMessageUpdated(FieldElement key, Model[] models)
