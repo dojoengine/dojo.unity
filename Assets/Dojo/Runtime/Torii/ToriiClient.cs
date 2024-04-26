@@ -229,7 +229,7 @@ namespace Dojo.Torii
                 entitiesPtr = ptr;
             }
 
-            onEntityStateUpdate = (key, models) =>
+            onEventMessagesUpdate = (key, models) =>
             {
                 var mappedModels = new Model[(int)models.data_len];
                 for (var i = 0; i < (int)models.data_len; i++)
@@ -257,7 +257,7 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
