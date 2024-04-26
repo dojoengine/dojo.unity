@@ -120,6 +120,36 @@ namespace Dojo.Torii
         {
             OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(ids)), OnEntityUpdatedHelper.Callback);
         }
+        
+        // Calls the callback at [callbackObjectName].[callbackMethodName] on event mnessage updated
+        [DllImport("__Internal")]
+        private static extern void OnEventMessageUpdated(IntPtr clientPtr, IntPtr ids, Action<string> cb);
+
+        private static class OnEventMessageUpdatedHelper
+        {
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string entity)
+            {
+                var parsedEntity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entity).First();
+                var models = new Dictionary<string, Model>();
+
+                foreach (var model in parsedEntity.Value)
+                {
+                    models.Add(model.Key, new Model(
+                        model.Key,
+                        model.Value
+                    ));
+                }
+
+                ToriiEvents.Instance.EventMessageUpdated(new FieldElement(parsedEntity.Key), models.Values.ToArray());
+            }
+        }
+
+        public static void OnEventMessageUpdated(IntPtr clientPtr, FieldElement[] ids)
+        {
+            OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(ids)), OnEventMessageUpdatedHelper.Callback);
+        }
 
         // Add models to sync
         [DllImport("__Internal")]

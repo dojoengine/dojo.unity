@@ -53,12 +53,12 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
-  OnEntityUpdated: function (clientPtr, ids, cb) {
+  OnEntityUpdated: async function (clientPtr, ids, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
     var idsString = UTF8ToString(ids);
     var idsArray = JSON.parse(idsString);
 
-    client.onEntityUpdated(idsArray, (entities) => {
+    const subscription = await client.onEntityUpdated(idsArray, (entities) => {
       // stringify the entities
       var entitiesString = JSON.stringify(entities);
       // return buffer
@@ -68,6 +68,26 @@ mergeInto(LibraryManager.library, {
 
       dynCall_vi(cb, buffer);
     });
+    subscription.__destroy_into_raw();
+
+    client.__destroy_into_raw();
+  },
+  OnEventMessageUpdated: async function (clientPtr, ids, cb) {
+    var client = wasm_bindgen.Client.__wrap(clientPtr);
+    var idsString = UTF8ToString(ids);
+    var idsArray = JSON.parse(idsString);
+
+    const subscription = await client.onEventMessageUpdated(idsArray, (entities) => {
+      // stringify the entities
+      var entitiesString = JSON.stringify(entities);
+      // return buffer
+      var bufferSize = lengthBytesUTF8(entitiesString) + 1;
+      var buffer = _malloc(bufferSize);
+      stringToUTF8(entitiesString, buffer, bufferSize);
+
+      dynCall_vi(cb, buffer);
+    });
+    subscription.__destroy_into_raw();
 
     client.__destroy_into_raw();
   },
@@ -87,7 +107,7 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     client.removeModelsToSync(modelsArray);
   },
-  OnSyncModelChange: function (
+  OnSyncModelChange: async function (
     clientPtr,
     models,
     callbackObjectName,
@@ -97,12 +117,14 @@ mergeInto(LibraryManager.library, {
     var modelsString = UTF8ToString(models);
     var modelsArray = JSON.parse(modelsString);
 
-    client.onSyncModelChange(modelsArray, () => {
+    const subscription = await client.onSyncModelChange(modelsArray, () => {
       gameInstance.SendMessage(
         UTF8ToString(callbackObjectName),
         UTF8ToString(callbackMethodName)
       );
     });
+    subscription.__destroy_into_raw();
+
     client.__destroy_into_raw();
   },
   // Encode typed data with the corresponding address and return the message hash
