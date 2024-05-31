@@ -12,8 +12,8 @@ namespace Dojo.Torii
 {
     // Member metadata doesn't seem to be needed.
     // Seems like the better devX is to just have a
-     // hashmap of the values themselves, without any
-     // wrapper around them.
+    // hashmap of the values themselves, without any
+    // wrapper around them.
 
     // public struct Member
     // {
@@ -58,7 +58,9 @@ namespace Dojo.Torii
             return ty.tag switch
             {
                 dojo.Ty_Tag.Struct_ => HandleCStruct(ty.struct_),
-                dojo.Ty_Tag.Enum_ => ty.enum_.option,
+                dojo.Ty_Tag.Enum_ => HandleCEnum(ty.enum_),
+                dojo.Ty_Tag.Tuple_ => ty.tuple.ToArray().Select(m => HandleCValue(m)).ToArray(),
+                dojo.Ty_Tag.Array_ => ty.array.ToArray().Select(m => HandleCValue(m)).ToArray(),
                 dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
                 {
                     dojo.Primitive_Tag.Bool => Convert.ToBoolean(ty.primitive.bool_.Value),
@@ -78,7 +80,6 @@ namespace Dojo.Torii
                     _ => throw new Exception("Unknown primitive type")
 
                 },
-                dojo.Ty_Tag.Tuple_ => throw new Exception("Tuple not supported"),
                 _ => throw new Exception("Unknown type")
             };
         }
@@ -90,7 +91,11 @@ namespace Dojo.Torii
                 // struct
                 "struct" => HandleJSStruct(value.value.ToObject<Dictionary<string, WasmValue>>()),
                 // enum
-                "enum" => value.value.ToObject<byte>(),
+                "enum" => HandleJSEnum(value.value.ToObject<WasmEnum>()),
+                // tuple
+                "tuple" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(),
+                // array
+                "array" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(),
                 // primitives
                 "bool" => value.value.ToObject<bool>(),
                 "u8" => value.value.ToObject<byte>(),
@@ -132,9 +137,30 @@ namespace Dojo.Torii
             return str.children.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))).ToDictionary(k => k.Key, v => v.Value);
         }
 
+        private Dictionary<string, object> HandleCEnum(dojo.Enum en)
+        {
+            var option = en.options[en.option];
+            Dictionary<string, object> dict = new()
+            {
+                { option.name, HandleCValue(option.ty) }
+            };
+
+            return dict;
+        }
+
         private Dictionary<string, object> HandleJSStruct(Dictionary<string, WasmValue> str)
         {
             return str.Select(m => new KeyValuePair<string, object>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value);
+        }
+
+        private Dictionary<string, object> HandleJSEnum(WasmEnum en)
+        {
+            Dictionary<string, object> dict = new()
+            {
+                { en.type, HandleWasmValue(en.data) }
+            };
+
+            return dict;
         }
     }
 }
