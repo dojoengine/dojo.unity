@@ -80,7 +80,7 @@ namespace Dojo.Torii
                     _ => throw new Exception("Unknown primitive type: " + ty.primitive.tag)
                 },
                 dojo.Ty_Tag.ByteArray => ty.byte_array,
-                _ => throw new Exception("Unknown type: " + ty.tag) 
+                _ => throw new Exception("Unknown type: " + ty.tag)
             };
         }
 
@@ -137,15 +137,11 @@ namespace Dojo.Torii
             return str.children.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))).ToDictionary(k => k.Key, v => v.Value);
         }
 
-        private Dictionary<string, object> HandleCEnum(dojo.Enum en)
+        private (string, object) HandleCEnum(dojo.Enum en)
         {
             var option = en.options[en.option];
-            Dictionary<string, object> dict = new()
-            {
-                { option.name, HandleCValue(option.ty) }
-            };
 
-            return dict;
+            return (option.name, HandleCValue(option.ty));
         }
 
         private Dictionary<string, object> HandleJSStruct(Dictionary<string, WasmValue> str)
