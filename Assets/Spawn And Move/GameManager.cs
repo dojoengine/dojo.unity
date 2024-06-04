@@ -13,6 +13,14 @@ using UnityEngine.UI;
 using Object = System.Object;
 using Random = UnityEngine.Random;
 
+// Fix to use Records in Unity ref. https://stackoverflow.com/a/73100830
+using System.ComponentModel;
+namespace System.Runtime.CompilerServices
+{
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    internal class IsExternalInit{}
+}
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField] WorldManager worldManager;
@@ -50,14 +58,14 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.E))
         {
             spawnedAccounts[masterAccount.Address] = null;
-            var txHash = await actions.Spawn(masterAccount);
+            var txHash = await actions.spawn(masterAccount);
         }
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
             var burner = await burnerManager.DeployBurner();
             spawnedAccounts[burner.Address] = null;
-            var txHash = await actions.Spawn(burner);
+            var txHash = await actions.spawn(burner);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -91,25 +99,25 @@ public class GameManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W))
         {
             // coordinates are different between dojo world and unity
-            Move(Direction.Down);
+            Move(new Direction.Down());
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            Move(Direction.Left);
+            Move(new Direction.Left());
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            Move(Direction.Up);
+            Move(new Direction.Up());
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            Move(Direction.Right);
+            Move(new Direction.Right());
         }
     }
 
     private async void Move(Direction direction)
     {
-        await actions.Move(burnerManager.CurrentBurner ?? masterAccount, direction);
+        await actions.move(burnerManager.CurrentBurner ?? masterAccount, direction);
     }
 
     private void InitEntity(GameObject entity)

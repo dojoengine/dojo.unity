@@ -43,6 +43,16 @@ declare namespace wasm_bindgen {
 	*/
 	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
 	/**
+	* @param {string} str
+	* @returns {(string)[]}
+	*/
+	export function byteArraySerialize(str: string): (string)[];
+	/**
+	* @param {(string)[]} felts
+	* @returns {string}
+	*/
+	export function byteArrayDeserialize(felts: (string)[]): string;
+	/**
 	* Create the a client with the given configurations.
 	* @param {KeysClauses} initialModelsToSync
 	* @param {ClientConfig} config
@@ -346,6 +356,8 @@ declare interface InitOutput {
   readonly account_executeRaw: (a: number, b: number) => number;
   readonly account_deployBurner: (a: number, b: number, c: number) => number;
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
+  readonly byteArraySerialize: (a: number, b: number, c: number) => void;
+  readonly byteArrayDeserialize: (a: number, b: number, c: number) => void;
   readonly client_getEntities: (a: number, b: number) => number;
   readonly client_getEventMessages: (a: number, b: number) => number;
   readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;

@@ -59,17 +59,29 @@ namespace Dojo
         // to the value of the model member.
         private static void HandleField(object instance, System.Reflection.FieldInfo field, object value)
         {
-            // if the field is an enum, we need to convert the value to the enum type
-            if (field.FieldType.IsEnum)
-            {
-                field.SetValue(instance, Enum.ToObject(field.FieldType, value));
-            }
             // if the field is a primitive, we can just set it
             // fieldelement is included as a primitive because its a class
             // but its already instantiated
-            else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement) || field.FieldType == typeof(BigInteger))
+            if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement) || field.FieldType == typeof(BigInteger) || field.FieldType == typeof(string))
             {
                 field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
+            }
+            // TODO: Handle arrays here
+            else if (field.FieldType.IsArray)
+            {
+                if (!(value is List<object> list))
+                {
+                    throw new Exception($"Expected a list for field \"{field.Name}\" but got {value.GetType()}. Cannot cast primitive types to arrays.");
+                }
+
+                var elementType = field.FieldType.GetElementType()
+                var array = Array.CreateInstance(elementType, list.Count);
+                for (var i = 0; i < list.Count; i++)
+                {
+                    
+                }
+
+                field.SetValue(instance, array);
             }
             // if the field is a struct/class. we check if our member is a dictionary
             // and we go through each of its keys and values and set them to the fields
@@ -78,7 +90,7 @@ namespace Dojo
             {
                 if (!(value is Dictionary<string, object> dict))
                 {
-                    throw new Exception($"Expected a dictionary for field {field.Name} but got {value.GetType()}. Cannot cast primitive types to structs/classes.");
+                    throw new Exception($"Expected a dictionary for field \"{field.Name}\" but got {value.GetType()}. Cannot cast primitive types to structs/classes.");
                 }
 
                 // we create an instance of the type
@@ -89,7 +101,7 @@ namespace Dojo
                     var instanceField = field.FieldType.GetField(kvp.Key);
                     if (instanceField == null)
                     {
-                        throw new Exception($"Field {kvp.Key} not found in type {field.FieldType}");
+                        throw new Exception($"Field \"{kvp.Key}\" not found in type {field.FieldType}");
                     }
                     HandleField(fieldInstance, instanceField, kvp.Value);
                 }

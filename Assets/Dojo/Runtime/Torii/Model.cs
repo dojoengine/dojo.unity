@@ -77,10 +77,10 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
                     dojo.Primitive_Tag.ContractAddress => new FieldElement(ty.primitive.contract_address),
-                    _ => throw new Exception("Unknown primitive type")
-
+                    _ => throw new Exception("Unknown primitive type: " + ty.primitive.tag)
                 },
-                _ => throw new Exception("Unknown type")
+                dojo.Ty_Tag.ByteArray => ty.byte_array,
+                _ => throw new Exception("Unknown type: " + ty.tag) 
             };
         }
 

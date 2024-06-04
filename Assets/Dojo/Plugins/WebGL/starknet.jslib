@@ -114,4 +114,21 @@ mergeInto(LibraryManager.library, {
       }
     );
   },
+  SerializeByteArray: function (byteArrayStr) {
+    const felts = wasm_bindgen.byteArraySerialize(UTF8ToString(byteArrayStr));
+    
+    const feltsString = JSON.stringify(felts);
+    const bufferSize = lengthBytesUTF8(feltsString) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(feltsString, buffer, bufferSize);
+    return buffer;
+  },
+  DeserializeByteArray: function (feltsStr) {
+    const felts = JSON.parse(UTF8ToString(feltsStr));
+    const byteArray = wasm_bindgen.byteArrayDeserialize(felts);
+    const bufferSize = lengthBytesUTF8(byteArray) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(byteArray, buffer, bufferSize);
+    return buffer;
+  },
 });

@@ -194,5 +194,21 @@ namespace Dojo.Starknet
 
         [DllImport("__Internal")]
         public static extern bool Verify(CString publicKey, CString hash, CString r, CString s);
+
+        [DllImport("__Internal")]
+        private static extern string SerializeByteArray(CString byteArray);
+
+        public static FieldElement[] SerializeByteArray(string byteArray)
+        {
+            return JsonConvert.DeserializeObject<string[]>(SerializeByteArray(new CString(byteArray))).Select(f => new FieldElement(f)).ToArray();
+        }
+
+        [DllImport("__Internal")]
+        private static extern string DeserializeByteArray(CString felts);
+
+        public static string DeserializeByteArray(FieldElement[] felts)
+        {
+            return DeserializeByteArray(new CString(JsonConvert.SerializeObject(felts.Select(f => f.Hex()).ToArray())));
+        }
     }
 }
