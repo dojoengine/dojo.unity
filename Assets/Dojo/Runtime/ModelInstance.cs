@@ -79,6 +79,18 @@ namespace Dojo
                 }
                 return instance;
             }
+            // handle tuple (ValueTuple - (T1, T2))
+            else if (type.FullName.StartsWith(typeof(ValueTuple).FullName))
+            {
+                var tupleTypes = type.GetGenericArguments();
+                var instance = Activator.CreateInstance(type);
+                var fields = type.GetFields();
+                for (var i = 0; i < fields.Length; i++)
+                {
+                    fields[i].SetValue(instance, HandleField(tupleTypes[i], ((IList)value)[i]));
+                }
+                return instance;
+            }
             // handle record (rust-like) enums
             else if (value is (string, object)) {
                 var (variant, member) = ((string, object))value;
