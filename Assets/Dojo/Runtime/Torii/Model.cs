@@ -118,6 +118,7 @@ namespace Dojo.Torii
                 "felt252" => new FieldElement(value.value.ToObject<string>()),
                 "class_hash" => new FieldElement(value.value.ToObject<string>()),
                 "contract_address" => new FieldElement(value.value.ToObject<string>()),
+                "byte_array" => value.value.ToObject<string>(),
                 _ => throw new Exception("Unknown primitive type")
             };
         }
@@ -149,14 +150,9 @@ namespace Dojo.Torii
             return str.Select(m => new KeyValuePair<string, object>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value);
         }
 
-        private Dictionary<string, object> HandleJSEnum(WasmEnum en)
+        private (string, object) HandleJSEnum(WasmEnum en)
         {
-            Dictionary<string, object> dict = new()
-            {
-                { en.type, HandleWasmValue(en.data) }
-            };
-
-            return dict;
+            return (en.type, HandleWasmValue(en.data));
         }
     }
 }
