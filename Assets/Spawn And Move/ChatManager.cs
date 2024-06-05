@@ -44,7 +44,24 @@ public class ChatManager : MonoBehaviour
         // if we press enter, send message
         if (Input.GetKeyUp(KeyCode.Return))
         {
-            Enum.TryParse(chatInput.text, out Emote emote);
+            Emote emote;
+            switch (chatInput.text.ToLower()) {
+                case "happy":
+                    emote = new Emote.Happy();
+                    break;
+                case "sad":
+                    emote = new Emote.Sad();
+                    break;
+                case "angry":
+                    emote = new Emote.Angry();
+                    break;
+                case "love":
+                    emote = new Emote.Love();
+                    break;
+                default:
+                    emote = new Emote.None();
+                    break;
+            }
 
             SendEmote(emote);
             chatInput.gameObject.SetActive(false);

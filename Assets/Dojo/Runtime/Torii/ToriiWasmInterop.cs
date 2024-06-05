@@ -21,6 +21,13 @@ namespace Dojo.Torii
         public bool key;
     }
 
+    [Serializable]
+    public struct WasmEnum
+    {
+        public string type;
+        public WasmValue data;
+    }
+
     public class ToriiWasmInterop : MonoBehaviour
     {
         // Creates a new client and returns the pointer to it

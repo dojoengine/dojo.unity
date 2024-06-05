@@ -1,16 +1,25 @@
-using System.Numerics;
+using System;
+using System.Linq;
+using System.Reflection;
 using Dojo;
 using Dojo.Starknet;
 using Dojo.Torii;
 
-public enum Direction
-{
-    None,
-    Left,
-    Right,
-    Up,
-    Down,
+// Type definition for `dojo_examples::models::Direction` enum
+public abstract record Direction() {
+    public record None() : Direction;
+    public record Left() : Direction;
+    public record Right() : Direction;
+    public record Up() : Direction;
+    public record Down() : Direction;
 
+    public static readonly Type[] DirectionTypes = typeof(Direction).GetNestedTypes(BindingFlags.Public)
+        .OrderBy(t => t.MetadataToken)
+        .ToArray();
+
+    public static int GetIndex(Direction value) {
+        return Array.IndexOf(DirectionTypes, value.GetType());
+    }
 }
 
 public class Moves : ModelInstance

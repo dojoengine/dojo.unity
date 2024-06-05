@@ -43,6 +43,16 @@ declare namespace wasm_bindgen {
 	*/
 	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
 	/**
+	* @param {string} str
+	* @returns {(string)[]}
+	*/
+	export function byteArraySerialize(str: string): (string)[];
+	/**
+	* @param {(string)[]} felts
+	* @returns {string}
+	*/
+	export function byteArrayDeserialize(felts: (string)[]): string;
+	/**
 	* Create the a client with the given configurations.
 	* @param {KeysClauses} initialModelsToSync
 	* @param {ClientConfig} config
@@ -346,6 +356,8 @@ declare interface InitOutput {
   readonly account_executeRaw: (a: number, b: number) => number;
   readonly account_deployBurner: (a: number, b: number, c: number) => number;
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
+  readonly byteArraySerialize: (a: number, b: number, c: number) => void;
+  readonly byteArrayDeserialize: (a: number, b: number, c: number) => void;
   readonly client_getEntities: (a: number, b: number) => number;
   readonly client_getEventMessages: (a: number, b: number) => number;
   readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;
@@ -382,14 +394,14 @@ declare interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h01267009a58bdbac: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke0_mut__h36992f9972bf8c8d: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h3f76f3e5f93ddbf8: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h33023456e31427ae: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h202721cc6efa1300: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke0_mut__hef135aeadb8d9b2d: (a: number, b: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke1_mut__h80d0ff2204b1ffde: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h54a3cbc5936c0dc6: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__he4a80bd8c9170623: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__hee2649badc712846: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**

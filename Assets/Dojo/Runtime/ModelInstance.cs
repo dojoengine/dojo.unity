@@ -8,6 +8,7 @@ using dojo_bindings;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Numerics;
+using System.Reflection;
 
 namespace Dojo
 {
@@ -50,52 +51,83 @@ namespace Dojo
                 var modelField = (ModelField)attribute[0];
                 var member = model.Members[modelField.Name];
 
-                HandleField(this, field, member);
+                field.SetValue(this, HandleField(field.FieldType, member));
             }
         }
 
         // Handles the initialization of a field
         // of a model instance. Uses reflection to set the field
         // to the value of the model member.
-        private static void HandleField(object instance, System.Reflection.FieldInfo field, object value)
+        private static object HandleField(Type type, object value)
         {
-            // if the field is an enum, we need to convert the value to the enum type
-            if (field.FieldType.IsEnum)
-            {
-                field.SetValue(instance, Enum.ToObject(field.FieldType, value));
-            }
             // if the field is a primitive, we can just set it
             // fieldelement is included as a primitive because its a class
             // but its already instantiated
-            else if (field.FieldType.IsPrimitive || field.FieldType == typeof(FieldElement) || field.FieldType == typeof(BigInteger))
+            if (type.IsPrimitive || type == typeof(FieldElement) || type == typeof(BigInteger) || type == typeof(string))
             {
-                field.SetValue(instance, Convert.ChangeType(value, field.FieldType));
+                return Convert.ChangeType(value, type);
+            }
+            // handle array
+            else if (type.IsArray)
+            {
+                var elementType = type.GetElementType();
+                var array = (IList)value;
+                var instance = Array.CreateInstance(elementType, array.Count);
+                for (var i = 0; i < array.Count; i++)
+                {
+                    instance.SetValue(HandleField(elementType, array[i]), i);
+                }
+                return instance;
+            }
+            // handle tuple (ValueTuple - (T1, T2))
+            else if (type.FullName.StartsWith(typeof(ValueTuple).FullName))
+            {
+                var tupleTypes = type.GetGenericArguments();
+                var instance = Activator.CreateInstance(type);
+                var fields = type.GetFields();
+                for (var i = 0; i < fields.Length; i++)
+                {
+                    fields[i].SetValue(instance, HandleField(tupleTypes[i], ((IList)value)[i]));
+                }
+                return instance;
+            }
+            // handle record (rust-like) enums
+            else if (value is (string, object)) {
+                var (variant, member) = ((string, object))value;
+                
+                var variantType = type.GetNestedType(variant);
+                if (variantType == null)
+                {
+                    throw new Exception($"Could not find variant {variant} in enum {type}");
+                }
+
+                if (type.GenericTypeArguments.Length > 0) {
+                    variantType = variantType.MakeGenericType(type.GenericTypeArguments);
+                }
+
+                List<object> args = new List<object>();
+                if (variantType.GetProperty("value") is PropertyInfo prop) {
+                    args.Add(HandleField(prop.PropertyType, member));
+                }
+
+                return Activator.CreateInstance(variantType, args.ToArray());
+
             }
             // if the field is a struct/class. we check if our member is a dictionary
             // and we go through each of its keys and values and set them to the fields
             // of the instantiated struct/class
-            else
-            {
-                if (!(value is Dictionary<string, object> dict))
+            else if (value is Dictionary<string, object> dict) {
+                var instance = Activator.CreateInstance(type);
+                var fields = type.GetFields();
+
+                foreach (var field in fields)
                 {
-                    throw new Exception($"Expected a dictionary for field {field.Name} but got {value.GetType()}. Cannot cast primitive types to structs/classes.");
+                    field.SetValue(instance, HandleField(field.FieldType, dict[field.Name]));
                 }
 
-                // we create an instance of the type
-                var fieldInstance = Activator.CreateInstance(field.FieldType);
-                // we set our dict values to the instance fields
-                foreach (var kvp in dict)
-                {
-                    var instanceField = field.FieldType.GetField(kvp.Key);
-                    if (instanceField == null)
-                    {
-                        throw new Exception($"Field {kvp.Key} not found in type {field.FieldType}");
-                    }
-                    HandleField(fieldInstance, instanceField, kvp.Value);
-                }
-
-                // we set the instance to the field
-                field.SetValue(instance, fieldInstance);
+                return instance;
+            } else {
+                throw new Exception($"Could not handle field of type {type}");
             }
         }
 

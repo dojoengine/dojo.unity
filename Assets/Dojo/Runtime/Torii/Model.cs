@@ -12,8 +12,8 @@ namespace Dojo.Torii
 {
     // Member metadata doesn't seem to be needed.
     // Seems like the better devX is to just have a
-     // hashmap of the values themselves, without any
-     // wrapper around them.
+    // hashmap of the values themselves, without any
+    // wrapper around them.
 
     // public struct Member
     // {
@@ -58,7 +58,9 @@ namespace Dojo.Torii
             return ty.tag switch
             {
                 dojo.Ty_Tag.Struct_ => HandleCStruct(ty.struct_),
-                dojo.Ty_Tag.Enum_ => ty.enum_.option,
+                dojo.Ty_Tag.Enum_ => HandleCEnum(ty.enum_),
+                dojo.Ty_Tag.Tuple_ => ty.tuple.ToArray().Select(m => HandleCValue(m)).ToArray(),
+                dojo.Ty_Tag.Array_ => ty.array.ToArray().Select(m => HandleCValue(m)).ToArray(),
                 dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
                 {
                     dojo.Primitive_Tag.Bool => Convert.ToBoolean(ty.primitive.bool_.Value),
@@ -75,11 +77,10 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
                     dojo.Primitive_Tag.ContractAddress => new FieldElement(ty.primitive.contract_address),
-                    _ => throw new Exception("Unknown primitive type")
-
+                    _ => throw new Exception("Unknown primitive type: " + ty.primitive.tag)
                 },
-                dojo.Ty_Tag.Tuple_ => throw new Exception("Tuple not supported"),
-                _ => throw new Exception("Unknown type")
+                dojo.Ty_Tag.ByteArray => ty.byte_array,
+                _ => throw new Exception("Unknown type: " + ty.tag)
             };
         }
 
@@ -90,7 +91,11 @@ namespace Dojo.Torii
                 // struct
                 "struct" => HandleJSStruct(value.value.ToObject<Dictionary<string, WasmValue>>()),
                 // enum
-                "enum" => value.value.ToObject<byte>(),
+                "enum" => HandleJSEnum(value.value.ToObject<WasmEnum>()),
+                // tuple
+                "tuple" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(),
+                // array
+                "array" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(),
                 // primitives
                 "bool" => value.value.ToObject<bool>(),
                 "u8" => value.value.ToObject<byte>(),
@@ -113,6 +118,7 @@ namespace Dojo.Torii
                 "felt252" => new FieldElement(value.value.ToObject<string>()),
                 "class_hash" => new FieldElement(value.value.ToObject<string>()),
                 "contract_address" => new FieldElement(value.value.ToObject<string>()),
+                "byte_array" => value.value.ToObject<string>(),
                 _ => throw new Exception("Unknown primitive type")
             };
         }
@@ -132,9 +138,21 @@ namespace Dojo.Torii
             return str.children.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))).ToDictionary(k => k.Key, v => v.Value);
         }
 
+        private (string, object) HandleCEnum(dojo.Enum en)
+        {
+            var option = en.options[en.option];
+
+            return (option.name, HandleCValue(option.ty));
+        }
+
         private Dictionary<string, object> HandleJSStruct(Dictionary<string, WasmValue> str)
         {
             return str.Select(m => new KeyValuePair<string, object>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value);
+        }
+
+        private (string, object) HandleJSEnum(WasmEnum en)
+        {
+            return (en.type, HandleWasmValue(en.data));
         }
     }
 }
