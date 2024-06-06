@@ -51,27 +51,27 @@ namespace Dojo
                 var modelField = (ModelField)attribute[0];
                 var member = model.Members[modelField.Name];
 
-                field.SetValue(this, HandleField(field.FieldType, member.value));
+                field.SetValue(this, HandleField(field.FieldType, member));
             }
         }
 
         // Handles the initialization of a field
         // of a model instance. Uses reflection to set the field
         // to the value of the model member.
-        private static object HandleField(Type type, object value)
+        private static object HandleField(Type type, Model.Ty ty)
         {
             // if the field is a primitive, we can just set it
             // fieldelement is included as a primitive because its a class
             // but its already instantiated
             if (type.IsPrimitive || type == typeof(FieldElement) || type == typeof(BigInteger) || type == typeof(string))
             {
-                return Convert.ChangeType(value, type);
+                return Convert.ChangeType(ty.value, type);
             }
             // handle array
             else if (type.IsArray)
             {
                 var elementType = type.GetElementType();
-                var array = (IList)value;
+                var array = (IList<Model.Ty>)ty.value;
                 var instance = Array.CreateInstance(elementType, array.Count);
                 for (var i = 0; i < array.Count; i++)
                 {
@@ -87,13 +87,13 @@ namespace Dojo
                 var fields = type.GetFields();
                 for (var i = 0; i < fields.Length; i++)
                 {
-                    fields[i].SetValue(instance, HandleField(tupleTypes[i], ((IList)value)[i]));
+                    fields[i].SetValue(instance, HandleField(tupleTypes[i], ((IList<Model.Ty>)ty.value)[i]));
                 }
                 return instance;
             }
             // dynamic types
             // handle record (rust-like) enums
-            else if (value is Model.Enum enumVariant) {
+            else if (ty.value is Model.Enum enumVariant) {
                 var variantType = type.GetNestedType(enumVariant.option);
                 if (variantType == null)
                 {
@@ -115,13 +115,13 @@ namespace Dojo
             // if the field is a struct/class. we check if our member is a dictionary
             // and we go through each of its keys and values and set them to the fields
             // of the instantiated struct/class
-            else if (value is Dictionary<string, Model.Ty> children) {
+            else if (ty.value is Dictionary<string, Model.Ty> children) {
                 var instance = Activator.CreateInstance(type);
                 var fields = type.GetFields();
 
                 foreach (var field in fields)
                 {
-                    field.SetValue(instance, HandleField(field.FieldType, children[field.Name].value));
+                    field.SetValue(instance, HandleField(field.FieldType, children[field.Name]));
                 }
 
                 return instance;
