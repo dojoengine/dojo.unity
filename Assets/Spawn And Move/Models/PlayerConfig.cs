@@ -5,6 +5,9 @@ using System.Linq;
 using System.Reflection;
 using Dojo;
 using Dojo.Starknet;
+using Dojo.Torii;
+using Newtonsoft.Json;
+using UnityEngine;
 
 // Type definition for `dojo_examples::models::PlayerItem` struct
 [Serializable]

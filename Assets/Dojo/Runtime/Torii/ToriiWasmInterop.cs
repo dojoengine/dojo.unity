@@ -24,8 +24,16 @@ namespace Dojo.Torii
     [Serializable]
     public struct WasmEnum
     {
-        public string type;
-        public WasmValue data;
+        public string name;
+        public string option;
+        public WasmValue value;
+    }
+
+    [Serializable]
+    public struct WasmStruct
+    {
+        public string name;
+        public Dictionary<string, WasmValue> children;
     }
 
     public class ToriiWasmInterop : MonoBehaviour

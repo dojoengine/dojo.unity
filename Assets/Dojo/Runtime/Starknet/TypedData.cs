@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using bottlenoselabs.C2CS.Runtime;
+using Codice.CM.SEIDInfo;
 using Dojo.Torii;
 using dojo_bindings;
 using Newtonsoft.Json;
+using PlasticGui;
 
 namespace Dojo.Starknet
 {
@@ -25,12 +28,12 @@ namespace Dojo.Starknet
 
     public class TypedData
     {
-        public Dictionary<string, object[]> types;
+        public Dictionary<string, TypedDataType[]> types;
         public string primaryType;
         public Domain domain;
         public Dictionary<string, object> message;
 
-        public TypedData(Dictionary<string, object[]> types, string primaryType, Domain domain, Dictionary<string, object> message)
+        public TypedData(Dictionary<string, TypedDataType[]> types, string primaryType, Domain domain, Dictionary<string, object> message)
         {
             this.types = types;
             this.primaryType = primaryType;
@@ -38,7 +41,7 @@ namespace Dojo.Starknet
             this.message = message;
         }
 
-        struct TypedDataType
+        public struct TypedDataType
         {
             public string name;
             public string type;
@@ -52,12 +55,12 @@ namespace Dojo.Starknet
 
         public TypedData(Model model)
         {
-            types = new Dictionary<string, object[]>
+            types = new Dictionary<string, TypedDataType[]>
             {
                 // starknet domain type
                 {
                     "StarknetDomain",
-                    new object[] {
+                    new TypedDataType[] {
                         new TypedDataType("name", "shortstring"),
                         new TypedDataType("version", "shortstring"),
                         new TypedDataType("chainId", "shortstring"),
@@ -67,7 +70,7 @@ namespace Dojo.Starknet
                 // primary type
                 {
                     "OffchainMessage",
-                    new object[] {
+                    new TypedDataType[] {
                         // model name
                         new TypedDataType("model", "shortstring"),
                         // model type
@@ -92,51 +95,89 @@ namespace Dojo.Starknet
             var members = new Dictionary<string, object>();
             foreach (var member in model.Members)
             {
-                members.Add(member.Key, member.Value);
+                members.Add(member.Key, mapMember(member.Value));
             }
 
             message.Add(model.Name, members);
         }
 
-        object[] getMembersTypes(ref Dictionary<string, object[]> types, Dictionary<string, object> members)
+        object mapMember(Model.Ty member)
         {
-            var result = new List<object>();
+            return member.value switch
+            {
+                Model.Enum enum_ => new Dictionary<string, object>
+                {
+                    { "option", enum_.option },
+                    { "value", mapMember(enum_.value) }
+                },
+                Dictionary<string, Model.Ty> struct_ => struct_.Select(child => new KeyValuePair<string, object>(child.Key, mapMember(child.Value))).ToDictionary(k => k.Key, v => v.Value),
+                Model.Ty[] tuple => tuple.Select(mapMember).ToArray(),
+                List<Model.Ty> array => array.Select(mapMember).ToList(),
+                _ => member.value
+            };
+        }
+
+        TypedDataType[] getMembersTypes(ref Dictionary<string, TypedDataType[]> types, Dictionary<string, Model.Ty> members)
+        {
+            var result = new List<TypedDataType>();
 
             foreach (var member in members)
             {
-                switch (member.Value)
+                switch (member.Value.value)
                 {
-                    case byte _:
-                        result.Add(new TypedDataType(member.Key, "u8"));
-                        break;
-                    case bool _:
-                        result.Add(new TypedDataType(member.Key, "bool"));
-                        break;
-                    case ushort _:
-                        result.Add(new TypedDataType(member.Key, "u16"));
-                        break;
-                    case uint _:
-                        result.Add(new TypedDataType(member.Key, "u32"));
-                        break;
-                    case ulong _:
-                        result.Add(new TypedDataType(member.Key, "u64"));
-                        break;
-                    case BigInteger _:
-                        result.Add(new TypedDataType(member.Key, "u128"));
+                    case string _:
+                        result.Add(new TypedDataType(member.Key, "string"));
                         break;
                     case FieldElement _:
-                        result.Add(new TypedDataType(member.Key, "felt"));
+                        var type_name = member.Value.name switch
+                        {
+                            "felt252" => "felt",
+                            "contract_address" => "ContractAddress",
+                            "class_hash" => "ClassHash",
+                            _ => member.Value.name
+                        };
+                        result.Add(new TypedDataType(member.Key, type_name));
                         break;
-                    case Enum _:
-                        result.Add(new TypedDataType(member.Key, "u8"));
+                    // Enum
+                    // (variantName, variantValue)
+                    case Model.Enum enum_:
+                        var enumMembers = getMembersTypes(ref types, new Dictionary<string, Model.Ty>
+                        {
+                            // enum option is a bytearray / string
+                            { "option", new Model.Ty(dojo.Ty_Tag.ByteArray, "string", enum_.option, false) },
+                            { "value", enum_.value }
+                        });
+                        types.TryAdd(member.Value.name, enumMembers);
+                        result.Add(new TypedDataType(member.Key, member.Value.name));
                         break;
-                    case Dictionary<string, object> struct_:
+                    case Dictionary<string, Model.Ty> struct_:
                         var structMembers = getMembersTypes(ref types, struct_);
-                        types.Add(member.Key, structMembers);
-                        result.Add(new TypedDataType(member.Key, member.Key));
+                        // add the struct members to the types. it might already be added from 
+                        // other members
+                        types.TryAdd(member.Value.name, structMembers);
+                        result.Add(new TypedDataType(member.Key, member.Value.name));
+                        break;
+                    // tuples are arrays
+                    case Model.Ty[] tuple:
+                        var tupleMembers = tuple.Select((v, i) => new KeyValuePair<string, Model.Ty>(i.ToString(), v)).ToDictionary(k => k.Key, v => v.Value);
+                        var tupleMembersTypes = getMembersTypes(ref types, tupleMembers);
+                        var formattedTupleName = $"({string.Join(",", tupleMembersTypes.Select(t => t.type))})";
+
+                        types.Add(formattedTupleName, tupleMembersTypes);
+                        result.Add(new TypedDataType(member.Key, formattedTupleName));
+                        break;
+                    // should be encoded as TypeObject* for arrays
+                    case List<Model.Ty> array:
+                        var inner = getMembersTypes(ref types, new Dictionary<string, Model.Ty>
+                        {
+                            { "inner", array[0] }
+                        }).First();
+
+                        result.Add(new TypedDataType(member.Key, member.Value.name));
                         break;
                     default:
-                        throw new System.Exception($"Unknown type {member.Value.GetType()}");
+                        result.Add(new TypedDataType(member.Key, member.Value.name));
+                        break;
                 }
 
             }
@@ -161,7 +202,7 @@ namespace Dojo.Starknet
 
         public static TypedData From<T>(T model) where T : ModelInstance
         {
-            return new TypedData(model.ToModel());
-        } 
+            return new TypedData(model.Model);
+        }
     }
 }

@@ -58,20 +58,20 @@ namespace Dojo
         // Handles the initialization of a field
         // of a model instance. Uses reflection to set the field
         // to the value of the model member.
-        private static object HandleField(Type type, object value)
+        private static object HandleField(Type type, Model.Ty ty)
         {
             // if the field is a primitive, we can just set it
             // fieldelement is included as a primitive because its a class
             // but its already instantiated
             if (type.IsPrimitive || type == typeof(FieldElement) || type == typeof(BigInteger) || type == typeof(string))
             {
-                return Convert.ChangeType(value, type);
+                return Convert.ChangeType(ty.value, type);
             }
             // handle array
             else if (type.IsArray)
             {
                 var elementType = type.GetElementType();
-                var array = (IList)value;
+                var array = (IList<Model.Ty>)ty.value;
                 var instance = Array.CreateInstance(elementType, array.Count);
                 for (var i = 0; i < array.Count; i++)
                 {
@@ -87,18 +87,17 @@ namespace Dojo
                 var fields = type.GetFields();
                 for (var i = 0; i < fields.Length; i++)
                 {
-                    fields[i].SetValue(instance, HandleField(tupleTypes[i], ((IList)value)[i]));
+                    fields[i].SetValue(instance, HandleField(tupleTypes[i], ((IList<Model.Ty>)ty.value)[i]));
                 }
                 return instance;
             }
+            // dynamic types
             // handle record (rust-like) enums
-            else if (value is (string, object)) {
-                var (variant, member) = ((string, object))value;
-                
-                var variantType = type.GetNestedType(variant);
+            else if (ty.value is Model.Enum enumVariant) {
+                var variantType = type.GetNestedType(enumVariant.option);
                 if (variantType == null)
                 {
-                    throw new Exception($"Could not find variant {variant} in enum {type}");
+                    throw new Exception($"Could not find variant {enumVariant.option} in enum {type}");
                 }
 
                 if (type.GenericTypeArguments.Length > 0) {
@@ -107,7 +106,7 @@ namespace Dojo
 
                 List<object> args = new List<object>();
                 if (variantType.GetProperty("value") is PropertyInfo prop) {
-                    args.Add(HandleField(prop.PropertyType, member));
+                    args.Add(HandleField(prop.PropertyType, enumVariant.value));
                 }
 
                 return Activator.CreateInstance(variantType, args.ToArray());
@@ -116,13 +115,13 @@ namespace Dojo
             // if the field is a struct/class. we check if our member is a dictionary
             // and we go through each of its keys and values and set them to the fields
             // of the instantiated struct/class
-            else if (value is Dictionary<string, object> dict) {
+            else if (ty.value is Dictionary<string, Model.Ty> children) {
                 var instance = Activator.CreateInstance(type);
                 var fields = type.GetFields();
 
                 foreach (var field in fields)
                 {
-                    field.SetValue(instance, HandleField(field.FieldType, dict[field.Name]));
+                    field.SetValue(instance, HandleField(field.FieldType, children[field.Name]));
                 }
 
                 return instance;
@@ -131,27 +130,9 @@ namespace Dojo
             }
         }
 
-        public static Model ToModel<T>(T model) where T : ModelInstance
+        public TypedData ToTypedData()
         {
-            var members = new Dictionary<string, object>();
-            foreach (var field in model.GetType().GetFields())
-            {
-                var attribute = field.GetCustomAttributes(typeof(ModelField), false);
-                if (attribute.Length == 0)
-                {
-                    continue;
-                }
-
-                var modelField = (ModelField)attribute[0];
-                members.Add(modelField.Name, field.GetValue(model));
-            }
-
-            return new Model(model.GetType().Name, members);
-        }
-
-        public Model ToModel()
-        {
-            return ToModel(this);
+            return new TypedData(Model);
         }
 
         // Called when the model is updated
