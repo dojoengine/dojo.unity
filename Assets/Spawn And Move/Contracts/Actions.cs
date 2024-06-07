@@ -36,7 +36,7 @@ public class Actions : MonoBehaviour {
     public async Task<FieldElement> spawn(Account account) {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         
-
+        
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
                 to = contractAddress,

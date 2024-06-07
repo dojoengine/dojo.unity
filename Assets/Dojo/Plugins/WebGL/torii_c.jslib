@@ -92,16 +92,19 @@ mergeInto(LibraryManager.library, {
     var idsString = UTF8ToString(ids);
     var idsArray = JSON.parse(idsString);
 
-    const subscription = await client.onEventMessageUpdated(idsArray, (entities) => {
-      // stringify the entities
-      var entitiesString = JSON.stringify(entities);
-      // return buffer
-      var bufferSize = lengthBytesUTF8(entitiesString) + 1;
-      var buffer = _malloc(bufferSize);
-      stringToUTF8(entitiesString, buffer, bufferSize);
+    const subscription = await client.onEventMessageUpdated(
+      idsArray,
+      (entities) => {
+        // stringify the entities
+        var entitiesString = JSON.stringify(entities);
+        // return buffer
+        var bufferSize = lengthBytesUTF8(entitiesString) + 1;
+        var buffer = _malloc(bufferSize);
+        stringToUTF8(entitiesString, buffer, bufferSize);
 
-      dynCall_vi(cb, buffer);
-    });
+        dynCall_vi(cb, buffer);
+      }
+    );
     subscription.__destroy_into_raw();
 
     client.__destroy_into_raw();
@@ -163,7 +166,10 @@ mergeInto(LibraryManager.library, {
   // signature: JSON string { r: string, s: string }
   PublishMessage: async function (clientPtr, message, signature, cb) {
     var client = wasm_bindgen.Client.__wrap(clientPtr);
-    const published = await client.publishMessage(UTF8ToString(message), JSON.parse(UTF8ToString(signature)));
+    const published = await client.publishMessage(
+      UTF8ToString(message),
+      JSON.parse(UTF8ToString(signature))
+    );
     const publishedString = JSON.stringify(Array.from(published));
     const bufferSize = lengthBytesUTF8(publishedString) + 1;
     const buffer = _malloc(bufferSize);

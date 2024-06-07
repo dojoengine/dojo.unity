@@ -99,37 +99,41 @@ namespace Dojo.Torii
             return value.type switch
             {
                 // struct
-                "struct" => new Ty(dojo.Ty_Tag.Struct_, value.value.ToObject<WasmStruct>().name, HandleJSStruct(value.value.ToObject<WasmStruct>()), value.key),
+                "struct" => new Ty(dojo.Ty_Tag.Struct_, value.type_name, HandleJSStruct(value.value.ToObject<Dictionary<string, WasmValue>>()), value.key),
                 // enum
-                "enum" => new Ty(dojo.Ty_Tag.Enum_, value.value.ToObject<WasmEnum>().name, HandleJSEnum(value.value.ToObject<WasmEnum>()), value.key),
+                "enum" => new Ty(dojo.Ty_Tag.Enum_, value.type_name, HandleJSEnum(value.value.ToObject<WasmEnum>()), value.key),
                 // tuple
                 "tuple" => new Ty(dojo.Ty_Tag.Tuple_, "tuple", value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(), value.key),
                 // array
                 "array" => new Ty(dojo.Ty_Tag.Array_, "array", value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToList(), value.key),
-                // primitives
-                "bool" => new Ty(dojo.Ty_Tag.Primitive_, "bool", value.value.ToObject<bool>(), value.key),
-                "u8" => new Ty(dojo.Ty_Tag.Primitive_, "u8", value.value.ToObject<byte>(), value.key),
-                "u16" => new Ty(dojo.Ty_Tag.Primitive_, "u16", value.value.ToObject<ushort>(), value.key),
-                "u32" => new Ty(dojo.Ty_Tag.Primitive_, "u32", value.value.ToObject<uint>(), value.key),
-                "u64" => new Ty(dojo.Ty_Tag.Primitive_, "u64", value.value.ToObject<ulong>(), value.key),
-                // NOTE: UNTESTED
-                // NOTE: slow?
-                // use BigInteger parse instead maybe but seems a bit
-                // uninconvenient to use
-                "u128" => new Ty(dojo.Ty_Tag.Primitive_, "u128", new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()), value.key),
-                // convert a 64 character hex string to a BigInteger
-                // IMPLEMNET
-                "u256" => new Ty(dojo.Ty_Tag.Primitive_, "u256", new Dictionary<string, object>(){
+                "bytearray" => new Ty(dojo.Ty_Tag.ByteArray, "bytearray", value.value.ToObject<string>(), value.key),
+                "primitive" => value.type_name switch
+                {
+                    // primitives
+                    "bool" => new Ty(dojo.Ty_Tag.Primitive_, "bool", value.value.ToObject<bool>(), value.key),
+                    "u8" => new Ty(dojo.Ty_Tag.Primitive_, "u8", value.value.ToObject<byte>(), value.key),
+                    "u16" => new Ty(dojo.Ty_Tag.Primitive_, "u16", value.value.ToObject<ushort>(), value.key),
+                    "u32" => new Ty(dojo.Ty_Tag.Primitive_, "u32", value.value.ToObject<uint>(), value.key),
+                    "u64" => new Ty(dojo.Ty_Tag.Primitive_, "u64", value.value.ToObject<ulong>(), value.key),
+                    // NOTE: UNTESTED
+                    // NOTE: slow?
+                    // use BigInteger parse instead maybe but seems a bit
+                    // uninconvenient to use
+                    "u128" => new Ty(dojo.Ty_Tag.Primitive_, "u128", new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()), value.key),
+                    // convert a 64 character hex string to a BigInteger
+                    // IMPLEMNET
+                    "u256" => new Ty(dojo.Ty_Tag.Primitive_, "u256", new Dictionary<string, object>(){
                     {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(0, 32)).Reverse().ToArray())},
                     {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(32, 32)).Reverse().ToArray())}
                 }, value.key),
-                "usize" => new Ty(dojo.Ty_Tag.Primitive_, "usize", value.value.ToObject<uint>(), value.key),
-                // these should be fine
-                "felt252" => new Ty(dojo.Ty_Tag.Primitive_, "felt252", new FieldElement(value.value.ToObject<string>()), value.key),
-                "class_hash" => new Ty(dojo.Ty_Tag.Primitive_, "class_hash", new FieldElement(value.value.ToObject<string>()), value.key),
-                "contract_address" => new Ty(dojo.Ty_Tag.Primitive_, "contract_address", new FieldElement(value.value.ToObject<string>()), value.key),
-                "bytearray" => new Ty(dojo.Ty_Tag.ByteArray, "bytearray", value.value.ToObject<string>(), value.key),
-                _ => throw new Exception("Unknown primitive type")
+                    "usize" => new Ty(dojo.Ty_Tag.Primitive_, "usize", value.value.ToObject<uint>(), value.key),
+                    // these should be fine
+                    "felt252" => new Ty(dojo.Ty_Tag.Primitive_, "felt252", new FieldElement(value.value.ToObject<string>()), value.key),
+                    "class_hash" => new Ty(dojo.Ty_Tag.Primitive_, "class_hash", new FieldElement(value.value.ToObject<string>()), value.key),
+                    "contract_address" => new Ty(dojo.Ty_Tag.Primitive_, "contract_address", new FieldElement(value.value.ToObject<string>()), value.key),
+                    _ => throw new Exception("Unknown primitive type: " + value.type_name)
+                },
+                _ => throw new Exception("Unknown type: " + value.type)
             };
         }
 
@@ -156,9 +160,9 @@ namespace Dojo.Torii
             return new Enum(option.name, HandleCValue(option.ty, false));
         }
 
-        private Dictionary<string, Ty> HandleJSStruct(WasmStruct str)
+        private Dictionary<string, Ty> HandleJSStruct(Dictionary<string, WasmValue> str)
         {
-            return str.children.Select(m => new KeyValuePair<string, Ty>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value);
+            return str.Select(m => new KeyValuePair<string, Ty>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value);
         }
 
         private Enum HandleJSEnum(WasmEnum en)
