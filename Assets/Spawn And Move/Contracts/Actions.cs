@@ -7,7 +7,6 @@ using UnityEngine;
 using dojo_bindings;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 
 // System definitions for `dojo_examples::actions::actions` contract
 public class Actions : MonoBehaviour {
@@ -36,6 +35,7 @@ public class Actions : MonoBehaviour {
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
     public async Task<FieldElement> spawn(Account account) {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
+        
         
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
