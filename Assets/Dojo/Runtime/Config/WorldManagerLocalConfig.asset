@@ -15,6 +15,6 @@ MonoBehaviour:
   toriiUrl: http://localhost:8080
   rpcUrl: http://localhost:5050
   relayUrl: /ip4/127.0.0.1/tcp/9090
-  relayWebrtcUrl: /ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiDMwVv8g645xRcfxVd25Yveps7p3mtnJqlSwQpMLib4RA
+  relayWebrtcUrl: /ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiAS9CpA5yNwO7iidBM5f9FcPl67PwohiK-1J9BhnFMrHg
   limit: 100
   worldAddress: 0x2e31cfde9f9990c7fe44b25043e3c6958a849c0a66ab535686d2b710e97f309

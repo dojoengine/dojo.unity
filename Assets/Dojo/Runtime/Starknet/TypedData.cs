@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using bottlenoselabs.C2CS.Runtime;
-using Codice.CM.SEIDInfo;
 using Dojo.Torii;
 using dojo_bindings;
 using Newtonsoft.Json;
-using PlasticGui;
 
 namespace Dojo.Starknet
 {
