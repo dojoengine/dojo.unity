@@ -54,6 +54,7 @@ public class PlayerConfig : ModelInstance
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log(JsonConvert.SerializeObject(new TypedData(Model)));
     }
 
     // Update is called once per frame

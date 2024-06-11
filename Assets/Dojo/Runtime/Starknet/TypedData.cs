@@ -43,11 +43,14 @@ namespace Dojo.Starknet
         {
             public string name;
             public string type;
+            [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+            public string contains;
 
-            public TypedDataType(string name, string type)
+            public TypedDataType(string name, string type, string contains = null)
             {
                 this.name = name;
                 this.type = type;
+                this.contains = contains;
             }
         }
 
@@ -105,8 +108,7 @@ namespace Dojo.Starknet
             {
                 Model.Enum enum_ => new Dictionary<string, object>
                 {
-                    { "option", enum_.option },
-                    { "value", mapMember(enum_.value) }
+                    { enum_.option, mapMember(enum_.value) }
                 },
                 Dictionary<string, Model.Ty> struct_ => struct_.Select(child => new KeyValuePair<string, object>(child.Key, mapMember(child.Value))).ToDictionary(k => k.Key, v => v.Value),
                 Model.Ty[] tuple => tuple.Select(mapMember).ToArray(),
@@ -141,12 +143,14 @@ namespace Dojo.Starknet
                     case Model.Enum enum_:
                         var enumMembers = getMembersTypes(ref types, new Dictionary<string, Model.Ty>
                         {
-                            // enum option is a bytearray / string
-                            { "option", new Model.Ty(dojo.Ty_Tag.ByteArray, "string", enum_.option, false) },
-                            { "value", enum_.value }
+                            // for now we only include our selected option
+                            // and its value
+                            { enum_.option, enum_.value },
+                            // TOOD: maybe include all other enum options
+                            // and their types?
                         });
                         types.TryAdd(member.Value.name, enumMembers);
-                        result.Add(new TypedDataType(member.Key, member.Value.name));
+                        result.Add(new TypedDataType(member.Key, "enum", member.Value.name));
                         break;
                     case Dictionary<string, Model.Ty> struct_:
                         var structMembers = getMembersTypes(ref types, struct_);
