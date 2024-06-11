@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Dojo;
 using Dojo.Starknet;
 using Dojo.Torii;
@@ -13,6 +14,7 @@ using UnityEngine.UI;
 public class ChatManager : MonoBehaviour
 {
     public bool chatOpen = false;
+    public FieldElement channel = new FieldElement(0);
 
     public GameManager gameManager;
     public WorldManager worldManager;
@@ -44,26 +46,7 @@ public class ChatManager : MonoBehaviour
         // if we press enter, send message
         if (Input.GetKeyUp(KeyCode.Return))
         {
-            Emote emote;
-            switch (chatInput.text.ToLower()) {
-                case "happy":
-                    emote = new Emote.Happy();
-                    break;
-                case "sad":
-                    emote = new Emote.Sad();
-                    break;
-                case "angry":
-                    emote = new Emote.Angry();
-                    break;
-                case "love":
-                    emote = new Emote.Love();
-                    break;
-                default:
-                    emote = new Emote.None();
-                    break;
-            }
-
-            SendEmote(emote);
+            SendMessage(chatInput.text);
             chatInput.gameObject.SetActive(false);
             chatInput.text = "";
             chatOpen = false;
@@ -78,13 +61,18 @@ public class ChatManager : MonoBehaviour
         }
     }
 
-    async void SendEmote(Emote emote)
+    async void SendMessage(string message)
     {
         var account = gameManager.burnerManager.CurrentBurner ?? gameManager.masterAccount;
-
-        var typed_data = TypedData.From(new EmoteMessage {
+        // random salt for the message
+        var salt = new byte[32];
+        RandomNumberGenerator.Fill(salt);
+        
+        var typed_data = TypedData.From(new Message {
             identity = account.Address,
-            emote = emote,
+            message = message,
+            channel = channel,
+            salt = new FieldElement(salt)
         });
 
         FieldElement messageHash = typed_data.encode(account.Address);
