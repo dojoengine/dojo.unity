@@ -65,8 +65,14 @@ public class ChatManager : MonoBehaviour
     {
         var account = gameManager.burnerManager.CurrentBurner ?? gameManager.masterAccount;
         // random salt for the message
+        var randomBytes = new byte[28];
+        RandomNumberGenerator.Fill(randomBytes);
+
+        // copy to a 32 byte array
         var salt = new byte[32];
-        RandomNumberGenerator.Fill(salt);
+        randomBytes.CopyTo(salt, 0);
+
+        salt = salt.Reverse().ToArray();
 
         var typed_data = TypedData.From(new Message
         {
@@ -75,6 +81,8 @@ public class ChatManager : MonoBehaviour
             channel = channel,
             salt = new FieldElement(salt),
         });
+
+        Debug.Log(JsonConvert.SerializeObject(typed_data));
 
         FieldElement messageHash = typed_data.encode(account.Address);
         Signature signature = account.Signer.Sign(messageHash);

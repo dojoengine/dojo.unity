@@ -30,30 +30,13 @@ public class Message : ModelInstance
     // Start is called before the first frame update
     void Start()
     {
-        meshRenderer = GetComponentInChildren<MeshRenderer>();
 
-        shortAddress = identity.Hex().Substring(0, 8);
-
-        // create a new GameObject for the text
-        GameObject textObject = new GameObject("TextTag");
-        textObject.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-        textObject.transform.parent = transform;
-        textObject.transform.localPosition = new Vector3(-1, 2, 0);
-
-
-        // add a Text component to the new GameObject
-        textTag = textObject.AddComponent<TextMesh>();
-
-        // set the properties of the Text component
-        textTag.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        textTag.color = Color.black;
     }
 
     // Update is called once per frame
     void Update()
     {
 
-        textTag.text = $"{shortAddress}\n{message}";
     }
 
     public override void OnUpdate(Model model)
