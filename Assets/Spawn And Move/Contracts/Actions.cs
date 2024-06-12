@@ -7,6 +7,7 @@ using UnityEngine;
 using dojo_bindings;
 using System.Collections.Generic;
 using System.Linq;
+using Enum = Dojo.Starknet.Enum;
 
 // System definitions for `dojo_examples::actions::actions` contract
 public class Actions : MonoBehaviour {
@@ -52,7 +53,7 @@ public class Actions : MonoBehaviour {
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
     public async Task<FieldElement> move(Account account, Direction direction) {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
-        calldata.Add(new FieldElement(Direction.GetIndex(direction)).Inner);
+        calldata.Add(new FieldElement(Enum.GetIndex(direction)).Inner);
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{

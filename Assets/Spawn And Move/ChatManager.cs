@@ -67,12 +67,13 @@ public class ChatManager : MonoBehaviour
         // random salt for the message
         var salt = new byte[32];
         RandomNumberGenerator.Fill(salt);
-        
-        var typed_data = TypedData.From(new Message {
+
+        var typed_data = TypedData.From(new Message
+        {
             identity = account.Address,
             message = message,
             channel = channel,
-            salt = new FieldElement(salt)
+            salt = new FieldElement(salt),
         });
 
         FieldElement messageHash = typed_data.encode(account.Address);
