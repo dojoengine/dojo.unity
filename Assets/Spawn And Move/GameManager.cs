@@ -122,6 +122,9 @@ public class GameManager : MonoBehaviour
 
     private void InitEntity(GameObject entity)
     {
+        // only spawn a capsule if the entity has a position component
+        if (!entity.GetComponent<Position>()) return;
+
         var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         // change color of capsule to a random color
         capsule.GetComponent<Renderer>().material.color = Random.ColorHSV();
