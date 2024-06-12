@@ -15,34 +15,31 @@ namespace Dojo.Torii
     {
         public struct Enum
         {
+            public string name;
             public string option;
-            public Ty value;
+            public object value;
 
-            public Enum(string option, Ty value)
+            public Enum(string name, string option, object value)
             {
+                this.name = name;
                 this.option = option;
                 this.value = value;
             }
         }
 
-        public struct Ty
-        {
-            public dojo.Ty_Tag type;
+        public struct Struct {
             public string name;
-            public object value;
-            public bool key;
+            public Dictionary<string, object> members;
 
-            public Ty(dojo.Ty_Tag type, string name, object value, bool key)
+            public Struct(string name, Dictionary<string, object> members)
             {
-                this.type = type;
                 this.name = name;
-                this.value = value;
-                this.key = key;
+                this.members = members;
             }
         }
 
         public string Name { get; }
-        public Dictionary<string, Ty> Members { get; }
+        public Dictionary<string, object> Members { get; }
 
         public Model(string name, Dictionary<string, WasmValue> members)
         {
@@ -51,7 +48,7 @@ namespace Dojo.Torii
             Members = members.ToDictionary(k => k.Key, v => HandleWasmValue(v.Value));
         }
 
-        public Model(string name, Dictionary<string, Ty> members)
+        public Model(string name, Dictionary<string, object> members)
         {
             Name = name;
             Members = members;
@@ -60,77 +57,77 @@ namespace Dojo.Torii
         public Model(dojo.Model model)
         {
             Name = model.name;
-            Members = new Dictionary<string, Ty>(model.members.ToArray().Select(m => new KeyValuePair<string, Ty>(m.name, HandleCValue(m.ty, false))));
+            Members = new Dictionary<string, object>(model.members.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))));
         }
 
-        private Ty HandleCValue(dojo.Ty ty, bool key)
+        private object HandleCValue(dojo.Ty ty)
         {
             return ty.tag switch
             {
-                dojo.Ty_Tag.Struct_ => new Ty(ty.tag, ty.struct_.name, HandleCStruct(ty.struct_), key),
-                dojo.Ty_Tag.Enum_ => new Ty(ty.tag, ty.enum_.name, HandleCEnum(ty.enum_), key),
-                dojo.Ty_Tag.Tuple_ => new Ty(ty.tag, "tuple", ty.tuple.ToArray().Select(m => HandleCValue(m, key)).ToArray(), key),
-                dojo.Ty_Tag.Array_ => new Ty(ty.tag, "array", ty.array.ToArray().Select(m => HandleCValue(m, key)).ToList(), key),
+                dojo.Ty_Tag.Struct_ => HandleCStruct(ty.struct_),
+                dojo.Ty_Tag.Enum_ => HandleCEnum(ty.enum_),
+                dojo.Ty_Tag.Tuple_ => ty.tuple.ToArray().Select(m => HandleCValue(m)).ToArray(),
+                dojo.Ty_Tag.Array_ => ty.array.ToArray().Select(m => HandleCValue(m)).ToList(),
                 dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
                 {
-                    dojo.Primitive_Tag.Bool => new Ty(ty.tag, "bool", Convert.ToBoolean(ty.primitive.bool_.Value), key),
-                    dojo.Primitive_Tag.U8 => new Ty(ty.tag, "u8", ty.primitive.u8, key),
-                    dojo.Primitive_Tag.U16 => new Ty(ty.tag, "u16", ty.primitive.u16, key),
-                    dojo.Primitive_Tag.U32 => new Ty(ty.tag, "u32", ty.primitive.u32, key),
-                    dojo.Primitive_Tag.U64 => new Ty(ty.tag, "u64", ty.primitive.u64, key),
-                    dojo.Primitive_Tag.U128 => new Ty(ty.tag, "u128", new BigInteger(ty.primitive.u128.ToArray()), key),
-                    dojo.Primitive_Tag.U256 => new Ty(ty.tag, "u256", new Dictionary<string, object>(){
+                    dojo.Primitive_Tag.Bool => Convert.ToBoolean(ty.primitive.bool_.Value),
+                    dojo.Primitive_Tag.U8 => ty.primitive.u8,
+                    dojo.Primitive_Tag.U16 => ty.primitive.u16,
+                    dojo.Primitive_Tag.U32 => ty.primitive.u32,
+                    dojo.Primitive_Tag.U64 => ty.primitive.u64,
+                    dojo.Primitive_Tag.U128 => new BigInteger(ty.primitive.u128.ToArray()),
+                    dojo.Primitive_Tag.U256 => new Dictionary<string, object>(){
                         {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
                         {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
-                    }, key),
-                    dojo.Primitive_Tag.USize => new Ty(ty.tag, "usize", ty.primitive.u_size, key),
-                    dojo.Primitive_Tag.Felt252 => new Ty(ty.tag, "felt252", new FieldElement(ty.primitive.felt252), key),
-                    dojo.Primitive_Tag.ClassHash => new Ty(ty.tag, "class_hash", new FieldElement(ty.primitive.class_hash), key),
-                    dojo.Primitive_Tag.ContractAddress => new Ty(ty.tag, "contract_address", new FieldElement(ty.primitive.contract_address), key),
+                    },
+                    dojo.Primitive_Tag.USize => ty.primitive.u_size,
+                    dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
+                    dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
+                    dojo.Primitive_Tag.ContractAddress => new FieldElement(ty.primitive.contract_address),
                     _ => throw new Exception("Unknown primitive type: " + ty.primitive.tag)
                 },
-                dojo.Ty_Tag.ByteArray => new Ty(ty.tag, "bytearray", ty.byte_array, key),
+                dojo.Ty_Tag.ByteArray => ty.byte_array,
                 _ => throw new Exception("Unknown type: " + ty.tag)
             };
         }
 
-        private Ty HandleWasmValue(WasmValue value)
+        private object HandleWasmValue(WasmValue value)
         {
             return value.type switch
             {
                 // struct
-                "struct" => new Ty(dojo.Ty_Tag.Struct_, value.type_name, HandleJSStruct(value.value.ToObject<Dictionary<string, WasmValue>>()), value.key),
+                "struct" => HandleJSStruct(value.type_name, value.value.ToObject<Dictionary<string, WasmValue>>()),
                 // enum
-                "enum" => new Ty(dojo.Ty_Tag.Enum_, value.type_name, HandleJSEnum(value.value.ToObject<WasmEnum>()), value.key),
+                "enum" => HandleJSEnum(value.type_name, value.value.ToObject<WasmEnum>()),
                 // tuple
-                "tuple" => new Ty(dojo.Ty_Tag.Tuple_, "tuple", value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(), value.key),
+                "tuple" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(),
                 // array
-                "array" => new Ty(dojo.Ty_Tag.Array_, "array", value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToList(), value.key),
-                "bytearray" => new Ty(dojo.Ty_Tag.ByteArray, "bytearray", value.value.ToObject<string>(), value.key),
+                "array" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToList(),
+                "bytearray" => value.value.ToObject<string>(),
                 "primitive" => value.type_name switch
                 {
                     // primitives
-                    "bool" => new Ty(dojo.Ty_Tag.Primitive_, "bool", value.value.ToObject<bool>(), value.key),
-                    "u8" => new Ty(dojo.Ty_Tag.Primitive_, "u8", value.value.ToObject<byte>(), value.key),
-                    "u16" => new Ty(dojo.Ty_Tag.Primitive_, "u16", value.value.ToObject<ushort>(), value.key),
-                    "u32" => new Ty(dojo.Ty_Tag.Primitive_, "u32", value.value.ToObject<uint>(), value.key),
-                    "u64" => new Ty(dojo.Ty_Tag.Primitive_, "u64", value.value.ToObject<ulong>(), value.key),
+                    "bool" => value.value.ToObject<bool>(),
+                    "u8" => value.value.ToObject<byte>(),
+                    "u16" => value.value.ToObject<ushort>(),
+                    "u32" => value.value.ToObject<uint>(),
+                    "u64" => value.value.ToObject<ulong>(),
                     // NOTE: UNTESTED
                     // NOTE: slow?
                     // use BigInteger parse instead maybe but seems a bit
                     // uninconvenient to use
-                    "u128" => new Ty(dojo.Ty_Tag.Primitive_, "u128", new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()), value.key),
+                    "u128" => new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
                     // convert a 64 character hex string to a BigInteger
                     // IMPLEMNET
-                    "u256" => new Ty(dojo.Ty_Tag.Primitive_, "u256", new Dictionary<string, object>(){
+                    "u256" => new Dictionary<string, object>(){
                     {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(0, 32)).Reverse().ToArray())},
                     {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(32, 32)).Reverse().ToArray())}
-                }, value.key),
-                    "usize" => new Ty(dojo.Ty_Tag.Primitive_, "usize", value.value.ToObject<uint>(), value.key),
+                },
+                    "usize" => value.value.ToObject<uint>(),
                     // these should be fine
-                    "felt252" => new Ty(dojo.Ty_Tag.Primitive_, "felt252", new FieldElement(value.value.ToObject<string>()), value.key),
-                    "class_hash" => new Ty(dojo.Ty_Tag.Primitive_, "class_hash", new FieldElement(value.value.ToObject<string>()), value.key),
-                    "contract_address" => new Ty(dojo.Ty_Tag.Primitive_, "contract_address", new FieldElement(value.value.ToObject<string>()), value.key),
+                    "felt252" => new FieldElement(value.value.ToObject<string>()),
+                    "class_hash" => new FieldElement(value.value.ToObject<string>()),
+                    "contract_address" => new FieldElement(value.value.ToObject<string>()),
                     _ => throw new Exception("Unknown primitive type: " + value.type_name)
                 },
                 _ => throw new Exception("Unknown type: " + value.type)
@@ -147,9 +144,9 @@ namespace Dojo.Torii
             return bytes;
         }
 
-        private Dictionary<string, Ty> HandleCStruct(dojo.Struct str)
+        private Struct HandleCStruct(dojo.Struct str)
         {
-            return str.children.ToArray().Select(m => new KeyValuePair<string, Ty>(m.name, HandleCValue(m.ty, m.key))).ToDictionary(k => k.Key, v => v.Value);
+            return new Struct(str.name, str.children.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))).ToDictionary(k => k.Key, v => v.Value));
         }
 
         private Enum HandleCEnum(dojo.Enum en)
@@ -157,17 +154,17 @@ namespace Dojo.Torii
             var option = en.options[en.option];
 
             // maybe we should inherit the key?
-            return new Enum(option.name, HandleCValue(option.ty, false));
+            return new Enum(en.name, option.name, HandleCValue(option.ty));
         }
 
-        private Dictionary<string, Ty> HandleJSStruct(Dictionary<string, WasmValue> str)
+        private Struct HandleJSStruct(string name, Dictionary<string, WasmValue> str)
         {
-            return str.Select(m => new KeyValuePair<string, Ty>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value);
+            return new Struct(name, str.Select(m => new KeyValuePair<string, object>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value));
         }
 
-        private Enum HandleJSEnum(WasmEnum en)
+        private Enum HandleJSEnum(string name, WasmEnum en)
         {
-            return new Enum(en.option, HandleWasmValue(en.value));
+            return new Enum(name, en.option, HandleWasmValue(en.value));
         }
     }
 }
