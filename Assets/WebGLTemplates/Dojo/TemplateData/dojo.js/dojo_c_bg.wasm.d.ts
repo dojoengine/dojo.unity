@@ -23,6 +23,7 @@ export function hashGetContractAddress(a: number, b: number, c: number, d: numbe
 export function byteArraySerialize(a: number, b: number, c: number): void;
 export function byteArrayDeserialize(a: number, b: number, c: number): void;
 export function client_getEntities(a: number, b: number): number;
+export function client_getAllEntities(a: number, b: number, c: number): number;
 export function client_getEventMessages(a: number, b: number): number;
 export function client_getModelValue(a: number, b: number, c: number, d: number, e: number): number;
 export function client_addModelsToSync(a: number, b: number): number;
