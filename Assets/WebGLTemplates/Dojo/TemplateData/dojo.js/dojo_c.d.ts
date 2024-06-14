@@ -161,6 +161,12 @@ declare namespace wasm_bindgen {
 	*/
 	  getEntities(query: Query): Promise<any>;
 	/**
+	* @param {number} limit
+	* @param {number} offset
+	* @returns {Promise<any>}
+	*/
+	  getAllEntities(limit: number, offset: number): Promise<any>;
+	/**
 	* @param {Query} query
 	* @returns {Promise<any>}
 	*/
@@ -359,6 +365,7 @@ declare interface InitOutput {
   readonly byteArraySerialize: (a: number, b: number, c: number) => void;
   readonly byteArrayDeserialize: (a: number, b: number, c: number) => void;
   readonly client_getEntities: (a: number, b: number) => number;
+  readonly client_getAllEntities: (a: number, b: number, c: number) => number;
   readonly client_getEventMessages: (a: number, b: number) => number;
   readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly client_addModelsToSync: (a: number, b: number) => number;
