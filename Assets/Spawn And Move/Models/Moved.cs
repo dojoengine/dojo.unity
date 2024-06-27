@@ -25,4 +25,3 @@ public class Moved : ModelInstance {
         base.OnUpdate(model);
     }
 }
-        
