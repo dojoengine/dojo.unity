@@ -53,6 +53,11 @@ declare namespace wasm_bindgen {
 	*/
 	export function byteArrayDeserialize(felts: (string)[]): string;
 	/**
+	* @param {(string)[]} inputs
+	* @returns {string}
+	*/
+	export function poseidonHash(inputs: (string)[]): string;
+	/**
 	* Create the a client with the given configurations.
 	* @param {KeysClauses} initialModelsToSync
 	* @param {ClientConfig} config
@@ -364,6 +369,7 @@ declare interface InitOutput {
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
   readonly byteArraySerialize: (a: number, b: number, c: number) => void;
   readonly byteArrayDeserialize: (a: number, b: number, c: number) => void;
+  readonly poseidonHash: (a: number, b: number, c: number) => void;
   readonly client_getEntities: (a: number, b: number) => number;
   readonly client_getAllEntities: (a: number, b: number, c: number) => number;
   readonly client_getEventMessages: (a: number, b: number) => number;

@@ -22,6 +22,7 @@ export function account_deployBurner(a: number, b: number, c: number): number;
 export function hashGetContractAddress(a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number): void;
 export function byteArraySerialize(a: number, b: number, c: number): void;
 export function byteArrayDeserialize(a: number, b: number, c: number): void;
+export function poseidonHash(a: number, b: number, c: number): void;
 export function client_getEntities(a: number, b: number): number;
 export function client_getAllEntities(a: number, b: number, c: number): number;
 export function client_getEventMessages(a: number, b: number): number;
