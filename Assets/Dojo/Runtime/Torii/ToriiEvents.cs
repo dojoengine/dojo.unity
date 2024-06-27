@@ -32,13 +32,11 @@ namespace Dojo.Torii
 
         public void EventMessageUpdated(FieldElement key, Model[] models)
         {
-            Debug.Log("EventMessageUpdated");
             OnEventMessageUpdated?.Invoke(key, models);
         }
 
         public void EntityUpdated(FieldElement key, Model[] models)
         {
-            Debug.Log("EntityUpdated");
             OnEntityUpdated?.Invoke(key, models);
         }
 
