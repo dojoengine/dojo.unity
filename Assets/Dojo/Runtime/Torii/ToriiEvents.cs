@@ -38,6 +38,7 @@ namespace Dojo.Torii
 
         public void EntityUpdated(FieldElement key, Model[] models)
         {
+            Debug.Log("EntityUpdated");
             OnEntityUpdated?.Invoke(key, models);
         }
 

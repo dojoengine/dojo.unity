@@ -15,6 +15,7 @@ namespace Dojo.Torii
         private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate onEventMessagesUpdate;
         private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
         private dojo.ToriiClient* client;
+        private List<IntPtr> subscriptions = new List<IntPtr>();
 
         public ToriiClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement worldAddress, bool dispatchEventsToMainThread = true)
         {
@@ -38,6 +39,11 @@ namespace Dojo.Torii
         // So we can free the underlying c client when the managed client is garbage collected.
         ~ToriiClient()
         {
+            for (var i = 0; i < subscriptions.Count; i++)
+            {
+                dojo.subscription_cancel((dojo.Subscription*)subscriptions[i]);
+            }
+
             dojo.client_free(client);
         }
 
@@ -174,6 +180,8 @@ namespace Dojo.Torii
             {
                 throw new Exception(res.err.message);
             }
+
+            subscriptions.Add((IntPtr)res._ok);
         }
 
         private void RegisterEntityStateUpdateEvent(dojo.EntityKeysClause? clause = null, bool dispatchToMainThread = true)
@@ -211,6 +219,8 @@ namespace Dojo.Torii
             {
                 throw new Exception(res.err.message);
             }
+
+            subscriptions.Add((IntPtr)res._ok);
         }
 
         private void RegisterEventMessageUpdateEvent(dojo.EntityKeysClause? clause = null, bool dispatchToMainThread = true)
@@ -243,11 +253,13 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, (dojo.EntityKeysClause*) &clause, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clause != null ? (dojo.EntityKeysClause*)&clause : (dojo.EntityKeysClause*)0, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }
+
+            subscriptions.Add((IntPtr)res._ok);
         }
 
         public Span<byte> PublishMessage(TypedData typedData, Signature signature)
