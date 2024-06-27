@@ -78,7 +78,7 @@ namespace Dojo
                 var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                 if (model == null)
                 {
-                    Debug.LogError($"Model {entityModel.Name} not found");
+                    Debug.LogWarning($"Model {entityModel.Name} not found");
                     continue;
                 }
 
@@ -112,7 +112,7 @@ namespace Dojo
                     var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                     if (model == null)
                     {
-                        Debug.LogError($"Model {entityModel.Name} not found");
+                        Debug.LogWarning($"Model {entityModel.Name} not found");
                         continue;
                     }
 
@@ -133,7 +133,7 @@ namespace Dojo
                 var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
                 if (model == null)
                 {
-                    Debug.LogError($"Model {entityModel.Name} not found");
+                    Debug.LogWarning($"Model {entityModel.Name} not found");
                     continue;
                 }
 
