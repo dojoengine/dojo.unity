@@ -6,6 +6,7 @@ using dojo_bindings;
 using Dojo.Starknet;
 using Newtonsoft.Json;
 using System.Linq;
+using PlasticPipe.PlasticProtocol.Messages;
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
@@ -15,14 +16,13 @@ namespace Dojo.Torii
         private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
         private dojo.ToriiClient* client;
 
-        public ToriiClient(string toriiUrl, string rpcUrl, string relayUrl, string world)
+        public ToriiClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement worldAddress, bool dispatchEventsToMainThread = true)
         {
             CString ctoriiUrl = CString.FromString(toriiUrl);
             CString crpcUrl = CString.FromString(rpcUrl);
             CString crelayUrl = CString.FromString(relayUrl);
-            CString cworld = CString.FromString(world);
 
-            var result = dojo.client_new(ctoriiUrl, crpcUrl, crelayUrl, cworld, (dojo.KeysClause*)0, (UIntPtr)0);
+            var result = dojo.client_new(ctoriiUrl, crpcUrl, crelayUrl, worldAddress.Inner);
             if (result.tag == dojo.ResultToriiClient_Tag.ErrToriiClient)
             {
                 throw new Exception(result.err.message);
@@ -30,8 +30,8 @@ namespace Dojo.Torii
 
             client = result._ok;
 
-            RegisterEntityStateUpdateEvent(new dojo.FieldElement[] { });
-            RegisterEventMessageUpdateEvent(new dojo.FieldElement[] { });
+            RegisterEntityStateUpdateEvent(null, dispatchEventsToMainThread);
+            RegisterEventMessageUpdateEvent(null, dispatchEventsToMainThread);
         }
 
         // We assume the torii client won't be copied around.
@@ -106,9 +106,9 @@ namespace Dojo.Torii
             return entities;
         }
 
-        public ReadOnlySpan<dojo.KeysClause> SubscribedModels()
+        public ReadOnlySpan<dojo.ModelKeysClause> SubscribedModels()
         {
-            dojo.CArrayKeysClause models = dojo.client_subscribed_models(client);
+            dojo.CArrayModelKeysClause models = dojo.client_subscribed_models(client);
             // NOTE: we could copy the data into a managed array
             // and free the c array from rust.
             // however, it is slower
@@ -118,16 +118,16 @@ namespace Dojo.Torii
             // this just returns a span of the carray data
             // freeing the c array is up to the caller
             // dojo.carray_free(entities);
-            var arr = new Span<dojo.KeysClause>(models.data, (int)models.data_len).ToArray();
+            var arr = new Span<dojo.ModelKeysClause>(models.data, (int)models.data_len).ToArray();
             dojo.carray_free(models.data, models.data_len);
             return arr;
         }
 
-        public void AddModelsToSync(dojo.KeysClause[] models)
+        public void AddModelsToSync(dojo.ModelKeysClause[] models)
         {
-            dojo.KeysClause* modelsPtr;
+            dojo.ModelKeysClause* modelsPtr;
 
-            fixed (dojo.KeysClause* ptr = &models[0])
+            fixed (dojo.ModelKeysClause* ptr = &models[0])
             {
                 modelsPtr = ptr;
             }
@@ -139,11 +139,11 @@ namespace Dojo.Torii
             }
         }
 
-        public void RemoveModelsToSync(dojo.KeysClause[] models)
+        public void RemoveModelsToSync(dojo.ModelKeysClause[] models)
         {
-            dojo.KeysClause* modelsPtr;
+            dojo.ModelKeysClause* modelsPtr;
 
-            fixed (dojo.KeysClause* ptr = &models[0])
+            fixed (dojo.ModelKeysClause* ptr = &models[0])
             {
                 modelsPtr = ptr;
             }
@@ -155,7 +155,7 @@ namespace Dojo.Torii
             }
         }
 
-        public void RegisterSyncModelUpdateEvent(dojo.KeysClause model, bool dispatchToMainThread = true)
+        public void RegisterSyncModelUpdateEvent(dojo.ModelKeysClause model, bool dispatchToMainThread = true)
         {
             onSyncModelUpdate = () =>
             {
@@ -176,15 +176,8 @@ namespace Dojo.Torii
             }
         }
 
-        private void RegisterEntityStateUpdateEvent(dojo.FieldElement[] entities, bool dispatchToMainThread = true)
+        private void RegisterEntityStateUpdateEvent(dojo.EntityKeysClause? clause = null, bool dispatchToMainThread = true)
         {
-            dojo.FieldElement* entitiesPtr;
-
-            fixed (dojo.FieldElement* ptr = entities)
-            {
-                entitiesPtr = ptr;
-            }
-
             onEntityStateUpdate = (key, models) =>
             {
                 var mappedModels = new Model[(int)models.data_len];
@@ -213,22 +206,15 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clause != null ? (dojo.EntityKeysClause*)&clause : (dojo.EntityKeysClause*)0, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }
         }
 
-        private void RegisterEventMessageUpdateEvent(dojo.FieldElement[] entities, bool dispatchToMainThread = true)
+        private void RegisterEventMessageUpdateEvent(dojo.EntityKeysClause? clause = null, bool dispatchToMainThread = true)
         {
-            dojo.FieldElement* entitiesPtr;
-
-            fixed (dojo.FieldElement* ptr = entities)
-            {
-                entitiesPtr = ptr;
-            }
-
             onEventMessagesUpdate = (key, models) =>
             {
                 var mappedModels = new Model[(int)models.data_len];
@@ -257,13 +243,13 @@ namespace Dojo.Torii
 
 
             // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, entitiesPtr, (nuint)entities.Length, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, (dojo.EntityKeysClause*) &clause, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }
         }
-        
+
         public Span<byte> PublishMessage(TypedData typedData, Signature signature)
         {
             var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signature.Inner);

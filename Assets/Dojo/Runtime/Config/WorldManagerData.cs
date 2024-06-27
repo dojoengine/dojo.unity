@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Dojo.Starknet;
 using UnityEngine;
 
 namespace Dojo
@@ -14,6 +15,6 @@ namespace Dojo
         public string relayWebrtcUrl;
         public uint limit = 100;
         [Header("World")]
-        public string worldAddress;
+        public FieldElement worldAddress;
     }
 }

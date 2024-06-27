@@ -9,16 +9,17 @@ using UnityEditor.VersionControl;
 using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using UnityEngine.SceneManagement;
 
 public class Tests
 {
     private readonly string toriiUrl = "http://0.0.0.0:8080";
     private readonly string rpcUrl = "http://0.0.0.0:5050";
-    private readonly string relayUrl = "ip4/127.0.0.1/tcp/9090";
+    private readonly string relayUrl = "/ip4/127.0.0.1/tcp/9090";
     // private readonly string playerKey = "0x028cd7ee02d7f6ec9810e75b930e8e607793b302445abbdee0ac88143f18da20";
-    private readonly string playerAddress = "0x0517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973";
-    private readonly string worldAddress = "0x028f5999ae62fec17c09c52a800e244961dba05251f5aaf923afabd9c9804d1a";
-    private readonly string actionsAddress = "0x0152dcff993befafe5001975149d2c50bd9621da7cbaed74f68e7d5e54e65abc";
+    private readonly FieldElement playerAddress = new FieldElement("0x6162896d1d7ab204c7ccac6dd5f8e9e7c25ecd5ae4fcb4ad32e57786bb46e03");
+    private readonly FieldElement worldAddress = new FieldElement("0x07efebb0c2d4cc285d48a97a7174def3be7fdd6b7bd29cca758fa2e17e03ef30");
+    private readonly FieldElement actionsAddress = new FieldElement("0x5c70a663d6b48d8e4c6aaa9572e3735a732ac3765700d470463e670587852af");
 
     private ToriiClient client;
     private JsonRpcClient provider;
@@ -29,11 +30,12 @@ public class Tests
     // when our account spawns
     private bool modelEntityUpdated = false;
     private bool entityUpdated = false;
+    private bool eventMessageUpdated = false;
 
     [SetUp]
     public void SetupTorii()
     {
-        client = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress);
+        client = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress, false);
 
         if (client == null) throw new Exception("client is null");
     }
@@ -45,7 +47,7 @@ public class Tests
 
         var signer = new SigningKey("0x1800000000300000180000000000030000000000003006001800006600");
 
-        account = new Account(provider, signer, new FieldElement(playerAddress));
+        account = new Account(provider, signer, playerAddress);
     }
 
     [Test]
@@ -53,7 +55,7 @@ public class Tests
     {
         var address = account.Address;
 
-        Assert.That(address.Hex(), Is.EqualTo(playerAddress));
+        Assert.That(address, Is.EqualTo(playerAddress));
     }
 
     // [Test]
@@ -81,7 +83,7 @@ public class Tests
     {
         dojo.Call call = new dojo.Call()
         {
-            to = actionsAddress,
+            to = actionsAddress.Inner,
             selector = "spawn"
         };
 
@@ -99,20 +101,37 @@ public class Tests
         
         if (entityUpdated != modelEntityUpdated) {
             Debug.LogWarning("Entity update status mismatch. One of the callbacks was not called.");
-            Debug.LogWarning("entityUpdated != modelEntityUpdated");
+            Debug.LogWarning($"entityUpdated ({entityUpdated}) != modelEntityUpdated ({modelEntityUpdated})");
         }
         Assert.That(entityUpdated || modelEntityUpdated, Is.True);
+
+        // Move to check for event message update
+        call = new dojo.Call()
+        {
+            to = actionsAddress.Inner,
+            selector = "move",
+            calldata = new dojo.FieldElement[] { new FieldElement(0).Inner }
+        };
+
+        txnHash = await account.ExecuteRaw(new[] { call });
+
+        await provider.WaitForTransaction(txnHash);
+
+        // We wait until our callback is called to mark our
+        // entity as updated. We timeout after 5 seconds.
+        start = DateTime.Now;
+        // entity as updated. We timeout after 5 seconds.
+        while (!eventMessageUpdated && DateTime.Now - start < TimeSpan.FromSeconds(5))
+        {
+        }
+
+        Assert.That(eventMessageUpdated, Is.True);
     }
 
     [Test]
     public void TestWorldMetadata()
     {
         var worldMetadata = client.WorldMetadata();
-
-        var worldAddressBytes = Enumerable.Range(2, worldAddress.Length - 2)
-            .Where(x => x % 2 == 0)
-            .Select(x => Convert.ToByte(worldAddress.Substring(x, 2), 16))
-            .ToArray();
 
         // models should correspond to Moves and Position
         var movesExists = false;
@@ -148,7 +167,7 @@ public class Tests
             }
         }
 
-        Assert.That(worldMetadata.world_address.data.ToArray(), Is.EqualTo(worldAddressBytes));
+        Assert.That(worldMetadata.world_address, Is.EqualTo(worldAddress.Inner));
         Assert.That(movesExists, Is.True);
         Assert.That(positionExists, Is.True);
     }
@@ -187,8 +206,8 @@ public class Tests
     [Test, Order(1)]
     public void TestAddModelsToSync()
     {
-        var models = new dojo.KeysClause[]
-            { new() { model_ = CString.FromString("Moves"), keys = new[] { playerAddress } } };
+        var models = new dojo.ModelKeysClause[]
+            { new() { model = "Moves", keys = new dojo.FieldElement[] { } } };
         client.AddModelsToSync(models);
 
         var subscribedModels = client.SubscribedModels();
@@ -203,7 +222,7 @@ public class Tests
     [Test, Order(4)]
     public void TestRemoveModelsToSync()
     {
-        var models = new dojo.KeysClause[] { new() { model = "Moves", keys = new[] { playerAddress } } };
+        var models = new dojo.ModelKeysClause[] { new() { model = "Moves", keys = new[] { playerAddress.Inner } } };
         client.RemoveModelsToSync(models);
 
         var subscribedmodels = client.SubscribedModels();
@@ -215,9 +234,21 @@ public class Tests
     {
         ToriiEvents.OnEntityStateUpdateDelegate callback = (key, models) =>
         {
-            entityUpdated = true;
+            if (models.Length == 0) return;
+            entityUpdated = models[0].Members["player"] == playerAddress;
         }; 
         ToriiEvents.Instance.OnEntityUpdated += callback;
+    }
+
+    [Test, Order(2)]
+    public void TestOnEventMessageUpdate()
+    {
+        ToriiEvents.OnEventMessageUpdateDelegate callback = (key, models) =>
+        {
+            if (models.Length == 0) return;
+            eventMessageUpdated = models[0].Members["player"] == playerAddress;
+        }; 
+        ToriiEvents.Instance.OnEventMessageUpdated += callback;
     }
 
     [Test, Order(2)]
@@ -227,7 +258,7 @@ public class Tests
         {
             modelEntityUpdated = true;
         };
-        client.RegisterSyncModelUpdateEvent(new dojo.KeysClause { model = "Moves", keys = new[] { playerAddress } }, false);
+        client.RegisterSyncModelUpdateEvent(new dojo.ModelKeysClause { model = "Moves", keys = new[] { playerAddress.Inner } }, false);
         ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }
