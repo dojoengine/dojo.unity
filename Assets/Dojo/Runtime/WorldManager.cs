@@ -13,7 +13,7 @@ namespace Dojo
         public SynchronizationMaster synchronizationMaster;
         public ToriiClient toriiClient;
         public ToriiWasmClient wasmClient;
-        [SerializeField] WorldManagerData dojoConfig;
+        [SerializeField] public WorldManagerData dojoConfig;
 
         async void Awake()
         {

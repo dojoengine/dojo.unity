@@ -3,11 +3,12 @@ using System.Linq;
 using Dojo.Starknet;
 using dojo_bindings;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using UnityEngine;
 
 namespace Dojo.Torii
 {
-    #nullable enable
+#nullable enable
 
     [Serializable]
     public class Query
@@ -147,6 +148,7 @@ namespace Dojo.Torii
     public struct KeysClause
     {
         public FieldElement[] keys;
+        [JsonConverter(typeof(StringEnumConverter))]
         public dojo.PatternMatching pattern_matching;
         public string[] models;
 
@@ -173,6 +175,7 @@ namespace Dojo.Torii
     {
         public string model;
         public string member;
+        [JsonConverter(typeof(StringEnumConverter))]
         public dojo.ComparisonOperator @operator;
         public Value value;
 
@@ -200,6 +203,7 @@ namespace Dojo.Torii
     public struct CompositeClause
     {
         public string model;
+        [JsonConverter(typeof(StringEnumConverter))]
         public dojo.LogicalOperator @operator;
         public Clause[] clauses;
 
