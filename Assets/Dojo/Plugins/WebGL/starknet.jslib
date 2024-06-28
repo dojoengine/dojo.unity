@@ -41,15 +41,49 @@ mergeInto(LibraryManager.library, {
     account.setBlockId(UTF8ToString(blockId));
   },
   AccountExecuteRaw: async function (accountPtr, callsStr, cb) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
-    const calls = JSON.parse(UTF8ToString(callsStr));
-    const txHash = await account.executeRaw(calls);
-    const bufferSize = lengthBytesUTF8(txHash) + 1;
-    const buffer = _malloc(bufferSize);
-    stringToUTF8(txHash, buffer, bufferSize);
-
-    account.__destroy_into_raw();
-    dynCall_vi(cb, buffer);
+    let account;
+    let buffer;
+    
+    try {
+        account = wasm_bindgen.Account.__wrap(accountPtr);
+        const calls = JSON.parse(UTF8ToString(callsStr));
+        
+        // Execute the raw calls and get the transaction hash
+        const txHash = await account.executeRaw(calls);
+        
+        // Create a success message
+        const message = JSON.stringify({ success: true, result: txHash });
+        
+        // Allocate buffer for the message
+        const bufferSize = lengthBytesUTF8(message) + 1;
+        buffer = _malloc(bufferSize);
+        stringToUTF8(message, buffer, bufferSize);
+        
+        // Call the callback function with the success message
+        dynCall_vi(cb, buffer);
+    } catch (error) {
+        // Log the error
+        console.error('Starknet call error:', error);
+        
+        // Create an error message
+        const message = JSON.stringify({ success: false, error: error.toString() });
+        
+        // Allocate buffer for the error message
+        const bufferSize = lengthBytesUTF8(message) + 1;
+        buffer = _malloc(bufferSize);
+        stringToUTF8(message, buffer, bufferSize);
+        
+        // Call the callback function with the error message
+        dynCall_vi(cb, buffer);
+    } finally {
+        // Clean up the account object
+        if (account) {
+            account.__destroy_into_raw();
+        }
+        if (buffer) {
+            _free(buffer);
+        }
+    }
   },
   AccountDeployBurner: async function (accountPtr, privateKey, cb) {
     const account = wasm_bindgen.Account.__wrap(accountPtr);
