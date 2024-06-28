@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Dojo.Starknet;
+using Dojo.Torii;
 using UnityEngine;
 
 namespace Dojo
@@ -13,8 +14,8 @@ namespace Dojo
         public string rpcUrl = "http://localhost:5050";
         public string relayUrl = "/ip4/127.0.0.1/tcp/9090";
         public string relayWebrtcUrl;
-        public uint limit = 100;
         [Header("World")]
         public FieldElement worldAddress;
+        public Query query = new Query(100, 0);
     }
 }

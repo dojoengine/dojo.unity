@@ -6,7 +6,6 @@ using dojo_bindings;
 using Dojo.Starknet;
 using Newtonsoft.Json;
 using System.Linq;
-using PlasticPipe.PlasticProtocol.Messages;
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
@@ -76,9 +75,11 @@ namespace Dojo.Torii
         //     return new Ty(result.ok._some.);
         // }
 
-        public List<Entity> Entities(dojo.Query query)
+        public List<Entity> Entities(Query query)
         {
-            dojo.ResultCArrayEntity result = dojo.client_entities(client, &query);
+            var nativeQuery = query.ToNative();
+
+            dojo.ResultCArrayEntity result = dojo.client_entities(client, &nativeQuery);
             if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
             {
                 throw new Exception(result.err.message);
@@ -94,9 +95,11 @@ namespace Dojo.Torii
             return entities;
         }
 
-        public List<Entity> EventMessages(dojo.Query query)
+        public List<Entity> EventMessages(Query query)
         {
-            dojo.ResultCArrayEntity result = dojo.client_event_messages(client, &query);
+            var nativeQuery = query.ToNative();
+
+            dojo.ResultCArrayEntity result = dojo.client_event_messages(client, &nativeQuery);
             if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
             {
                 throw new Exception(result.err.message);
@@ -129,11 +132,12 @@ namespace Dojo.Torii
             return arr;
         }
 
-        public void AddModelsToSync(dojo.ModelKeysClause[] models)
+        public void AddModelsToSync(ModelKeysClause[] models)
         {
-            dojo.ModelKeysClause* modelsPtr;
+            var mappedModels = models.ToArray().Select(m => m.ToNative()).ToArray();
 
-            fixed (dojo.ModelKeysClause* ptr = &models[0])
+            dojo.ModelKeysClause* modelsPtr;
+            fixed (dojo.ModelKeysClause* ptr = &mappedModels[0])
             {
                 modelsPtr = ptr;
             }
@@ -145,11 +149,12 @@ namespace Dojo.Torii
             }
         }
 
-        public void RemoveModelsToSync(dojo.ModelKeysClause[] models)
+        public void RemoveModelsToSync(ModelKeysClause[] models)
         {
-            dojo.ModelKeysClause* modelsPtr;
+            var mappedModels = models.ToArray().Select(m => m.ToNative()).ToArray();
 
-            fixed (dojo.ModelKeysClause* ptr = &models[0])
+            dojo.ModelKeysClause* modelsPtr;
+            fixed (dojo.ModelKeysClause* ptr = &mappedModels[0])
             {
                 modelsPtr = ptr;
             }
@@ -161,7 +166,7 @@ namespace Dojo.Torii
             }
         }
 
-        public void RegisterSyncModelUpdateEvent(dojo.ModelKeysClause model, bool dispatchToMainThread = true)
+        public void RegisterSyncModelUpdateEvent(ModelKeysClause model, bool dispatchToMainThread = true)
         {
             onSyncModelUpdate = () =>
             {
@@ -175,7 +180,7 @@ namespace Dojo.Torii
                 }
             };
 
-            dojo.ResultSubscription res = dojo.client_on_sync_model_update(client, model, new dojo.FnPtr_Void(onSyncModelUpdate));
+            dojo.ResultSubscription res = dojo.client_on_sync_model_update(client, model.ToNative(), new dojo.FnPtr_Void(onSyncModelUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -184,7 +189,7 @@ namespace Dojo.Torii
             subscriptions.Add((IntPtr)res._ok);
         }
 
-        private void RegisterEntityStateUpdateEvent(dojo.EntityKeysClause? clause = null, bool dispatchToMainThread = true)
+        private void RegisterEntityStateUpdateEvent(EntityKeysClause? clause = null, bool dispatchToMainThread = true)
         {
             onEntityStateUpdate = (key, models) =>
             {
@@ -213,8 +218,13 @@ namespace Dojo.Torii
             };
 
 
-            // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clause != null ? (dojo.EntityKeysClause*)&clause : (dojo.EntityKeysClause*)0, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
+            dojo.EntityKeysClause* ptr = (dojo.EntityKeysClause*)0;
+            if (clause.HasValue)
+            {
+                var c = clause.Value.ToNative();
+                ptr = &c;
+            }
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -223,7 +233,7 @@ namespace Dojo.Torii
             subscriptions.Add((IntPtr)res._ok);
         }
 
-        private void RegisterEventMessageUpdateEvent(dojo.EntityKeysClause? clause = null, bool dispatchToMainThread = true)
+        private void RegisterEventMessageUpdateEvent(EntityKeysClause? clause = null, bool dispatchToMainThread = true)
         {
             onEventMessagesUpdate = (key, models) =>
             {
@@ -252,8 +262,13 @@ namespace Dojo.Torii
             };
 
 
-            // dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate callbackHandler = HandleEntityStateUpdate;
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clause != null ? (dojo.EntityKeysClause*)&clause : (dojo.EntityKeysClause*)0, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
+            dojo.EntityKeysClause* ptr = (dojo.EntityKeysClause*)0;
+            if (clause.HasValue)
+            {
+                var c = clause.Value.ToNative();
+                ptr = &c;
+            }
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);

@@ -70,7 +70,7 @@ mergeInto(LibraryManager.library, {
   },
   OnEntityUpdated: async function (clientPtr, clauseStr, cb) {
     let client = wasm_bindgen.Client.__wrap(clientPtr);
-    let clause = JSON.parse(UTF8ToString(clauseStr));
+    let clause = clauseStr ? JSON.parse(UTF8ToString(clauseStr)) : undefined;
 
     const subscription = await client.onEntityUpdated(clause, (entities) => {
       // stringify the entities
@@ -86,9 +86,9 @@ mergeInto(LibraryManager.library, {
 
     client.__destroy_into_raw();
   },
-  OnEventMessageUpdated: async function (clientPtr, clauseStrs, cb) {
+  OnEventMessageUpdated: async function (clientPtr, clauseStr, cb) {
     let client = wasm_bindgen.Client.__wrap(clientPtr);
-    let clause = JSON.parse(UTF8ToString(clauseStrs));
+    let clause = clauseStr ? JSON.parse(UTF8ToString(clauseStr)) : undefined;
 
     const subscription = await client.onEventMessageUpdated(
       clause,

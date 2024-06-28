@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
+
 namespace Dojo.Torii
 {
     [Serializable]
@@ -142,7 +143,7 @@ namespace Dojo.Torii
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
-        private static extern void OnEntityUpdated(IntPtr clientPtr, IntPtr ids, Action<string> cb);
+        private static extern void OnEntityUpdated(IntPtr clientPtr, IntPtr clause, Action<string> cb);
 
         private static class OnEntityUpdatedHelper
         {
@@ -165,14 +166,14 @@ namespace Dojo.Torii
             }
         }
 
-        public static void OnEntityUpdated(IntPtr clientPtr, FieldElement[] ids)
+        public static void OnEntityUpdated(IntPtr clientPtr, KeysClause? clause = null)
         {
-            OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(ids)), OnEntityUpdatedHelper.Callback);
+            OnEntityUpdated(clientPtr, clause.HasValue ? new CString(JsonConvert.SerializeObject(clause)) : (IntPtr)0, OnEntityUpdatedHelper.Callback);
         }
-        
+
         // Calls the callback at [callbackObjectName].[callbackMethodName] on event mnessage updated
         [DllImport("__Internal")]
-        private static extern void OnEventMessageUpdated(IntPtr clientPtr, IntPtr ids, Action<string> cb);
+        private static extern void OnEventMessageUpdated(IntPtr clientPtr, IntPtr clause, Action<string> cb);
 
         private static class OnEventMessageUpdatedHelper
         {
@@ -195,9 +196,9 @@ namespace Dojo.Torii
             }
         }
 
-        public static void OnEventMessageUpdated(IntPtr clientPtr, FieldElement[] ids)
+        public static void OnEventMessageUpdated(IntPtr clientPtr, KeysClause? clause = null)
         {
-            OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(ids)), OnEventMessageUpdatedHelper.Callback);
+            OnEventMessageUpdated(clientPtr, clause.HasValue ? new CString(JsonConvert.SerializeObject(clause)) : (IntPtr)0, OnEventMessageUpdatedHelper.Callback);
         }
 
         // Add models to sync

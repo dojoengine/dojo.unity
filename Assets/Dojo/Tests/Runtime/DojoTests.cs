@@ -10,6 +10,7 @@ using System.Diagnostics;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class Tests
 {
@@ -88,7 +89,7 @@ public class Tests
         };
 
         var txnHash = await account.ExecuteRaw(new[] { call });
-        
+
         await provider.WaitForTransaction(txnHash);
 
         // We wait until our callback is called to mark our 
@@ -98,8 +99,9 @@ public class Tests
         {
         }
 
-        
-        if (entityUpdated != modelEntityUpdated) {
+
+        if (entityUpdated != modelEntityUpdated)
+        {
             Debug.LogWarning("Entity update status mismatch. One of the callbacks was not called.");
             Debug.LogWarning($"entityUpdated ({entityUpdated}) != modelEntityUpdated ({modelEntityUpdated})");
         }
@@ -175,13 +177,7 @@ public class Tests
     [Test, Order(1)]
     public void TestEntities()
     {
-        var query = new dojo.Query
-        {
-            limit = 5,
-            clause = new dojo.COptionClause{
-                tag = dojo.COptionClause_Tag.NoneClause,
-            }
-        };
+        var query = new Query(5, 0);
 
         var entities = client.Entities(query);
         Assert.That(entities.Count, Is.GreaterThanOrEqualTo(1));
@@ -206,8 +202,8 @@ public class Tests
     [Test, Order(1)]
     public void TestAddModelsToSync()
     {
-        var models = new dojo.ModelKeysClause[]
-            { new() { model = "Moves", keys = new dojo.FieldElement[] { } } };
+        var models = new ModelKeysClause[]
+            { new ModelKeysClause ("Moves", new FieldElement[] { playerAddress } ) };
         client.AddModelsToSync(models);
 
         var subscribedModels = client.SubscribedModels();
@@ -222,7 +218,7 @@ public class Tests
     [Test, Order(4)]
     public void TestRemoveModelsToSync()
     {
-        var models = new dojo.ModelKeysClause[] { new() { model = "Moves", keys = new[] { playerAddress.Inner } } };
+        var models = new ModelKeysClause[] { new ModelKeysClause("Moves", new FieldElement[] { playerAddress }) };
         client.RemoveModelsToSync(models);
 
         var subscribedmodels = client.SubscribedModels();
@@ -236,7 +232,7 @@ public class Tests
         {
             if (models.Length == 0) return;
             entityUpdated = models[0].Members["player"] == playerAddress;
-        }; 
+        };
         ToriiEvents.Instance.OnEntityUpdated += callback;
     }
 
@@ -247,7 +243,7 @@ public class Tests
         {
             if (models.Length == 0) return;
             eventMessageUpdated = models[0].Members["player"] == playerAddress;
-        }; 
+        };
         ToriiEvents.Instance.OnEventMessageUpdated += callback;
     }
 
@@ -258,7 +254,7 @@ public class Tests
         {
             modelEntityUpdated = true;
         };
-        client.RegisterSyncModelUpdateEvent(new dojo.ModelKeysClause { model = "Moves", keys = new[] { playerAddress.Inner } }, false);
+        client.RegisterSyncModelUpdateEvent(new ModelKeysClause("Moves", new[] { playerAddress }), false);
         ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }
