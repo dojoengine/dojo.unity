@@ -12,7 +12,7 @@ using Enum = Dojo.Starknet.Enum;
 // System definitions for `dojo_examples::actions::actions` contract
 public class Actions : MonoBehaviour {
     // The address of this contract
-    public string contractAddress;
+    public FieldElement contractAddress;
 
     
     // Call the `dojo_init` system with the specified Account and calldata
@@ -23,7 +23,7 @@ public class Actions : MonoBehaviour {
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
-                to = contractAddress,
+                to = contractAddress.Inner,
                 selector = "dojo_init",
                 calldata = calldata.ToArray()
             }
@@ -40,7 +40,7 @@ public class Actions : MonoBehaviour {
         
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
-                to = contractAddress,
+                to = contractAddress.Inner,
                 selector = "spawn",
                 calldata = calldata.ToArray()
             }
@@ -57,7 +57,7 @@ public class Actions : MonoBehaviour {
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
-                to = contractAddress,
+                to = contractAddress.Inner,
                 selector = "move",
                 calldata = calldata.ToArray()
             }
@@ -74,7 +74,7 @@ public class Actions : MonoBehaviour {
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
-                to = contractAddress,
+                to = contractAddress.Inner,
                 selector = "set_player_config",
                 calldata = calldata.ToArray()
             }

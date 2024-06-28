@@ -15,10 +15,10 @@ namespace Dojo.Torii
         private string toriiUrl;
         private string rpcUrl;
         private string relayUrl;
-        private string world;
+        private FieldElement world;
         public IntPtr clientPtr;
 
-        public ToriiWasmClient(string toriiUrl, string rpcUrl, string relayUrl, string world)
+        public ToriiWasmClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement world)
         {
             this.toriiUrl = toriiUrl;
             this.rpcUrl = rpcUrl;
@@ -28,20 +28,20 @@ namespace Dojo.Torii
 
         public async Task CreateClient()
         {
-            clientPtr = await ToriiWasmInterop.CreateClientAsync(rpcUrl, toriiUrl, relayUrl, world);
-            ToriiWasmInterop.OnEntityUpdated(clientPtr, new FieldElement[] { });
-            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new FieldElement[] { });
+            clientPtr = await ToriiWasmInterop.CreateClientAsync(rpcUrl, toriiUrl, relayUrl, world.Hex());
+            ToriiWasmInterop.OnEntityUpdated(clientPtr);
+            ToriiWasmInterop.OnEventMessageUpdated(clientPtr);
         }
 
-        public async Task<List<Entity>> Entities(dojo.Query query)
+        public async Task<List<Entity>> Entities(Query query)
         {
-            var entities = await ToriiWasmInterop.GetEntitiesAsync(clientPtr, new Query(query));
+            var entities = await ToriiWasmInterop.GetEntitiesAsync(clientPtr, query);
             return entities;
         }
 
-        public async Task<List<Entity>> EventMessages(dojo.Query query)
+        public async Task<List<Entity>> EventMessages(Query query)
         {
-            var entities = await ToriiWasmInterop.GetEventMessagesAsync(clientPtr, new Query(query));
+            var entities = await ToriiWasmInterop.GetEventMessagesAsync(clientPtr, query);
             return entities;
         }
 

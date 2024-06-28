@@ -7,11 +7,11 @@ using dojo_bindings;
 
 namespace Starknet {
     public struct Call {
-        public string contractAddress;
+        public FieldElement contractAddress;
         public string selector;
         public FieldElement[] calldata;
 
-        public Call(string contractAddress, string selector, params FieldElement[] calldata) {
+        public Call(FieldElement contractAddress, string selector, params FieldElement[] calldata) {
             this.contractAddress = contractAddress;
             this.selector = selector;
             this.calldata = calldata;
@@ -33,14 +33,14 @@ namespace Starknet {
             return this;
         }
 
-        public ExecutionHelper AddCall(string contractAddress, string selector, params FieldElement[] calldata) {
+        public ExecutionHelper AddCall(FieldElement contractAddress, string selector, params FieldElement[] calldata) {
             var call = new Call(contractAddress, selector, calldata);
             return AddCall(call);
         }
 
         public async Task<FieldElement> Execute() {
             return await account.ExecuteRaw(calls.Select(call => new dojo.Call {
-                to = call.contractAddress,
+                to = call.contractAddress.Inner,
                 selector = call.selector,
                 calldata = call.calldata.Select(field => field.Inner).ToArray()
             }).ToArray());
