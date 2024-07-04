@@ -41,6 +41,8 @@ namespace Dojo
         // Fetch all entities from the dojo world and spawn them.
         public async Task<int> SynchronizeEntities()
         {
+            worldManager.dojoConfig.query.clause = new KeysClause(new FieldElement[] { new FieldElement("0x6162896d1d7ab204c7ccac6dd5f8e9e7c25ecd5ae4fcb4ad32e57786bb46e03") }, dojo.PatternMatching.VariableLen, new string[] { "Moves" });
+
 #if UNITY_WEBGL && !UNITY_EDITOR
             var entities = await worldManager.wasmClient.Entities(worldManager.dojoConfig.query);
 #else

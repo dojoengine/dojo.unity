@@ -29,6 +29,7 @@ namespace Dojo.Torii
             }
 
             client = result._ok;
+            dojo.client_set_logger(client, new dojo.FnPtr_CString_Void((msg) => Debug.Log(msg)));
 
             RegisterEntityStateUpdateEvent(null, dispatchEventsToMainThread);
             RegisterEventMessageUpdateEvent(null, dispatchEventsToMainThread);
