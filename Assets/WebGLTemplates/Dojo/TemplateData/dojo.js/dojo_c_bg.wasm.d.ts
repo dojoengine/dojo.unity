@@ -1,6 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
+export function __wbg_provider_free(a: number): void;
+export function __wbg_account_free(a: number): void;
+export function __wbg_subscription_free(a: number): void;
 export function __wbg_client_free(a: number): void;
 export function typedDataEncode(a: number, b: number, c: number, d: number, e: number): void;
 export function signingKeyNew(a: number): void;
@@ -32,9 +35,6 @@ export function client_onEventMessageUpdated(a: number, b: number, c: number): n
 export function client_publishMessage(a: number, b: number, c: number, d: number): number;
 export function subscription_cancel(a: number): void;
 export function createClient(a: number): number;
-export function __wbg_provider_free(a: number): void;
-export function __wbg_account_free(a: number): void;
-export function __wbg_subscription_free(a: number): void;
 export function __wbg_queuingstrategy_free(a: number): void;
 export function queuingstrategy_highWaterMark(a: number): number;
 export function __wbg_intounderlyingsink_free(a: number): void;

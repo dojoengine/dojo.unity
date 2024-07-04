@@ -147,12 +147,12 @@ namespace Dojo.Torii
     [Serializable]
     public struct KeysClause
     {
-        public FieldElement[] keys;
+        public FieldElement?[] keys;
         [JsonConverter(typeof(StringEnumConverter))]
         public dojo.PatternMatching pattern_matching;
         public string[] models;
 
-        public KeysClause(FieldElement[] keys, dojo.PatternMatching pattern_matching, string[] models)
+        public KeysClause(FieldElement?[] keys, dojo.PatternMatching pattern_matching, string[] models)
         {
             this.keys = keys;
             this.pattern_matching = pattern_matching;
@@ -163,7 +163,9 @@ namespace Dojo.Torii
         {
             return new dojo.KeysClause
             {
-                keys = keys.Select(k => k.Inner).ToArray(),
+                keys = keys.Select(k => k is null ?
+                    new dojo.COptionFieldElement { tag = dojo.COptionFieldElement_Tag.NoneFieldElement }
+                    : new dojo.COptionFieldElement { tag = dojo.COptionFieldElement_Tag.SomeFieldElement, some = k.Inner }).ToArray(),
                 pattern_matching = pattern_matching,
                 models = models
             };
