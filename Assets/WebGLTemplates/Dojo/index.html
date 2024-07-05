@@ -131,12 +131,18 @@
 #endif
       loadingBar.style.display = "block";
 
+      // load dojo.c wasm module
       var dojoScript = document.createElement("script");
       dojoScript.src = "TemplateData/dojo.js/dojo_c.js";
       dojoScript.onload = async () => {
         await wasm_bindgen();
       };
       document.body.appendChild(dojoScript);
+
+      // load controller
+      var controllerScript = document.createElement("script");
+      controllerScript.src = "TemplateData/controller/index.js";
+      document.body.appendChild(controllerScript);
 
       // var starknetScript = document.createElement("script");
       // starknetScript.src = "TemplateData/starknet-5.24.3.js";
