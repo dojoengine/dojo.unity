@@ -357,9 +357,6 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_provider_free: (a: number) => void;
-  readonly __wbg_account_free: (a: number) => void;
-  readonly __wbg_subscription_free: (a: number) => void;
   readonly __wbg_client_free: (a: number) => void;
   readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
@@ -391,6 +388,9 @@ declare interface InitOutput {
   readonly client_publishMessage: (a: number, b: number, c: number, d: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
+  readonly __wbg_provider_free: (a: number) => void;
+  readonly __wbg_account_free: (a: number) => void;
+  readonly __wbg_subscription_free: (a: number) => void;
   readonly __wbg_queuingstrategy_free: (a: number) => void;
   readonly queuingstrategy_highWaterMark: (a: number) => number;
   readonly __wbg_intounderlyingsink_free: (a: number) => void;
