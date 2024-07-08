@@ -204,14 +204,12 @@ namespace Dojo.Torii
     [Serializable]
     public struct CompositeClause
     {
-        public string model;
         [JsonConverter(typeof(StringEnumConverter))]
         public dojo.LogicalOperator @operator;
         public Clause[] clauses;
 
-        public CompositeClause(string model, dojo.LogicalOperator @operator, Clause[] clauses)
+        public CompositeClause(dojo.LogicalOperator @operator, Clause[] clauses)
         {
-            this.model = model;
             this.@operator = @operator;
             this.clauses = clauses;
         }
@@ -220,7 +218,6 @@ namespace Dojo.Torii
         {
             return new dojo.CompositeClause
             {
-                model = model,
                 operator_ = @operator,
                 clauses = clauses.Select(c => c.ToNative()).ToArray()
             };
