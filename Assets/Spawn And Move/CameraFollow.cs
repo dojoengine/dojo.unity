@@ -1,4 +1,5 @@
 using Dojo;
+using dojo_examples;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
@@ -11,9 +12,13 @@ public class CameraFollow : MonoBehaviour
 
     void Update()
     {
-        if (worldManager.Entities().Length > 0)
+        // all entities with the position model, 
+        // we only want to consider those for "follow"
+        var entities = worldManager.Entities<Position>();
+
+        if (entities.Length > 0)
         {
-            Vector3 centerPoint = GetCenterPoint();
+            Vector3 centerPoint = GetCenterPoint(entities);
             Vector3 offset = new Vector3(0, height, -height);
             Vector3 desiredPosition = centerPoint + offset;
             Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, damping * Time.deltaTime);
@@ -28,22 +33,22 @@ public class CameraFollow : MonoBehaviour
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
 
-            transform.RotateAround(GetCenterPoint(), Vector3.up, mouseX * speed);
-            transform.RotateAround(GetCenterPoint(), transform.right, -mouseY * speed);
+            transform.RotateAround(GetCenterPoint(entities), Vector3.up, mouseX * speed);
+            transform.RotateAround(GetCenterPoint(entities), transform.right, -mouseY * speed);
         }
     }
 
-    Vector3 GetCenterPoint()
+    Vector3 GetCenterPoint(GameObject[] entities)
     {
-        if (worldManager.Entities().Length == 1)
+        if (entities.Length == 1)
         {
-            return worldManager.Entities()[0].transform.position;
+            return entities[0].transform.position;
         }
 
-        var bounds = new Bounds(worldManager.Entities()[0].transform.position, Vector3.zero);
-        for (int i = 0; i < worldManager.Entities().Length; i++)
+        var bounds = new Bounds(entities[0].transform.position, Vector3.zero);
+        for (int i = 0; i < entities.Length; i++)
         {
-            bounds.Encapsulate(worldManager.Entities()[i].transform.position);
+            bounds.Encapsulate(entities[i].transform.position);
         }
         return bounds.center;
     }

@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour
         burnerManager = new BurnerManager(provider, masterAccount);
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
-        foreach (var entity in worldManager.Entities())
+        foreach (var entity in worldManager.Entities<Position>())
         {
             InitEntity(entity);
         }
@@ -123,9 +123,9 @@ public class GameManager : MonoBehaviour
 
     private void InitEntity(GameObject entity)
     {
-        // only spawn a capsule if the entity has a position component
-        if (!entity.GetComponent<Position>()) return;
-
+        // check if entity has position component
+        if (!entity.TryGetComponent(out Position position)) return;
+        
         var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         // change color of capsule to a random color
         capsule.GetComponent<Renderer>().material.color = Random.ColorHSV();
