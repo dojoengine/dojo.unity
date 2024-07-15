@@ -7,6 +7,7 @@ using Dojo;
 using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
+using dojo_examples;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;

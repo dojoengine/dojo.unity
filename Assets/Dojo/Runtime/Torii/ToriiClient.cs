@@ -10,8 +10,8 @@ namespace Dojo.Torii
 {
     public unsafe class ToriiClient
     {
-        private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate onEntityStateUpdate;
-        private dojo.FnPtr_FieldElement_CArrayModel_Void.@delegate onEventMessagesUpdate;
+        private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEntityStateUpdate;
+        private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEventMessagesUpdate;
         private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
         private dojo.ToriiClient* client;
         private List<IntPtr> subscriptions = new List<IntPtr>();
@@ -225,7 +225,7 @@ namespace Dojo.Torii
                 var c = clause.Value.ToNative();
                 ptr = &c;
             }
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEntityStateUpdate));
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -269,7 +269,7 @@ namespace Dojo.Torii
                 var c = clause.Value.ToNative();
                 ptr = &c;
             }
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayModel_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);

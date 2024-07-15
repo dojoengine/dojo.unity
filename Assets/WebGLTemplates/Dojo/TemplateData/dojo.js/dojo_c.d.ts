@@ -120,7 +120,6 @@ declare namespace wasm_bindgen {
 	}
 	
 	export interface CompositeClause {
-	    model: string;
 	    operator: LogicalOperator;
 	    clauses: Clause[];
 	}
