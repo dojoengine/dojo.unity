@@ -9,15 +9,15 @@ namespace Dojo.Starknet
         public class JsonRpcClient
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-        public IntPtr client;
+                public IntPtr client;
 #else
                 public unsafe dojo.Provider* client;
 #endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
-        public JsonRpcClient(string rpcUrl) {
-            client = StarknetInterop.NewProvider(new CString(rpcUrl));
-        }
+                public JsonRpcClient(string rpcUrl) {
+                client = StarknetInterop.NewProvider(new CString(rpcUrl));
+                }
 #else
                 public unsafe JsonRpcClient(string rpcUrl)
                 {
@@ -59,7 +59,7 @@ namespace Dojo.Starknet
                 public async Task WaitForTransaction(FieldElement transactionHash)
                 {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            await StarknetInterop.WaitForTransactionAsync(client, transactionHash);
+                        await StarknetInterop.WaitForTransactionAsync(client, transactionHash);
 #else
                         await Task.Run(() => WaitForTransactionSync(transactionHash));
 #endif
@@ -86,12 +86,12 @@ namespace Dojo.Starknet
                 // Wait for the transaction to be confirmed. Asynchronously.
                 // This doesn't guarantee that the torii client has updated its state
                 // if an entity is updated.
-                public async Task Call(dojo.Call call, dojo.BlockId blockId)
+                public async Task<FieldElement[]> Call(dojo.Call call, dojo.BlockId blockId)
                 {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            await StarknetInterop.CallAsync(client, call, blockId);
+                        await StarknetInterop.CallAsync(client, call, blockId);
 #else
-                        await Task.Run(() => CallSync(call, blockId));
+                        return await Task.Run(() => CallSync(call, blockId));
 #endif
                 }
         }
