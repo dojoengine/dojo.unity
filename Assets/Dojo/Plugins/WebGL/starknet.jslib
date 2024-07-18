@@ -112,29 +112,29 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, confirmed);
   },
   NewSigningKey: function () {
-    var pk = wasm_bindgen.signingKeyNew();
-    var bufferSize = lengthBytesUTF8(pk) + 1;
-    var buffer = _malloc(bufferSize);
+    let pk = wasm_bindgen.signingKeyNew();
+    let bufferSize = lengthBytesUTF8(pk) + 1;
+    let buffer = _malloc(bufferSize);
     stringToUTF8(pk, buffer, bufferSize);
     return buffer;
   },
   Sign: function (pk, hash) {
-    var signature = wasm_bindgen.signingKeySign(
+    let signature = wasm_bindgen.signingKeySign(
       UTF8ToString(pk),
       UTF8ToString(hash)
     );
-    var compactSig =
+    let compactSig =
       signature.r.replace("0x", "").padStart(64, "0") +
       signature.s.replace("0x", "").padStart(64, "0");
-    var bufferSize = lengthBytesUTF8(compactSig) + 1;
-    var buffer = _malloc(bufferSize);
+    let bufferSize = lengthBytesUTF8(compactSig) + 1;
+    let buffer = _malloc(bufferSize);
     stringToUTF8(compactSig, buffer, bufferSize);
     return buffer;
   },
   NewVerifyingKey: function (pk) {
-    var verifyingKey = wasm_bindgen.verifyingKeyNew(UTF8ToString(pk));
-    var bufferSize = lengthBytesUTF8(verifyingKey) + 1;
-    var buffer = _malloc(bufferSize);
+    let verifyingKey = wasm_bindgen.verifyingKeyNew(UTF8ToString(pk));
+    let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
+    let buffer = _malloc(bufferSize);
     stringToUTF8(verifyingKey, buffer, bufferSize);
     return buffer;
   },

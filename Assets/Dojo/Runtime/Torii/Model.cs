@@ -54,10 +54,10 @@ namespace Dojo.Torii
             Members = members;
         }
 
-        public Model(dojo.Model model)
+        public Model(dojo.Struct model)
         {
             Name = model.name;
-            Members = new Dictionary<string, object>(model.members.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))));
+            Members = new Dictionary<string, object>(model.children.ToArray().Select(m => new KeyValuePair<string, object>(m.name, HandleCValue(m.ty))));
         }
 
         private object HandleCValue(dojo.Ty ty)

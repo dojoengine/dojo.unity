@@ -1255,6 +1255,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chatOpen: 0
+  channel:
+    hex: 0x0000000000000000000000000000000000000000000000000000000000000000
   gameManager: {fileID: 2019443018}
   worldManager: {fileID: 2019443015}
 --- !u!1 &1436812976
@@ -1910,7 +1912,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60b18adcaf2b047e6b2b01ff15e6aea9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contractAddress: 0x263f89fc2bdf121a3bdcc9af35eb6b3d5c078f9bcc257e9f5627af81a7607fd
+  contractAddress:
+    hex: 0x05c70a663d6b48d8e4c6aaa9572e3735a732ac3765700d470463e670587852af
 --- !u!1001 &1014796538906876319
 PrefabInstance:
   m_ObjectHideFlags: 0

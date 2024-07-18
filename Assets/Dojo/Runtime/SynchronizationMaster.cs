@@ -41,19 +41,10 @@ namespace Dojo
         // Fetch all entities from the dojo world and spawn them.
         public async Task<int> SynchronizeEntities()
         {
-            var query = new dojo.Query
-            {
-                clause = new dojo.COptionClause
-                {
-                    tag = dojo.COptionClause_Tag.NoneClause,
-                },
-                limit = limit,
-            };
-
 #if UNITY_WEBGL && !UNITY_EDITOR
-            var entities = await worldManager.wasmClient.Entities(query);
+            var entities = await worldManager.wasmClient.Entities(worldManager.dojoConfig.query);
 #else
-            var entities = await Task.Run(() => worldManager.toriiClient.Entities(query));
+            var entities = await Task.Run(() => worldManager.toriiClient.Entities(worldManager.dojoConfig.query));
 #endif
 
             var entityGameObjects = new List<GameObject>();
@@ -74,8 +65,12 @@ namespace Dojo
             // Initialize each one of the entity models
             foreach (var entityModel in entityModels)
             {
+                string[] parts = entityModel.Name.Split('-');
+                string @namespace = parts[0];
+                string name = parts[1];
+
                 // Check if we have a model definition for this entity model
-                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
+                var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
                 if (model == null)
                 {
                     Debug.LogWarning($"Model {entityModel.Name} not found");
@@ -98,8 +93,9 @@ namespace Dojo
             var entity = GameObject.Find(hashedKeys.Hex());
             if (entity == null)
             {
-                // should we fetch the entity here?
                 entity = SpawnEntity(hashedKeys, entityModels);
+                // We don't need to update the entity models
+                return;
             }
 
             // Update each one of the entity models
@@ -108,8 +104,12 @@ namespace Dojo
                 var component = entity.GetComponent(entityModel.Name);
                 if (component == null)
                 {
+                    string[] parts = entityModel.Name.Split('-');
+                    string @namespace = parts[0];
+                    string name = parts[1];
+
                     // TODO: decouple?
-                    var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
+                    var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
                     if (model == null)
                     {
                         Debug.LogWarning($"Model {entityModel.Name} not found");

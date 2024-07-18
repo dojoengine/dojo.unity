@@ -53,12 +53,16 @@ declare namespace wasm_bindgen {
 	*/
 	export function byteArrayDeserialize(felts: (string)[]): string;
 	/**
+	* @param {(string)[]} inputs
+	* @returns {string}
+	*/
+	export function poseidonHash(inputs: (string)[]): string;
+	/**
 	* Create the a client with the given configurations.
-	* @param {KeysClauses} initialModelsToSync
 	* @param {ClientConfig} config
 	* @returns {Promise<Client>}
 	*/
-	export function createClient(initialModelsToSync: KeysClauses, config: ClientConfig): Promise<Client>;
+	export function createClient(config: ClientConfig): Promise<Client>;
 	export interface ClientConfig {
 	    rpcUrl: string;
 	    toriiUrl: string;
@@ -91,11 +95,21 @@ declare namespace wasm_bindgen {
 	
 	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
 	
-	export type KeysClauses = KeysClause[];
+	export type KeysClauses = ModelKeysClause[];
 	
-	export interface KeysClause {
+	export interface ModelKeysClause {
 	    model: string;
 	    keys: string[];
+	}
+	
+	export type PatternMatching = "FixedLen" | "VariableLen";
+	
+	export type EntityKeysClause = { HashedKeys: string[] } | { Keys: KeysClause };
+	
+	export interface KeysClause {
+	    keys: (string | null)[];
+	    pattern_matching: PatternMatching;
+	    models: string[];
 	}
 	
 	export interface MemberClause {
@@ -106,7 +120,6 @@ declare namespace wasm_bindgen {
 	}
 	
 	export interface CompositeClause {
-	    model: string;
 	    operator: LogicalOperator;
 	    clauses: Clause[];
 	}
@@ -192,23 +205,23 @@ declare namespace wasm_bindgen {
 	  removeModelsToSync(models: KeysClauses): Promise<void>;
 	/**
 	* Register a callback to be called every time the specified synced entity's value changes.
-	* @param {KeysClause} model
+	* @param {ModelKeysClause} model
 	* @param {Function} callback
 	* @returns {Promise<Subscription>}
 	*/
-	  onSyncModelChange(model: KeysClause, callback: Function): Promise<Subscription>;
+	  onSyncModelChange(model: ModelKeysClause, callback: Function): Promise<Subscription>;
 	/**
-	* @param {(string)[] | undefined} ids
+	* @param {EntityKeysClause | undefined} clause
 	* @param {Function} callback
 	* @returns {Promise<Subscription>}
 	*/
-	  onEntityUpdated(ids: (string)[] | undefined, callback: Function): Promise<Subscription>;
+	  onEntityUpdated(clause: EntityKeysClause | undefined, callback: Function): Promise<Subscription>;
 	/**
-	* @param {(string)[] | undefined} ids
+	* @param {EntityKeysClause | undefined} clause
 	* @param {Function} callback
 	* @returns {Promise<Subscription>}
 	*/
-	  onEventMessageUpdated(ids: (string)[] | undefined, callback: Function): Promise<Subscription>;
+	  onEventMessageUpdated(clause: EntityKeysClause | undefined, callback: Function): Promise<Subscription>;
 	/**
 	* @param {string} message
 	* @param {JsSignature} signature
@@ -364,6 +377,7 @@ declare interface InitOutput {
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
   readonly byteArraySerialize: (a: number, b: number, c: number) => void;
   readonly byteArrayDeserialize: (a: number, b: number, c: number) => void;
+  readonly poseidonHash: (a: number, b: number, c: number) => void;
   readonly client_getEntities: (a: number, b: number) => number;
   readonly client_getAllEntities: (a: number, b: number, c: number) => number;
   readonly client_getEventMessages: (a: number, b: number) => number;
@@ -371,11 +385,11 @@ declare interface InitOutput {
   readonly client_addModelsToSync: (a: number, b: number) => number;
   readonly client_removeModelsToSync: (a: number, b: number) => number;
   readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
-  readonly client_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly client_onEventMessageUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly client_onEntityUpdated: (a: number, b: number, c: number) => number;
+  readonly client_onEventMessageUpdated: (a: number, b: number, c: number) => number;
   readonly client_publishMessage: (a: number, b: number, c: number, d: number) => number;
   readonly subscription_cancel: (a: number) => void;
-  readonly createClient: (a: number, b: number) => number;
+  readonly createClient: (a: number) => number;
   readonly __wbg_queuingstrategy_free: (a: number) => void;
   readonly queuingstrategy_highWaterMark: (a: number) => number;
   readonly __wbg_intounderlyingsink_free: (a: number) => void;
@@ -401,7 +415,7 @@ declare interface InitOutput {
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h202721cc6efa1300: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h02744ff72e97ed73: (a: number, b: number, c: number) => void;
   readonly wasm_bindgen__convert__closures__invoke0_mut__hef135aeadb8d9b2d: (a: number, b: number) => void;
   readonly wasm_bindgen__convert__closures__invoke1_mut__h80d0ff2204b1ffde: (a: number, b: number, c: number) => void;
   readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h54a3cbc5936c0dc6: (a: number, b: number, c: number) => void;
