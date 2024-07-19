@@ -65,7 +65,7 @@ namespace Dojo
             // but its already instantiated
             if (type.IsPrimitive || type == typeof(FieldElement) || type == typeof(BigInteger) || type == typeof(string))
             {
-                return Convert.ChangeType(ty, type);
+                return ty.GetType() != type ? Convert.ChangeType(ty, type) : ty;
             }
             // handle array
             else if (type.IsArray)
@@ -93,19 +93,22 @@ namespace Dojo
             }
             // dynamic types
             // handle record (rust-like) enums
-            else if (ty is Model.Enum enumVariant) {
+            else if (ty is Model.Enum enumVariant)
+            {
                 var variantType = type.GetNestedType(enumVariant.option);
                 if (variantType == null)
                 {
                     throw new Exception($"Could not find variant {enumVariant.option} in enum {type}");
                 }
 
-                if (type.GenericTypeArguments.Length > 0) {
+                if (type.GenericTypeArguments.Length > 0)
+                {
                     variantType = variantType.MakeGenericType(type.GenericTypeArguments);
                 }
 
                 List<object> args = new List<object>();
-                if (variantType.GetProperty("value") is PropertyInfo prop) {
+                if (variantType.GetProperty("value") is PropertyInfo prop)
+                {
                     args.Add(HandleField(prop.PropertyType, enumVariant.value));
                 }
 
@@ -115,7 +118,8 @@ namespace Dojo
             // if the field is a struct/class. we check if our member is a dictionary
             // and we go through each of its keys and values and set them to the fields
             // of the instantiated struct/class
-            else if (ty is Model.Struct struct_) {
+            else if (ty is Model.Struct struct_)
+            {
                 var instance = Activator.CreateInstance(type);
                 var fields = type.GetFields();
 
@@ -125,7 +129,9 @@ namespace Dojo
                 }
 
                 return instance;
-            } else {
+            }
+            else
+            {
                 throw new Exception($"Could not handle field of type {type}");
             }
         }
