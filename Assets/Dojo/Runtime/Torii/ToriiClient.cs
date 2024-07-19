@@ -14,7 +14,8 @@ namespace Dojo.Torii
         private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEventMessagesUpdate;
         private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
         private dojo.ToriiClient* client;
-        private List<IntPtr> subscriptions = new List<IntPtr>();
+        private dojo.Subscription* entitySubscription;
+        private dojo.Subscription* eventMessagesSubscription;
 
         public ToriiClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement worldAddress, bool dispatchEventsToMainThread = true)
         {
@@ -31,18 +32,16 @@ namespace Dojo.Torii
             client = result._ok;
             dojo.client_set_logger(client, new dojo.FnPtr_CString_Void((msg) => Debug.Log(msg)));
 
-            RegisterEntityStateUpdateEvent(null, dispatchEventsToMainThread);
-            RegisterEventMessageUpdateEvent(null, dispatchEventsToMainThread);
+            RegisterEntityStateUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
+            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
         }
 
         // We assume the torii client won't be copied around.
         // So we can free the underlying c client when the managed client is garbage collected.
         ~ToriiClient()
         {
-            for (var i = 0; i < subscriptions.Count; i++)
-            {
-                dojo.subscription_cancel((dojo.Subscription*)subscriptions[i]);
-            }
+            dojo.subscription_cancel(entitySubscription);
+            dojo.subscription_cancel(eventMessagesSubscription);
 
             dojo.client_free(client);
         }
@@ -187,10 +186,11 @@ namespace Dojo.Torii
                 throw new Exception(res.err.message);
             }
 
-            subscriptions.Add((IntPtr)res._ok);
+            // keep track of these subscriptions? we cant update them for now.
+            // subscriptions.Add((IntPtr)res._ok);
         }
 
-        private void RegisterEntityStateUpdateEvent(EntityKeysClause? clause = null, bool dispatchToMainThread = true)
+        private void RegisterEntityStateUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
         {
             onEntityStateUpdate = (key, models) =>
             {
@@ -219,22 +219,23 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* ptr = (dojo.EntityKeysClause*)0;
-            if (clause.HasValue)
+            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+            dojo.EntityKeysClause* clausesPtr;
+            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
             {
-                var c = clause.Value.ToNative();
-                ptr = &c;
+                clausesPtr = ptr;
             }
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
+
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }
 
-            subscriptions.Add((IntPtr)res._ok);
+            entitySubscription = res._ok;
         }
 
-        private void RegisterEventMessageUpdateEvent(EntityKeysClause? clause = null, bool dispatchToMainThread = true)
+        private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
         {
             onEventMessagesUpdate = (key, models) =>
             {
@@ -263,19 +264,20 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* ptr = (dojo.EntityKeysClause*)0;
-            if (clause.HasValue)
+            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+            dojo.EntityKeysClause* clausesPtr;
+            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
             {
-                var c = clause.Value.ToNative();
-                ptr = &c;
+                clausesPtr = ptr;
             }
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, ptr, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
+
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
             }
 
-            subscriptions.Add((IntPtr)res._ok);
+            eventMessagesSubscription = res._ok;
         }
 
         public Span<byte> PublishMessage(TypedData typedData, Signature signature)
