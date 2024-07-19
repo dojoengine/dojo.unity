@@ -27,7 +27,8 @@ namespace Dojo.Torii
             }
         }
 
-        public struct Struct {
+        public struct Struct
+        {
             public string name;
             public Dictionary<string, object> members;
 

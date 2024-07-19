@@ -95,7 +95,9 @@ declare namespace wasm_bindgen {
 	
 	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
 	
-	export type KeysClauses = ModelKeysClause[];
+	export type KeysClauses = EntityKeysClause[];
+	
+	export type ModelKeysClauses = ModelKeysClause[];
 	
 	export interface ModelKeysClause {
 	    model: string;
@@ -135,7 +137,7 @@ declare namespace wasm_bindgen {
 	
 	export type ValueType = { String: string } | { Int: number } | { UInt: number } | { VBool: boolean } | { Bytes: number[] };
 	
-	export type Primitive = { U8: number | null } | { U16: number | null } | { U32: number | null } | { U64: number | null } | { U128: string | null } | { U256: string | null } | { USize: number | null } | { Bool: boolean | null } | { Felt252: string | null } | { ClassHash: string | null } | { ContractAddress: string | null };
+	export type Primitive = { I8: number | null } | { I16: number | null } | { I32: number | null } | { I64: number | null } | { I128: string | null } | { U8: number | null } | { U16: number | null } | { U32: number | null } | { U64: number | null } | { U128: string | null } | { U256: string | null } | { USize: number | null } | { Bool: boolean | null } | { Felt252: string | null } | { ClassHash: string | null } | { ContractAddress: string | null };
 	
 	/**
 	*/
@@ -185,7 +187,8 @@ declare namespace wasm_bindgen {
 	*/
 	  getEventMessages(query: Query): Promise<any>;
 	/**
-	* Retrieves the model value of an entity. Will fetch from remote if the requested entity is not one of the entities that are being synced.
+	* Retrieves the model value of an entity. Will fetch from remote if the requested entity is
+	* not one of the entities that are being synced.
 	* @param {string} model
 	* @param {(string)[]} keys
 	* @returns {Promise<any>}
@@ -193,16 +196,16 @@ declare namespace wasm_bindgen {
 	  getModelValue(model: string, keys: (string)[]): Promise<any>;
 	/**
 	* Register new entities to be synced.
-	* @param {KeysClauses} models
+	* @param {ModelKeysClauses} models
 	* @returns {Promise<void>}
 	*/
-	  addModelsToSync(models: KeysClauses): Promise<void>;
+	  addModelsToSync(models: ModelKeysClauses): Promise<void>;
 	/**
 	* Remove the entities from being synced.
-	* @param {KeysClauses} models
+	* @param {ModelKeysClauses} models
 	* @returns {Promise<void>}
 	*/
-	  removeModelsToSync(models: KeysClauses): Promise<void>;
+	  removeModelsToSync(models: ModelKeysClauses): Promise<void>;
 	/**
 	* Register a callback to be called every time the specified synced entity's value changes.
 	* @param {ModelKeysClause} model
@@ -211,17 +214,29 @@ declare namespace wasm_bindgen {
 	*/
 	  onSyncModelChange(model: ModelKeysClause, callback: Function): Promise<Subscription>;
 	/**
-	* @param {EntityKeysClause | undefined} clause
+	* @param {KeysClauses} clauses
 	* @param {Function} callback
 	* @returns {Promise<Subscription>}
 	*/
-	  onEntityUpdated(clause: EntityKeysClause | undefined, callback: Function): Promise<Subscription>;
+	  onEntityUpdated(clauses: KeysClauses, callback: Function): Promise<Subscription>;
 	/**
-	* @param {EntityKeysClause | undefined} clause
+	* @param {Subscription} subscription
+	* @param {KeysClauses} clauses
+	* @returns {Promise<void>}
+	*/
+	  updateEntitySubscription(subscription: Subscription, clauses: KeysClauses): Promise<void>;
+	/**
+	* @param {KeysClauses} clauses
 	* @param {Function} callback
 	* @returns {Promise<Subscription>}
 	*/
-	  onEventMessageUpdated(clause: EntityKeysClause | undefined, callback: Function): Promise<Subscription>;
+	  onEventMessageUpdated(clauses: KeysClauses, callback: Function): Promise<Subscription>;
+	/**
+	* @param {Subscription} subscription
+	* @param {KeysClauses} clauses
+	* @returns {Promise<void>}
+	*/
+	  updateEventMessageSubscription(subscription: Subscription, clauses: KeysClauses): Promise<void>;
 	/**
 	* @param {string} message
 	* @param {JsSignature} signature
@@ -386,22 +401,27 @@ declare interface InitOutput {
   readonly client_removeModelsToSync: (a: number, b: number) => number;
   readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
   readonly client_onEntityUpdated: (a: number, b: number, c: number) => number;
+  readonly client_updateEntitySubscription: (a: number, b: number, c: number) => number;
   readonly client_onEventMessageUpdated: (a: number, b: number, c: number) => number;
+  readonly client_updateEventMessageSubscription: (a: number, b: number, c: number) => number;
   readonly client_publishMessage: (a: number, b: number, c: number, d: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
-  readonly __wbg_queuingstrategy_free: (a: number) => void;
-  readonly queuingstrategy_highWaterMark: (a: number) => number;
-  readonly __wbg_intounderlyingsink_free: (a: number) => void;
-  readonly intounderlyingsink_write: (a: number, b: number) => number;
-  readonly intounderlyingsink_close: (a: number) => number;
-  readonly intounderlyingsink_abort: (a: number, b: number) => number;
   readonly __wbg_intounderlyingbytesource_free: (a: number) => void;
   readonly intounderlyingbytesource_type: (a: number, b: number) => void;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_start: (a: number, b: number) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: number) => number;
   readonly intounderlyingbytesource_cancel: (a: number) => void;
+  readonly __wbg_intounderlyingsink_free: (a: number) => void;
+  readonly intounderlyingsink_write: (a: number, b: number) => number;
+  readonly intounderlyingsink_close: (a: number) => number;
+  readonly intounderlyingsink_abort: (a: number, b: number) => number;
+  readonly __wbg_queuingstrategy_free: (a: number) => void;
+  readonly queuingstrategy_highWaterMark: (a: number) => number;
+  readonly __wbg_intounderlyingsource_free: (a: number) => void;
+  readonly intounderlyingsource_pull: (a: number, b: number) => number;
+  readonly intounderlyingsource_cancel: (a: number) => void;
   readonly __wbg_readablestreamgetreaderoptions_free: (a: number) => void;
   readonly readablestreamgetreaderoptions_mode: (a: number) => number;
   readonly __wbg_pipeoptions_free: (a: number) => void;
@@ -409,20 +429,17 @@ declare interface InitOutput {
   readonly pipeoptions_preventCancel: (a: number) => number;
   readonly pipeoptions_preventAbort: (a: number) => number;
   readonly pipeoptions_signal: (a: number) => number;
-  readonly __wbg_intounderlyingsource_free: (a: number) => void;
-  readonly intounderlyingsource_pull: (a: number, b: number) => number;
-  readonly intounderlyingsource_cancel: (a: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h02744ff72e97ed73: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke0_mut__hef135aeadb8d9b2d: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h80d0ff2204b1ffde: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h54a3cbc5936c0dc6: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h05db343f92bb3eb6: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hb11e865e5432cb06: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h28419e06302fe8ff: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h807a1be1d16a981e: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__hee2649badc712846: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h25a220322e26fa8f: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**
