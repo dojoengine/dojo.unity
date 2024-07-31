@@ -19,6 +19,9 @@ namespace Dojo.Torii
         private FieldElement world;
         public IntPtr clientPtr;
 
+        IntPtr entitySubscription;
+        IntPtr eventMessageSubscription;
+
         public ToriiWasmClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement world)
         {
             this.toriiUrl = toriiUrl;
@@ -44,8 +47,8 @@ namespace Dojo.Torii
             ToriiWasmInterop.CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
             clientPtr = await CreateClientHelper.Tcs.Task;
 
-            RegisterEntityStateUpdateEvent();
-            RegisterEventMessageUpdateEvent();
+            entitySubscription = await RegisterEntityStateUpdateEvent(new KeysClause[] { });
+            eventMessageSubscription = await RegisterEventMessageUpdateEvent(new KeysClause[] { });
         }
 
         private static class GetEntitiesHelper
@@ -114,9 +117,22 @@ namespace Dojo.Torii
             }
         }
 
-        public void RegisterEntityStateUpdateEvent(KeysClause? clause = null)
+        private static class SubscriptionHelper
         {
-            ToriiWasmInterop.OnEntityUpdated(clientPtr, clause.HasValue ? new CString(JsonConvert.SerializeObject(clause)) : (IntPtr)0, OnEntityUpdatedHelper.Callback);
+            public static TaskCompletionSource<IntPtr> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<IntPtr>))]
+            public static void Callback(IntPtr subPtr)
+            {
+                Tcs.SetResult(subPtr);
+            }
+        }
+
+        public async Task<IntPtr> RegisterEntityStateUpdateEvent(KeysClause[] clauses)
+        {
+            SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
+            ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            return await SubscriptionHelper.Tcs.Task;
         }
 
         private static class OnEventMessageUpdatedHelper
@@ -140,9 +156,11 @@ namespace Dojo.Torii
             }
         }
 
-        public void RegisterEventMessageUpdateEvent(KeysClause? clause = null)
+        public async Task<IntPtr> RegisterEventMessageUpdateEvent(KeysClause[] clauses)
         {
-            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, clause.HasValue ? new CString(JsonConvert.SerializeObject(clause)) : (IntPtr)0, OnEventMessageUpdatedHelper.Callback);
+            SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
+            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            return await SubscriptionHelper.Tcs.Task;
         }
 
         private static class PublishMessageHelper

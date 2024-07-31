@@ -4,6 +4,8 @@ export const memory: WebAssembly.Memory;
 export function __wbg_provider_free(a: number): void;
 export function __wbg_account_free(a: number): void;
 export function __wbg_subscription_free(a: number): void;
+export function __wbg_get_subscription_id(a: number): number;
+export function __wbg_set_subscription_id(a: number, b: number): void;
 export function __wbg_client_free(a: number): void;
 export function typedDataEncode(a: number, b: number, c: number, d: number, e: number): void;
 export function signingKeyNew(a: number): void;

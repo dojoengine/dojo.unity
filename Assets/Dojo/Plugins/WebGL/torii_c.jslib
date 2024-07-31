@@ -68,11 +68,11 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
-  OnEntityUpdated: async function (clientPtr, clauseStr, cb) {
+  OnEntityUpdated: async function (clientPtr, clausesStr, cb, subCb) {
     let client = wasm_bindgen.Client.__wrap(clientPtr);
-    let clause = clauseStr ? JSON.parse(UTF8ToString(clauseStr)) : undefined;
+    let clauses = JSON.parse(UTF8ToString(clausesStr));
 
-    const subscription = await client.onEntityUpdated(clause, (entities) => {
+    const subscription = await client.onEntityUpdated(clauses, (entities) => {
       // stringify the entities
       let entitiesString = JSON.stringify(entities);
       // return buffer
@@ -82,16 +82,26 @@ mergeInto(LibraryManager.library, {
 
       dynCall_vi(cb, buffer);
     });
-    subscription.__destroy_into_raw();
 
     client.__destroy_into_raw();
+    dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
-  OnEventMessageUpdated: async function (clientPtr, clauseStr, cb) {
+  UpdateEntitySubscription: async function (clientPtr, subPtr, clausesStr) {
     let client = wasm_bindgen.Client.__wrap(clientPtr);
-    let clause = clauseStr ? JSON.parse(UTF8ToString(clauseStr)) : undefined;
+    let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
+    let clauses = JSON.parse(UTF8ToString(clausesStr));
+
+    await client.updateEntitySubscription(subscription, clauses);
+
+    client.__destroy_into_raw();
+    subscription.__destroy_into_raw();
+  }
+  OnEventMessageUpdated: async function (clientPtr, clausesStr, cb, subCb) {
+    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let clauses = JSON.parse(UTF8ToString(clausesStr));
 
     const subscription = await client.onEventMessageUpdated(
-      clause,
+      clauses,
       (entities) => {
         // stringify the entities
         let entitiesString = JSON.stringify(entities);
@@ -103,9 +113,19 @@ mergeInto(LibraryManager.library, {
         dynCall_vi(cb, buffer);
       }
     );
-    subscription.__destroy_into_raw();
 
     client.__destroy_into_raw();
+    dynCall_vi(subCb, subscription.__destroy_into_raw());
+  },
+  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr) {
+    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
+    let clauses = JSON.parse(UTF8ToString(clausesStr));
+
+    await client.updateEventMessageSubscription(subscription, clauses);
+
+    client.__destroy_into_raw();
+    subscription.__destroy_into_raw();
   },
   AddModelsToSync: function (clientPtr, models) {
     let client = wasm_bindgen.Client.__wrap(clientPtr);

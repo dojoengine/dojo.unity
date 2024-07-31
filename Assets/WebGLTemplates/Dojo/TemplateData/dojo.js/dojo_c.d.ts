@@ -363,6 +363,9 @@ declare namespace wasm_bindgen {
 	/**
 	*/
 	  cancel(): void;
+	/**
+	*/
+	  id: bigint;
 	}
 	
 }
@@ -374,6 +377,8 @@ declare interface InitOutput {
   readonly __wbg_provider_free: (a: number) => void;
   readonly __wbg_account_free: (a: number) => void;
   readonly __wbg_subscription_free: (a: number) => void;
+  readonly __wbg_get_subscription_id: (a: number) => number;
+  readonly __wbg_set_subscription_id: (a: number, b: number) => void;
   readonly __wbg_client_free: (a: number) => void;
   readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
