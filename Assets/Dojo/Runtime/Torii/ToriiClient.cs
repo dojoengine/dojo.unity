@@ -219,12 +219,16 @@ namespace Dojo.Torii
             };
 
 
-            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            dojo.EntityKeysClause* clausesPtr;
-            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+            dojo.EntityKeysClause* clausesPtr = (dojo.EntityKeysClause*)0;
+            if (clauses.Length > 0)
             {
-                clausesPtr = ptr;
+                var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+                fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+                {
+                    clausesPtr = ptr;
+                }
             }
+
 
             dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
@@ -276,11 +280,14 @@ namespace Dojo.Torii
             };
 
 
-            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            dojo.EntityKeysClause* clausesPtr;
-            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+            dojo.EntityKeysClause* clausesPtr = (dojo.EntityKeysClause*)0;
+            if (clauses.Length > 0)
             {
-                clausesPtr = ptr;
+                var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+                fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+                {
+                    clausesPtr = ptr;
+                }
             }
 
             dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
