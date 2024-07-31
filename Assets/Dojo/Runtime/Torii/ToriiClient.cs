@@ -235,6 +235,18 @@ namespace Dojo.Torii
             entitySubscription = res._ok;
         }
 
+        public void UpdateEntitySubscription(EntityKeysClause[] clauses)
+        {
+            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+            dojo.EntityKeysClause* clausesPtr;
+            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+            {
+                clausesPtr = ptr;
+            }
+
+            dojo.client_update_entity_subscription(client, entitySubscription, clausesPtr, (UIntPtr)clauses.Length);
+        }
+
         private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
         {
             onEventMessagesUpdate = (key, models) =>
@@ -278,6 +290,18 @@ namespace Dojo.Torii
             }
 
             eventMessagesSubscription = res._ok;
+        }
+
+        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses)
+        {
+            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+            dojo.EntityKeysClause* clausesPtr;
+            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+            {
+                clausesPtr = ptr;
+            }
+
+            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length);
         }
 
         public Span<byte> PublishMessage(TypedData typedData, Signature signature)
