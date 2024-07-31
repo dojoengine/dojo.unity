@@ -300,6 +300,16 @@ namespace Dojo.Torii
     public struct Primitive
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public sbyte? I8;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public short? I16;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public int? I32;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public long? I64;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public FieldElement? I128;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public byte? U8;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public ushort? U16;
@@ -324,6 +334,16 @@ namespace Dojo.Torii
 
         public dojo.Primitive ToNative()
         {
+            if (I8.HasValue)
+                return new dojo.Primitive { tag = dojo.Primitive_Tag.I8, i8 = I8.Value };
+            if (I16.HasValue)
+                return new dojo.Primitive { tag = dojo.Primitive_Tag.I16, i16 = I16.Value };
+            if (I32.HasValue)
+                return new dojo.Primitive { tag = dojo.Primitive_Tag.I32, i32 = I32.Value };
+            if (I64.HasValue)
+                return new dojo.Primitive { tag = dojo.Primitive_Tag.I64, i64 = I64.Value };
+            if (I128 != null)
+                return new dojo.Primitive { tag = dojo.Primitive_Tag.I128, i128 = I128.Inner.data };
             if (U8.HasValue)
                 return new dojo.Primitive { tag = dojo.Primitive_Tag.U8, u8 = U8.Value };
             if (U16.HasValue)
