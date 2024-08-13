@@ -10,30 +10,6 @@
   "macroObjects": {},
   "variables": {},
   "functions": {
-    "world_metadata_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "metadata",
-          "type": {
-            "name": "WorldMetadata*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "WorldMetadata",
-              "kind": "struct",
-              "sizeOf": 80,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
     "starknet_keccak": {
       "callingConvention": "cdecl",
       "returnType": {
@@ -82,80 +58,225 @@
         }
       ]
     },
-    "client_update_event_message_subscription": {
+    "ty_free": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "Resultbool",
-        "kind": "struct",
-        "sizeOf": 16,
-        "alignOf": 8
+        "name": "void",
+        "kind": "primitive"
       },
       "parameters": [
         {
-          "name": "client",
+          "name": "ty",
           "type": {
-            "name": "ToriiClient*",
+            "name": "Ty*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "subscription",
-          "type": {
-            "name": "Subscription*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Subscription",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "clauses",
-          "type": {
-            "name": "EntityKeysClause*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "EntityKeysClause",
+              "name": "Ty",
               "kind": "struct",
               "sizeOf": 48,
-              "alignOf": 8,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "clauses_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
               "alignOf": 8
             }
           }
         }
       ]
     },
-    "client_on_event_message_update": {
+    "model_free": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "ResultSubscription",
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "model",
+          "type": {
+            "name": "Struct*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Struct",
+              "kind": "struct",
+              "sizeOf": 24,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "client_new": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultToriiClient",
         "kind": "struct",
         "sizeOf": 16,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "torii_url",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "rpc_url",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "libp2p_relay_url",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "world",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "account_nonce": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultFieldElement",
+        "kind": "struct",
+        "sizeOf": 40,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "account",
+          "type": {
+            "name": "Account*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Account",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "get_selector_from_name": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultFieldElement",
+        "kind": "struct",
+        "sizeOf": 40,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
+    "account_address": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "FieldElement",
+        "kind": "struct",
+        "sizeOf": 32,
+        "alignOf": 1
+      },
+      "parameters": [
+        {
+          "name": "account",
+          "type": {
+            "name": "Account*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Account",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "provider_free": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "rpc",
+          "type": {
+            "name": "Provider*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Provider",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "client_entities": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultCArrayEntity",
+        "kind": "struct",
+        "sizeOf": 24,
         "alignOf": 8
       },
       "parameters": [
@@ -173,43 +294,19 @@
           }
         },
         {
-          "name": "clauses",
+          "name": "query",
           "type": {
-            "name": "EntityKeysClause*",
+            "name": "Query*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "EntityKeysClause",
+              "name": "Query",
               "kind": "struct",
-              "sizeOf": 48,
+              "sizeOf": 88,
               "alignOf": 8,
               "isConst": true
             }
-          }
-        },
-        {
-          "name": "clauses_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "callback",
-          "type": {
-            "name": "void (FieldElement, CArrayStruct)",
-            "kind": "functionPointer",
-            "sizeOf": 8,
-            "alignOf": 8
           }
         }
       ]
@@ -283,158 +380,13 @@
         }
       ]
     },
-    "provider_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "rpc",
-          "type": {
-            "name": "Provider*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Provider",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "signing_key_new": {
+    "account_chain_id": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "FieldElement",
         "kind": "struct",
         "sizeOf": 32,
         "alignOf": 1
-      },
-      "parameters": []
-    },
-    "account_new": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultAccount",
-        "kind": "struct",
-        "sizeOf": 16,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "rpc",
-          "type": {
-            "name": "Provider*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Provider",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "private_key",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "address",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "carray_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "data",
-          "type": {
-            "name": "void*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "void",
-              "kind": "primitive"
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
-    "get_selector_from_name": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultFieldElement",
-        "kind": "struct",
-        "sizeOf": 40,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "name",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "account_nonce": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultFieldElement",
-        "kind": "struct",
-        "sizeOf": 40,
-        "alignOf": 8
       },
       "parameters": [
         {
@@ -447,178 +399,6 @@
             "innerType": {
               "name": "Account",
               "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "bytearray_serialize": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultCArrayFieldElement",
-        "kind": "struct",
-        "sizeOf": 24,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "str",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "subscription_cancel": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "subscription",
-          "type": {
-            "name": "Subscription*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Subscription",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "error_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "error",
-          "type": {
-            "name": "Error*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Error",
-              "kind": "struct",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
-    "signing_key_sign": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultSignature",
-        "kind": "struct",
-        "sizeOf": 72,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "private_key",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "client_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "t",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "entity_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "entity",
-          "type": {
-            "name": "Entity*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Entity",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
-    "ty_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "ty",
-          "type": {
-            "name": "Ty*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8
             }
           }
         }
@@ -664,7 +444,7 @@
         }
       ]
     },
-    "string_free": {
+    "carray_free": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "void",
@@ -672,235 +452,42 @@
       },
       "parameters": [
         {
-          "name": "string",
+          "name": "data",
           "type": {
-            "name": "char*",
+            "name": "void*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "char",
+              "name": "void",
+              "kind": "primitive"
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
               "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1
-            }
-          }
-        }
-      ]
-    },
-    "starknet_call": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultCArrayFieldElement",
-        "kind": "struct",
-        "sizeOf": 24,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "provider",
-          "type": {
-            "name": "Provider*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Provider",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "call",
-          "type": {
-            "name": "Call",
-            "kind": "struct",
-            "sizeOf": 56,
-            "alignOf": 8
-          }
-        },
-        {
-          "name": "block_id",
-          "type": {
-            "name": "BlockId",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "client_entities": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultCArrayEntity",
-        "kind": "struct",
-        "sizeOf": 24,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "query",
-          "type": {
-            "name": "Query*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Query",
-              "kind": "struct",
-              "sizeOf": 88,
-              "alignOf": 8,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "client_set_logger": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "logger",
-          "type": {
-            "name": "void (const char *)",
-            "kind": "functionPointer",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "model_free": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "model",
-          "type": {
-            "name": "Struct*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Struct",
-              "kind": "struct",
-              "sizeOf": 24,
+              "sizeOf": 8,
               "alignOf": 8
             }
           }
         }
       ]
     },
-    "parse_cairo_short_string": {
+    "bytearray_deserialize": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "Resultc_char",
         "kind": "struct",
         "sizeOf": 16,
         "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "felt",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "client_publish_message": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultCArrayu8",
-        "kind": "struct",
-        "sizeOf": 24,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "client",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        },
-        {
-          "name": "message",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "signature",
-          "type": {
-            "name": "Signature",
-            "kind": "struct",
-            "sizeOf": 64,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "poseidon_hash": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "FieldElement",
-        "kind": "struct",
-        "sizeOf": 32,
-        "alignOf": 1
       },
       "parameters": [
         {
@@ -1000,13 +587,37 @@
         }
       ]
     },
-    "bytearray_deserialize": {
+    "world_metadata_free": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "Resultc_char",
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "metadata",
+          "type": {
+            "name": "WorldMetadata*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "WorldMetadata",
+              "kind": "struct",
+              "sizeOf": 80,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "poseidon_hash": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "FieldElement",
         "kind": "struct",
-        "sizeOf": 16,
-        "alignOf": 8
+        "sizeOf": 32,
+        "alignOf": 1
       },
       "parameters": [
         {
@@ -1042,7 +653,56 @@
         }
       ]
     },
-    "account_free": {
+    "client_publish_message": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultCArrayu8",
+        "kind": "struct",
+        "sizeOf": 24,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "message",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "signature",
+          "type": {
+            "name": "Signature",
+            "kind": "struct",
+            "sizeOf": 64,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "client_free": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "void",
@@ -1050,215 +710,73 @@
       },
       "parameters": [
         {
-          "name": "account",
+          "name": "t",
           "type": {
-            "name": "Account*",
+            "name": "ToriiClient*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Account",
+              "name": "ToriiClient",
               "kind": "opaqueType"
             }
           }
         }
       ]
     },
-    "typed_data_encode": {
+    "client_update_entity_subscription": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "ResultFieldElement",
-        "kind": "struct",
-        "sizeOf": 40,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "typed_data",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "client_new": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultToriiClient",
+        "name": "Resultbool",
         "kind": "struct",
         "sizeOf": 16,
         "alignOf": 8
       },
       "parameters": [
         {
-          "name": "torii_url",
+          "name": "client",
           "type": {
-            "name": "const char*",
+            "name": "ToriiClient*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "rpc_url",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "libp2p_relay_url",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "world",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "get_selector_from_tag": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "FieldElement",
-        "kind": "struct",
-        "sizeOf": 32,
-        "alignOf": 1
-      },
-      "parameters": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "account_address": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "FieldElement",
-        "kind": "struct",
-        "sizeOf": 32,
-        "alignOf": 1
-      },
-      "parameters": [
-        {
-          "name": "account",
-          "type": {
-            "name": "Account*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Account",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "account_execute_raw": {
-      "callingConvention": "cdecl",
-      "returnType": {
-        "name": "ResultFieldElement",
-        "kind": "struct",
-        "sizeOf": 40,
-        "alignOf": 8
-      },
-      "parameters": [
-        {
-          "name": "account",
-          "type": {
-            "name": "Account*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Account",
+              "name": "ToriiClient",
               "kind": "opaqueType"
             }
           }
         },
         {
-          "name": "calldata",
+          "name": "subscription",
           "type": {
-            "name": "Call*",
+            "name": "Subscription*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Call",
+              "name": "Subscription",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "clauses",
+          "type": {
+            "name": "EntityKeysClause*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "EntityKeysClause",
               "kind": "struct",
-              "sizeOf": 56,
+              "sizeOf": 48,
               "alignOf": 8,
               "isConst": true
             }
           }
         },
         {
-          "name": "calldata_len",
+          "name": "clauses_len",
           "type": {
             "name": "uintptr_t",
             "kind": "typeAlias",
@@ -1274,10 +792,30 @@
         }
       ]
     },
-    "wait_for_transaction": {
+    "parse_cairo_short_string": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "Resultbool",
+        "name": "Resultc_char",
+        "kind": "struct",
+        "sizeOf": 16,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "felt",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "account_new": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultAccount",
         "kind": "struct",
         "sizeOf": 16,
         "alignOf": 8
@@ -1297,12 +835,184 @@
           }
         },
         {
-          "name": "txn_hash",
+          "name": "private_key",
           "type": {
             "name": "FieldElement",
             "kind": "struct",
             "sizeOf": 32,
             "alignOf": 1
+          }
+        },
+        {
+          "name": "address",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
+    "signing_key_new": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "FieldElement",
+        "kind": "struct",
+        "sizeOf": 32,
+        "alignOf": 1
+      },
+      "parameters": []
+    },
+    "signing_key_sign": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultSignature",
+        "kind": "struct",
+        "sizeOf": 72,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "private_key",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "subscription_cancel": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "subscription",
+          "type": {
+            "name": "Subscription*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Subscription",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "client_on_event_message_update": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultSubscription",
+        "kind": "struct",
+        "sizeOf": 16,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "clauses",
+          "type": {
+            "name": "EntityKeysClause*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "EntityKeysClause",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "clauses_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "callback",
+          "type": {
+            "name": "void (FieldElement, CArrayStruct)",
+            "kind": "functionPointer",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "account_set_block_id": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "account",
+          "type": {
+            "name": "Account*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Account",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "block_id",
+          "type": {
+            "name": "BlockId",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8
           }
         }
       ]
@@ -1334,21 +1044,39 @@
         }
       ]
     },
-    "verifying_key_new": {
+    "verifying_key_verify": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "FieldElement",
+        "name": "Resultbool",
         "kind": "struct",
-        "sizeOf": 32,
-        "alignOf": 1
+        "sizeOf": 16,
+        "alignOf": 8
       },
       "parameters": [
         {
-          "name": "signing_key",
+          "name": "verifying_key",
           "type": {
             "name": "FieldElement",
             "kind": "struct",
             "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "signature",
+          "type": {
+            "name": "Signature",
+            "kind": "struct",
+            "sizeOf": 64,
             "alignOf": 1
           }
         }
@@ -1427,7 +1155,196 @@
         }
       ]
     },
-    "account_set_block_id": {
+    "get_selector_from_tag": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "FieldElement",
+        "kind": "struct",
+        "sizeOf": 32,
+        "alignOf": 1
+      },
+      "parameters": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
+    "typed_data_encode": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultFieldElement",
+        "kind": "struct",
+        "sizeOf": 40,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "typed_data",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "address",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "bytearray_serialize": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultCArrayFieldElement",
+        "kind": "struct",
+        "sizeOf": 24,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "str",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
+    "verifying_key_new": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "FieldElement",
+        "kind": "struct",
+        "sizeOf": 32,
+        "alignOf": 1
+      },
+      "parameters": [
+        {
+          "name": "signing_key",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "account_execute_raw": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "ResultFieldElement",
+        "kind": "struct",
+        "sizeOf": 40,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "account",
+          "type": {
+            "name": "Account*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Account",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "calldata",
+          "type": {
+            "name": "Call*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Call",
+              "kind": "struct",
+              "sizeOf": 56,
+              "alignOf": 8,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "calldata_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "client_metadata": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "WorldMetadata",
+        "kind": "struct",
+        "sizeOf": 80,
+        "alignOf": 8
+      },
+      "parameters": [
+        {
+          "name": "client",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "account_free": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "void",
@@ -1446,19 +1363,34 @@
               "kind": "opaqueType"
             }
           }
-        },
+        }
+      ]
+    },
+    "string_free": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
         {
-          "name": "block_id",
+          "name": "string",
           "type": {
-            "name": "BlockId",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8
+            "name": "char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1
+            }
           }
         }
       ]
     },
-    "client_update_entity_subscription": {
+    "client_update_event_message_subscription": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "Resultbool",
@@ -1526,7 +1458,31 @@
         }
       ]
     },
-    "verifying_key_verify": {
+    "entity_free": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "entity",
+          "type": {
+            "name": "Entity*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Entity",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "wait_for_transaction": {
       "callingConvention": "cdecl",
       "returnType": {
         "name": "Resultbool",
@@ -1536,41 +1492,58 @@
       },
       "parameters": [
         {
-          "name": "verifying_key",
+          "name": "rpc",
+          "type": {
+            "name": "Provider*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Provider",
+              "kind": "opaqueType"
+            }
+          }
+        },
+        {
+          "name": "txn_hash",
           "type": {
             "name": "FieldElement",
             "kind": "struct",
             "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "signature",
-          "type": {
-            "name": "Signature",
-            "kind": "struct",
-            "sizeOf": 64,
             "alignOf": 1
           }
         }
       ]
     },
-    "client_metadata": {
+    "error_free": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "WorldMetadata",
-        "kind": "struct",
-        "sizeOf": 80,
-        "alignOf": 8
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "error",
+          "type": {
+            "name": "Error*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Error",
+              "kind": "struct",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "client_set_logger": {
+      "callingConvention": "cdecl",
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
       },
       "parameters": [
         {
@@ -1585,48 +1558,102 @@
               "kind": "opaqueType"
             }
           }
+        },
+        {
+          "name": "logger",
+          "type": {
+            "name": "void (const char *)",
+            "kind": "functionPointer",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
         }
       ]
     },
-    "account_chain_id": {
+    "starknet_call": {
       "callingConvention": "cdecl",
       "returnType": {
-        "name": "FieldElement",
+        "name": "ResultCArrayFieldElement",
         "kind": "struct",
-        "sizeOf": 32,
-        "alignOf": 1
+        "sizeOf": 24,
+        "alignOf": 8
       },
       "parameters": [
         {
-          "name": "account",
+          "name": "provider",
           "type": {
-            "name": "Account*",
+            "name": "Provider*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Account",
+              "name": "Provider",
               "kind": "opaqueType"
             }
+          }
+        },
+        {
+          "name": "call",
+          "type": {
+            "name": "Call",
+            "kind": "struct",
+            "sizeOf": 56,
+            "alignOf": 8
+          }
+        },
+        {
+          "name": "block_id",
+          "type": {
+            "name": "BlockId",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8
           }
         }
       ]
     }
   },
   "records": {
-    "ResultToriiClient": {
+    "ResultCArrayEntity_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "Resultbool": {
       "size_of": 16,
       "align_of": 8,
       "fields": [
         {
           "name": "tag",
           "type": {
-            "name": "ResultToriiClient_Tag",
+            "name": "Resultbool_Tag",
             "kind": "typeAlias",
             "sizeOf": 4,
             "alignOf": 4,
             "innerType": {
-              "name": "ResultToriiClient_Tag",
+              "name": "Resultbool_Tag",
               "kind": "enum",
               "sizeOf": 4,
               "alignOf": 4
@@ -1636,7 +1663,7 @@
         {
           "name": "",
           "type": {
-            "name": "ResultToriiClient_ANONYMOUS_FIELD1",
+            "name": "Resultbool_ANONYMOUS_FIELD1",
             "kind": "union",
             "sizeOf": 8,
             "alignOf": 8,
@@ -1646,36 +1673,145 @@
         }
       ]
     },
-    "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+    "FieldElement": {
       "size_of": 32,
       "align_of": 1,
       "fields": [
         {
-          "name": "ok",
+          "name": "data",
           "type": {
-            "name": "FieldElement",
-            "kind": "struct",
+            "name": "uint8_t[32]",
+            "kind": "array",
             "sizeOf": 32,
-            "alignOf": 1
+            "alignOf": 8,
+            "sizeOfElement": 1,
+            "arraySize": 32,
+            "innerType": {
+              "name": "uint8_t",
+              "kind": "typeAlias",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "innerType": {
+                "name": "unsigned char",
+                "kind": "primitive",
+                "sizeOf": 1,
+                "alignOf": 1
+              }
+            }
           }
         }
       ]
     },
-    "CArrayMember": {
+    "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultSubscription": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultSubscription_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultSubscription_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultSubscription_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Enum": {
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "option",
+          "type": {
+            "name": "uint8_t",
+            "kind": "typeAlias",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "innerType": {
+              "name": "unsigned char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1
+            }
+          },
+          "offset_of": 8
+        },
+        {
+          "name": "options",
+          "type": {
+            "name": "CArrayEnumOption",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 16
+        }
+      ]
+    },
+    "CArrayEntity": {
       "size_of": 16,
       "align_of": 8,
       "fields": [
         {
           "name": "data",
           "type": {
-            "name": "Member*",
+            "name": "Entity*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Member",
+              "name": "Entity",
               "kind": "struct",
-              "sizeOf": 24,
+              "sizeOf": 48,
               "alignOf": 8
             }
           }
@@ -1693,6 +1829,156 @@
               "sizeOf": 8,
               "alignOf": 8
             }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "KeysClause": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "keys",
+          "type": {
+            "name": "CArrayCOptionFieldElement",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        },
+        {
+          "name": "pattern_matching",
+          "type": {
+            "name": "PatternMatching",
+            "kind": "enum",
+            "sizeOf": 4,
+            "alignOf": 4
+          },
+          "offset_of": 16
+        },
+        {
+          "name": "models",
+          "type": {
+            "name": "CArrayc_char",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 24
+        }
+      ]
+    },
+    "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultCArrayFieldElement": {
+      "size_of": 24,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultCArrayFieldElement_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultCArrayFieldElement_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayFieldElement_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD6": {
+      "size_of": 2,
+      "align_of": 2,
+      "fields": [
+        {
+          "name": "u16",
+          "type": {
+            "name": "uint16_t",
+            "kind": "typeAlias",
+            "sizeOf": 2,
+            "alignOf": 2,
+            "innerType": {
+              "name": "unsigned short",
+              "kind": "primitive",
+              "sizeOf": 2,
+              "alignOf": 2
+            }
+          }
+        }
+      ]
+    },
+    "Clause": {
+      "size_of": 72,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "Clause_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "Clause_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Clause_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 64,
+            "alignOf": 8,
+            "isAnonymous": true
           },
           "offset_of": 8
         }
@@ -1745,7 +2031,334 @@
         }
       ]
     },
-    "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+    "ResultCArrayFieldElement_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD5": {
+      "size_of": 1,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "u8",
+          "type": {
+            "name": "uint8_t",
+            "kind": "typeAlias",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "innerType": {
+              "name": "unsigned char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1
+            }
+          }
+        }
+      ]
+    },
+    "Resultc_char_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "Provider*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Provider",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
+      "size_of": 24,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "composite",
+          "type": {
+            "name": "CompositeClause",
+            "kind": "struct",
+            "sizeOf": 24,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Clause_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 64,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 64,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2",
+            "kind": "struct",
+            "sizeOf": 24,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "EntityKeysClause": {
+      "size_of": 48,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "EntityKeysClause_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "EntityKeysClause_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "EntityKeysClause_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "COptionClause_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 72,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "COptionClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 72,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "Member": {
+      "size_of": 24,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "ty",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        },
+        {
+          "name": "key",
+          "type": {
+            "name": "_Bool",
+            "kind": "primitive",
+            "sizeOf": 1,
+            "alignOf": 1
+          },
+          "offset_of": 16
+        }
+      ]
+    },
+    "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "hashed_keys",
+          "type": {
+            "name": "CArrayFieldElement",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "COptionClause": {
+      "size_of": 80,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "COptionClause_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "COptionClause_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "COptionClause_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 72,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "CArrayStruct": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "Struct*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Struct",
+              "kind": "struct",
+              "sizeOf": 24,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
       "size_of": 8,
       "align_of": 8,
       "fields": [
@@ -1756,6 +2369,1582 @@
             "kind": "struct",
             "sizeOf": 8,
             "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "CArrayFieldElement",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "COptionFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "some",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "EnumOption": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "ty",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD4": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "byte_array",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
+    "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 1,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "_Bool",
+            "kind": "primitive",
+            "sizeOf": 1,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "Ty": {
+      "size_of": 48,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "Ty_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "Ty_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Ty_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "MemberClause": {
+      "size_of": 64,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        },
+        {
+          "name": "member",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          },
+          "offset_of": 8
+        },
+        {
+          "name": "operator_",
+          "type": {
+            "name": "ComparisonOperator",
+            "kind": "enum",
+            "sizeOf": 4,
+            "alignOf": 4
+          },
+          "offset_of": 16
+        },
+        {
+          "name": "value",
+          "type": {
+            "name": "Primitive",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8
+          },
+          "offset_of": 24
+        }
+      ]
+    },
+    "ResultSubscription_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "CArrayEntity",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultAccount_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "COptionClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 72,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "some",
+          "type": {
+            "name": "Clause",
+            "kind": "struct",
+            "sizeOf": 72,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD8": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "u64",
+          "type": {
+            "name": "uint64_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "number",
+          "type": {
+            "name": "uint64_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          }
+        }
+      ]
+    },
+    "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "Account*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Account",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "CArrayc_char": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "const char**",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char*",
+              "kind": "pointer",
+              "sizeOf": 8,
+              "alignOf": 8,
+              "innerType": {
+                "name": "const char",
+                "kind": "primitive",
+                "sizeOf": 1,
+                "alignOf": 1,
+                "isConst": true
+              }
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "ToriiClient*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "ToriiClient",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "CArrayClause": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "Clause*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Clause",
+              "kind": "struct",
+              "sizeOf": 72,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 64,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "c_member",
+          "type": {
+            "name": "MemberClause",
+            "kind": "struct",
+            "sizeOf": 64,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultCArrayu8_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "COptionFieldElement_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "COptionFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "primitive",
+          "type": {
+            "name": "Primitive",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 2,
+      "align_of": 2,
+      "fields": [
+        {
+          "name": "i16",
+          "type": {
+            "name": "int16_t",
+            "kind": "typeAlias",
+            "sizeOf": 2,
+            "alignOf": 2,
+            "innerType": {
+              "name": "short",
+              "kind": "primitive",
+              "sizeOf": 2,
+              "alignOf": 2
+            }
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 1,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "i8",
+          "type": {
+            "name": "int8_t",
+            "kind": "typeAlias",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "innerType": {
+              "name": "signed char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1
+            }
+          }
+        }
+      ]
+    },
+    "ResultToriiClient": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultToriiClient_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultToriiClient_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultToriiClient_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "enum_",
+          "type": {
+            "name": "Enum",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "Subscription*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Subscription",
+              "kind": "opaqueType"
+            }
+          }
+        }
+      ]
+    },
+    "CHashItemFieldElementModelMetadata": {
+      "size_of": 184,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "key",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "value",
+          "type": {
+            "name": "ModelMetadata",
+            "kind": "struct",
+            "sizeOf": 152,
+            "alignOf": 8
+          },
+          "offset_of": 32
+        }
+      ]
+    },
+    "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Primitive": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "Primitive_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "Primitive_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Primitive_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "WorldMetadata": {
+      "size_of": 80,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "world_address",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "world_class_hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          },
+          "offset_of": 32
+        },
+        {
+          "name": "models",
+          "type": {
+            "name": "CArrayCHashItemFieldElementModelMetadata",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 64
+        }
+      ]
+    },
+    "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Error": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "message",
+          "type": {
+            "name": "char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1
+            }
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD4": {
+      "size_of": 16,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "i128",
+          "type": {
+            "name": "uint8_t[16]",
+            "kind": "array",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "sizeOfElement": 1,
+            "arraySize": 16,
+            "innerType": {
+              "name": "uint8_t",
+              "kind": "typeAlias",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "innerType": {
+                "name": "unsigned char",
+                "kind": "primitive",
+                "sizeOf": 1,
+                "alignOf": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "keys",
+          "type": {
+            "name": "KeysClause",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Entity": {
+      "size_of": 48,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "hashed_keys",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "models",
+          "type": {
+            "name": "CArrayStruct",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 32
+        }
+      ]
+    },
+    "CArrayEnumOption": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "EnumOption*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "EnumOption",
+              "kind": "struct",
+              "sizeOf": 16,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "entity_keys",
+          "type": {
+            "name": "KeysClause",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
+    "CArrayCOptionFieldElement": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "COptionFieldElement*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "COptionFieldElement",
+              "kind": "struct",
+              "sizeOf": 36,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "CArrayTy": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "Ty*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "Ty",
+              "kind": "struct",
+              "sizeOf": 48,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
+              "alignOf": 8
+            }
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
+      "size_of": 4,
+      "align_of": 4,
+      "fields": [
+        {
+          "name": "i32",
+          "type": {
+            "name": "int32_t",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "int",
+              "kind": "primitive",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD11": {
+      "size_of": 4,
+      "align_of": 4,
+      "fields": [
+        {
+          "name": "u_size",
+          "type": {
+            "name": "uint32_t",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "unsigned int",
+              "kind": "primitive",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        }
+      ]
+    },
+    "Resultbool_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 1,
+            "alignOf": 1,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Signature": {
+      "size_of": 64,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "r",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          },
+          "comment": "/**\n   * The \u0060r\u0060 value of a signature\n   */"
+        },
+        {
+          "name": "s",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          },
+          "offset_of": 32,
+          "comment": "/**\n   * The \u0060s\u0060 value of a signature\n   */"
+        }
+      ]
+    },
+    "ResultCArrayEntity": {
+      "size_of": 24,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultCArrayEntity_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultCArrayEntity_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultCArrayEntity_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Call": {
+      "size_of": 56,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "to",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        },
+        {
+          "name": "selector",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          },
+          "offset_of": 32
+        },
+        {
+          "name": "calldata",
+          "type": {
+            "name": "CArrayFieldElement",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 40
+        }
+      ]
+    },
+    "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "ModelMetadata": {
+      "size_of": 152,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "schema",
+          "type": {
+            "name": "Ty",
+            "kind": "struct",
+            "sizeOf": 48,
+            "alignOf": 8
+          }
+        },
+        {
+          "name": "namespace_",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          },
+          "offset_of": 48
+        },
+        {
+          "name": "name",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          },
+          "offset_of": 56
+        },
+        {
+          "name": "packed_size",
+          "type": {
+            "name": "uint32_t",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "unsigned int",
+              "kind": "primitive",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          },
+          "offset_of": 64
+        },
+        {
+          "name": "unpacked_size",
+          "type": {
+            "name": "uint32_t",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "unsigned int",
+              "kind": "primitive",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          },
+          "offset_of": 68
+        },
+        {
+          "name": "class_hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          },
+          "offset_of": 72
+        },
+        {
+          "name": "contract_address",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          },
+          "offset_of": 104
+        },
+        {
+          "name": "layout",
+          "type": {
+            "name": "CArrayFieldElement",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 136
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD14": {
+      "size_of": 32,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "class_hash",
+          "type": {
+            "name": "FieldElement",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD12": {
+      "size_of": 1,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "bool_",
+          "type": {
+            "name": "_Bool",
+            "kind": "primitive",
+            "sizeOf": 1,
+            "alignOf": 1
+          }
+        }
+      ]
+    },
+    "ResultProvider_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "ResultProvider": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultProvider_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultProvider_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultProvider_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "ResultToriiClient_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "BlockId_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2",
+            "kind": "struct",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
+      "size_of": 8,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "err",
+          "type": {
+            "name": "Error",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "EntityKeysClause_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 40,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 40,
+            "alignOf": 8,
+            "isAnonymous": true
+          }
+        }
+      ]
+    },
+    "ResultFieldElement_ANONYMOUS_FIELD1": {
+      "record_kind": "union",
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "",
+          "type": {
+            "name": "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "kind": "struct",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "kind": "struct",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
           }
         }
       ]
@@ -1927,19 +4116,19 @@
         }
       ]
     },
-    "Clause": {
-      "size_of": 72,
+    "BlockId": {
+      "size_of": 40,
       "align_of": 8,
       "fields": [
         {
           "name": "tag",
           "type": {
-            "name": "Clause_Tag",
+            "name": "BlockId_Tag",
             "kind": "typeAlias",
             "sizeOf": 4,
             "alignOf": 4,
             "innerType": {
-              "name": "Clause_Tag",
+              "name": "BlockId_Tag",
               "kind": "enum",
               "sizeOf": 4,
               "alignOf": 4
@@ -1949,28 +4138,13 @@
         {
           "name": "",
           "type": {
-            "name": "Clause_ANONYMOUS_FIELD1",
+            "name": "BlockId_ANONYMOUS_FIELD1",
             "kind": "union",
-            "sizeOf": 64,
+            "sizeOf": 32,
             "alignOf": 8,
             "isAnonymous": true
           },
           "offset_of": 8
-        }
-      ]
-    },
-    "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 64,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "c_member",
-          "type": {
-            "name": "MemberClause",
-            "kind": "struct",
-            "sizeOf": 64,
-            "alignOf": 8
-          }
         }
       ]
     },
@@ -1980,574 +4154,6 @@
       "fields": [
         {
           "name": "contract_address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "EntityKeysClause": {
-      "size_of": 48,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "EntityKeysClause_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "EntityKeysClause_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "EntityKeysClause_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 40,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD4": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "byte_array",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD4": {
-      "size_of": 16,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "i128",
-          "type": {
-            "name": "uint8_t[16]",
-            "kind": "array",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "sizeOfElement": 1,
-            "arraySize": 16,
-            "innerType": {
-              "name": "uint8_t",
-              "kind": "typeAlias",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "innerType": {
-                "name": "unsigned char",
-                "kind": "primitive",
-                "sizeOf": 1,
-                "alignOf": 1
-              }
-            }
-          }
-        }
-      ]
-    },
-    "ResultAccount_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "CArrayEnumOption": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "EnumOption*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "EnumOption",
-              "kind": "struct",
-              "sizeOf": 16,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tuple",
-          "type": {
-            "name": "CArrayTy",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 32,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "enum_",
-          "type": {
-            "name": "Enum",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultCArrayEntity_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "COptionClause": {
-      "size_of": 80,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "COptionClause_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "COptionClause_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "COptionClause_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 72,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "ResultProvider_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "CArrayEntity",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultCArrayu8": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultCArrayu8_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultCArrayu8_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayu8_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "ResultFieldElement": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultFieldElement_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultFieldElement_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultFieldElement_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "CHashItemFieldElementModelMetadata": {
-      "size_of": 184,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "key",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "value",
-          "type": {
-            "name": "ModelMetadata",
-            "kind": "struct",
-            "sizeOf": 152,
-            "alignOf": 8
-          },
-          "offset_of": 32
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD5": {
-      "size_of": 1,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "u8",
-          "type": {
-            "name": "uint8_t",
-            "kind": "typeAlias",
-            "sizeOf": 1,
-            "alignOf": 1,
-            "innerType": {
-              "name": "unsigned char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1
-            }
-          }
-        }
-      ]
-    },
-    "ResultCArrayu8_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "entity_keys",
-          "type": {
-            "name": "KeysClause",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
-      "size_of": 4,
-      "align_of": 4,
-      "fields": [
-        {
-          "name": "i32",
-          "type": {
-            "name": "int32_t",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "int",
-              "kind": "primitive",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        }
-      ]
-    },
-    "CArrayEntity": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "Entity*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Entity",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 64,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "Signature",
-            "kind": "struct",
-            "sizeOf": 64,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "WorldMetadata": {
-      "size_of": 80,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "world_address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "world_class_hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          },
-          "offset_of": 32
-        },
-        {
-          "name": "models",
-          "type": {
-            "name": "CArrayCHashItemFieldElementModelMetadata",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 64
-        }
-      ]
-    },
-    "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "hash",
           "type": {
             "name": "FieldElement",
             "kind": "struct",
@@ -2574,866 +4180,6 @@
               "sizeOf": 8,
               "alignOf": 8
             }
-          }
-        }
-      ]
-    },
-    "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "Subscription*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Subscription",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "ResultSubscription_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "CArrayFieldElement",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ModelMetadata": {
-      "size_of": 152,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "schema",
-          "type": {
-            "name": "Ty",
-            "kind": "struct",
-            "sizeOf": 48,
-            "alignOf": 8
-          }
-        },
-        {
-          "name": "namespace_",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "offset_of": 48
-        },
-        {
-          "name": "name",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "offset_of": 56
-        },
-        {
-          "name": "packed_size",
-          "type": {
-            "name": "uint32_t",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "unsigned int",
-              "kind": "primitive",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          },
-          "offset_of": 64
-        },
-        {
-          "name": "unpacked_size",
-          "type": {
-            "name": "uint32_t",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "unsigned int",
-              "kind": "primitive",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          },
-          "offset_of": 68
-        },
-        {
-          "name": "class_hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          },
-          "offset_of": 72
-        },
-        {
-          "name": "contract_address",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          },
-          "offset_of": 104
-        },
-        {
-          "name": "layout",
-          "type": {
-            "name": "CArrayFieldElement",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 136
-        }
-      ]
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "primitive",
-          "type": {
-            "name": "Primitive",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 1,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "_Bool",
-            "kind": "primitive",
-            "sizeOf": 1,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        }
-      ]
-    },
-    "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultCArrayEntity": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultCArrayEntity_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultCArrayEntity_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayEntity_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "COptionClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 72,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "some",
-          "type": {
-            "name": "Clause",
-            "kind": "struct",
-            "sizeOf": 72,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
-      "size_of": 4,
-      "align_of": 4,
-      "fields": [
-        {
-          "name": "block_tag",
-          "type": {
-            "name": "BlockTag",
-            "kind": "enum",
-            "sizeOf": 4,
-            "alignOf": 4
-          }
-        }
-      ]
-    },
-    "CArrayu8": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "uint8_t*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "uint8_t",
-              "kind": "typeAlias",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "innerType": {
-                "name": "unsigned char",
-                "kind": "primitive",
-                "sizeOf": 1,
-                "alignOf": 1
-              }
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "ResultToriiClient_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "COptionFieldElement": {
-      "size_of": 36,
-      "align_of": 4,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "COptionFieldElement_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "COptionFieldElement_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "COptionFieldElement_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "isAnonymous": true
-          },
-          "offset_of": 4
-        }
-      ]
-    },
-    "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "Account*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Account",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "Member": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "name",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "ty",
-          "type": {
-            "name": "Ty*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        },
-        {
-          "name": "key",
-          "type": {
-            "name": "_Bool",
-            "kind": "primitive",
-            "sizeOf": 1,
-            "alignOf": 1
-          },
-          "offset_of": 16
-        }
-      ]
-    },
-    "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "ToriiClient*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "ToriiClient",
-              "kind": "opaqueType"
-            }
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD7": {
-      "size_of": 4,
-      "align_of": 4,
-      "fields": [
-        {
-          "name": "u32",
-          "type": {
-            "name": "uint32_t",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "unsigned int",
-              "kind": "primitive",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD14": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "class_hash",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "Ty": {
-      "size_of": 48,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "Ty_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "Ty_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Ty_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 40,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "COptionFieldElement_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "COptionFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "CArrayStruct": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "Struct*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Struct",
-              "kind": "struct",
-              "sizeOf": 24,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "EntityKeysClause_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD3": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "array",
-          "type": {
-            "name": "CArrayTy",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Clause_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 64,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 64,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2",
-            "kind": "struct",
-            "sizeOf": 24,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "COptionClause_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 72,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "COptionClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 72,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Resultc_char": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "Resultc_char_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "Resultc_char_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Resultc_char_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Primitive": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "Primitive_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "Primitive_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Primitive_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD9": {
-      "size_of": 16,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "u128",
-          "type": {
-            "name": "uint8_t[16]",
-            "kind": "array",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "sizeOfElement": 1,
-            "arraySize": 16,
-            "innerType": {
-              "name": "uint8_t",
-              "kind": "typeAlias",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "innerType": {
-                "name": "unsigned char",
-                "kind": "primitive",
-                "sizeOf": 1,
-                "alignOf": 1
-              }
-            }
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD13": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "felt252",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
           }
         }
       ]
@@ -3475,21 +4221,113 @@
         }
       ]
     },
-    "ResultProvider_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 8,
+    "Struct": {
+      "size_of": 24,
       "align_of": 8,
       "fields": [
         {
-          "name": "ok",
+          "name": "name",
           "type": {
-            "name": "Provider*",
+            "name": "const char*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Provider",
-              "kind": "opaqueType"
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
             }
+          }
+        },
+        {
+          "name": "children",
+          "type": {
+            "name": "CArrayMember",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultSignature": {
+      "size_of": 72,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultSignature_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultSignature_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultSignature_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 64,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultAccount": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "ResultAccount_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
+            "innerType": {
+              "name": "ResultAccount_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "ResultAccount_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 64,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "Signature",
+            "kind": "struct",
+            "sizeOf": 64,
+            "alignOf": 1
           }
         }
       ]
@@ -3551,19 +4389,19 @@
         }
       ]
     },
-    "ResultAccount": {
+    "Resultc_char": {
       "size_of": 16,
       "align_of": 8,
       "fields": [
         {
           "name": "tag",
           "type": {
-            "name": "ResultAccount_Tag",
+            "name": "Resultc_char_Tag",
             "kind": "typeAlias",
             "sizeOf": 4,
             "alignOf": 4,
             "innerType": {
-              "name": "ResultAccount_Tag",
+              "name": "Resultc_char_Tag",
               "kind": "enum",
               "sizeOf": 4,
               "alignOf": 4
@@ -3573,7 +4411,7 @@
         {
           "name": "",
           "type": {
-            "name": "ResultAccount_ANONYMOUS_FIELD1",
+            "name": "Resultc_char_ANONYMOUS_FIELD1",
             "kind": "union",
             "sizeOf": 8,
             "alignOf": 8,
@@ -3583,142 +4421,152 @@
         }
       ]
     },
-    "Enum": {
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD13": {
       "size_of": 32,
-      "align_of": 8,
+      "align_of": 1,
       "fields": [
         {
-          "name": "name",
+          "name": "felt252",
           "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "option",
-          "type": {
-            "name": "uint8_t",
-            "kind": "typeAlias",
-            "sizeOf": 1,
-            "alignOf": 1,
-            "innerType": {
-              "name": "unsigned char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1
-            }
-          },
-          "offset_of": 8
-        },
-        {
-          "name": "options",
-          "type": {
-            "name": "CArrayEnumOption",
+            "name": "FieldElement",
             "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 16
+            "sizeOf": 32,
+            "alignOf": 1
+          }
         }
       ]
     },
-    "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+    "ResultFieldElement": {
       "size_of": 40,
       "align_of": 8,
       "fields": [
         {
-          "name": "keys",
+          "name": "tag",
           "type": {
-            "name": "KeysClause",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Signature": {
-      "size_of": 64,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "r",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          },
-          "comment": "/**\n   * The \u0060r\u0060 value of a signature\n   */"
-        },
-        {
-          "name": "s",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          },
-          "offset_of": 32,
-          "comment": "/**\n   * The \u0060s\u0060 value of a signature\n   */"
-        }
-      ]
-    },
-    "ResultSubscription_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "EnumOption": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "name",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
+            "name": "ResultFieldElement_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
             "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
+              "name": "ResultFieldElement_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
             }
           }
         },
         {
-          "name": "ty",
+          "name": "",
           "type": {
-            "name": "Ty*",
+            "name": "ResultFieldElement_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "isAnonymous": true
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD9": {
+      "size_of": 16,
+      "align_of": 1,
+      "fields": [
+        {
+          "name": "u128",
+          "type": {
+            "name": "uint8_t[16]",
+            "kind": "array",
+            "sizeOf": 16,
+            "alignOf": 8,
+            "sizeOfElement": 1,
+            "arraySize": 16,
+            "innerType": {
+              "name": "uint8_t",
+              "kind": "typeAlias",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "innerType": {
+                "name": "unsigned char",
+                "kind": "primitive",
+                "sizeOf": 1,
+                "alignOf": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "tuple",
+          "type": {
+            "name": "CArrayTy",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "CompositeClause": {
+      "size_of": 24,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "operator_",
+          "type": {
+            "name": "LogicalOperator",
+            "kind": "enum",
+            "sizeOf": 4,
+            "alignOf": 4
+          }
+        },
+        {
+          "name": "clauses",
+          "type": {
+            "name": "CArrayClause",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          },
+          "offset_of": 8
+        }
+      ]
+    },
+    "CArrayMember": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "name": "Member*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "Ty",
+              "name": "Member",
               "kind": "struct",
-              "sizeOf": 48,
+              "sizeOf": 24,
+              "alignOf": 8
+            }
+          }
+        },
+        {
+          "name": "data_len",
+          "type": {
+            "name": "uintptr_t",
+            "kind": "typeAlias",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "unsigned long",
+              "kind": "primitive",
+              "sizeOf": 8,
               "alignOf": 8
             }
           },
@@ -3726,81 +4574,165 @@
         }
       ]
     },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 1,
-      "align_of": 1,
+    "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
+      "size_of": 4,
+      "align_of": 4,
       "fields": [
         {
-          "name": "i8",
+          "name": "block_tag",
           "type": {
-            "name": "int8_t",
+            "name": "BlockTag",
+            "kind": "enum",
+            "sizeOf": 4,
+            "alignOf": 4
+          }
+        }
+      ]
+    },
+    "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "name": "CArrayu8",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "Ty_ANONYMOUS_FIELD1_ANONYMOUS_FIELD3": {
+      "size_of": 16,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "array",
+          "type": {
+            "name": "CArrayTy",
+            "kind": "struct",
+            "sizeOf": 16,
+            "alignOf": 8
+          }
+        }
+      ]
+    },
+    "COptionFieldElement": {
+      "size_of": 36,
+      "align_of": 4,
+      "fields": [
+        {
+          "name": "tag",
+          "type": {
+            "name": "COptionFieldElement_Tag",
             "kind": "typeAlias",
-            "sizeOf": 1,
-            "alignOf": 1,
+            "sizeOf": 4,
+            "alignOf": 4,
             "innerType": {
-              "name": "signed char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1
+              "name": "COptionFieldElement_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
+            }
+          }
+        },
+        {
+          "name": "",
+          "type": {
+            "name": "COptionFieldElement_ANONYMOUS_FIELD1",
+            "kind": "union",
+            "sizeOf": 32,
+            "alignOf": 1,
+            "isAnonymous": true
+          },
+          "offset_of": 4
+        }
+      ]
+    },
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD10": {
+      "size_of": 32,
+      "align_of": 8,
+      "fields": [
+        {
+          "name": "u256",
+          "type": {
+            "name": "uint64_t[4]",
+            "kind": "array",
+            "sizeOf": 32,
+            "alignOf": 8,
+            "sizeOfElement": 8,
+            "arraySize": 4,
+            "innerType": {
+              "name": "uint64_t",
+              "kind": "typeAlias",
+              "sizeOf": 8,
+              "alignOf": 8,
+              "innerType": {
+                "name": "unsigned long",
+                "kind": "primitive",
+                "sizeOf": 8,
+                "alignOf": 8
+              }
             }
           }
         }
       ]
     },
-    "Struct": {
+    "ResultCArrayu8": {
       "size_of": 24,
       "align_of": 8,
       "fields": [
         {
-          "name": "name",
+          "name": "tag",
           "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
+            "name": "ResultCArrayu8_Tag",
+            "kind": "typeAlias",
+            "sizeOf": 4,
+            "alignOf": 4,
             "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
+              "name": "ResultCArrayu8_Tag",
+              "kind": "enum",
+              "sizeOf": 4,
+              "alignOf": 4
             }
           }
         },
         {
-          "name": "children",
+          "name": "",
           "type": {
-            "name": "CArrayMember",
-            "kind": "struct",
+            "name": "ResultCArrayu8_ANONYMOUS_FIELD1",
+            "kind": "union",
             "sizeOf": 16,
-            "alignOf": 8
+            "alignOf": 8,
+            "isAnonymous": true
           },
           "offset_of": 8
         }
       ]
     },
-    "CArrayc_char": {
+    "CArrayu8": {
       "size_of": 16,
       "align_of": 8,
       "fields": [
         {
           "name": "data",
           "type": {
-            "name": "const char**",
+            "name": "uint8_t*",
             "kind": "pointer",
             "sizeOf": 8,
             "alignOf": 8,
             "innerType": {
-              "name": "const char*",
-              "kind": "pointer",
-              "sizeOf": 8,
-              "alignOf": 8,
+              "name": "uint8_t",
+              "kind": "typeAlias",
+              "sizeOf": 1,
+              "alignOf": 1,
               "innerType": {
-                "name": "const char",
+                "name": "unsigned char",
                 "kind": "primitive",
                 "sizeOf": 1,
-                "alignOf": 1,
-                "isConst": true
+                "alignOf": 1
               }
             }
           }
@@ -3823,209 +4755,12 @@
         }
       ]
     },
-    "ResultProvider": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultProvider_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultProvider_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultProvider_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "ResultSignature": {
-      "size_of": 72,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultSignature_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultSignature_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultSignature_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 64,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Call": {
-      "size_of": 56,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "to",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "selector",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "offset_of": 32
-        },
-        {
-          "name": "calldata",
-          "type": {
-            "name": "CArrayFieldElement",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 40
-        }
-      ]
-    },
-    "ResultCArrayFieldElement": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultCArrayFieldElement_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultCArrayFieldElement_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayFieldElement_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Resultbool_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 1,
-            "alignOf": 1,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Resultbool_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "ResultSubscription": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "ResultSubscription_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "ResultSubscription_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultSubscription_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD11": {
+    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD7": {
       "size_of": 4,
       "align_of": 4,
       "fields": [
         {
-          "name": "u_size",
+          "name": "u32",
           "type": {
             "name": "uint32_t",
             "kind": "typeAlias",
@@ -4037,176 +4772,6 @@
               "sizeOf": 4,
               "alignOf": 4
             }
-          }
-        }
-      ]
-    },
-    "BlockId": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "BlockId_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "BlockId_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "BlockId_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "ResultCArrayFieldElement_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultCArrayFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "ResultSignature_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 64,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 64,
-            "alignOf": 1,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD6": {
-      "size_of": 2,
-      "align_of": 2,
-      "fields": [
-        {
-          "name": "u16",
-          "type": {
-            "name": "uint16_t",
-            "kind": "typeAlias",
-            "sizeOf": 2,
-            "alignOf": 2,
-            "innerType": {
-              "name": "unsigned short",
-              "kind": "primitive",
-              "sizeOf": 2,
-              "alignOf": 2
-            }
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD8": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "u64",
-          "type": {
-            "name": "uint64_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
-    "Clause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "composite",
-          "type": {
-            "name": "CompositeClause",
-            "kind": "struct",
-            "sizeOf": 24,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Resultc_char_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
           }
         }
       ]
@@ -4248,365 +4813,17 @@
         }
       ]
     },
-    "CArrayClause": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "Clause*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Clause",
-              "kind": "struct",
-              "sizeOf": 72,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "CompositeClause": {
-      "size_of": 24,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "operator_",
-          "type": {
-            "name": "LogicalOperator",
-            "kind": "enum",
-            "sizeOf": 4,
-            "alignOf": 4
-          }
-        },
-        {
-          "name": "clauses",
-          "type": {
-            "name": "CArrayClause",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "ResultToriiClient_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "FieldElement": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "uint8_t[32]",
-            "kind": "array",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "sizeOfElement": 1,
-            "arraySize": 32,
-            "innerType": {
-              "name": "uint8_t",
-              "kind": "typeAlias",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "innerType": {
-                "name": "unsigned char",
-                "kind": "primitive",
-                "sizeOf": 1,
-                "alignOf": 1
-              }
-            }
-          }
-        }
-      ]
-    },
-    "ResultCArrayEntity_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "ResultFieldElement_ANONYMOUS_FIELD1": {
+    "ResultSignature_ANONYMOUS_FIELD1": {
       "record_kind": "union",
-      "size_of": 32,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "",
-          "type": {
-            "name": "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1,
-            "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "ResultFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "ResultAccount_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD10": {
-      "size_of": 32,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "u256",
-          "type": {
-            "name": "uint64_t[4]",
-            "kind": "array",
-            "sizeOf": 32,
-            "alignOf": 8,
-            "sizeOfElement": 8,
-            "arraySize": 4,
-            "innerType": {
-              "name": "uint64_t",
-              "kind": "typeAlias",
-              "sizeOf": 8,
-              "alignOf": 8,
-              "innerType": {
-                "name": "unsigned long",
-                "kind": "primitive",
-                "sizeOf": 8,
-                "alignOf": 8
-              }
-            }
-          }
-        }
-      ]
-    },
-    "MemberClause": {
       "size_of": 64,
       "align_of": 8,
       "fields": [
         {
-          "name": "model",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          }
-        },
-        {
-          "name": "member",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
-          },
-          "offset_of": 8
-        },
-        {
-          "name": "operator_",
-          "type": {
-            "name": "ComparisonOperator",
-            "kind": "enum",
-            "sizeOf": 4,
-            "alignOf": 4
-          },
-          "offset_of": 16
-        },
-        {
-          "name": "value",
-          "type": {
-            "name": "Primitive",
-            "kind": "struct",
-            "sizeOf": 40,
-            "alignOf": 8
-          },
-          "offset_of": 24
-        }
-      ]
-    },
-    "CArrayTy": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "Ty*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "Ty",
-              "kind": "struct",
-              "sizeOf": 48,
-              "alignOf": 8
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "KeysClause": {
-      "size_of": 40,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "keys",
-          "type": {
-            "name": "CArrayCOptionFieldElement",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          }
-        },
-        {
-          "name": "pattern_matching",
-          "type": {
-            "name": "PatternMatching",
-            "kind": "enum",
-            "sizeOf": 4,
-            "alignOf": 4
-          },
-          "offset_of": 16
-        },
-        {
-          "name": "models",
-          "type": {
-            "name": "CArrayc_char",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 24
-        }
-      ]
-    },
-    "Entity": {
-      "size_of": 48,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "hashed_keys",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        },
-        {
-          "name": "models",
-          "type": {
-            "name": "CArrayStruct",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          },
-          "offset_of": 32
-        }
-      ]
-    },
-    "BlockId_ANONYMOUS_FIELD1": {
-      "record_kind": "union",
-      "size_of": 32,
-      "align_of": 8,
-      "fields": [
-        {
           "name": "",
           "type": {
-            "name": "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
+            "name": "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0",
             "kind": "struct",
-            "sizeOf": 32,
+            "sizeOf": 64,
             "alignOf": 1,
             "isAnonymous": true
           }
@@ -4614,234 +4831,145 @@
         {
           "name": "",
           "type": {
-            "name": "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
+            "name": "ResultSignature_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1",
             "kind": "struct",
             "sizeOf": 8,
             "alignOf": 8,
             "isAnonymous": true
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD2",
-            "kind": "struct",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "isAnonymous": true
-          }
-        }
-      ]
-    },
-    "COptionFieldElement_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 32,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "some",
-          "type": {
-            "name": "FieldElement",
-            "kind": "struct",
-            "sizeOf": 32,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD12": {
-      "size_of": 1,
-      "align_of": 1,
-      "fields": [
-        {
-          "name": "bool_",
-          "type": {
-            "name": "_Bool",
-            "kind": "primitive",
-            "sizeOf": 1,
-            "alignOf": 1
-          }
-        }
-      ]
-    },
-    "Primitive_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 2,
-      "align_of": 2,
-      "fields": [
-        {
-          "name": "i16",
-          "type": {
-            "name": "int16_t",
-            "kind": "typeAlias",
-            "sizeOf": 2,
-            "alignOf": 2,
-            "innerType": {
-              "name": "short",
-              "kind": "primitive",
-              "sizeOf": 2,
-              "alignOf": 2
-            }
-          }
-        }
-      ]
-    },
-    "Resultc_char_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "err",
-          "type": {
-            "name": "Error",
-            "kind": "struct",
-            "sizeOf": 8,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Error": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "message",
-          "type": {
-            "name": "char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1
-            }
-          }
-        }
-      ]
-    },
-    "CArrayCOptionFieldElement": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "data",
-          "type": {
-            "name": "COptionFieldElement*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "COptionFieldElement",
-              "kind": "struct",
-              "sizeOf": 36,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "data_len",
-          "type": {
-            "name": "uintptr_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "BlockId_ANONYMOUS_FIELD1_ANONYMOUS_FIELD1": {
-      "size_of": 8,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "number",
-          "type": {
-            "name": "uint64_t",
-            "kind": "typeAlias",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "unsigned long",
-              "kind": "primitive",
-              "sizeOf": 8,
-              "alignOf": 8
-            }
-          }
-        }
-      ]
-    },
-    "ResultCArrayu8_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "ok",
-          "type": {
-            "name": "CArrayu8",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
-          }
-        }
-      ]
-    },
-    "Resultbool": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "tag",
-          "type": {
-            "name": "Resultbool_Tag",
-            "kind": "typeAlias",
-            "sizeOf": 4,
-            "alignOf": 4,
-            "innerType": {
-              "name": "Resultbool_Tag",
-              "kind": "enum",
-              "sizeOf": 4,
-              "alignOf": 4
-            }
-          }
-        },
-        {
-          "name": "",
-          "type": {
-            "name": "Resultbool_ANONYMOUS_FIELD1",
-            "kind": "union",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "isAnonymous": true
-          },
-          "offset_of": 8
-        }
-      ]
-    },
-    "EntityKeysClause_ANONYMOUS_FIELD1_ANONYMOUS_FIELD0": {
-      "size_of": 16,
-      "align_of": 8,
-      "fields": [
-        {
-          "name": "hashed_keys",
-          "type": {
-            "name": "CArrayFieldElement",
-            "kind": "struct",
-            "sizeOf": 16,
-            "alignOf": 8
           }
         }
       ]
     }
   },
   "enums": {
+    "Resultbool_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "Okbool"
+        },
+        {
+          "name": "Errbool",
+          "value": 1
+        }
+      ]
+    },
+    "Clause_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "Keys"
+        },
+        {
+          "name": "CMember",
+          "value": 1
+        },
+        {
+          "name": "Composite",
+          "value": 2
+        }
+      ]
+    },
+    "BlockId_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "Hash"
+        },
+        {
+          "name": "Number",
+          "value": 1
+        },
+        {
+          "name": "BlockTag_",
+          "value": 2
+        }
+      ],
+      "comment": "/**\n * Block hash, number or tag\n */"
+    },
+    "COptionClause_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "SomeClause"
+        },
+        {
+          "name": "NoneClause",
+          "value": 1
+        }
+      ]
+    },
+    "LogicalOperator": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "And"
+        },
+        {
+          "name": "Or",
+          "value": 1
+        }
+      ]
+    },
+    "EntityKeysClause_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "HashedKeys"
+        },
+        {
+          "name": "EntityKeys",
+          "value": 1
+        }
+      ]
+    },
+    "ResultCArrayEntity_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "OkCArrayEntity"
+        },
+        {
+          "name": "ErrCArrayEntity",
+          "value": 1
+        }
+      ]
+    },
     "ResultAccount_Tag": {
       "typeInteger": {
         "name": "unsigned int",
@@ -4855,6 +4983,56 @@
         },
         {
           "name": "ErrAccount",
+          "value": 1
+        }
+      ]
+    },
+    "ComparisonOperator": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "Eq"
+        },
+        {
+          "name": "Neq",
+          "value": 1
+        },
+        {
+          "name": "Gt",
+          "value": 2
+        },
+        {
+          "name": "Gte",
+          "value": 3
+        },
+        {
+          "name": "Lt",
+          "value": 4
+        },
+        {
+          "name": "Lte",
+          "value": 5
+        }
+      ]
+    },
+    "COptionFieldElement_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "SomeFieldElement"
+        },
+        {
+          "name": "NoneFieldElement",
           "value": 1
         }
       ]
@@ -4906,269 +5084,6 @@
         {
           "name": "ByteArray",
           "value": 5
-        }
-      ]
-    },
-    "ResultToriiClient_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "OkToriiClient"
-        },
-        {
-          "name": "ErrToriiClient",
-          "value": 1
-        }
-      ]
-    },
-    "LogicalOperator": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "And"
-        },
-        {
-          "name": "Or",
-          "value": 1
-        }
-      ]
-    },
-    "EntityKeysClause_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "HashedKeys"
-        },
-        {
-          "name": "EntityKeys",
-          "value": 1
-        }
-      ]
-    },
-    "BlockTag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "Latest"
-        },
-        {
-          "name": "Pending",
-          "value": 1
-        }
-      ]
-    },
-    "ResultSubscription_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "OkSubscription"
-        },
-        {
-          "name": "ErrSubscription",
-          "value": 1
-        }
-      ]
-    },
-    "ResultFieldElement_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "OkFieldElement"
-        },
-        {
-          "name": "ErrFieldElement",
-          "value": 1
-        }
-      ]
-    },
-    "BlockId_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "Hash"
-        },
-        {
-          "name": "Number",
-          "value": 1
-        },
-        {
-          "name": "BlockTag_",
-          "value": 2
-        }
-      ],
-      "comment": "/**\n * Block hash, number or tag\n */"
-    },
-    "PatternMatching": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "FixedLen"
-        },
-        {
-          "name": "VariableLen",
-          "value": 1
-        }
-      ]
-    },
-    "Resultbool_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "Okbool"
-        },
-        {
-          "name": "Errbool",
-          "value": 1
-        }
-      ]
-    },
-    "Resultc_char_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "Okc_char"
-        },
-        {
-          "name": "Errc_char",
-          "value": 1
-        }
-      ]
-    },
-    "ComparisonOperator": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "Eq"
-        },
-        {
-          "name": "Neq",
-          "value": 1
-        },
-        {
-          "name": "Gt",
-          "value": 2
-        },
-        {
-          "name": "Gte",
-          "value": 3
-        },
-        {
-          "name": "Lt",
-          "value": 4
-        },
-        {
-          "name": "Lte",
-          "value": 5
-        }
-      ]
-    },
-    "ResultCArrayEntity_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "OkCArrayEntity"
-        },
-        {
-          "name": "ErrCArrayEntity",
-          "value": 1
-        }
-      ]
-    },
-    "Clause_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "Keys"
-        },
-        {
-          "name": "CMember",
-          "value": 1
-        },
-        {
-          "name": "Composite",
-          "value": 2
-        }
-      ]
-    },
-    "ResultProvider_Tag": {
-      "typeInteger": {
-        "name": "unsigned int",
-        "kind": "primitive",
-        "sizeOf": 4,
-        "alignOf": 4
-      },
-      "values": [
-        {
-          "name": "OkProvider"
-        },
-        {
-          "name": "ErrProvider",
-          "value": 1
         }
       ]
     },
@@ -5245,7 +5160,7 @@
         }
       ]
     },
-    "COptionFieldElement_Tag": {
+    "Resultc_char_Tag": {
       "typeInteger": {
         "name": "unsigned int",
         "kind": "primitive",
@@ -5254,15 +5169,15 @@
       },
       "values": [
         {
-          "name": "SomeFieldElement"
+          "name": "Okc_char"
         },
         {
-          "name": "NoneFieldElement",
+          "name": "Errc_char",
           "value": 1
         }
       ]
     },
-    "COptionClause_Tag": {
+    "PatternMatching": {
       "typeInteger": {
         "name": "unsigned int",
         "kind": "primitive",
@@ -5271,15 +5186,15 @@
       },
       "values": [
         {
-          "name": "SomeClause"
+          "name": "FixedLen"
         },
         {
-          "name": "NoneClause",
+          "name": "VariableLen",
           "value": 1
         }
       ]
     },
-    "ResultSignature_Tag": {
+    "ResultFieldElement_Tag": {
       "typeInteger": {
         "name": "unsigned int",
         "kind": "primitive",
@@ -5288,10 +5203,78 @@
       },
       "values": [
         {
-          "name": "OkSignature"
+          "name": "OkFieldElement"
         },
         {
-          "name": "ErrSignature",
+          "name": "ErrFieldElement",
+          "value": 1
+        }
+      ]
+    },
+    "ResultProvider_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "OkProvider"
+        },
+        {
+          "name": "ErrProvider",
+          "value": 1
+        }
+      ]
+    },
+    "ResultToriiClient_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "OkToriiClient"
+        },
+        {
+          "name": "ErrToriiClient",
+          "value": 1
+        }
+      ]
+    },
+    "BlockTag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "Latest"
+        },
+        {
+          "name": "Pending",
+          "value": 1
+        }
+      ]
+    },
+    "ResultSubscription_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "OkSubscription"
+        },
+        {
+          "name": "ErrSubscription",
           "value": 1
         }
       ]
@@ -5312,16 +5295,63 @@
           "value": 1
         }
       ]
+    },
+    "ResultSignature_Tag": {
+      "typeInteger": {
+        "name": "unsigned int",
+        "kind": "primitive",
+        "sizeOf": 4,
+        "alignOf": 4
+      },
+      "values": [
+        {
+          "name": "OkSignature"
+        },
+        {
+          "name": "ErrSignature",
+          "value": 1
+        }
+      ]
     }
   },
   "typeAliases": {},
   "opaqueTypes": {
-    "Subscription": {},
     "Account": {},
+    "Provider": {},
     "ToriiClient": {},
-    "Provider": {}
+    "Subscription": {}
   },
   "functionPointers": {
+    "void (const char *)": {
+      "type": {
+        "name": "void (const char *)",
+        "kind": "functionPointer",
+        "sizeOf": 1,
+        "alignOf": 4
+      },
+      "returnType": {
+        "name": "void",
+        "kind": "primitive"
+      },
+      "parameters": [
+        {
+          "name": "",
+          "type": {
+            "name": "const char*",
+            "kind": "pointer",
+            "sizeOf": 8,
+            "alignOf": 8,
+            "innerType": {
+              "name": "const char",
+              "kind": "primitive",
+              "sizeOf": 1,
+              "alignOf": 1,
+              "isConst": true
+            }
+          }
+        }
+      ]
+    },
     "void (FieldElement, CArrayStruct)": {
       "type": {
         "name": "void (FieldElement, CArrayStruct)",
@@ -5350,36 +5380,6 @@
             "kind": "struct",
             "sizeOf": 16,
             "alignOf": 8
-          }
-        }
-      ]
-    },
-    "void (const char *)": {
-      "type": {
-        "name": "void (const char *)",
-        "kind": "functionPointer",
-        "sizeOf": 1,
-        "alignOf": 4
-      },
-      "returnType": {
-        "name": "void",
-        "kind": "primitive"
-      },
-      "parameters": [
-        {
-          "name": "",
-          "type": {
-            "name": "const char*",
-            "kind": "pointer",
-            "sizeOf": 8,
-            "alignOf": 8,
-            "innerType": {
-              "name": "const char",
-              "kind": "primitive",
-              "sizeOf": 1,
-              "alignOf": 1,
-              "isConst": true
-            }
           }
         }
       ]
