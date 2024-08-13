@@ -43,6 +43,27 @@ namespace Dojo.Starknet
 
         [DllImport("__Internal")]
         public static extern string AccountChainId(IntPtr account);
+        
+        [DllImport("__Internal")]
+        public static extern void AccountNonce(IntPtr account, Action<string> cb);
+
+        public class AccountNonceHelper
+        {
+            public static TaskCompletionSource<FieldElement> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string result)
+            {
+                Tcs.SetResult(new FieldElement(result));
+            }
+        }
+
+        public static Task<FieldElement> AccountNonceAsync(IntPtr account)
+        {
+            AccountNonceHelper.Tcs = new TaskCompletionSource<FieldElement>();
+            AccountNonce(account, AccountNonceHelper.Callback);
+            return AccountNonceHelper.Tcs.Task;
+        }
 
         [DllImport("__Internal")]
         public static extern void AccountExecuteRaw(IntPtr account, CString calls, Action<string> cb);
@@ -212,5 +233,8 @@ namespace Dojo.Starknet
         {
             return DeserializeByteArray(new CString(JsonConvert.SerializeObject(felts.Select(f => f.Hex()).ToArray())));
         }
+
+        [DllImport("__Internal")]
+        public static extern string PoseidonHash(CString str);
     }
 }

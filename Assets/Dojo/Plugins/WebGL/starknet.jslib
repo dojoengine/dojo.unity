@@ -58,6 +58,16 @@ mergeInto(LibraryManager.library, {
     account.__destroy_into_raw();
     dynCall_vi(cb, burner.__destroy_into_raw());
   },
+  AccountNonce: function (accountPtr, cb) {
+    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const nonce = await account.nonce();
+    const bufferSize = lengthBytesUTF8(nonce) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(nonce, buffer, bufferSize);
+    
+    account.__destroy_into_raw();
+    dynCall_vi(cb, buffer);
+  },
   Call: async function (providerPtr, callStr, blockIdStr, cb) {
     const provider = wasm_bindgen.Provider.__wrap(providerPtr);
     const call = JSON.parse(UTF8ToString(callStr));
@@ -131,4 +141,11 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(byteArray, buffer, bufferSize);
     return buffer;
   },
+  PoseidonHash: function (str) {
+    const hash = wasm_bindgen.poseidonHash(UTF8ToString(str));
+    const bufferSize = lengthBytesUTF8(hash) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(hash, buffer, bufferSize);
+    return buffer;
+  }
 });

@@ -99,21 +99,15 @@ namespace Dojo.Torii
         private static class OnEntityUpdatedHelper
         {
 
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string entity)
+            [MonoPInvokeCallback(typeof(Action<string, string>))]
+            public static void Callback(string hashed_keys, string models)
             {
-                var parsedEntity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entity).First();
-                var models = new Dictionary<string, Model>();
+                var parsedModels = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, WasmValue>>>(models).Select(m => new Model(
+                    m.Key,
+                    m.Value
+                )).ToArray();
 
-                foreach (var model in parsedEntity.Value)
-                {
-                    models.Add(model.Key, new Model(
-                        model.Key,
-                        model.Value
-                    ));
-                }
-
-                ToriiEvents.Instance.EntityUpdated(new FieldElement(parsedEntity.Key), models.Values.ToArray());
+                ToriiEvents.Instance.EntityUpdated(new FieldElement(hashed_keys), parsedModels);
             }
         }
 

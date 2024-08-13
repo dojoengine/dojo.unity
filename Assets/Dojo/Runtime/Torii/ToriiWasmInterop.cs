@@ -49,7 +49,7 @@ namespace Dojo.Torii
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
-        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clauses, Action<string> cb, Action<IntPtr> subCb);
+        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clauses, Action<string, string> cb, Action<IntPtr> subCb);
 
         [DllImport("__Internal")]
         public static extern void UpdateEntitySubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses);
