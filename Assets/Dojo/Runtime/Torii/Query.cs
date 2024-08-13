@@ -86,28 +86,6 @@ namespace Dojo.Torii
     }
 
     [Serializable]
-    public struct ModelKeysClause
-    {
-        public string model;
-        public FieldElement[] keys;
-
-        public ModelKeysClause(string model, FieldElement[] keys)
-        {
-            this.model = model;
-            this.keys = keys;
-        }
-
-        public dojo.ModelKeysClause ToNative()
-        {
-            return new dojo.ModelKeysClause
-            {
-                model = model,
-                keys = keys.Select(k => k.Inner).ToArray()
-            };
-        }
-    }
-
-    [Serializable]
     public struct EntityKeysClause
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -179,9 +157,9 @@ namespace Dojo.Torii
         public string member;
         [JsonConverter(typeof(StringEnumConverter))]
         public dojo.ComparisonOperator @operator;
-        public Value value;
+        public Primitive value;
 
-        public MemberClause(string model, string member, dojo.ComparisonOperator @operator, Value value)
+        public MemberClause(string model, string member, dojo.ComparisonOperator @operator, Primitive value)
         {
             this.model = model;
             this.member = member;
@@ -221,78 +199,6 @@ namespace Dojo.Torii
                 operator_ = @operator,
                 clauses = clauses.Select(c => c.ToNative()).ToArray()
             };
-        }
-    }
-
-    [Serializable]
-    public class Value
-    {
-        public Primitive primitive_type;
-        public ValueType value_type;
-
-        public dojo.Value ToNative()
-        {
-            return new dojo.Value
-            {
-                primitive_type = primitive_type.ToNative(),
-                value_type = value_type.ToNative()
-            };
-        }
-    }
-
-    [Serializable]
-    public struct ValueType
-    {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public string? String;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public long? Int;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public ulong? UInt;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public bool? VBool;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public byte[]? Bytes;
-
-        public static implicit operator ValueType(string str)
-        {
-            return new ValueType { String = str };
-        }
-
-        public static implicit operator ValueType(long i)
-        {
-            return new ValueType { Int = i };
-        }
-
-        public static implicit operator ValueType(ulong u)
-        {
-            return new ValueType { UInt = u };
-        }
-
-        public static implicit operator ValueType(bool b)
-        {
-            return new ValueType { VBool = b };
-        }
-
-        public static implicit operator ValueType(byte[] bytes)
-        {
-            return new ValueType { Bytes = bytes };
-        }
-
-        public dojo.ValueType ToNative()
-        {
-            if (String != null)
-                return new dojo.ValueType { tag = dojo.ValueType_Tag.String, @string = String };
-            if (Int.HasValue)
-                return new dojo.ValueType { tag = dojo.ValueType_Tag.Int, int_ = Int.Value };
-            if (UInt.HasValue)
-                return new dojo.ValueType { tag = dojo.ValueType_Tag.UInt, u_int = UInt.Value };
-            if (VBool.HasValue)
-                return new dojo.ValueType { tag = dojo.ValueType_Tag.VBool, v_bool = VBool.Value };
-            if (Bytes != null)
-                return new dojo.ValueType { tag = dojo.ValueType_Tag.Bytes, bytes = Bytes };
-
-            throw new InvalidOperationException("ValueType must have one non-null value");
         }
     }
 
