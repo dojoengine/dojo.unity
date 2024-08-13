@@ -199,32 +199,6 @@ public class Tests
     //     Assert.That(model.struct_.children[0].name, Is.EqualTo("player"));
     // }
 
-    [Test, Order(1)]
-    public void TestAddModelsToSync()
-    {
-        var models = new ModelKeysClause[]
-            { new ModelKeysClause ("Moves", new FieldElement[] { playerAddress } ) };
-        client.AddModelsToSync(models);
-
-        var subscribedModels = client.SubscribedModels();
-
-        for (var i = 0; i < subscribedModels.Length; i++)
-        {
-            Assert.That(subscribedModels[i].model, Is.EqualTo("Moves"));
-            Assert.That(subscribedModels[i].keys[0], Is.EqualTo(playerAddress));
-        }
-    }
-
-    [Test, Order(4)]
-    public void TestRemoveModelsToSync()
-    {
-        var models = new ModelKeysClause[] { new ModelKeysClause("Moves", new FieldElement[] { playerAddress }) };
-        client.RemoveModelsToSync(models);
-
-        var subscribedmodels = client.SubscribedModels();
-        Assert.That(subscribedmodels.Length, Is.EqualTo(0));
-    }
-
     [Test, Order(2)]
     public void TestOnEntityStateUpdate()
     {
@@ -245,16 +219,5 @@ public class Tests
             eventMessageUpdated = models[0].Members["player"] == playerAddress;
         };
         ToriiEvents.Instance.OnEventMessageUpdated += callback;
-    }
-
-    [Test, Order(2)]
-    public void TestOnSyncModelUpdate()
-    {
-        ToriiEvents.OnSyncModelUpdateDelegate callback = () =>
-        {
-            modelEntityUpdated = true;
-        };
-        client.RegisterSyncModelUpdateEvent(new ModelKeysClause("Moves", new[] { playerAddress }), false);
-        ToriiEvents.Instance.OnSyncModelUpdated += callback;
     }
 }

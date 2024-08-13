@@ -70,25 +70,28 @@ namespace Dojo.Starknet
 #endif
         }
 
-        //         public async unsafe Task<FieldElement> ChainId()
-        //         {
-        // #if UNITY_WEBGL && !UNITY_EDITOR
-        //             var chainId = StarknetInterop.AccountChainId(await account.Task);
-        // #else
-        //             var chainId = dojo.account_chain_id(account);
-        // #endif
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public async Task<FieldElement> Nonce()
+        {
+            return await StarknetInterop.AccountNonceAsync(await account.Task);
+        }
+#else
+        public unsafe FieldElement NonceSync()
+        {
+            var result = dojo.account_nonce(account);
+            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
+            {
+                throw new Exception(result.err.message);
+            }
 
-        //             return new FieldElement(chainId);
-        //         }
+            return new FieldElement(result.ok);
+        }
 
-        //         public unsafe void SetBlockId(dojo.BlockId blockId)
-        //         {
-        // // #if UNITY_WEBGL && !UNITY_EDITOR
-        //             StarknetInterop.account(account, blockId.Hex());
-        // #else
-        //             dojo.account_set_block_id(account, blockId);
-        // #endif
-        //         }
+        public async Task<FieldElement> Nonce()
+        {
+            return await Task.Run(() => Nonce());
+        }
+#endif
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings

@@ -14,9 +14,9 @@ declare namespace wasm_bindgen {
 	/**
 	* @param {string} private_key
 	* @param {string} hash
-	* @returns {JsSignature}
+	* @returns {Signature}
 	*/
-	export function signingKeySign(private_key: string, hash: string): JsSignature;
+	export function signingKeySign(private_key: string, hash: string): Signature;
 	/**
 	* @param {string} signing_key
 	* @returns {string}
@@ -25,10 +25,10 @@ declare namespace wasm_bindgen {
 	/**
 	* @param {string} verifying_key
 	* @param {string} hash
-	* @param {JsSignature} signature
+	* @param {Signature} signature
 	* @returns {boolean}
 	*/
-	export function verifyingKeyVerify(verifying_key: string, hash: string, signature: JsSignature): boolean;
+	export function verifyingKeyVerify(verifying_key: string, hash: string, signature: Signature): boolean;
 	/**
 	* @param {string} rpc_url
 	* @returns {Provider}
@@ -42,6 +42,11 @@ declare namespace wasm_bindgen {
 	* @returns {string}
 	*/
 	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
+	/**
+	* @param {string} tag
+	* @returns {string}
+	*/
+	export function getSelectorFromTag(tag: string): string;
 	/**
 	* @param {string} str
 	* @returns {(string)[]}
@@ -58,11 +63,31 @@ declare namespace wasm_bindgen {
 	*/
 	export function poseidonHash(inputs: (string)[]): string;
 	/**
+	* @param {string} name
+	* @returns {string}
+	*/
+	export function getSelectorFromName(name: string): string;
+	/**
+	* @param {Uint8Array} inputs
+	* @returns {string}
+	*/
+	export function starknetKeccak(inputs: Uint8Array): string;
+	/**
+	* @param {string} str
+	* @returns {string}
+	*/
+	export function cairoShortStringToFelt(str: string): string;
+	/**
+	* @param {string} str
+	* @returns {string}
+	*/
+	export function parseCairoShortString(str: string): string;
+	/**
 	* Create the a client with the given configurations.
 	* @param {ClientConfig} config
-	* @returns {Promise<Client>}
+	* @returns {Promise<ToriiClient>}
 	*/
-	export function createClient(config: ClientConfig): Promise<Client>;
+	export function createClient(config: ClientConfig): Promise<ToriiClient>;
 	export interface ClientConfig {
 	    rpcUrl: string;
 	    toriiUrl: string;
@@ -70,12 +95,30 @@ declare namespace wasm_bindgen {
 	    worldAddress: string;
 	}
 	
-	export interface JsSignature {
+	export interface Ty {
+	    type: "primitive" | "struct" | "enum" | "array" | "tuple" | "bytearray";
+	    type_name: string;
+	    value: boolean | number | string | Ty | null;
+	    key: boolean;
+	}
+	
+	export interface EnumValue {
+	    option: string;
+	    value: Ty;
+	}
+	
+	export interface Signature {
 	    r: string;
 	    s: string;
 	}
 	
 	export type Calls = Call[];
+	
+	export type Model = Record<string, Ty>;
+	
+	export type Entity = Record<string, Model>;
+	
+	export type Entities = Record<string, Entity>;
 	
 	export interface Call {
 	    to: string;
@@ -90,12 +133,14 @@ declare namespace wasm_bindgen {
 	export interface Query {
 	    limit: number;
 	    offset: number;
-	    clause: Clause | null;
+	    clause: Clause | undefined;
 	}
 	
 	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
 	
-	export type KeysClauses = ModelKeysClause[];
+	export type KeysClauses = EntityKeysClause[];
+	
+	export type ModelKeysClauses = ModelKeysClause[];
 	
 	export interface ModelKeysClause {
 	    model: string;
@@ -107,7 +152,7 @@ declare namespace wasm_bindgen {
 	export type EntityKeysClause = { HashedKeys: string[] } | { Keys: KeysClause };
 	
 	export interface KeysClause {
-	    keys: (string | null)[];
+	    keys: (string | undefined)[];
 	    pattern_matching: PatternMatching;
 	    models: string[];
 	}
@@ -116,7 +161,7 @@ declare namespace wasm_bindgen {
 	    model: string;
 	    member: string;
 	    operator: ComparisonOperator;
-	    value: Value;
+	    value: Primitive;
 	}
 	
 	export interface CompositeClause {
@@ -135,7 +180,7 @@ declare namespace wasm_bindgen {
 	
 	export type ValueType = { String: string } | { Int: number } | { UInt: number } | { VBool: boolean } | { Bytes: number[] };
 	
-	export type Primitive = { U8: number | null } | { U16: number | null } | { U32: number | null } | { U64: number | null } | { U128: string | null } | { U256: string | null } | { USize: number | null } | { Bool: boolean | null } | { Felt252: string | null } | { ClassHash: string | null } | { ContractAddress: string | null };
+	export type Primitive = { I8: number | undefined } | { I16: number | undefined } | { I32: number | undefined } | { I64: number | undefined } | { I128: string | undefined } | { U8: number | undefined } | { U16: number | undefined } | { U32: number | undefined } | { U64: number | undefined } | { U128: string | undefined } | { U256: string | undefined } | { USize: number | undefined } | { Bool: boolean | undefined } | { Felt252: string | undefined } | { ClassHash: string | undefined } | { ContractAddress: string | undefined };
 	
 	/**
 	*/
@@ -154,80 +199,19 @@ declare namespace wasm_bindgen {
 	*/
 	  setBlockId(block_id: string): void;
 	/**
-	* @param {Calls} calldata
+	* @param {(Call)[]} calldata
 	* @returns {Promise<string>}
 	*/
-	  executeRaw(calldata: Calls): Promise<string>;
+	  executeRaw(calldata: (Call)[]): Promise<string>;
 	/**
 	* @param {string} private_key
 	* @returns {Promise<Account>}
 	*/
 	  deployBurner(private_key: string): Promise<Account>;
-	}
 	/**
+	* @returns {Promise<string>}
 	*/
-	export class Client {
-	  free(): void;
-	/**
-	* @param {Query} query
-	* @returns {Promise<any>}
-	*/
-	  getEntities(query: Query): Promise<any>;
-	/**
-	* @param {number} limit
-	* @param {number} offset
-	* @returns {Promise<any>}
-	*/
-	  getAllEntities(limit: number, offset: number): Promise<any>;
-	/**
-	* @param {Query} query
-	* @returns {Promise<any>}
-	*/
-	  getEventMessages(query: Query): Promise<any>;
-	/**
-	* Retrieves the model value of an entity. Will fetch from remote if the requested entity is not one of the entities that are being synced.
-	* @param {string} model
-	* @param {(string)[]} keys
-	* @returns {Promise<any>}
-	*/
-	  getModelValue(model: string, keys: (string)[]): Promise<any>;
-	/**
-	* Register new entities to be synced.
-	* @param {KeysClauses} models
-	* @returns {Promise<void>}
-	*/
-	  addModelsToSync(models: KeysClauses): Promise<void>;
-	/**
-	* Remove the entities from being synced.
-	* @param {KeysClauses} models
-	* @returns {Promise<void>}
-	*/
-	  removeModelsToSync(models: KeysClauses): Promise<void>;
-	/**
-	* Register a callback to be called every time the specified synced entity's value changes.
-	* @param {ModelKeysClause} model
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
-	  onSyncModelChange(model: ModelKeysClause, callback: Function): Promise<Subscription>;
-	/**
-	* @param {EntityKeysClause | undefined} clause
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
-	  onEntityUpdated(clause: EntityKeysClause | undefined, callback: Function): Promise<Subscription>;
-	/**
-	* @param {EntityKeysClause | undefined} clause
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
-	  onEventMessageUpdated(clause: EntityKeysClause | undefined, callback: Function): Promise<Subscription>;
-	/**
-	* @param {string} message
-	* @param {JsSignature} signature
-	* @returns {Promise<Uint8Array>}
-	*/
-	  publishMessage(message: string, signature: JsSignature): Promise<Uint8Array>;
+	  nonce(): Promise<string>;
 	}
 	/**
 	*/
@@ -348,6 +332,60 @@ declare namespace wasm_bindgen {
 	/**
 	*/
 	  cancel(): void;
+	/**
+	*/
+	  id: bigint;
+	}
+	/**
+	*/
+	export class ToriiClient {
+	  free(): void;
+	/**
+	* @param {Query} query
+	* @returns {Promise<Entities>}
+	*/
+	  getEntities(query: Query): Promise<Entities>;
+	/**
+	* @param {number} limit
+	* @param {number} offset
+	* @returns {Promise<Entities>}
+	*/
+	  getAllEntities(limit: number, offset: number): Promise<Entities>;
+	/**
+	* @param {Query} query
+	* @returns {Promise<Entities>}
+	*/
+	  getEventMessages(query: Query): Promise<Entities>;
+	/**
+	* @param {(EntityKeysClause)[]} clauses
+	* @param {Function} callback
+	* @returns {Promise<Subscription>}
+	*/
+	  onEntityUpdated(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	/**
+	* @param {Subscription} subscription
+	* @param {(EntityKeysClause)[]} clauses
+	* @returns {Promise<void>}
+	*/
+	  updateEntitySubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
+	/**
+	* @param {(EntityKeysClause)[]} clauses
+	* @param {Function} callback
+	* @returns {Promise<Subscription>}
+	*/
+	  onEventMessageUpdated(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	/**
+	* @param {Subscription} subscription
+	* @param {(EntityKeysClause)[]} clauses
+	* @returns {Promise<void>}
+	*/
+	  updateEventMessageSubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
+	/**
+	* @param {string} message
+	* @param {Signature} signature
+	* @returns {Promise<Uint8Array>}
+	*/
+	  publishMessage(message: string, signature: Signature): Promise<Uint8Array>;
 	}
 	
 }
@@ -356,10 +394,6 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_provider_free: (a: number) => void;
-  readonly __wbg_account_free: (a: number) => void;
-  readonly __wbg_subscription_free: (a: number) => void;
-  readonly __wbg_client_free: (a: number) => void;
   readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
   readonly signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -372,36 +406,49 @@ declare interface InitOutput {
   readonly account_address: (a: number, b: number) => void;
   readonly account_chainId: (a: number, b: number) => void;
   readonly account_setBlockId: (a: number, b: number, c: number, d: number) => void;
-  readonly account_executeRaw: (a: number, b: number) => number;
+  readonly account_executeRaw: (a: number, b: number, c: number) => number;
   readonly account_deployBurner: (a: number, b: number, c: number) => number;
+  readonly account_nonce: (a: number) => number;
   readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
+  readonly getSelectorFromTag: (a: number, b: number, c: number) => void;
   readonly byteArraySerialize: (a: number, b: number, c: number) => void;
   readonly byteArrayDeserialize: (a: number, b: number, c: number) => void;
   readonly poseidonHash: (a: number, b: number, c: number) => void;
-  readonly client_getEntities: (a: number, b: number) => number;
-  readonly client_getAllEntities: (a: number, b: number, c: number) => number;
-  readonly client_getEventMessages: (a: number, b: number) => number;
-  readonly client_getModelValue: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly client_addModelsToSync: (a: number, b: number) => number;
-  readonly client_removeModelsToSync: (a: number, b: number) => number;
-  readonly client_onSyncModelChange: (a: number, b: number, c: number) => number;
-  readonly client_onEntityUpdated: (a: number, b: number, c: number) => number;
-  readonly client_onEventMessageUpdated: (a: number, b: number, c: number) => number;
-  readonly client_publishMessage: (a: number, b: number, c: number, d: number) => number;
+  readonly getSelectorFromName: (a: number, b: number, c: number) => void;
+  readonly starknetKeccak: (a: number, b: number) => void;
+  readonly cairoShortStringToFelt: (a: number, b: number, c: number) => void;
+  readonly parseCairoShortString: (a: number, b: number, c: number) => void;
+  readonly toriiclient_getEntities: (a: number, b: number) => number;
+  readonly toriiclient_getAllEntities: (a: number, b: number, c: number) => number;
+  readonly toriiclient_getEventMessages: (a: number, b: number) => number;
+  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_updateEntitySubscription: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
-  readonly __wbg_queuingstrategy_free: (a: number) => void;
-  readonly queuingstrategy_highWaterMark: (a: number) => number;
-  readonly __wbg_intounderlyingsink_free: (a: number) => void;
-  readonly intounderlyingsink_write: (a: number, b: number) => number;
-  readonly intounderlyingsink_close: (a: number) => number;
-  readonly intounderlyingsink_abort: (a: number, b: number) => number;
+  readonly __wbg_toriiclient_free: (a: number) => void;
+  readonly __wbg_provider_free: (a: number) => void;
+  readonly __wbg_account_free: (a: number) => void;
+  readonly __wbg_subscription_free: (a: number) => void;
+  readonly __wbg_get_subscription_id: (a: number) => number;
+  readonly __wbg_set_subscription_id: (a: number, b: number) => void;
   readonly __wbg_intounderlyingbytesource_free: (a: number) => void;
   readonly intounderlyingbytesource_type: (a: number, b: number) => void;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_start: (a: number, b: number) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: number) => number;
   readonly intounderlyingbytesource_cancel: (a: number) => void;
+  readonly __wbg_queuingstrategy_free: (a: number) => void;
+  readonly queuingstrategy_highWaterMark: (a: number) => number;
+  readonly __wbg_intounderlyingsink_free: (a: number) => void;
+  readonly intounderlyingsink_write: (a: number, b: number) => number;
+  readonly intounderlyingsink_close: (a: number) => number;
+  readonly intounderlyingsink_abort: (a: number, b: number) => number;
+  readonly __wbg_intounderlyingsource_free: (a: number) => void;
+  readonly intounderlyingsource_pull: (a: number, b: number) => number;
+  readonly intounderlyingsource_cancel: (a: number) => void;
   readonly __wbg_readablestreamgetreaderoptions_free: (a: number) => void;
   readonly readablestreamgetreaderoptions_mode: (a: number) => number;
   readonly __wbg_pipeoptions_free: (a: number) => void;
@@ -409,20 +456,17 @@ declare interface InitOutput {
   readonly pipeoptions_preventCancel: (a: number) => number;
   readonly pipeoptions_preventAbort: (a: number) => number;
   readonly pipeoptions_signal: (a: number) => number;
-  readonly __wbg_intounderlyingsource_free: (a: number) => void;
-  readonly intounderlyingsource_pull: (a: number, b: number) => number;
-  readonly intounderlyingsource_cancel: (a: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h02744ff72e97ed73: (a: number, b: number, c: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke0_mut__hef135aeadb8d9b2d: (a: number, b: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke1_mut__h80d0ff2204b1ffde: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h54a3cbc5936c0dc6: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h30748262f1b7d27c: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hb74b4e0cfb480659: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hcbe5adb8ab3b7d0e: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h0616717051788241: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__hee2649badc712846: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h3e82d67bb2b557d3: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**

@@ -45,27 +45,33 @@ namespace Dojo.Torii
 
         // Get the value of a model for a specific set of keys
         [DllImport("__Internal")]
-        public static extern string GetModelValue(IntPtr clientPtr, string model, string keys);
+        public static extern string GetModelValue(IntPtr clientPtr, CString model, CString keys);
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
-        public static extern void OnEntityUpdated(IntPtr clientPtr, IntPtr clause, Action<string> cb);
+        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clauses, Action<string, string> cb, Action<IntPtr> subCb);
+
+        [DllImport("__Internal")]
+        public static extern void UpdateEntitySubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses);
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on event mnessage updated
         [DllImport("__Internal")]
-        public static extern void OnEventMessageUpdated(IntPtr clientPtr, IntPtr clause, Action<string> cb);
+        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clauses, Action<string, string> cb, Action<IntPtr> subCb);
+
+        [DllImport("__Internal")]
+        public static extern void UpdateEventMessageSubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses);
 
         // Add models to sync
         [DllImport("__Internal")]
-        public static extern void AddModelsToSync(IntPtr clientPtr, string models);
+        public static extern void AddModelsToSync(IntPtr clientPtr, CString models);
 
         // Remove models to sync
         [DllImport("__Internal")]
-        public static extern void RemoveModelsToSync(IntPtr clientPtr, string models);
+        public static extern void RemoveModelsToSync(IntPtr clientPtr, CString models);
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on model change
         [DllImport("__Internal")]
-        public static extern void OnSyncModelChange(IntPtr clientPtr, string model, string callbackObjectName, string callbackMethodName);
+        public static extern void OnSyncModelChange(IntPtr clientPtr, CString model, CString callbackObjectName, CString callbackMethodName);
 
         [DllImport("__Internal")]
         public static extern string EncodeTypedData(CString typedData, CString address);

@@ -89,7 +89,7 @@ namespace Dojo.Starknet
                 public async Task<FieldElement[]> Call(dojo.Call call, dojo.BlockId blockId)
                 {
 #if UNITY_WEBGL && !UNITY_EDITOR
-                        await StarknetInterop.CallAsync(client, call, blockId);
+                        return await StarknetInterop.CallAsync(client, call, blockId);
 #else
                         return await Task.Run(() => CallSync(call, blockId));
 #endif

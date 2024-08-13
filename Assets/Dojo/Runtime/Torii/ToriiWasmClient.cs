@@ -19,6 +19,9 @@ namespace Dojo.Torii
         private FieldElement world;
         public IntPtr clientPtr;
 
+        IntPtr entitySubscription;
+        IntPtr eventMessageSubscription;
+
         public ToriiWasmClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement world)
         {
             this.toriiUrl = toriiUrl;
@@ -44,8 +47,8 @@ namespace Dojo.Torii
             ToriiWasmInterop.CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
             clientPtr = await CreateClientHelper.Tcs.Task;
 
-            RegisterEntityStateUpdateEvent();
-            RegisterEventMessageUpdateEvent();
+            entitySubscription = await RegisterEntityStateUpdateEvent(new KeysClause[] { });
+            eventMessageSubscription = await RegisterEventMessageUpdateEvent(new KeysClause[] { });
         }
 
         private static class GetEntitiesHelper
@@ -96,53 +99,66 @@ namespace Dojo.Torii
         private static class OnEntityUpdatedHelper
         {
 
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string entity)
+            [MonoPInvokeCallback(typeof(Action<string, string>))]
+            public static void Callback(string hashed_keys, string models)
             {
-                var parsedEntity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entity).First();
-                var models = new Dictionary<string, Model>();
+                var parsedModels = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, WasmValue>>>(models).Select(m => new Model(
+                    m.Key,
+                    m.Value
+                )).ToArray();
 
-                foreach (var model in parsedEntity.Value)
-                {
-                    models.Add(model.Key, new Model(
-                        model.Key,
-                        model.Value
-                    ));
-                }
-
-                ToriiEvents.Instance.EntityUpdated(new FieldElement(parsedEntity.Key), models.Values.ToArray());
+                ToriiEvents.Instance.EntityUpdated(new FieldElement(hashed_keys), parsedModels);
             }
         }
 
-        public void RegisterEntityStateUpdateEvent(KeysClause? clause = null)
+        private static class SubscriptionHelper
         {
-            ToriiWasmInterop.OnEntityUpdated(clientPtr, clause.HasValue ? new CString(JsonConvert.SerializeObject(clause)) : (IntPtr)0, OnEntityUpdatedHelper.Callback);
+            public static TaskCompletionSource<IntPtr> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<IntPtr>))]
+            public static void Callback(IntPtr subPtr)
+            {
+                Tcs.SetResult(subPtr);
+            }
+        }
+
+        public async Task<IntPtr> RegisterEntityStateUpdateEvent(KeysClause[] clauses)
+        {
+            SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
+            ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            return await SubscriptionHelper.Tcs.Task;
+        }
+
+        public void UpdateEntitySubscription(KeysClause[] clauses)
+        {
+            ToriiWasmInterop.UpdateEntitySubscription(clientPtr, entitySubscription, new CString(JsonConvert.SerializeObject(clauses)));
         }
 
         private static class OnEventMessageUpdatedHelper
         {
 
-            [MonoPInvokeCallback(typeof(Action<string>))]
-            public static void Callback(string entity)
+            [MonoPInvokeCallback(typeof(Action<string, string>))]
+            public static void Callback(string hashed_keys, string models)
             {
-                var parsedEntity = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entity).First();
-                var models = new Dictionary<string, Model>();
+                var parsedModels = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, WasmValue>>>(models).Select(m => new Model(
+                    m.Key,
+                    m.Value
+                )).ToArray();
 
-                foreach (var model in parsedEntity.Value)
-                {
-                    models.Add(model.Key, new Model(
-                        model.Key,
-                        model.Value
-                    ));
-                }
-
-                ToriiEvents.Instance.EventMessageUpdated(new FieldElement(parsedEntity.Key), models.Values.ToArray());
+                ToriiEvents.Instance.EventMessageUpdated(new FieldElement(hashed_keys), parsedModels);
             }
         }
 
-        public void RegisterEventMessageUpdateEvent(KeysClause? clause = null)
+        public async Task<IntPtr> RegisterEventMessageUpdateEvent(KeysClause[] clauses)
         {
-            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, clause.HasValue ? new CString(JsonConvert.SerializeObject(clause)) : (IntPtr)0, OnEventMessageUpdatedHelper.Callback);
+            SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
+            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            return await SubscriptionHelper.Tcs.Task;
+        }
+
+        public void UpdateEventMessageSubscription(KeysClause[] clauses)
+        {
+            ToriiWasmInterop.UpdateEventMessageSubscription(clientPtr, eventMessageSubscription, new CString(JsonConvert.SerializeObject(clauses)));
         }
 
         private static class PublishMessageHelper
