@@ -20,7 +20,7 @@ mergeInto(LibraryManager.library, {
   },
   // Returns a dictionary of all of the entities
   GetEntities: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.Client.__wrap(clientPtr);
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
     let entities = await client.getEntities(query);
 
@@ -36,7 +36,7 @@ mergeInto(LibraryManager.library, {
   },
   // Returns a dictionary of all of the eventmessages
   GetEventMessages: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.Client.__wrap(clientPtr);
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
     let entities = await client.getEventMessages(query);
 
@@ -52,7 +52,7 @@ mergeInto(LibraryManager.library, {
   },
   // Get the value of a model for a specific set of keys
   GetModelValue: async function (clientPtr, model, keys, cb) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let modelValue = await client.getModelValue(
       UTF8ToString(model),
       JSON.parse(UTF8ToString(keys))
@@ -69,7 +69,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   OnEntityUpdated: async function (clientPtr, clausesStr, cb, subCb) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
     const subscription = await client.onEntityUpdated(clauses, (hashed_keys, models) => {
@@ -90,7 +90,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
   UpdateEntitySubscription: async function (clientPtr, subPtr, clausesStr) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
@@ -98,9 +98,9 @@ mergeInto(LibraryManager.library, {
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
-  }
+  },
   OnEventMessageUpdated: async function (clientPtr, clausesStr, cb, subCb) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
     const subscription = await client.onEventMessageUpdated(
@@ -121,7 +121,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
   UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
@@ -131,7 +131,7 @@ mergeInto(LibraryManager.library, {
     subscription.__destroy_into_raw();
   },
   AddModelsToSync: function (clientPtr, models) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let modelsString = UTF8ToString(models);
     let modelsArray = JSON.parse(modelsString);
 
@@ -139,7 +139,7 @@ mergeInto(LibraryManager.library, {
     client.addModelsToSync(modelsArray);
   },
   RemoveModelsToSync: function (clientPtr, models) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let modelsString = UTF8ToString(models);
     let modelsArray = JSON.parse(modelsString);
 
@@ -152,7 +152,7 @@ mergeInto(LibraryManager.library, {
     callbackObjectName,
     callbackMethodName
   ) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let modelsString = UTF8ToString(models);
     let modelsArray = JSON.parse(modelsString);
 
@@ -186,7 +186,7 @@ mergeInto(LibraryManager.library, {
   // message: typed data JSON string
   // signature: JSON string { r: string, s: string }
   PublishMessage: async function (clientPtr, message, signature, cb) {
-    let client = wasm_bindgen.Client.__wrap(clientPtr);
+    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const published = await client.publishMessage(
       UTF8ToString(message),
       JSON.parse(UTF8ToString(signature))

@@ -12,7 +12,6 @@ namespace Dojo.Torii
     {
         private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEntityStateUpdate;
         private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEventMessagesUpdate;
-        private dojo.FnPtr_Void.@delegate onSyncModelUpdate;
         private dojo.ToriiClient* client;
         private dojo.Subscription* entitySubscription;
         private dojo.Subscription* eventMessagesSubscription;
@@ -113,81 +112,6 @@ namespace Dojo.Torii
 
             dojo.carray_free(result._ok.data, result._ok.data_len);
             return entities;
-        }
-
-        public ReadOnlySpan<dojo.ModelKeysClause> SubscribedModels()
-        {
-            dojo.CArrayModelKeysClause models = dojo.client_subscribed_models(client);
-            // NOTE: we could copy the data into a managed array
-            // and free the c array from rust.
-            // however, it is slower
-            // dojo.EntityQuery[] arr = new Span<dojo.EntityQuery>(entities->data, (int)entities->data_len).ToArray();
-            // dojo.carray_free(entities);
-
-            // this just returns a span of the carray data
-            // freeing the c array is up to the caller
-            // dojo.carray_free(entities);
-            var arr = new Span<dojo.ModelKeysClause>(models.data, (int)models.data_len).ToArray();
-            dojo.carray_free(models.data, models.data_len);
-            return arr;
-        }
-
-        public void AddModelsToSync(ModelKeysClause[] models)
-        {
-            var mappedModels = models.ToArray().Select(m => m.ToNative()).ToArray();
-
-            dojo.ModelKeysClause* modelsPtr;
-            fixed (dojo.ModelKeysClause* ptr = &mappedModels[0])
-            {
-                modelsPtr = ptr;
-            }
-
-            var result = dojo.client_add_models_to_sync(client, modelsPtr, (nuint)models.Length);
-            if (result.tag == dojo.Resultbool_Tag.Errbool)
-            {
-                throw new Exception(result.err.message);
-            }
-        }
-
-        public void RemoveModelsToSync(ModelKeysClause[] models)
-        {
-            var mappedModels = models.ToArray().Select(m => m.ToNative()).ToArray();
-
-            dojo.ModelKeysClause* modelsPtr;
-            fixed (dojo.ModelKeysClause* ptr = &mappedModels[0])
-            {
-                modelsPtr = ptr;
-            }
-
-            var result = dojo.client_remove_models_to_sync(client, modelsPtr, (nuint)models.Length);
-            if (result.tag == dojo.Resultbool_Tag.Errbool)
-            {
-                throw new Exception(result.err.message);
-            }
-        }
-
-        public void RegisterSyncModelUpdateEvent(ModelKeysClause model, bool dispatchToMainThread = true)
-        {
-            onSyncModelUpdate = () =>
-            {
-                if (dispatchToMainThread)
-                {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.SyncModelUpdated());
-                }
-                else
-                {
-                    ToriiEvents.Instance.SyncModelUpdated();
-                }
-            };
-
-            dojo.ResultSubscription res = dojo.client_on_sync_model_update(client, model.ToNative(), new dojo.FnPtr_Void(onSyncModelUpdate));
-            if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
-            {
-                throw new Exception(res.err.message);
-            }
-
-            // keep track of these subscriptions? we cant update them for now.
-            // subscriptions.Add((IntPtr)res._ok);
         }
 
         private void RegisterEntityStateUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)

@@ -58,7 +58,7 @@ mergeInto(LibraryManager.library, {
     account.__destroy_into_raw();
     dynCall_vi(cb, burner.__destroy_into_raw());
   },
-  AccountNonce: function (accountPtr, cb) {
+  AccountNonce: async function (accountPtr, cb) {
     const account = wasm_bindgen.Account.__wrap(accountPtr);
     const nonce = await account.nonce();
     const bufferSize = lengthBytesUTF8(nonce) + 1;
@@ -67,7 +67,7 @@ mergeInto(LibraryManager.library, {
     
     account.__destroy_into_raw();
     dynCall_vi(cb, buffer);
-  },
+},
   Call: async function (providerPtr, callStr, blockIdStr, cb) {
     const provider = wasm_bindgen.Provider.__wrap(providerPtr);
     const call = JSON.parse(UTF8ToString(callStr));
