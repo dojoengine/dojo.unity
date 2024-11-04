@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using bottlenoselabs.C2CS.Runtime;
 using Dojo.Starknet;
 using dojo_bindings;
 using Newtonsoft.Json;
@@ -157,9 +158,9 @@ namespace Dojo.Torii
         public string member;
         [JsonConverter(typeof(StringEnumConverter))]
         public dojo.ComparisonOperator @operator;
-        public Primitive value;
+        public MemberValue value;
 
-        public MemberClause(string model, string member, dojo.ComparisonOperator @operator, Primitive value)
+        public MemberClause(string model, string member, dojo.ComparisonOperator @operator, MemberValue value)
         {
             this.model = model;
             this.member = member;
@@ -199,6 +200,26 @@ namespace Dojo.Torii
                 operator_ = @operator,
                 clauses = clauses.Select(c => c.ToNative()).ToArray()
             };
+        }
+    }
+
+
+    [Serializable]
+    public struct MemberValue
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string? String;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Primitive? Primitive;
+
+        public dojo.MemberValue ToNative()
+        {
+            if (String != null)
+                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.String, @string = String };
+            if (Primitive.HasValue)
+                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.Primitive, primitive = Primitive.Value.ToNative() };
+
+            throw new InvalidOperationException("MemberValue must have one non-null value");
         }
     }
 

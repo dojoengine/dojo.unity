@@ -116,6 +116,7 @@ namespace Dojo
                         continue;
                     }
 
+                    model.name = model.GetType().Namespace + "-" + model.GetType().Name;
                     // we dont need to initialize the component
                     // because it'll get updated
                     component = (ModelInstance)entity.AddComponent(model.GetType());
