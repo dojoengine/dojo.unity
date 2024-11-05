@@ -15,7 +15,7 @@ using Random = UnityEngine.Random;
 
 // Fix to use Records in Unity ref. https://stackoverflow.com/a/73100830
 using System.ComponentModel;
-using dojo_examples;
+using ns;
 namespace System.Runtime.CompilerServices
 {
     [EditorBrowsable(EditorBrowsableState.Never)]

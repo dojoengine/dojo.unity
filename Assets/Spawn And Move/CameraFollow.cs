@@ -1,5 +1,5 @@
 using Dojo;
-using dojo_examples;
+using ns;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour

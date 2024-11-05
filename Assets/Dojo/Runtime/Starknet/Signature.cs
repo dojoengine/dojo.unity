@@ -78,5 +78,11 @@ namespace Dojo.Starknet
         {
             return (R().Hex() + S().Hex()).Replace("0x", "");
         }
+
+        // Return the felts of the signature.
+        public FieldElement[] ToFeltArray()
+        {
+            return new FieldElement[] { R(), S() };
+        }
     }
 }

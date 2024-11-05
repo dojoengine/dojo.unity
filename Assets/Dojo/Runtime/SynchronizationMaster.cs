@@ -101,13 +101,13 @@ namespace Dojo
             // Update each one of the entity models
             foreach (var entityModel in entityModels)
             {
-                var component = entity.GetComponent(entityModel.Name);
+                string[] parts = entityModel.Name.Split('-');
+                string @namespace = parts[0];
+                string name = parts[1];
+
+                var component = entity.GetComponent(name);
                 if (component == null)
                 {
-                    string[] parts = entityModel.Name.Split('-');
-                    string @namespace = parts[0];
-                    string name = parts[1];
-
                     // TODO: decouple?
                     var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
                     if (model == null)
@@ -116,7 +116,6 @@ namespace Dojo
                         continue;
                     }
 
-                    model.name = model.GetType().Namespace + "-" + model.GetType().Name;
                     // we dont need to initialize the component
                     // because it'll get updated
                     component = (ModelInstance)entity.AddComponent(model.GetType());
