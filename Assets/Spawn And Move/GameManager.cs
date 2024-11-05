@@ -13,14 +13,6 @@ using UnityEngine.UI;
 using Object = System.Object;
 using Random = UnityEngine.Random;
 
-// Fix to use Records in Unity ref. https://stackoverflow.com/a/73100830
-using System.ComponentModel;
-namespace System.Runtime.CompilerServices
-{
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    internal class IsExternalInit{}
-}
-
 public class GameManager : MonoBehaviour
 {
     [SerializeField] WorldManager worldManager;

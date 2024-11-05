@@ -6,6 +6,14 @@ using System;
 using Dojo.Starknet;
 using System.Threading.Tasks;
 
+// Fix to use Records in Unity ref. https://stackoverflow.com/a/73100830
+using System.ComponentModel;
+namespace System.Runtime.CompilerServices
+{
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    internal class IsExternalInit{}
+}
+
 namespace Dojo
 {
     public class WorldManager : MonoBehaviour
