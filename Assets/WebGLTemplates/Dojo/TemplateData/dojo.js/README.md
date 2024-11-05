@@ -24,7 +24,7 @@ cargo build --release --target x86_64-unknown-linux-gnu
 # Building wasm32 binary
 cargo build --release --target wasm32-unknown-unknown
 # Building using wasm-pack
-bunx wasm-pack build --release
+cd pkg && bunx wasm-pack build --release
 ```
 
 ## Running

@@ -172,14 +172,10 @@ namespace Dojo.Torii
             }
         }
 
-        public Task<byte[]> PublishMessage(TypedData typedData, Signature signature)
+        public Task<byte[]> PublishMessage(TypedData typedData, FieldElement[] signature)
         {
             PublishMessageHelper.Tcs = new TaskCompletionSource<byte[]>();
-            ToriiWasmInterop.PublishMessage(clientPtr, new CString(JsonConvert.SerializeObject(typedData)), new CString(JsonConvert.SerializeObject(new
-            {
-                r = signature.R().Hex(),
-                s = signature.S().Hex()
-            })), PublishMessageHelper.Callback);
+            ToriiWasmInterop.PublishMessage(clientPtr, new CString(JsonConvert.SerializeObject(typedData)), new CString(JsonConvert.SerializeObject(signature)), PublishMessageHelper.Callback);
             return PublishMessageHelper.Tcs.Task;
         }
 

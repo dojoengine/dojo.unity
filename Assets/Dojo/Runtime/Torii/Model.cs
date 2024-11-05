@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Dojo.Starknet;
 using dojo_bindings;
 using JetBrains.Annotations;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -99,6 +100,7 @@ namespace Dojo.Torii
 
         private object HandleWasmValue(WasmValue value)
         {
+            Debug.Log($"value: {JsonConvert.SerializeObject(value)}");
             return value.type switch
             {
                 // struct
@@ -131,14 +133,14 @@ namespace Dojo.Torii
                     // convert a 64 character hex string to a BigInteger
                     // IMPLEMNET
                     "u256" => new Struct("U256", new Dictionary<string, object>(){
-                        {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(0, 32)).Reverse().ToArray())},
-                        {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(32, 32)).Reverse().ToArray())}
+                        {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(2, 32)).Reverse().ToArray())},
+                        {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(34, 32)).Reverse().ToArray())}
                     }),
                     "usize" => value.value.ToObject<uint>(),
                     // these should be fine
-                    "felt252" => new FieldElement(value.value.ToObject<string>()),
-                    "class_hash" => new FieldElement(value.value.ToObject<string>()),
-                    "contract_address" => new FieldElement(value.value.ToObject<string>()),
+                    "Felt252" => new FieldElement(value.value.ToObject<string>()),
+                    "ClassHash" => new FieldElement(value.value.ToObject<string>()),
+                    "ContractAddress" => new FieldElement(value.value.ToObject<string>()),
                     _ => throw new Exception("Unknown primitive type: " + value.type_name)
                 },
                 _ => throw new Exception("Unknown type: " + value.type)
@@ -147,11 +149,21 @@ namespace Dojo.Torii
 
         private byte[] hexStringToByteArray(string hex)
         {
-            var bytes = Enumerable.Range(0, hex.Length)
-                .Where(x => x % 2 == 0)
-                .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                .ToArray();
-
+            // Remove "0x" prefix if present
+            hex = hex.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? hex[2..] : hex;
+            
+            // Ensure even number of characters
+            if (hex.Length % 2 != 0)
+                hex = "0" + hex;
+            
+            byte[] bytes = new byte[hex.Length / 2];
+            
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                string byteValue = hex.Substring(i * 2, 2);
+                bytes[i] = Convert.ToByte(byteValue, 16);
+            }
+            
             return bytes;
         }
 

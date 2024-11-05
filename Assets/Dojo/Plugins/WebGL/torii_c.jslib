@@ -184,7 +184,7 @@ mergeInto(LibraryManager.library, {
   },
   // Publishes a message and returns its ID
   // message: typed data JSON string
-  // signature: JSON string { r: string, s: string }
+  // signature: string[]
   PublishMessage: async function (clientPtr, message, signature, cb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const published = await client.publishMessage(

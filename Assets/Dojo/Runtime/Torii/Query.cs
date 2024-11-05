@@ -18,12 +18,14 @@ namespace Dojo.Torii
         public uint offset;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Clause? clause;
+        public bool dont_include_hashed_keys;
 
-        public Query(uint limit, uint offset, Clause? clause = null)
+        public Query(uint limit, uint offset, Clause? clause = null, bool dont_include_hashed_keys = false)
         {
             this.limit = limit;
             this.offset = offset;
             this.clause = clause;
+            this.dont_include_hashed_keys = dont_include_hashed_keys;
         }
 
         public dojo.Query ToNative()
@@ -32,7 +34,8 @@ namespace Dojo.Torii
             {
                 limit = limit,
                 offset = offset,
-                clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause }
+                clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause },
+                dont_include_hashed_keys = dont_include_hashed_keys
             };
 
             if (clause.HasValue)

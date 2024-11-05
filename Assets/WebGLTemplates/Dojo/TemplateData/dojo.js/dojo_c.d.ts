@@ -88,6 +88,13 @@ declare namespace wasm_bindgen {
 	* @returns {Promise<ToriiClient>}
 	*/
 	export function createClient(config: ClientConfig): Promise<ToriiClient>;
+	export interface IndexerUpdate {
+	    head: number;
+	    tps: number;
+	    last_block_timestamp: number;
+	    contract_address: string;
+	}
+	
 	export interface ClientConfig {
 	    rpcUrl: string;
 	    toriiUrl: string;
@@ -98,7 +105,7 @@ declare namespace wasm_bindgen {
 	export interface Ty {
 	    type: "primitive" | "struct" | "enum" | "array" | "tuple" | "bytearray";
 	    type_name: string;
-	    value: boolean | number | string | Ty | null;
+	    value: boolean | number | string | Ty | Record<string, Ty> | Array<Ty> | { option: string, value: Ty } | null;
 	    key: boolean;
 	}
 	
@@ -134,6 +141,7 @@ declare namespace wasm_bindgen {
 	    limit: number;
 	    offset: number;
 	    clause: Clause | undefined;
+	    dont_include_hashed_keys: boolean;
 	}
 	
 	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
@@ -157,11 +165,13 @@ declare namespace wasm_bindgen {
 	    models: string[];
 	}
 	
+	export type MemberValue = { Primitive: Primitive } | { String: string };
+	
 	export interface MemberClause {
 	    model: string;
 	    member: string;
 	    operator: ComparisonOperator;
-	    value: Primitive;
+	    value: MemberValue;
 	}
 	
 	export interface CompositeClause {
@@ -181,6 +191,12 @@ declare namespace wasm_bindgen {
 	export type ValueType = { String: string } | { Int: number } | { UInt: number } | { VBool: boolean } | { Bytes: number[] };
 	
 	export type Primitive = { I8: number | undefined } | { I16: number | undefined } | { I32: number | undefined } | { I64: number | undefined } | { I128: string | undefined } | { U8: number | undefined } | { U16: number | undefined } | { U32: number | undefined } | { U64: number | undefined } | { U128: string | undefined } | { U256: string | undefined } | { USize: number | undefined } | { Bool: boolean | undefined } | { Felt252: string | undefined } | { ClassHash: string | undefined } | { ContractAddress: string | undefined };
+	
+	export interface Event {
+	    keys: string[];
+	    data: string[];
+	    transaction_hash: string;
+	}
 	
 	/**
 	*/
@@ -218,14 +234,14 @@ declare namespace wasm_bindgen {
 	export class IntoUnderlyingByteSource {
 	  free(): void;
 	/**
-	* @param {any} controller
+	* @param {ReadableByteStreamController} controller
 	*/
-	  start(controller: any): void;
+	  start(controller: ReadableByteStreamController): void;
 	/**
-	* @param {any} controller
+	* @param {ReadableByteStreamController} controller
 	* @returns {Promise<any>}
 	*/
-	  pull(controller: any): Promise<any>;
+	  pull(controller: ReadableByteStreamController): Promise<any>;
 	/**
 	*/
 	  cancel(): void;
@@ -260,31 +276,13 @@ declare namespace wasm_bindgen {
 	export class IntoUnderlyingSource {
 	  free(): void;
 	/**
-	* @param {any} controller
+	* @param {ReadableStreamDefaultController} controller
 	* @returns {Promise<any>}
 	*/
-	  pull(controller: any): Promise<any>;
+	  pull(controller: ReadableStreamDefaultController): Promise<any>;
 	/**
 	*/
 	  cancel(): void;
-	}
-	/**
-	* Raw options for [`pipeTo()`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/pipeTo).
-	*/
-	export class PipeOptions {
-	  free(): void;
-	/**
-	*/
-	  readonly preventAbort: boolean;
-	/**
-	*/
-	  readonly preventCancel: boolean;
-	/**
-	*/
-	  readonly preventClose: boolean;
-	/**
-	*/
-	  readonly signal: AbortSignal | undefined;
 	}
 	/**
 	*/
@@ -310,31 +308,11 @@ declare namespace wasm_bindgen {
 	}
 	/**
 	*/
-	export class QueuingStrategy {
-	  free(): void;
-	/**
-	*/
-	  readonly highWaterMark: number;
-	}
-	/**
-	* Raw options for [`getReader()`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/getReader).
-	*/
-	export class ReadableStreamGetReaderOptions {
-	  free(): void;
-	/**
-	*/
-	  readonly mode: any;
-	}
-	/**
-	*/
 	export class Subscription {
 	  free(): void;
 	/**
 	*/
 	  cancel(): void;
-	/**
-	*/
-	  id: bigint;
 	}
 	/**
 	*/
@@ -353,9 +331,10 @@ declare namespace wasm_bindgen {
 	  getAllEntities(limit: number, offset: number): Promise<Entities>;
 	/**
 	* @param {Query} query
+	* @param {boolean} historical
 	* @returns {Promise<Entities>}
 	*/
-	  getEventMessages(query: Query): Promise<Entities>;
+	  getEventMessages(query: Query, historical: boolean): Promise<Entities>;
 	/**
 	* @param {(EntityKeysClause)[]} clauses
 	* @param {Function} callback
@@ -370,22 +349,36 @@ declare namespace wasm_bindgen {
 	  updateEntitySubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
 	/**
 	* @param {(EntityKeysClause)[]} clauses
+	* @param {boolean} historical
 	* @param {Function} callback
 	* @returns {Promise<Subscription>}
 	*/
-	  onEventMessageUpdated(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	  onEventMessageUpdated(clauses: (EntityKeysClause)[], historical: boolean, callback: Function): Promise<Subscription>;
 	/**
 	* @param {Subscription} subscription
 	* @param {(EntityKeysClause)[]} clauses
+	* @param {boolean} historical
 	* @returns {Promise<void>}
 	*/
-	  updateEventMessageSubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
+	  updateEventMessageSubscription(subscription: Subscription, clauses: (EntityKeysClause)[], historical: boolean): Promise<void>;
+	/**
+	* @param {(EntityKeysClause)[]} clauses
+	* @param {Function} callback
+	* @returns {Promise<Subscription>}
+	*/
+	  onStarknetEvent(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	/**
+	* @param {string | undefined} contract_address
+	* @param {Function} callback
+	* @returns {Promise<Subscription>}
+	*/
+	  onIndexerUpdated(contract_address: string | undefined, callback: Function): Promise<Subscription>;
 	/**
 	* @param {string} message
-	* @param {Signature} signature
+	* @param {(string)[]} signature
 	* @returns {Promise<Uint8Array>}
 	*/
-	  publishMessage(message: string, signature: Signature): Promise<Uint8Array>;
+	  publishMessage(message: string, signature: (string)[]): Promise<Uint8Array>;
 	}
 	
 }
@@ -394,6 +387,10 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
+  readonly __wbg_provider_free: (a: number, b: number) => void;
+  readonly __wbg_account_free: (a: number, b: number) => void;
+  readonly __wbg_subscription_free: (a: number, b: number) => void;
   readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
   readonly signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -420,61 +417,50 @@ declare interface InitOutput {
   readonly parseCairoShortString: (a: number, b: number, c: number) => void;
   readonly toriiclient_getEntities: (a: number, b: number) => number;
   readonly toriiclient_getAllEntities: (a: number, b: number, c: number) => number;
-  readonly toriiclient_getEventMessages: (a: number, b: number) => number;
+  readonly toriiclient_getEventMessages: (a: number, b: number, c: number) => number;
   readonly toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
   readonly toriiclient_updateEntitySubscription: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
-  readonly __wbg_toriiclient_free: (a: number) => void;
-  readonly __wbg_provider_free: (a: number) => void;
-  readonly __wbg_account_free: (a: number) => void;
-  readonly __wbg_subscription_free: (a: number) => void;
-  readonly __wbg_get_subscription_id: (a: number) => number;
-  readonly __wbg_set_subscription_id: (a: number, b: number) => void;
-  readonly __wbg_intounderlyingbytesource_free: (a: number) => void;
+  readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_type: (a: number, b: number) => void;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_start: (a: number, b: number) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: number) => number;
   readonly intounderlyingbytesource_cancel: (a: number) => void;
-  readonly __wbg_queuingstrategy_free: (a: number) => void;
-  readonly queuingstrategy_highWaterMark: (a: number) => number;
-  readonly __wbg_intounderlyingsink_free: (a: number) => void;
+  readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
+  readonly intounderlyingsource_pull: (a: number, b: number) => number;
+  readonly intounderlyingsource_cancel: (a: number) => void;
+  readonly __wbg_intounderlyingsink_free: (a: number, b: number) => void;
   readonly intounderlyingsink_write: (a: number, b: number) => number;
   readonly intounderlyingsink_close: (a: number) => number;
   readonly intounderlyingsink_abort: (a: number, b: number) => number;
-  readonly __wbg_intounderlyingsource_free: (a: number) => void;
-  readonly intounderlyingsource_pull: (a: number, b: number) => number;
-  readonly intounderlyingsource_cancel: (a: number) => void;
-  readonly __wbg_readablestreamgetreaderoptions_free: (a: number) => void;
-  readonly readablestreamgetreaderoptions_mode: (a: number) => number;
-  readonly __wbg_pipeoptions_free: (a: number) => void;
-  readonly pipeoptions_preventClose: (a: number) => number;
-  readonly pipeoptions_preventCancel: (a: number) => number;
-  readonly pipeoptions_preventAbort: (a: number) => number;
-  readonly pipeoptions_signal: (a: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h30748262f1b7d27c: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hb74b4e0cfb480659: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hcbe5adb8ab3b7d0e: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h0616717051788241: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hd2c74c1b7e9222d1: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4aebea369d10720f: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4301a475fe6d23e9: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hdff8534b51b570f5: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hbb184a197cc25f28: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h57be5134d1d69be9: (a: number, b: number, c: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__h3e82d67bb2b557d3: (a: number, b: number, c: number, d: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__hcb093c54d64f88f2: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**
 * If `module_or_path` is {RequestInfo} or {URL}, makes a request and
 * for everything else, calls `WebAssembly.instantiate` directly.
 *
-* @param {InitInput | Promise<InitInput>} module_or_path
+* @param {{ module_or_path: InitInput | Promise<InitInput> }} module_or_path - Passing `InitInput` directly is deprecated.
 *
 * @returns {Promise<InitOutput>}
 */
-declare function wasm_bindgen (module_or_path?: InitInput | Promise<InitInput>): Promise<InitOutput>;
+declare function wasm_bindgen (module_or_path?: { module_or_path: InitInput | Promise<InitInput> } | InitInput | Promise<InitInput>): Promise<InitOutput>;
