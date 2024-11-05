@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using bottlenoselabs.C2CS.Runtime;
 using Dojo.Starknet;
 using dojo_bindings;
 using Newtonsoft.Json;
@@ -17,12 +18,14 @@ namespace Dojo.Torii
         public uint offset;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Clause? clause;
+        public bool dont_include_hashed_keys;
 
-        public Query(uint limit, uint offset, Clause? clause = null)
+        public Query(uint limit, uint offset, Clause? clause = null, bool dont_include_hashed_keys = false)
         {
             this.limit = limit;
             this.offset = offset;
             this.clause = clause;
+            this.dont_include_hashed_keys = dont_include_hashed_keys;
         }
 
         public dojo.Query ToNative()
@@ -31,7 +34,8 @@ namespace Dojo.Torii
             {
                 limit = limit,
                 offset = offset,
-                clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause }
+                clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause },
+                dont_include_hashed_keys = dont_include_hashed_keys
             };
 
             if (clause.HasValue)
@@ -157,9 +161,9 @@ namespace Dojo.Torii
         public string member;
         [JsonConverter(typeof(StringEnumConverter))]
         public dojo.ComparisonOperator @operator;
-        public Primitive value;
+        public MemberValue value;
 
-        public MemberClause(string model, string member, dojo.ComparisonOperator @operator, Primitive value)
+        public MemberClause(string model, string member, dojo.ComparisonOperator @operator, MemberValue value)
         {
             this.model = model;
             this.member = member;
@@ -199,6 +203,26 @@ namespace Dojo.Torii
                 operator_ = @operator,
                 clauses = clauses.Select(c => c.ToNative()).ToArray()
             };
+        }
+    }
+
+
+    [Serializable]
+    public struct MemberValue
+    {
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public string? String;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Primitive? Primitive;
+
+        public dojo.MemberValue ToNative()
+        {
+            if (String != null)
+                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.String, @string = String };
+            if (Primitive.HasValue)
+                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.Primitive, primitive = Primitive.Value.ToNative() };
+
+            throw new InvalidOperationException("MemberValue must have one non-null value");
         }
     }
 

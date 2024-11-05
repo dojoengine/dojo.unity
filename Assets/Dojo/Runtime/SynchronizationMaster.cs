@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -70,7 +71,7 @@ namespace Dojo
                 string name = parts[1];
 
                 // Check if we have a model definition for this entity model
-                var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
+                var model = models.FirstOrDefault(m => m.GetType().Name == $"{@namespace}_{name}");
                 if (model == null)
                 {
                     Debug.LogWarning($"Model {entityModel.Name} not found");
@@ -101,15 +102,15 @@ namespace Dojo
             // Update each one of the entity models
             foreach (var entityModel in entityModels)
             {
-                var component = entity.GetComponent(entityModel.Name);
+                string[] parts = entityModel.Name.Split('-');
+                string @namespace = parts[0];
+                string name = parts[1];
+
+                var component = entity.GetComponent(name);
                 if (component == null)
                 {
-                    string[] parts = entityModel.Name.Split('-');
-                    string @namespace = parts[0];
-                    string name = parts[1];
-
                     // TODO: decouple?
-                    var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
+                    var model = models.FirstOrDefault(m => m.GetType().Name == $"{@namespace}_{name}");
                     if (model == null)
                     {
                         Debug.LogWarning($"Model {entityModel.Name} not found");

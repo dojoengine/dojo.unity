@@ -7,7 +7,6 @@ using Dojo;
 using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
-using dojo_examples;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
@@ -75,7 +74,7 @@ public class ChatManager : MonoBehaviour
 
         salt = salt.Reverse().ToArray();
 
-        var typed_data = TypedData.From(new Message
+        var typed_data = TypedData.From(new ns_Message
         {
             identity = account.Address,
             message = message,
@@ -88,6 +87,6 @@ public class ChatManager : MonoBehaviour
         FieldElement messageHash = typed_data.encode(account.Address);
         Signature signature = account.Signer.Sign(messageHash);
 
-        await worldManager.Publish(typed_data, signature);
+        await worldManager.Publish(typed_data, signature.ToFeltArray());
     }
 }

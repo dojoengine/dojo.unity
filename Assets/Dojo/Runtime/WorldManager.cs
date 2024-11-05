@@ -114,7 +114,7 @@ namespace Dojo
             }
         }
 
-        public async Task<byte[]> Publish(TypedData typedData, Signature signature)
+        public async Task<byte[]> Publish(TypedData typedData, FieldElement[] signature)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             return await wasmClient.PublishMessage(typedData, signature);

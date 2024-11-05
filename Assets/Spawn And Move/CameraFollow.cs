@@ -1,5 +1,4 @@
 using Dojo;
-using dojo_examples;
 using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
@@ -14,7 +13,7 @@ public class CameraFollow : MonoBehaviour
     {
         // all entities with the position model, 
         // we only want to consider those for "follow"
-        var entities = worldManager.Entities<Position>();
+        var entities = worldManager.Entities<ns_Position>();
 
         if (entities.Length > 0)
         {

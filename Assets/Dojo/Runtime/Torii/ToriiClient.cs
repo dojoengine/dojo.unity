@@ -42,7 +42,7 @@ namespace Dojo.Torii
             dojo.subscription_cancel(entitySubscription);
             dojo.subscription_cancel(eventMessagesSubscription);
 
-            dojo.client_free(client);
+            // dojo.client_free(client);
         }
 
         public dojo.WorldMetadata WorldMetadata()
@@ -94,11 +94,11 @@ namespace Dojo.Torii
             return entities;
         }
 
-        public List<Entity> EventMessages(Query query)
+        public List<Entity> EventMessages(Query query, bool historical = false)
         {
             var nativeQuery = query.ToNative();
 
-            dojo.ResultCArrayEntity result = dojo.client_event_messages(client, &nativeQuery);
+            dojo.ResultCArrayEntity result = dojo.client_event_messages(client, &nativeQuery, historical);
             if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
             {
                 throw new Exception(result.err.message);
@@ -175,7 +175,7 @@ namespace Dojo.Torii
             dojo.client_update_entity_subscription(client, entitySubscription, clausesPtr, (UIntPtr)clauses.Length);
         }
 
-        private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
+        private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool historical = false, bool dispatchToMainThread = true)
         {
             onEventMessagesUpdate = (key, models) =>
             {
@@ -214,7 +214,7 @@ namespace Dojo.Torii
                 }
             }
 
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, historical, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -223,7 +223,7 @@ namespace Dojo.Torii
             eventMessagesSubscription = res._ok;
         }
 
-        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses)
+        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses, bool historical = false)
         {
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
             dojo.EntityKeysClause* clausesPtr;
@@ -232,12 +232,19 @@ namespace Dojo.Torii
                 clausesPtr = ptr;
             }
 
-            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length);
+            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length, historical);
         }
 
-        public Span<byte> PublishMessage(TypedData typedData, Signature signature)
+        public Span<byte> PublishMessage(TypedData typedData, FieldElement[] signature)
         {
-            var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signature.Inner);
+            var mappedSignature = signature.Select(s => s.Inner).ToArray();
+            dojo.FieldElement* signaturePtr;
+            fixed (dojo.FieldElement* ptr = &mappedSignature[0])
+            {
+                signaturePtr = ptr;
+            }
+
+            var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signaturePtr, (UIntPtr)signature.Length);
             if (result.tag == dojo.ResultCArrayu8_Tag.ErrCArrayu8)
             {
                 throw new Exception(result.err.message);

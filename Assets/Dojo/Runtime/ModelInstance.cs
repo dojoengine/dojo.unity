@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using System.Numerics;
 using System.Reflection;
-
+using Newtonsoft.Json;
 namespace Dojo
 {
     [AttributeUsage(AttributeTargets.Field)]
@@ -49,6 +49,12 @@ namespace Dojo
                 }
 
                 var modelField = (ModelField)attribute[0];
+                if (!model.Members.ContainsKey(modelField.Name))
+                {
+                    Debug.LogWarning($"Model field {modelField.Name} not found in model {model.Name}");
+                    continue;
+                }
+
                 var member = model.Members[modelField.Name];
 
                 field.SetValue(this, HandleField(field.FieldType, member));

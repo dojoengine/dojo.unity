@@ -15,7 +15,6 @@ using Random = UnityEngine.Random;
 
 // Fix to use Records in Unity ref. https://stackoverflow.com/a/73100830
 using System.ComponentModel;
-using dojo_examples;
 namespace System.Runtime.CompilerServices
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -45,7 +44,7 @@ public class GameManager : MonoBehaviour
         burnerManager = new BurnerManager(provider, masterAccount);
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
-        foreach (var entity in worldManager.Entities<Position>())
+        foreach (var entity in worldManager.Entities<ns_Position>())
         {
             InitEntity(entity);
         }
@@ -76,7 +75,7 @@ public class GameManager : MonoBehaviour
             if (hit && hitInfo.transform.parent != null)
             {
                 var entity = hitInfo.transform.parent;
-                Position position;
+                ns_Position position;
                 entity.TryGetComponent(out position);
 
                 if (position && spawnedAccounts.ContainsValue(entity.name))
@@ -85,7 +84,7 @@ public class GameManager : MonoBehaviour
                     if (previousBurner != null)
                     {
                         worldManager.Entity(spawnedAccounts[previousBurner.Address])
-                            .GetComponent<Position>().textTag.color = Color.black;
+                            .GetComponent<ns_Position>().textTag.color = Color.black;
                     }
 
                     var burner = spawnedAccounts.First(b => b.Value == entity.name);
@@ -124,7 +123,7 @@ public class GameManager : MonoBehaviour
     private void InitEntity(GameObject entity)
     {
         // check if entity has position component
-        if (!entity.TryGetComponent(out Position position)) return;
+        if (!entity.TryGetComponent(out ns_Position position)) return;
         
         var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         // change color of capsule to a random color
