@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 

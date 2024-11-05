@@ -42,7 +42,7 @@ namespace Dojo.Torii
             dojo.subscription_cancel(entitySubscription);
             dojo.subscription_cancel(eventMessagesSubscription);
 
-            dojo.client_free(client);
+            // dojo.client_free(client);
         }
 
         public dojo.WorldMetadata WorldMetadata()

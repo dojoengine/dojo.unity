@@ -49,8 +49,12 @@ namespace Dojo
                 }
 
                 var modelField = (ModelField)attribute[0];
-                Debug.Log($"Model field: {modelField.Name}");
-                Debug.Log($"Model: {JsonConvert.SerializeObject(model)}");
+                if (!model.Members.ContainsKey(modelField.Name))
+                {
+                    Debug.LogWarning($"Model field {modelField.Name} not found in model {model.Name}");
+                    continue;
+                }
+
                 var member = model.Members[modelField.Name];
 
                 field.SetValue(this, HandleField(field.FieldType, member));
