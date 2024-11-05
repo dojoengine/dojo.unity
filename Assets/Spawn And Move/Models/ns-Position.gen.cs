@@ -22,40 +22,38 @@ public struct Vec2 {
 }
 
 
-namespace ns {
-    // Model definition for `dojo_examples::models::Position` model
-    public class Position : ModelInstance {
-        [ModelField("player")]
-        public FieldElement player;
+// Model definition for `dojo_examples::models::Position` model
+public class ns_Position : ModelInstance {
+    [ModelField("player")]
+    public FieldElement player;
 
-        [ModelField("vec")]
-        public Vec2 vec;
+    [ModelField("vec")]
+    public Vec2 vec;
 
-        // component fields
-        public TextMesh textTag;
-        public string shortPlayerAddress;
+    // component fields
+    public TextMesh textTag;
+    public string shortPlayerAddress;
 
-        void Start()
+    void Start()
+    {
+        var target = new Vector3(vec.x, 0, vec.y);
+        gameObject.transform.position = target;
+    }
+
+    void Update()
+    {
+        // our curent position is gameObject.transform.position
+        // move towards the target position
+        var step = 3.0f * Time.deltaTime;
+        // scale down our positions
+        Vector3 oldPosition = gameObject.transform.position;
+        var target = new Vector3(vec.x, oldPosition.y, vec.y);
+        gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, target, step);
+
+        // if we are close enough to the target position, snap to it
+        if (Vector3.Distance(gameObject.transform.position, target) < 0.001f)
         {
-            var target = new Vector3(vec.x, 0, vec.y);
             gameObject.transform.position = target;
-        }
-
-        void Update()
-        {
-            // our curent position is gameObject.transform.position
-            // move towards the target position
-            var step = 3.0f * Time.deltaTime;
-            // scale down our positions
-            Vector3 oldPosition = gameObject.transform.position;
-            var target = new Vector3(vec.x, oldPosition.y, vec.y);
-            gameObject.transform.position = Vector3.MoveTowards(gameObject.transform.position, target, step);
-
-            // if we are close enough to the target position, snap to it
-            if (Vector3.Distance(gameObject.transform.position, target) < 0.001f)
-            {
-                gameObject.transform.position = target;
-            }
         }
     }
 }

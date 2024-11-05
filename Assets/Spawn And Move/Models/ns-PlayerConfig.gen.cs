@@ -24,28 +24,26 @@ public struct PlayerItem {
 }
 
 
-namespace ns {
-    // Model definition for `dojo_examples::models::PlayerConfig` model
-    public class PlayerConfig : ModelInstance {
-        [ModelField("player")]
-        public FieldElement player;
+// Model definition for `dojo_examples::models::PlayerConfig` model
+public class ns_PlayerConfig : ModelInstance {
+    [ModelField("player")]
+    public FieldElement player;
 
-        [ModelField("name")]
-        public string name;
+    [ModelField("name")]
+    public string name;
 
-        [ModelField("items")]
-        public PlayerItem[] items;
+    [ModelField("items")]
+    public PlayerItem[] items;
 
-        [ModelField("favorite_item")]
-        public Option<uint> favorite_item;
+    [ModelField("favorite_item")]
+    public Option<uint> favorite_item;
 
-        // Start is called before the first frame update
-        void Start() {
-        }
-    
-        // Update is called once per frame
-        void Update() {
-        }
+    // Start is called before the first frame update
+    void Start() {
+    }
+
+    // Update is called once per frame
+    void Update() {
     }
 }
 

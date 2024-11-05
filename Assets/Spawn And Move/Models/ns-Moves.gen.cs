@@ -24,25 +24,23 @@ public abstract record Direction() : Enum {
 }
 
 
-namespace ns {
-    // Model definition for `dojo_examples::models::Moves` model
-    public class Moves : ModelInstance {
-        [ModelField("player")]
-        public FieldElement player;
+// Model definition for `dojo_examples::models::Moves` model
+public class ns_Moves : ModelInstance {
+    [ModelField("player")]
+    public FieldElement player;
 
-        [ModelField("remaining")]
-        public byte remaining;
+    [ModelField("remaining")]
+    public byte remaining;
 
-        [ModelField("last_direction")]
-        public Direction last_direction;
+    [ModelField("last_direction")]
+    public Direction last_direction;
 
-        // Start is called before the first frame update
-        void Start() {
-        }
-    
-        // Update is called once per frame
-        void Update() {
-        }
+    // Start is called before the first frame update
+    void Start() {
+    }
+
+    // Update is called once per frame
+    void Update() {
     }
 }
 

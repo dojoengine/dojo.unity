@@ -14,25 +14,23 @@ public struct ServerProfileValue {
 }
 
 
-namespace ns {
-    // Model definition for `dojo_examples::models::ServerProfile` model
-    public class ServerProfile : ModelInstance {
-        [ModelField("player")]
-        public FieldElement player;
+// Model definition for `dojo_examples::models::ServerProfile` model
+public class ns_ServerProfile : ModelInstance {
+    [ModelField("player")]
+    public FieldElement player;
 
-        [ModelField("server_id")]
-        public uint server_id;
+    [ModelField("server_id")]
+    public uint server_id;
 
-        [ModelField("name")]
-        public string name;
+    [ModelField("name")]
+    public string name;
 
-        // Start is called before the first frame update
-        void Start() {
-        }
-    
-        // Update is called once per frame
-        void Update() {
-        }
+    // Start is called before the first frame update
+    void Start() {
+    }
+
+    // Update is called once per frame
+    void Update() {
     }
 }
 

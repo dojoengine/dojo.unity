@@ -76,16 +76,16 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.I16 => ty.primitive.i16,
                     dojo.Primitive_Tag.I32 => ty.primitive.i32,
                     dojo.Primitive_Tag.I64 => ty.primitive.i64,
-                    dojo.Primitive_Tag.I128 => new BigInteger(ty.primitive.i128.ToArray()),
+                    dojo.Primitive_Tag.I128 => ConvertTwosComplementToBigInteger(ty.primitive.i128.ToArray()),
                     dojo.Primitive_Tag.U8 => ty.primitive.u8,
                     dojo.Primitive_Tag.U16 => ty.primitive.u16,
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
                     dojo.Primitive_Tag.U64 => ty.primitive.u64,
-                    dojo.Primitive_Tag.U128 => new BigInteger(ty.primitive.u128.ToArray()),
-                    dojo.Primitive_Tag.U256 => new Dictionary<string, object>(){
+                    dojo.Primitive_Tag.U128 => ConvertTwosComplementToBigInteger(ty.primitive.u128.ToArray()),
+                    dojo.Primitive_Tag.U256 => new Struct("U256", new Dictionary<string, object>(){
                         {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
                         {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
-                    },
+                    }),
                     dojo.Primitive_Tag.USize => ty.primitive.u_size,
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
@@ -117,12 +117,12 @@ namespace Dojo.Torii
                     "i8" => value.value.ToObject<sbyte>(),
                     "i16" => value.value.ToObject<short>(),
                     "i32" => value.value.ToObject<int>(),
-                    "i64" => value.value.ToObject<long>(),
-                    "i128" => new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
+                    "i64" => ConvertTwosComplementToLong(hexStringToByteArray(value.value.ToObject<string>())),
+                    "i128" => ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>())),
                     "u8" => value.value.ToObject<byte>(),
                     "u16" => value.value.ToObject<ushort>(),
                     "u32" => value.value.ToObject<uint>(),
-                    "u64" => value.value.ToObject<ulong>(),
+                    "u64" => (long)new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
                     // NOTE: UNTESTED
                     // NOTE: slow?
                     // use BigInteger parse instead maybe but seems a bit
@@ -130,10 +130,10 @@ namespace Dojo.Torii
                     "u128" => new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
                     // convert a 64 character hex string to a BigInteger
                     // IMPLEMNET
-                    "u256" => new Dictionary<string, object>(){
-                    {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(0, 32)).Reverse().ToArray())},
-                    {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(32, 32)).Reverse().ToArray())}
-                },
+                    "u256" => new Struct("U256", new Dictionary<string, object>(){
+                        {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(0, 32)).Reverse().ToArray())},
+                        {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(32, 32)).Reverse().ToArray())}
+                    }),
                     "usize" => value.value.ToObject<uint>(),
                     // these should be fine
                     "felt252" => new FieldElement(value.value.ToObject<string>()),
@@ -176,6 +176,36 @@ namespace Dojo.Torii
         private Enum HandleJSEnum(string name, WasmEnum en)
         {
             return new Enum(name, en.option, HandleWasmValue(en.value));
+        }
+
+        private long ConvertTwosComplementToLong(byte[] bytes)
+        {
+            var reversed = bytes.Reverse().ToArray();
+            var unsigned = new BigInteger(reversed);
+            
+            // Check if the highest bit is set (negative number)
+            if ((unsigned & (BigInteger.One << 63)) != 0)
+            {
+                // Convert from two's complement
+                unsigned -= BigInteger.One << 64;
+            }
+            
+            return (long)unsigned;
+        }
+
+        private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes)
+        {
+            var reversed = bytes.Reverse().ToArray();
+            var unsigned = new BigInteger(reversed);
+            
+            // Check if the highest bit is set (negative number)
+            if ((unsigned & (BigInteger.One << 127)) != 0)
+            {
+                // Convert from two's complement
+                unsigned -= BigInteger.One << 128;
+            }
+            
+            return unsigned;
         }
     }
 }

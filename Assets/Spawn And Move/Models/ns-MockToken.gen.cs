@@ -8,22 +8,20 @@ using System.Collections.Generic;
 using Enum = Dojo.Starknet.Enum;
 using BigInteger = System.Numerics.BigInteger;
 
-namespace ns {
-    // Model definition for `dojo_examples::models::MockToken` model
-    public class MockToken : ModelInstance {
-        [ModelField("account")]
-        public FieldElement account;
+// Model definition for `dojo_examples::models::MockToken` model
+public class ns_MockToken : ModelInstance {
+    [ModelField("account")]
+    public FieldElement account;
 
-        [ModelField("amount")]
-        public BigInteger amount;
+    [ModelField("amount")]
+    public BigInteger amount;
 
-        // Start is called before the first frame update
-        void Start() {
-        }
-    
-        // Update is called once per frame
-        void Update() {
-        }
+    // Start is called before the first frame update
+    void Start() {
+    }
+
+    // Update is called once per frame
+    void Update() {
     }
 }
 

@@ -13,28 +13,26 @@ public abstract record Option<A>() : Enum {
     public record None() : Option<A>;
 }
 
-namespace ns {
-    // Model definition for `dojo_examples::models::Message` model
-    public class Message : ModelInstance {
-        [ModelField("identity")]
-        public FieldElement identity;
+// Model definition for `dojo_examples::models::Message` model
+public class ns_Message : ModelInstance {
+    [ModelField("identity")]
+    public FieldElement identity;
 
-        [ModelField("channel")]
-        public FieldElement channel;
+    [ModelField("channel")]
+    public FieldElement channel;
 
-        [ModelField("message")]
-        public string message;
+    [ModelField("message")]
+    public string message;
 
-        [ModelField("salt")]
-        public FieldElement salt;
+    [ModelField("salt")]
+    public FieldElement salt;
 
-        // Start is called before the first frame update
-        void Start() {
-        }
-    
-        // Update is called once per frame
-        void Update() {
-        }
+    // Start is called before the first frame update
+    void Start() {
+    }
+
+    // Update is called once per frame
+    void Update() {
     }
 }
 

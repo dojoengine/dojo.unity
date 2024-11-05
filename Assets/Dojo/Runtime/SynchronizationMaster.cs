@@ -71,7 +71,7 @@ namespace Dojo
                 string name = parts[1];
 
                 // Check if we have a model definition for this entity model
-                var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
+                var model = models.FirstOrDefault(m => m.GetType().Name == $"{@namespace}_{name}");
                 if (model == null)
                 {
                     Debug.LogWarning($"Model {entityModel.Name} not found");
@@ -110,7 +110,7 @@ namespace Dojo
                 if (component == null)
                 {
                     // TODO: decouple?
-                    var model = models.FirstOrDefault(m => m.GetType().Name == name && m.GetType().Namespace == @namespace);
+                    var model = models.FirstOrDefault(m => m.GetType().Name == $"{@namespace}_{name}");
                     if (model == null)
                     {
                         Debug.LogWarning($"Model {entityModel.Name} not found");
