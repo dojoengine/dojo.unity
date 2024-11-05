@@ -10,6 +10,7 @@ using UnityEngine.Events;
 using System.Numerics;
 using System.Reflection;
 using Newtonsoft.Json;
+
 namespace Dojo
 {
     [AttributeUsage(AttributeTargets.Field)]
