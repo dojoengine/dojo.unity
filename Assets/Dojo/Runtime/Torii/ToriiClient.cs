@@ -31,8 +31,9 @@ namespace Dojo.Torii
             client = result._ok;
             dojo.client_set_logger(client, new dojo.FnPtr_CString_Void((msg) => Debug.Log(msg)));
 
-            RegisterEntityStateUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
-            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
+            var clauses = new EntityKeysClause[] { new EntityKeysClause(new KeysClause(new FieldElement[] { }, dojo.PatternMatching.VariableLen, new string[] { })) };
+            RegisterEntityStateUpdateEvent(clauses, dispatchEventsToMainThread);
+            RegisterEventMessageUpdateEvent(clauses, dispatchEventsToMainThread);
         }
 
         // We assume the torii client won't be copied around.
@@ -143,16 +144,12 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* clausesPtr = (dojo.EntityKeysClause*)0;
-            if (clauses.Length > 0)
+            dojo.EntityKeysClause* clausesPtr;
+            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
             {
-                var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-                fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
-                {
-                    clausesPtr = ptr;
-                }
+                clausesPtr = ptr;
             }
-
 
             dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
@@ -204,14 +201,11 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* clausesPtr = (dojo.EntityKeysClause*)0;
-            if (clauses.Length > 0)
+            dojo.EntityKeysClause* clausesPtr;
+            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
+            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
             {
-                var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-                fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
-                {
-                    clausesPtr = ptr;
-                }
+                clausesPtr = ptr;
             }
 
             dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, historical, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
