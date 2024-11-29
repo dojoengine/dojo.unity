@@ -40,8 +40,10 @@ namespace Dojo.Torii
         // So we can free the underlying c client when the managed client is garbage collected.
         ~ToriiClient()
         {
-            dojo.subscription_cancel(entitySubscription);
-            dojo.subscription_cancel(eventMessagesSubscription);
+            // For some reason, these cause a crash. TODO: investigate.
+            
+            // dojo.subscription_cancel(entitySubscription);
+            // dojo.subscription_cancel(eventMessagesSubscription);
 
             // dojo.client_free(client);
         }
