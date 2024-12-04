@@ -1,93 +1,50 @@
 declare namespace wasm_bindgen {
 	/* tslint:disable */
 	/* eslint-disable */
-	/**
-	* @param {string} typed_data
-	* @param {string} address
-	* @returns {string}
-	*/
 	export function typedDataEncode(typed_data: string, address: string): string;
-	/**
-	* @returns {string}
-	*/
 	export function signingKeyNew(): string;
-	/**
-	* @param {string} private_key
-	* @param {string} hash
-	* @returns {Signature}
-	*/
 	export function signingKeySign(private_key: string, hash: string): Signature;
-	/**
-	* @param {string} signing_key
-	* @returns {string}
-	*/
 	export function verifyingKeyNew(signing_key: string): string;
-	/**
-	* @param {string} verifying_key
-	* @param {string} hash
-	* @param {Signature} signature
-	* @returns {boolean}
-	*/
 	export function verifyingKeyVerify(verifying_key: string, hash: string, signature: Signature): boolean;
-	/**
-	* @param {string} rpc_url
-	* @returns {Provider}
-	*/
 	export function createProvider(rpc_url: string): Provider;
-	/**
-	* @param {string} class_hash
-	* @param {string} salt
-	* @param {(string)[]} constructor_calldata
-	* @param {string} deployer_address
-	* @returns {string}
-	*/
 	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
-	/**
-	* @param {string} tag
-	* @returns {string}
-	*/
 	export function getSelectorFromTag(tag: string): string;
-	/**
-	* @param {string} str
-	* @returns {(string)[]}
-	*/
 	export function byteArraySerialize(str: string): (string)[];
-	/**
-	* @param {(string)[]} felts
-	* @returns {string}
-	*/
 	export function byteArrayDeserialize(felts: (string)[]): string;
-	/**
-	* @param {(string)[]} inputs
-	* @returns {string}
-	*/
 	export function poseidonHash(inputs: (string)[]): string;
-	/**
-	* @param {string} name
-	* @returns {string}
-	*/
 	export function getSelectorFromName(name: string): string;
-	/**
-	* @param {Uint8Array} inputs
-	* @returns {string}
-	*/
 	export function starknetKeccak(inputs: Uint8Array): string;
-	/**
-	* @param {string} str
-	* @returns {string}
-	*/
 	export function cairoShortStringToFelt(str: string): string;
-	/**
-	* @param {string} str
-	* @returns {string}
-	*/
 	export function parseCairoShortString(str: string): string;
 	/**
-	* Create the a client with the given configurations.
-	* @param {ClientConfig} config
-	* @returns {Promise<ToriiClient>}
-	*/
+	 * Create the a client with the given configurations.
+	 */
 	export function createClient(config: ClientConfig): Promise<ToriiClient>;
+	/**
+	 * The `ReadableStreamType` enum.
+	 *
+	 * *This API requires the following crate features to be activated: `ReadableStreamType`*
+	 */
+	type ReadableStreamType = "bytes";
+	export type Tokens = Token[];
+	
+	export type TokenBalances = TokenBalance[];
+	
+	export interface Token {
+	    contract_address: string;
+	    name: string;
+	    symbol: string;
+	    decimals: number;
+	    metadata: string;
+	}
+	
+	export interface TokenBalance {
+	    balance: string;
+	    account_address: string;
+	    contract_address: string;
+	    token_id: string;
+	}
+	
 	export interface IndexerUpdate {
 	    head: number;
 	    tps: number;
@@ -198,187 +155,65 @@ declare namespace wasm_bindgen {
 	    transaction_hash: string;
 	}
 	
-	/**
-	*/
 	export class Account {
+	  private constructor();
 	  free(): void;
-	/**
-	* @returns {string}
-	*/
 	  address(): string;
-	/**
-	* @returns {string}
-	*/
 	  chainId(): string;
-	/**
-	* @param {string} block_id
-	*/
 	  setBlockId(block_id: string): void;
-	/**
-	* @param {(Call)[]} calldata
-	* @returns {Promise<string>}
-	*/
 	  executeRaw(calldata: (Call)[]): Promise<string>;
-	/**
-	* @param {string} private_key
-	* @returns {Promise<Account>}
-	*/
 	  deployBurner(private_key: string): Promise<Account>;
-	/**
-	* @returns {Promise<string>}
-	*/
 	  nonce(): Promise<string>;
 	}
-	/**
-	*/
 	export class IntoUnderlyingByteSource {
+	  private constructor();
 	  free(): void;
-	/**
-	* @param {ReadableByteStreamController} controller
-	*/
 	  start(controller: ReadableByteStreamController): void;
-	/**
-	* @param {ReadableByteStreamController} controller
-	* @returns {Promise<any>}
-	*/
 	  pull(controller: ReadableByteStreamController): Promise<any>;
-	/**
-	*/
 	  cancel(): void;
-	/**
-	*/
+	  readonly type: ReadableStreamType;
 	  readonly autoAllocateChunkSize: number;
-	/**
-	*/
-	  readonly type: string;
 	}
-	/**
-	*/
 	export class IntoUnderlyingSink {
+	  private constructor();
 	  free(): void;
-	/**
-	* @param {any} chunk
-	* @returns {Promise<any>}
-	*/
 	  write(chunk: any): Promise<any>;
-	/**
-	* @returns {Promise<any>}
-	*/
 	  close(): Promise<any>;
-	/**
-	* @param {any} reason
-	* @returns {Promise<any>}
-	*/
 	  abort(reason: any): Promise<any>;
 	}
-	/**
-	*/
 	export class IntoUnderlyingSource {
+	  private constructor();
 	  free(): void;
-	/**
-	* @param {ReadableStreamDefaultController} controller
-	* @returns {Promise<any>}
-	*/
 	  pull(controller: ReadableStreamDefaultController): Promise<any>;
-	/**
-	*/
 	  cancel(): void;
 	}
-	/**
-	*/
 	export class Provider {
+	  private constructor();
 	  free(): void;
-	/**
-	* @param {string} private_key
-	* @param {string} address
-	* @returns {Promise<Account>}
-	*/
 	  createAccount(private_key: string, address: string): Promise<Account>;
-	/**
-	* @param {Call} call
-	* @param {BlockId} block_id
-	* @returns {Promise<Array<any>>}
-	*/
 	  call(call: Call, block_id: BlockId): Promise<Array<any>>;
-	/**
-	* @param {string} txn_hash
-	* @returns {Promise<boolean>}
-	*/
 	  waitForTransaction(txn_hash: string): Promise<boolean>;
 	}
-	/**
-	*/
 	export class Subscription {
+	  private constructor();
 	  free(): void;
-	/**
-	*/
 	  cancel(): void;
 	}
-	/**
-	*/
 	export class ToriiClient {
+	  private constructor();
 	  free(): void;
-	/**
-	* @param {Query} query
-	* @returns {Promise<Entities>}
-	*/
+	  getTokens(contract_addresses: (string)[]): Promise<Tokens>;
+	  getTokenBalances(account_addresses: (string)[], contract_addresses: (string)[]): Promise<TokenBalances>;
 	  getEntities(query: Query): Promise<Entities>;
-	/**
-	* @param {number} limit
-	* @param {number} offset
-	* @returns {Promise<Entities>}
-	*/
 	  getAllEntities(limit: number, offset: number): Promise<Entities>;
-	/**
-	* @param {Query} query
-	* @param {boolean} historical
-	* @returns {Promise<Entities>}
-	*/
 	  getEventMessages(query: Query, historical: boolean): Promise<Entities>;
-	/**
-	* @param {(EntityKeysClause)[]} clauses
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
 	  onEntityUpdated(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
-	/**
-	* @param {Subscription} subscription
-	* @param {(EntityKeysClause)[]} clauses
-	* @returns {Promise<void>}
-	*/
 	  updateEntitySubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
-	/**
-	* @param {(EntityKeysClause)[]} clauses
-	* @param {boolean} historical
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
 	  onEventMessageUpdated(clauses: (EntityKeysClause)[], historical: boolean, callback: Function): Promise<Subscription>;
-	/**
-	* @param {Subscription} subscription
-	* @param {(EntityKeysClause)[]} clauses
-	* @param {boolean} historical
-	* @returns {Promise<void>}
-	*/
 	  updateEventMessageSubscription(subscription: Subscription, clauses: (EntityKeysClause)[], historical: boolean): Promise<void>;
-	/**
-	* @param {(EntityKeysClause)[]} clauses
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
 	  onStarknetEvent(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
-	/**
-	* @param {string | undefined} contract_address
-	* @param {Function} callback
-	* @returns {Promise<Subscription>}
-	*/
 	  onIndexerUpdated(contract_address: string | undefined, callback: Function): Promise<Subscription>;
-	/**
-	* @param {string} message
-	* @param {(string)[]} signature
-	* @returns {Promise<Uint8Array>}
-	*/
-	  publishMessage(message: string, signature: (string)[]): Promise<Uint8Array>;
+	  publishMessage(message: string, signature: (string)[], is_session_signature: boolean): Promise<Uint8Array>;
 	}
 	
 }
@@ -415,6 +250,8 @@ declare interface InitOutput {
   readonly starknetKeccak: (a: number, b: number) => void;
   readonly cairoShortStringToFelt: (a: number, b: number, c: number) => void;
   readonly parseCairoShortString: (a: number, b: number, c: number) => void;
+  readonly toriiclient_getTokens: (a: number, b: number, c: number) => number;
+  readonly toriiclient_getTokenBalances: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly toriiclient_getEntities: (a: number, b: number) => number;
   readonly toriiclient_getAllEntities: (a: number, b: number, c: number) => number;
   readonly toriiclient_getEventMessages: (a: number, b: number, c: number) => number;
@@ -424,11 +261,11 @@ declare interface InitOutput {
   readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number) => number;
   readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
-  readonly intounderlyingbytesource_type: (a: number, b: number) => void;
+  readonly intounderlyingbytesource_type: (a: number) => number;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_start: (a: number, b: number) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: number) => number;
@@ -442,17 +279,17 @@ declare interface InitOutput {
   readonly intounderlyingsink_abort: (a: number, b: number) => number;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
-  readonly __wbindgen_export_2: WebAssembly.Table;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hd2c74c1b7e9222d1: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4aebea369d10720f: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h4301a475fe6d23e9: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hdff8534b51b570f5: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hbb184a197cc25f28: (a: number, b: number, c: number) => void;
-  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h57be5134d1d69be9: (a: number, b: number, c: number) => void;
+  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __wbindgen_export_3: WebAssembly.Table;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
-  readonly __wbindgen_exn_store: (a: number) => void;
-  readonly wasm_bindgen__convert__closures__invoke2_mut__hcb093c54d64f88f2: (a: number, b: number, c: number, d: number) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hdd36548e68818caf: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h57f21cd7c8b9ea8e: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h8e06c60ba0f5003f: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h8045929816b5fbae: (a: number, b: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hae2f4ec6e71d3739: (a: number, b: number, c: number) => void;
+  readonly _dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hf76e1f80e8c3e0a1: (a: number, b: number, c: number) => void;
+  readonly wasm_bindgen__convert__closures__invoke2_mut__h49e145a35b1c793c: (a: number, b: number, c: number, d: number) => void;
 }
 
 /**
