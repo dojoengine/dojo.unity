@@ -3341,8 +3341,8 @@ namespace dojo_bindings
         [CNode(Kind = "Enum")]
         public enum MemberValue_Tag : int
         {
-            String = 0,
-            Primitive = 1
+            Primitive = 0,
+            String = 1
         }
 
         [CNode(Kind = "Enum")]
