@@ -26,6 +26,7 @@ namespace Dojo
 
         public UnityEvent<List<GameObject>> OnSynchronized;
         public UnityEvent<GameObject> OnEntitySpawned;
+        public UnityEvent<ModelInstance> OnModelUpdated;
         public UnityEvent<ModelInstance> OnEventMessage;
 
         // Awake is called when the script instance is being loaded.
@@ -122,6 +123,7 @@ namespace Dojo
 
                 // update component with new model data
                 ((ModelInstance)component).OnUpdate(entityModel);
+                OnModelUpdated?.Invoke(model);
             }
         }
 
