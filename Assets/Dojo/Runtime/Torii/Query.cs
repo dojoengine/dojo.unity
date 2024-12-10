@@ -20,11 +20,19 @@ namespace Dojo.Torii
         public Clause? clause;
         public bool dont_include_hashed_keys;
 
-        public Query(uint limit, uint offset, Clause? clause = null, bool dont_include_hashed_keys = false)
+        public Query(uint limit = 1000, uint offset = 0, Clause? clause = null, bool dont_include_hashed_keys = false)
         {
             this.limit = limit;
             this.offset = offset;
             this.clause = clause;
+            this.dont_include_hashed_keys = dont_include_hashed_keys;
+        }
+
+        public Query(Clause clause, uint limit = 1000, uint offset = 0, bool dont_include_hashed_keys = false)
+        {
+            this.clause = clause;
+            this.limit = limit;
+            this.offset = offset;
             this.dont_include_hashed_keys = dont_include_hashed_keys;
         }
 
