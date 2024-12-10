@@ -111,7 +111,7 @@ namespace Dojo.Torii
                 // array
                 "array" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToList(),
                 "bytearray" => value.value.ToObject<string>(),
-                "primitive" => value.type_name switch
+                "primitive" => value.type_name.ToLower() switch
                 {
                     // primitives
                     "bool" => value.value.ToObject<bool>(),
