@@ -131,7 +131,10 @@ namespace Dojo
         {
             foreach (var entityModel in entityModels)
             {
-                var model = models.FirstOrDefault(m => m.GetType().Name == entityModel.Name);
+                string[] parts = entityModel.Name.Split('-');
+                string @namespace = parts[0];
+                string name = parts[1];
+                var model = models.FirstOrDefault(m => m.GetType().Name == $"{@namespace}_{name}");
                 if (model == null)
                 {
                     Debug.LogWarning($"Model {entityModel.Name} not found");
