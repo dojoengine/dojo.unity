@@ -190,7 +190,6 @@ mergeInto(LibraryManager.library, {
     const published = await client.publishMessage(
       UTF8ToString(message),
       JSON.parse(UTF8ToString(signature)),
-      false
     );
     const publishedString = JSON.stringify(Array.from(published));
     const bufferSize = lengthBytesUTF8(publishedString) + 1;
