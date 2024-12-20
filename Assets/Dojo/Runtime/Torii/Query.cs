@@ -19,21 +19,27 @@ namespace Dojo.Torii
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Clause? clause;
         public bool dont_include_hashed_keys;
+        public OrderBy[] order_by;
+        public string[] entity_models;
 
-        public Query(uint limit = 1000, uint offset = 0, Clause? clause = null, bool dont_include_hashed_keys = false)
+        public Query(uint limit = 1000, uint offset = 0, Clause? clause = null, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null)
         {
             this.limit = limit;
             this.offset = offset;
             this.clause = clause;
             this.dont_include_hashed_keys = dont_include_hashed_keys;
+            this.order_by = order_by ?? Array.Empty<OrderBy>();
+            this.entity_models = entity_models ?? Array.Empty<string>();
         }
 
-        public Query(Clause clause, uint limit = 1000, uint offset = 0, bool dont_include_hashed_keys = false)
+        public Query(Clause clause, uint limit = 1000, uint offset = 0, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null)
         {
             this.clause = clause;
             this.limit = limit;
             this.offset = offset;
             this.dont_include_hashed_keys = dont_include_hashed_keys;
+            this.order_by = order_by ?? Array.Empty<OrderBy>();
+            this.entity_models = entity_models ?? Array.Empty<string>();
         }
 
         public dojo.Query ToNative()
@@ -56,6 +62,31 @@ namespace Dojo.Torii
             }
 
             return nativeQuery;
+        }
+    }
+
+    [Serializable]
+    public struct OrderBy
+    {
+        public string model;
+        public string member;
+        public dojo.OrderDirection direction;
+
+        public OrderBy(string model, string member, dojo.OrderDirection direction)
+        {
+            this.model = model;
+            this.member = member;
+            this.direction = direction;
+        }
+
+        public dojo.OrderBy ToNative()
+        {
+            return new dojo.OrderBy
+            {
+                model = model,
+                member = member,
+                direction = direction
+            };
         }
     }
 
