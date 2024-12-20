@@ -1,10 +1,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export const __wbg_toriiclient_free: (a: number, b: number) => void;
-export const __wbg_provider_free: (a: number, b: number) => void;
-export const __wbg_account_free: (a: number, b: number) => void;
-export const __wbg_subscription_free: (a: number, b: number) => void;
+export const clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
 export const typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
 export const signingKeyNew: (a: number) => void;
 export const signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -40,9 +37,13 @@ export const toriiclient_onEventMessageUpdated: (a: number, b: number, c: number
 export const toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number, e: number) => number;
 export const toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number) => number;
 export const toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number) => number;
-export const toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+export const toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
 export const subscription_cancel: (a: number) => void;
 export const createClient: (a: number) => number;
+export const __wbg_toriiclient_free: (a: number, b: number) => void;
+export const __wbg_provider_free: (a: number, b: number) => void;
+export const __wbg_account_free: (a: number, b: number) => void;
+export const __wbg_subscription_free: (a: number, b: number) => void;
 export const __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
 export const intounderlyingbytesource_type: (a: number) => number;
 export const intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;

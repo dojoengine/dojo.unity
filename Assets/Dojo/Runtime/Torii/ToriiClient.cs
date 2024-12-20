@@ -243,7 +243,7 @@ namespace Dojo.Torii
                 signaturePtr = ptr;
             }
 
-            var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signaturePtr, (UIntPtr)signature.Length, false);
+            var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signaturePtr, (UIntPtr)signature.Length);
             if (result.tag == dojo.ResultCArrayu8_Tag.ErrCArrayu8)
             {
                 throw new Exception(result.err.message);

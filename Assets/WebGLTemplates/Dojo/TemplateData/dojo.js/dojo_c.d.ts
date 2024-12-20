@@ -1,23 +1,168 @@
 declare namespace wasm_bindgen {
 	/* tslint:disable */
 	/* eslint-disable */
+	/**
+	 * Encodes typed data according to Starknet's typed data specification
+	 *
+	 * # Parameters
+	 * * `typed_data` - JSON string containing the typed data
+	 * * `address` - Address as hex string
+	 *
+	 * # Returns
+	 * Result containing encoded data as hex string or error
+	 */
 	export function typedDataEncode(typed_data: string, address: string): string;
+	/**
+	 * Generates a new random signing key
+	 *
+	 * # Returns
+	 * Private key as hex string
+	 */
 	export function signingKeyNew(): string;
+	/**
+	 * Signs a message hash with a private key
+	 *
+	 * # Parameters
+	 * * `private_key` - Private key as hex string
+	 * * `hash` - Message hash as hex string
+	 *
+	 * # Returns
+	 * Result containing signature or error
+	 */
 	export function signingKeySign(private_key: string, hash: string): Signature;
+	/**
+	 * Derives a verifying (public) key from a signing (private) key
+	 *
+	 * # Parameters
+	 * * `signing_key` - Signing key as hex string
+	 *
+	 * # Returns
+	 * Result containing verifying key as hex string or error
+	 */
 	export function verifyingKeyNew(signing_key: string): string;
+	/**
+	 * Verifies a signature against a message hash using a verifying key
+	 *
+	 * # Parameters
+	 * * `verifying_key` - Verifying key as hex string
+	 * * `hash` - Message hash as hex string
+	 * * `signature` - Signature to verify
+	 *
+	 * # Returns
+	 * Result containing verification success boolean or error
+	 */
 	export function verifyingKeyVerify(verifying_key: string, hash: string, signature: Signature): boolean;
+	/**
+	 * Creates a new Starknet provider instance for a given RPC URL
+	 *
+	 * # Parameters
+	 * * `rpc_url` - URL of the RPC endpoint
+	 *
+	 * # Returns
+	 * Result containing Provider instance or error
+	 */
 	export function createProvider(rpc_url: string): Provider;
+	/**
+	 * Computes a contract address from deployment parameters
+	 *
+	 * # Parameters
+	 * * `class_hash` - Contract class hash as hex string
+	 * * `salt` - Salt value as hex string
+	 * * `constructor_calldata` - Array of constructor parameters as hex strings
+	 * * `deployer_address` - Address of deployer as hex string
+	 *
+	 * # Returns
+	 * Result containing computed contract address as hex string or error
+	 */
 	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
+	/**
+	 * Computes a selector from a tag string
+	 *
+	 * # Parameters
+	 * * `tag` - Tag string to compute selector from
+	 *
+	 * # Returns
+	 * Selector as hex string
+	 */
 	export function getSelectorFromTag(tag: string): string;
+	/**
+	 * Serializes a string into a Cairo byte array
+	 *
+	 * # Parameters
+	 * * `str` - String to serialize
+	 *
+	 * # Returns
+	 * Result containing array of field elements as hex strings or error
+	 */
 	export function byteArraySerialize(str: string): (string)[];
+	/**
+	 * Deserializes a Cairo byte array into a string
+	 *
+	 * # Parameters
+	 * * `felts` - Array of field elements as hex strings
+	 *
+	 * # Returns
+	 * Result containing deserialized string or error
+	 */
 	export function byteArrayDeserialize(felts: (string)[]): string;
+	/**
+	 * Computes a Poseidon hash of the inputs
+	 *
+	 * # Parameters
+	 * * `inputs` - Array of field elements as hex strings
+	 *
+	 * # Returns
+	 * Result containing hash as hex string or error
+	 */
 	export function poseidonHash(inputs: (string)[]): string;
+	/**
+	 * Gets a selector from a function name
+	 *
+	 * # Parameters
+	 * * `name` - Function name to compute selector from
+	 *
+	 * # Returns
+	 * Result containing selector as hex string or error
+	 */
 	export function getSelectorFromName(name: string): string;
+	/**
+	 * Computes the Starknet variant of Keccak hash
+	 *
+	 * # Parameters
+	 * * `inputs` - Byte array to hash
+	 *
+	 * # Returns
+	 * Result containing hash as hex string or error
+	 */
 	export function starknetKeccak(inputs: Uint8Array): string;
+	/**
+	 * Converts a short string to a Cairo field element
+	 *
+	 * # Parameters
+	 * * `str` - String to convert
+	 *
+	 * # Returns
+	 * Result containing field element as hex string or error
+	 */
 	export function cairoShortStringToFelt(str: string): string;
+	/**
+	 * Parses a Cairo field element into a short string
+	 *
+	 * # Parameters
+	 * * `str` - Field element as hex string
+	 *
+	 * # Returns
+	 * Result containing parsed string or error
+	 */
 	export function parseCairoShortString(str: string): string;
 	/**
-	 * Create the a client with the given configurations.
+	 * Creates a new Torii client with the given configuration
+	 *
+	 * # Parameters
+	 * * `config` - Client configuration including URLs and world address
+	 *
+	 * # Returns
+	 * Result containing ToriiClient instance or error
 	 */
 	export function createClient(config: ClientConfig): Promise<ToriiClient>;
 	/**
@@ -99,7 +244,18 @@ declare namespace wasm_bindgen {
 	    offset: number;
 	    clause: Clause | undefined;
 	    dont_include_hashed_keys: boolean;
+	    order_by: OrderBy[];
+	    entity_models: string[];
+	    entity_updated_after: number;
 	}
+	
+	export interface OrderBy {
+	    model: string;
+	    member: string;
+	    direction: OrderDirection;
+	}
+	
+	export type OrderDirection = "Asc" | "Desc";
 	
 	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
 	
@@ -158,11 +314,56 @@ declare namespace wasm_bindgen {
 	export class Account {
 	  private constructor();
 	  free(): void;
+	  /**
+	   * Returns the account's address
+	   *
+	   * # Returns
+	   * Result containing address as hex string or error
+	   */
 	  address(): string;
+	  /**
+	   * Returns the account's chain ID
+	   *
+	   * # Returns
+	   * Result containing chain ID as hex string or error
+	   */
 	  chainId(): string;
+	  /**
+	   * Sets the block ID for subsequent operations
+	   *
+	   * # Parameters
+	   * * `block_id` - Block ID as hex string
+	   *
+	   * # Returns
+	   * Result containing unit or error
+	   */
 	  setBlockId(block_id: string): void;
+	  /**
+	   * Executes a raw transaction
+	   *
+	   * # Parameters
+	   * * `calldata` - Array of contract calls to execute
+	   *
+	   * # Returns
+	   * Result containing transaction hash as hex string or error
+	   */
 	  executeRaw(calldata: (Call)[]): Promise<string>;
+	  /**
+	   * Deploys a burner wallet
+	   *
+	   * # Parameters
+	   * * `private_key` - Private key for the burner wallet as hex string
+	   *
+	   * # Returns
+	   * Result containing new Account instance or error
+	   */
 	  deployBurner(private_key: string): Promise<Account>;
+	  /**
+	   * Gets the current nonce for the account
+	   *
+	   * # Returns
+	   * Result containing nonce as hex string or error
+	   */
 	  nonce(): Promise<string>;
 	}
 	export class IntoUnderlyingByteSource {
@@ -190,30 +391,182 @@ declare namespace wasm_bindgen {
 	export class Provider {
 	  private constructor();
 	  free(): void;
+	  /**
+	   * Creates a new account instance with the given private key and address
+	   *
+	   * # Parameters
+	   * * `private_key` - Private key as hex string
+	   * * `address` - Account address as hex string
+	   *
+	   * # Returns
+	   * Result containing Account instance or error
+	   */
 	  createAccount(private_key: string, address: string): Promise<Account>;
+	  /**
+	   * Calls a Starknet contract view function
+	   *
+	   * # Parameters
+	   * * `call` - Call parameters including contract address and function
+	   * * `block_id` - Block identifier for the call
+	   *
+	   * # Returns
+	   * Result containing array of field elements or error
+	   */
 	  call(call: Call, block_id: BlockId): Promise<Array<any>>;
+	  /**
+	   * Waits for a transaction to be confirmed
+	   *
+	   * # Parameters
+	   * * `txn_hash` - Transaction hash as hex string
+	   *
+	   * # Returns
+	   * Result containing success boolean or error
+	   */
 	  waitForTransaction(txn_hash: string): Promise<boolean>;
 	}
 	export class Subscription {
 	  private constructor();
 	  free(): void;
+	  /**
+	   * Cancels an active subscription
+	   */
 	  cancel(): void;
 	}
 	export class ToriiClient {
 	  private constructor();
 	  free(): void;
+	  /**
+	   * Gets token information for the given contract addresses
+	   *
+	   * # Parameters
+	   * * `contract_addresses` - Array of contract addresses as hex strings
+	   *
+	   * # Returns
+	   * Result containing token information or error
+	   */
 	  getTokens(contract_addresses: (string)[]): Promise<Tokens>;
+	  /**
+	   * Gets token balances for given accounts and contracts
+	   *
+	   * # Parameters
+	   * * `account_addresses` - Array of account addresses as hex strings
+	   * * `contract_addresses` - Array of contract addresses as hex strings
+	   *
+	   * # Returns
+	   * Result containing token balances or error
+	   */
 	  getTokenBalances(account_addresses: (string)[], contract_addresses: (string)[]): Promise<TokenBalances>;
+	  /**
+	   * Queries entities based on the provided query parameters
+	   *
+	   * # Parameters
+	   * * `query` - Query parameters for filtering entities
+	   *
+	   * # Returns
+	   * Result containing matching entities or error
+	   */
 	  getEntities(query: Query): Promise<Entities>;
+	  /**
+	   * Gets all entities with pagination
+	   *
+	   * # Parameters
+	   * * `limit` - Maximum number of entities to return
+	   * * `offset` - Number of entities to skip
+	   *
+	   * # Returns
+	   * Result containing paginated entities or error
+	   */
 	  getAllEntities(limit: number, offset: number): Promise<Entities>;
+	  /**
+	   * Gets event messages based on query parameters
+	   *
+	   * # Parameters
+	   * * `query` - Query parameters for filtering messages
+	   * * `historical` - Whether to include historical messages
+	   *
+	   * # Returns
+	   * Result containing matching event messages or error
+	   */
 	  getEventMessages(query: Query, historical: boolean): Promise<Entities>;
+	  /**
+	   * Subscribes to entity updates
+	   *
+	   * # Parameters
+	   * * `clauses` - Array of key clauses for filtering updates
+	   * * `callback` - JavaScript function to call on updates
+	   *
+	   * # Returns
+	   * Result containing subscription handle or error
+	   */
 	  onEntityUpdated(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	  /**
+	   * Updates an existing entity subscription
+	   *
+	   * # Parameters
+	   * * `subscription` - Existing subscription to update
+	   * * `clauses` - New array of key clauses for filtering
+	   *
+	   * # Returns
+	   * Result containing unit or error
+	   */
 	  updateEntitySubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
+	  /**
+	   * Subscribes to event message updates
+	   *
+	   * # Parameters
+	   * * `clauses` - Array of key clauses for filtering updates
+	   * * `historical` - Whether to include historical messages
+	   * * `callback` - JavaScript function to call on updates
+	   *
+	   * # Returns
+	   * Result containing subscription handle or error
+	   */
 	  onEventMessageUpdated(clauses: (EntityKeysClause)[], historical: boolean, callback: Function): Promise<Subscription>;
+	  /**
+	   * Updates an existing event message subscription
+	   *
+	   * # Parameters
+	   * * `subscription` - Existing subscription to update
+	   * * `clauses` - New array of key clauses for filtering
+	   * * `historical` - Whether to include historical messages
+	   *
+	   * # Returns
+	   * Result containing unit or error
+	   */
 	  updateEventMessageSubscription(subscription: Subscription, clauses: (EntityKeysClause)[], historical: boolean): Promise<void>;
+	  /**
+	   * Subscribes to Starknet events
+	   *
+	   * # Parameters
+	   * * `clauses` - Array of key clauses for filtering events
+	   * * `callback` - JavaScript function to call on events
+	   *
+	   * # Returns
+	   * Result containing subscription handle or error
+	   */
 	  onStarknetEvent(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	  /**
+	   * Subscribes to indexer updates
+	   *
+	   * # Parameters
+	   * * `contract_address` - Optional contract address to filter updates
+	   * * `callback` - JavaScript function to call on updates
+	   *
+	   * # Returns
+	   * Result containing subscription handle or error
+	   */
 	  onIndexerUpdated(contract_address: string | undefined, callback: Function): Promise<Subscription>;
-	  publishMessage(message: string, signature: (string)[], is_session_signature: boolean): Promise<Uint8Array>;
+	  /**
+	   * Publishes a message to the network
+	   *
+	   * # Parameters
+	   * * `message` - Message to publish as JSON string
+	   * * `signature` - Array of signature field elements as hex strings
+	   *
+	   * # Returns
+	   * Result containing message ID as byte array or error
+	   */
+	  publishMessage(message: string, signature: (string)[]): Promise<Uint8Array>;
 	}
 	
 }
@@ -222,10 +575,7 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
-  readonly __wbg_provider_free: (a: number, b: number) => void;
-  readonly __wbg_account_free: (a: number, b: number) => void;
-  readonly __wbg_subscription_free: (a: number, b: number) => void;
+  readonly clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
   readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
   readonly signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -261,9 +611,13 @@ declare interface InitOutput {
   readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number) => number;
   readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
+  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
+  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
+  readonly __wbg_provider_free: (a: number, b: number) => void;
+  readonly __wbg_account_free: (a: number, b: number) => void;
+  readonly __wbg_subscription_free: (a: number, b: number) => void;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
