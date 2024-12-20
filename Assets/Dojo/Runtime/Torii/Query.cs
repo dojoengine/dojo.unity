@@ -21,8 +21,9 @@ namespace Dojo.Torii
         public bool dont_include_hashed_keys;
         public OrderBy[] order_by;
         public string[] entity_models;
+        public ulong entity_updated_after;
 
-        public Query(uint limit = 1000, uint offset = 0, Clause? clause = null, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null)
+        public Query(uint limit = 1000, uint offset = 0, Clause? clause = null, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null, ulong entity_updated_after = 0)
         {
             this.limit = limit;
             this.offset = offset;
@@ -30,9 +31,10 @@ namespace Dojo.Torii
             this.dont_include_hashed_keys = dont_include_hashed_keys;
             this.order_by = order_by ?? Array.Empty<OrderBy>();
             this.entity_models = entity_models ?? Array.Empty<string>();
+            this.entity_updated_after = entity_updated_after;
         }
 
-        public Query(Clause clause, uint limit = 1000, uint offset = 0, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null)
+        public Query(Clause clause, uint limit = 1000, uint offset = 0, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null, ulong entity_updated_after = 0)
         {
             this.clause = clause;
             this.limit = limit;
@@ -40,6 +42,7 @@ namespace Dojo.Torii
             this.dont_include_hashed_keys = dont_include_hashed_keys;
             this.order_by = order_by ?? Array.Empty<OrderBy>();
             this.entity_models = entity_models ?? Array.Empty<string>();
+            this.entity_updated_after = entity_updated_after;
         }
 
         public dojo.Query ToNative()

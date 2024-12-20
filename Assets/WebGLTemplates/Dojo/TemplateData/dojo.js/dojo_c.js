@@ -232,6 +232,14 @@ let wasm_bindgen;
         return className;
     }
     /**
+     * Encodes typed data according to Starknet's typed data specification
+     *
+     * # Parameters
+     * * `typed_data` - JSON string containing the typed data
+     * * `address` - Address as hex string
+     *
+     * # Returns
+     * Result containing encoded data as hex string or error
      * @param {string} typed_data
      * @param {string} address
      * @returns {string}
@@ -266,6 +274,10 @@ let wasm_bindgen;
     };
 
     /**
+     * Generates a new random signing key
+     *
+     * # Returns
+     * Private key as hex string
      * @returns {string}
      */
     __exports.signingKeyNew = function() {
@@ -286,6 +298,14 @@ let wasm_bindgen;
     };
 
     /**
+     * Signs a message hash with a private key
+     *
+     * # Parameters
+     * * `private_key` - Private key as hex string
+     * * `hash` - Message hash as hex string
+     *
+     * # Returns
+     * Result containing signature or error
      * @param {string} private_key
      * @param {string} hash
      * @returns {Signature}
@@ -311,6 +331,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Derives a verifying (public) key from a signing (private) key
+     *
+     * # Parameters
+     * * `signing_key` - Signing key as hex string
+     *
+     * # Returns
+     * Result containing verifying key as hex string or error
      * @param {string} signing_key
      * @returns {string}
      */
@@ -342,6 +369,15 @@ let wasm_bindgen;
     };
 
     /**
+     * Verifies a signature against a message hash using a verifying key
+     *
+     * # Parameters
+     * * `verifying_key` - Verifying key as hex string
+     * * `hash` - Message hash as hex string
+     * * `signature` - Signature to verify
+     *
+     * # Returns
+     * Result containing verification success boolean or error
      * @param {string} verifying_key
      * @param {string} hash
      * @param {Signature} signature
@@ -368,6 +404,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Creates a new Starknet provider instance for a given RPC URL
+     *
+     * # Parameters
+     * * `rpc_url` - URL of the RPC endpoint
+     *
+     * # Returns
+     * Result containing Provider instance or error
      * @param {string} rpc_url
      * @returns {Provider}
      */
@@ -399,6 +442,16 @@ let wasm_bindgen;
         return ptr;
     }
     /**
+     * Computes a contract address from deployment parameters
+     *
+     * # Parameters
+     * * `class_hash` - Contract class hash as hex string
+     * * `salt` - Salt value as hex string
+     * * `constructor_calldata` - Array of constructor parameters as hex strings
+     * * `deployer_address` - Address of deployer as hex string
+     *
+     * # Returns
+     * Result containing computed contract address as hex string or error
      * @param {string} class_hash
      * @param {string} salt
      * @param {(string)[]} constructor_calldata
@@ -439,6 +492,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Computes a selector from a tag string
+     *
+     * # Parameters
+     * * `tag` - Tag string to compute selector from
+     *
+     * # Returns
+     * Selector as hex string
      * @param {string} tag
      * @returns {string}
      */
@@ -471,6 +531,13 @@ let wasm_bindgen;
         return result;
     }
     /**
+     * Serializes a string into a Cairo byte array
+     *
+     * # Parameters
+     * * `str` - String to serialize
+     *
+     * # Returns
+     * Result containing array of field elements as hex strings or error
      * @param {string} str
      * @returns {(string)[]}
      */
@@ -496,6 +563,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Deserializes a Cairo byte array into a string
+     *
+     * # Parameters
+     * * `felts` - Array of field elements as hex strings
+     *
+     * # Returns
+     * Result containing deserialized string or error
      * @param {(string)[]} felts
      * @returns {string}
      */
@@ -527,6 +601,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Computes a Poseidon hash of the inputs
+     *
+     * # Parameters
+     * * `inputs` - Array of field elements as hex strings
+     *
+     * # Returns
+     * Result containing hash as hex string or error
      * @param {(string)[]} inputs
      * @returns {string}
      */
@@ -558,6 +639,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Gets a selector from a function name
+     *
+     * # Parameters
+     * * `name` - Function name to compute selector from
+     *
+     * # Returns
+     * Result containing selector as hex string or error
      * @param {string} name
      * @returns {string}
      */
@@ -589,6 +677,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Computes the Starknet variant of Keccak hash
+     *
+     * # Parameters
+     * * `inputs` - Byte array to hash
+     *
+     * # Returns
+     * Result containing hash as hex string or error
      * @param {Uint8Array} inputs
      * @returns {string}
      */
@@ -618,6 +713,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Converts a short string to a Cairo field element
+     *
+     * # Parameters
+     * * `str` - String to convert
+     *
+     * # Returns
+     * Result containing field element as hex string or error
      * @param {string} str
      * @returns {string}
      */
@@ -649,6 +751,13 @@ let wasm_bindgen;
     };
 
     /**
+     * Parses a Cairo field element into a short string
+     *
+     * # Parameters
+     * * `str` - Field element as hex string
+     *
+     * # Returns
+     * Result containing parsed string or error
      * @param {string} str
      * @returns {string}
      */
@@ -685,7 +794,13 @@ let wasm_bindgen;
         }
     }
     /**
-     * Create the a client with the given configurations.
+     * Creates a new Torii client with the given configuration
+     *
+     * # Parameters
+     * * `config` - Client configuration including URLs and world address
+     *
+     * # Returns
+     * Result containing ToriiClient instance or error
      * @param {ClientConfig} config
      * @returns {Promise<ToriiClient>}
      */
@@ -718,7 +833,7 @@ let wasm_bindgen;
         wasm._dyn_core__ops__function__FnMut__A____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hf76e1f80e8c3e0a1(arg0, arg1, addHeapObject(arg2));
     }
 
-    function __wbg_adapter_394(arg0, arg1, arg2, arg3) {
+    function __wbg_adapter_395(arg0, arg1, arg2, arg3) {
         wasm.wasm_bindgen__convert__closures__invoke2_mut__h49e145a35b1c793c(arg0, arg1, addHeapObject(arg2), addHeapObject(arg3));
     }
 
@@ -768,6 +883,10 @@ let wasm_bindgen;
             wasm.__wbg_account_free(ptr, 0);
         }
         /**
+         * Returns the account's address
+         *
+         * # Returns
+         * Result containing address as hex string or error
          * @returns {string}
          */
         address() {
@@ -795,6 +914,10 @@ let wasm_bindgen;
             }
         }
         /**
+         * Returns the account's chain ID
+         *
+         * # Returns
+         * Result containing chain ID as hex string or error
          * @returns {string}
          */
         chainId() {
@@ -822,6 +945,13 @@ let wasm_bindgen;
             }
         }
         /**
+         * Sets the block ID for subsequent operations
+         *
+         * # Parameters
+         * * `block_id` - Block ID as hex string
+         *
+         * # Returns
+         * Result containing unit or error
          * @param {string} block_id
          */
         setBlockId(block_id) {
@@ -840,6 +970,13 @@ let wasm_bindgen;
             }
         }
         /**
+         * Executes a raw transaction
+         *
+         * # Parameters
+         * * `calldata` - Array of contract calls to execute
+         *
+         * # Returns
+         * Result containing transaction hash as hex string or error
          * @param {(Call)[]} calldata
          * @returns {Promise<string>}
          */
@@ -850,6 +987,13 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Deploys a burner wallet
+         *
+         * # Parameters
+         * * `private_key` - Private key for the burner wallet as hex string
+         *
+         * # Returns
+         * Result containing new Account instance or error
          * @param {string} private_key
          * @returns {Promise<Account>}
          */
@@ -860,6 +1004,10 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Gets the current nonce for the account
+         *
+         * # Returns
+         * Result containing nonce as hex string or error
          * @returns {Promise<string>}
          */
         nonce() {
@@ -868,6 +1016,44 @@ let wasm_bindgen;
         }
     }
     __exports.Account = Account;
+
+    const ClientConfigFinalization = (typeof FinalizationRegistry === 'undefined')
+        ? { register: () => {}, unregister: () => {} }
+        : new FinalizationRegistry(ptr => wasm.__wbg_clientconfig_free(ptr >>> 0, 1));
+
+    class ClientConfig {
+
+        __destroy_into_raw() {
+            const ptr = this.__wbg_ptr;
+            this.__wbg_ptr = 0;
+            ClientConfigFinalization.unregister(this);
+            return ptr;
+        }
+
+        free() {
+            const ptr = this.__destroy_into_raw();
+            wasm.__wbg_clientconfig_free(ptr, 0);
+        }
+        /**
+         * @param {string} rpc_url
+         * @param {string} torii_url
+         * @param {string} relay_url
+         * @param {string} world_address
+         */
+        constructor(rpc_url, torii_url, relay_url, world_address) {
+            const ptr0 = passStringToWasm0(rpc_url, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ptr1 = passStringToWasm0(torii_url, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len1 = WASM_VECTOR_LEN;
+            const ptr2 = passStringToWasm0(relay_url, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len2 = WASM_VECTOR_LEN;
+            const ptr3 = passStringToWasm0(world_address, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len3 = WASM_VECTOR_LEN;
+            const ret = wasm.clientconfig_new(ptr0, len0, ptr1, len1, ptr2, len2, ptr3, len3);
+            return takeObject(ret);
+        }
+    }
+    __exports.ClientConfig = ClientConfig;
 
     const IntoUnderlyingByteSourceFinalization = (typeof FinalizationRegistry === 'undefined')
         ? { register: () => {}, unregister: () => {} }
@@ -1024,6 +1210,14 @@ let wasm_bindgen;
             wasm.__wbg_provider_free(ptr, 0);
         }
         /**
+         * Creates a new account instance with the given private key and address
+         *
+         * # Parameters
+         * * `private_key` - Private key as hex string
+         * * `address` - Account address as hex string
+         *
+         * # Returns
+         * Result containing Account instance or error
          * @param {string} private_key
          * @param {string} address
          * @returns {Promise<Account>}
@@ -1037,6 +1231,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Calls a Starknet contract view function
+         *
+         * # Parameters
+         * * `call` - Call parameters including contract address and function
+         * * `block_id` - Block identifier for the call
+         *
+         * # Returns
+         * Result containing array of field elements or error
          * @param {Call} call
          * @param {BlockId} block_id
          * @returns {Promise<Array<any>>}
@@ -1046,6 +1248,13 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Waits for a transaction to be confirmed
+         *
+         * # Parameters
+         * * `txn_hash` - Transaction hash as hex string
+         *
+         * # Returns
+         * Result containing success boolean or error
          * @param {string} txn_hash
          * @returns {Promise<boolean>}
          */
@@ -1083,6 +1292,9 @@ let wasm_bindgen;
             const ptr = this.__destroy_into_raw();
             wasm.__wbg_subscription_free(ptr, 0);
         }
+        /**
+         * Cancels an active subscription
+         */
         cancel() {
             const ptr = this.__destroy_into_raw();
             wasm.subscription_cancel(ptr);
@@ -1116,6 +1328,13 @@ let wasm_bindgen;
             wasm.__wbg_toriiclient_free(ptr, 0);
         }
         /**
+         * Gets token information for the given contract addresses
+         *
+         * # Parameters
+         * * `contract_addresses` - Array of contract addresses as hex strings
+         *
+         * # Returns
+         * Result containing token information or error
          * @param {(string)[]} contract_addresses
          * @returns {Promise<Tokens>}
          */
@@ -1126,6 +1345,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Gets token balances for given accounts and contracts
+         *
+         * # Parameters
+         * * `account_addresses` - Array of account addresses as hex strings
+         * * `contract_addresses` - Array of contract addresses as hex strings
+         *
+         * # Returns
+         * Result containing token balances or error
          * @param {(string)[]} account_addresses
          * @param {(string)[]} contract_addresses
          * @returns {Promise<TokenBalances>}
@@ -1139,6 +1366,13 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Queries entities based on the provided query parameters
+         *
+         * # Parameters
+         * * `query` - Query parameters for filtering entities
+         *
+         * # Returns
+         * Result containing matching entities or error
          * @param {Query} query
          * @returns {Promise<Entities>}
          */
@@ -1147,6 +1381,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Gets all entities with pagination
+         *
+         * # Parameters
+         * * `limit` - Maximum number of entities to return
+         * * `offset` - Number of entities to skip
+         *
+         * # Returns
+         * Result containing paginated entities or error
          * @param {number} limit
          * @param {number} offset
          * @returns {Promise<Entities>}
@@ -1156,6 +1398,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Gets event messages based on query parameters
+         *
+         * # Parameters
+         * * `query` - Query parameters for filtering messages
+         * * `historical` - Whether to include historical messages
+         *
+         * # Returns
+         * Result containing matching event messages or error
          * @param {Query} query
          * @param {boolean} historical
          * @returns {Promise<Entities>}
@@ -1165,6 +1415,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Subscribes to entity updates
+         *
+         * # Parameters
+         * * `clauses` - Array of key clauses for filtering updates
+         * * `callback` - JavaScript function to call on updates
+         *
+         * # Returns
+         * Result containing subscription handle or error
          * @param {(EntityKeysClause)[]} clauses
          * @param {Function} callback
          * @returns {Promise<Subscription>}
@@ -1176,6 +1434,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Updates an existing entity subscription
+         *
+         * # Parameters
+         * * `subscription` - Existing subscription to update
+         * * `clauses` - New array of key clauses for filtering
+         *
+         * # Returns
+         * Result containing unit or error
          * @param {Subscription} subscription
          * @param {(EntityKeysClause)[]} clauses
          * @returns {Promise<void>}
@@ -1188,6 +1454,15 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Subscribes to event message updates
+         *
+         * # Parameters
+         * * `clauses` - Array of key clauses for filtering updates
+         * * `historical` - Whether to include historical messages
+         * * `callback` - JavaScript function to call on updates
+         *
+         * # Returns
+         * Result containing subscription handle or error
          * @param {(EntityKeysClause)[]} clauses
          * @param {boolean} historical
          * @param {Function} callback
@@ -1200,6 +1475,15 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Updates an existing event message subscription
+         *
+         * # Parameters
+         * * `subscription` - Existing subscription to update
+         * * `clauses` - New array of key clauses for filtering
+         * * `historical` - Whether to include historical messages
+         *
+         * # Returns
+         * Result containing unit or error
          * @param {Subscription} subscription
          * @param {(EntityKeysClause)[]} clauses
          * @param {boolean} historical
@@ -1213,6 +1497,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Subscribes to Starknet events
+         *
+         * # Parameters
+         * * `clauses` - Array of key clauses for filtering events
+         * * `callback` - JavaScript function to call on events
+         *
+         * # Returns
+         * Result containing subscription handle or error
          * @param {(EntityKeysClause)[]} clauses
          * @param {Function} callback
          * @returns {Promise<Subscription>}
@@ -1224,6 +1516,14 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Subscribes to indexer updates
+         *
+         * # Parameters
+         * * `contract_address` - Optional contract address to filter updates
+         * * `callback` - JavaScript function to call on updates
+         *
+         * # Returns
+         * Result containing subscription handle or error
          * @param {string | undefined} contract_address
          * @param {Function} callback
          * @returns {Promise<Subscription>}
@@ -1235,17 +1535,24 @@ let wasm_bindgen;
             return takeObject(ret);
         }
         /**
+         * Publishes a message to the network
+         *
+         * # Parameters
+         * * `message` - Message to publish as JSON string
+         * * `signature` - Array of signature field elements as hex strings
+         *
+         * # Returns
+         * Result containing message ID as byte array or error
          * @param {string} message
          * @param {(string)[]} signature
-         * @param {boolean} is_session_signature
          * @returns {Promise<Uint8Array>}
          */
-        publishMessage(message, signature, is_session_signature) {
+        publishMessage(message, signature) {
             const ptr0 = passStringToWasm0(message, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
             const len0 = WASM_VECTOR_LEN;
             const ptr1 = passArrayJsValueToWasm0(signature, wasm.__wbindgen_malloc);
             const len1 = WASM_VECTOR_LEN;
-            const ret = wasm.toriiclient_publishMessage(this.__wbg_ptr, ptr0, len0, ptr1, len1, is_session_signature);
+            const ret = wasm.toriiclient_publishMessage(this.__wbg_ptr, ptr0, len0, ptr1, len1);
             return takeObject(ret);
         }
     }
@@ -1594,7 +1901,7 @@ let wasm_bindgen;
                     const a = state0.a;
                     state0.a = 0;
                     try {
-                        return __wbg_adapter_394(a, state0.b, arg0, arg1);
+                        return __wbg_adapter_395(a, state0.b, arg0, arg1);
                     } finally {
                         state0.a = a;
                     }
@@ -1969,44 +2276,44 @@ let wasm_bindgen;
             const ret = false;
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper1957 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 635, __wbg_adapter_50);
+        imports.wbg.__wbindgen_closure_wrapper1967 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 639, __wbg_adapter_50);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2943 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1014, __wbg_adapter_53);
+        imports.wbg.__wbindgen_closure_wrapper2951 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1019, __wbg_adapter_53);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2944 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1014, __wbg_adapter_53);
+        imports.wbg.__wbindgen_closure_wrapper2952 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1019, __wbg_adapter_53);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2945 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1014, __wbg_adapter_53);
+        imports.wbg.__wbindgen_closure_wrapper2953 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1019, __wbg_adapter_53);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2977 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1039, __wbg_adapter_60);
+        imports.wbg.__wbindgen_closure_wrapper2985 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1044, __wbg_adapter_60);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2978 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1039, __wbg_adapter_60);
+        imports.wbg.__wbindgen_closure_wrapper2986 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1044, __wbg_adapter_60);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2979 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1039, __wbg_adapter_60);
+        imports.wbg.__wbindgen_closure_wrapper2987 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1044, __wbg_adapter_60);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper4740 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1796, __wbg_adapter_67);
+        imports.wbg.__wbindgen_closure_wrapper4748 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1801, __wbg_adapter_67);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper5590 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 2071, __wbg_adapter_70);
+        imports.wbg.__wbindgen_closure_wrapper5596 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 2076, __wbg_adapter_70);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper6254 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 2390, __wbg_adapter_73);
+        imports.wbg.__wbindgen_closure_wrapper6260 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 2395, __wbg_adapter_73);
             return addHeapObject(ret);
         };
         imports.wbg.__wbindgen_debug_string = function(arg0, arg1) {
