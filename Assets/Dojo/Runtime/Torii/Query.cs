@@ -49,7 +49,9 @@ namespace Dojo.Torii
                 limit = limit,
                 offset = offset,
                 clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause },
-                dont_include_hashed_keys = dont_include_hashed_keys
+                dont_include_hashed_keys = dont_include_hashed_keys,
+                order_by = order_by.Select(o => o.ToNative()).ToArray(),
+                entity_models = entity_models
             };
 
             if (clause.HasValue)
