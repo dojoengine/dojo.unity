@@ -204,19 +204,24 @@ namespace Dojo.Torii
             return (long)unsigned;
         }
 
-        private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes)
+        private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes, bool unsigned = false)
         {
             var reversed = bytes.Reverse().ToArray();
-            var unsigned = new BigInteger(reversed);
+            var n = new BigInteger(reversed);
+            if (unsigned) return n;
             
-            // Check if the highest bit is set (negative number)
-            if ((unsigned & (BigInteger.One << 127)) != 0)
+            // For 128-bit numbers
+            BigInteger maxValue = (BigInteger.One << 127) - 1;
+            
+            // If the number is larger than the maximum positive value,
+            // it's negative in two's complement
+            if (n > maxValue)
             {
-                // Convert from two's complement
-                unsigned -= BigInteger.One << 128;
+                // Convert from two's complement by subtracting 2^128
+                n -= BigInteger.One << 128;
             }
             
-            return unsigned;
+            return n;
         }
     }
 }
