@@ -77,12 +77,12 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.I16 => ty.primitive.i16,
                     dojo.Primitive_Tag.I32 => ty.primitive.i32,
                     dojo.Primitive_Tag.I64 => ty.primitive.i64,
-                    dojo.Primitive_Tag.I128 => ConvertTwosComplementToBigInteger(ty.primitive.i128.ToArray()),
+                    dojo.Primitive_Tag.I128 => ConvertTwosComplementToBigInteger(ty.primitive.i128.ToArray(), bits: 128),
                     dojo.Primitive_Tag.U8 => ty.primitive.u8,
                     dojo.Primitive_Tag.U16 => ty.primitive.u16,
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
                     dojo.Primitive_Tag.U64 => ty.primitive.u64,
-                    dojo.Primitive_Tag.U128 => ConvertTwosComplementToBigInteger(ty.primitive.u128.ToArray()),
+                    dojo.Primitive_Tag.U128 => ConvertTwosComplementToBigInteger(ty.primitive.u128.ToArray(), unsigned: true, bits: 128),
                     dojo.Primitive_Tag.U256 => new Struct("U256", new Dictionary<string, object>(){
                         {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
                         {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
@@ -118,17 +118,17 @@ namespace Dojo.Torii
                     "i8" => value.value.ToObject<sbyte>(),
                     "i16" => value.value.ToObject<short>(),
                     "i32" => value.value.ToObject<int>(),
-                    "i64" => ConvertTwosComplementToLong(hexStringToByteArray(value.value.ToObject<string>())),
-                    "i128" => ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>())),
+                    "i64" => (long)ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), bits: 64),
+                    "i128" => ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), bits: 128),
                     "u8" => value.value.ToObject<byte>(),
                     "u16" => value.value.ToObject<ushort>(),
                     "u32" => value.value.ToObject<uint>(),
-                    "u64" => (long)new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
+                    "u64" => (long)ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), unsigned: true, bits: 64),
                     // NOTE: UNTESTED
                     // NOTE: slow?
                     // use BigInteger parse instead maybe but seems a bit
                     // uninconvenient to use
-                    "u128" => new BigInteger(hexStringToByteArray(value.value.ToObject<string>()).Reverse().ToArray()),
+                    "u128" => ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), unsigned: true, bits: 128),
                     // convert a 64 character hex string to a BigInteger
                     // IMPLEMNET
                     "u256" => new Struct("U256", new Dictionary<string, object>(){
@@ -189,34 +189,24 @@ namespace Dojo.Torii
             return new Enum(name, en.option, HandleWasmValue(en.value));
         }
 
-        private long ConvertTwosComplementToLong(byte[] bytes)
+        private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes, bool unsigned = false, int bits = 128)
         {
             var reversed = bytes.Reverse().ToArray();
-            var unsigned = new BigInteger(reversed);
+            var n = new BigInteger(reversed);
+            if (unsigned) return n;
             
-            // Check if the highest bit is set (negative number)
-            if ((unsigned & (BigInteger.One << 63)) != 0)
+            // For 128-bit numbers
+            BigInteger maxValue = (BigInteger.One << (bits - 1)) - 1;
+            
+            // If the number is larger than the maximum positive value,
+            // it's negative in two's complement
+            if (n > maxValue)
             {
-                // Convert from two's complement
-                unsigned -= BigInteger.One << 64;
+                // Convert from two's complement by subtracting 2^128
+                n -= BigInteger.One << bits;
             }
             
-            return (long)unsigned;
-        }
-
-        private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes)
-        {
-            var reversed = bytes.Reverse().ToArray();
-            var unsigned = new BigInteger(reversed);
-            
-            // Check if the highest bit is set (negative number)
-            if ((unsigned & (BigInteger.One << 127)) != 0)
-            {
-                // Convert from two's complement
-                unsigned -= BigInteger.One << 128;
-            }
-            
-            return unsigned;
+            return n;
         }
     }
 }
