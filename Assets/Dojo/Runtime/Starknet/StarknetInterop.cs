@@ -236,5 +236,10 @@ namespace Dojo.Starknet
 
         [DllImport("__Internal")]
         public static extern string PoseidonHash(CString str);
+
+          public static string PoseidonHash(FieldElement[] felts)
+        {
+            return PoseidonHash(new CString(JsonConvert.SerializeObject(felts.Select(f => f.Hex()).ToArray())));
+        }
     }
 }

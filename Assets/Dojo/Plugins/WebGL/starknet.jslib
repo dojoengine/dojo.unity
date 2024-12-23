@@ -142,10 +142,12 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
   PoseidonHash: function (str) {
-    const hash = wasm_bindgen.poseidonHash(UTF8ToString(str));
+    const felts = JSON.parse(UTF8ToString(str));
+    const hash = wasm_bindgen.poseidonHash(felts);
     const bufferSize = lengthBytesUTF8(hash) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(hash, buffer, bufferSize);
     return buffer;
-  }
+  },
+  
 });
