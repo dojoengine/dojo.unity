@@ -259,6 +259,18 @@ namespace Dojo.Torii
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public Primitive? Primitive;
 
+        public MemberValue(string value)
+        {
+            String = value;
+            Primitive = null;
+        }
+
+        public MemberValue(Primitive primitive)
+        {
+            Primitive = primitive;
+            String = null;
+        }
+
         public dojo.MemberValue ToNative()
         {
             if (String != null)
