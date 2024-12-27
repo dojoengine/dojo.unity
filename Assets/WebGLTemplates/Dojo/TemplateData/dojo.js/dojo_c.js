@@ -1348,19 +1348,19 @@ let wasm_bindgen;
          * Gets token balances for given accounts and contracts
          *
          * # Parameters
-         * * `account_addresses` - Array of account addresses as hex strings
          * * `contract_addresses` - Array of contract addresses as hex strings
+         * * `account_addresses` - Array of account addresses as hex strings
          *
          * # Returns
          * Result containing token balances or error
-         * @param {(string)[]} account_addresses
          * @param {(string)[]} contract_addresses
+         * @param {(string)[]} account_addresses
          * @returns {Promise<TokenBalances>}
          */
-        getTokenBalances(account_addresses, contract_addresses) {
-            const ptr0 = passArrayJsValueToWasm0(account_addresses, wasm.__wbindgen_malloc);
+        getTokenBalances(contract_addresses, account_addresses) {
+            const ptr0 = passArrayJsValueToWasm0(contract_addresses, wasm.__wbindgen_malloc);
             const len0 = WASM_VECTOR_LEN;
-            const ptr1 = passArrayJsValueToWasm0(contract_addresses, wasm.__wbindgen_malloc);
+            const ptr1 = passArrayJsValueToWasm0(account_addresses, wasm.__wbindgen_malloc);
             const len1 = WASM_VECTOR_LEN;
             const ret = wasm.toriiclient_getTokenBalances(this.__wbg_ptr, ptr0, len0, ptr1, len1);
             return takeObject(ret);
@@ -1425,13 +1425,24 @@ let wasm_bindgen;
          * Result containing subscription handle or error
          * @param {(EntityKeysClause)[]} clauses
          * @param {Function} callback
-         * @returns {Promise<Subscription>}
+         * @returns {Subscription}
          */
         onEntityUpdated(clauses, callback) {
-            const ptr0 = passArrayJsValueToWasm0(clauses, wasm.__wbindgen_malloc);
-            const len0 = WASM_VECTOR_LEN;
-            const ret = wasm.toriiclient_onEntityUpdated(this.__wbg_ptr, ptr0, len0, addHeapObject(callback));
-            return takeObject(ret);
+            try {
+                const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+                const ptr0 = passArrayJsValueToWasm0(clauses, wasm.__wbindgen_malloc);
+                const len0 = WASM_VECTOR_LEN;
+                wasm.toriiclient_onEntityUpdated(retptr, this.__wbg_ptr, ptr0, len0, addHeapObject(callback));
+                var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+                var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+                var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+                if (r2) {
+                    throw takeObject(r1);
+                }
+                return Subscription.__wrap(r0);
+            } finally {
+                wasm.__wbindgen_add_to_stack_pointer(16);
+            }
         }
         /**
          * Updates an existing entity subscription
@@ -1466,13 +1477,24 @@ let wasm_bindgen;
          * @param {(EntityKeysClause)[]} clauses
          * @param {boolean} historical
          * @param {Function} callback
-         * @returns {Promise<Subscription>}
+         * @returns {Subscription}
          */
         onEventMessageUpdated(clauses, historical, callback) {
-            const ptr0 = passArrayJsValueToWasm0(clauses, wasm.__wbindgen_malloc);
-            const len0 = WASM_VECTOR_LEN;
-            const ret = wasm.toriiclient_onEventMessageUpdated(this.__wbg_ptr, ptr0, len0, historical, addHeapObject(callback));
-            return takeObject(ret);
+            try {
+                const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+                const ptr0 = passArrayJsValueToWasm0(clauses, wasm.__wbindgen_malloc);
+                const len0 = WASM_VECTOR_LEN;
+                wasm.toriiclient_onEventMessageUpdated(retptr, this.__wbg_ptr, ptr0, len0, historical, addHeapObject(callback));
+                var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+                var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+                var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+                if (r2) {
+                    throw takeObject(r1);
+                }
+                return Subscription.__wrap(r0);
+            } finally {
+                wasm.__wbindgen_add_to_stack_pointer(16);
+            }
         }
         /**
          * Updates an existing event message subscription
@@ -1507,13 +1529,24 @@ let wasm_bindgen;
          * Result containing subscription handle or error
          * @param {(EntityKeysClause)[]} clauses
          * @param {Function} callback
-         * @returns {Promise<Subscription>}
+         * @returns {Subscription}
          */
         onStarknetEvent(clauses, callback) {
-            const ptr0 = passArrayJsValueToWasm0(clauses, wasm.__wbindgen_malloc);
-            const len0 = WASM_VECTOR_LEN;
-            const ret = wasm.toriiclient_onStarknetEvent(this.__wbg_ptr, ptr0, len0, addHeapObject(callback));
-            return takeObject(ret);
+            try {
+                const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+                const ptr0 = passArrayJsValueToWasm0(clauses, wasm.__wbindgen_malloc);
+                const len0 = WASM_VECTOR_LEN;
+                wasm.toriiclient_onStarknetEvent(retptr, this.__wbg_ptr, ptr0, len0, addHeapObject(callback));
+                var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+                var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+                var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+                if (r2) {
+                    throw takeObject(r1);
+                }
+                return Subscription.__wrap(r0);
+            } finally {
+                wasm.__wbindgen_add_to_stack_pointer(16);
+            }
         }
         /**
          * Subscribes to indexer updates
@@ -1526,12 +1559,81 @@ let wasm_bindgen;
          * Result containing subscription handle or error
          * @param {string | undefined} contract_address
          * @param {Function} callback
-         * @returns {Promise<Subscription>}
+         * @returns {Subscription}
          */
         onIndexerUpdated(contract_address, callback) {
-            var ptr0 = isLikeNone(contract_address) ? 0 : passStringToWasm0(contract_address, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            var len0 = WASM_VECTOR_LEN;
-            const ret = wasm.toriiclient_onIndexerUpdated(this.__wbg_ptr, ptr0, len0, addHeapObject(callback));
+            try {
+                const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+                var ptr0 = isLikeNone(contract_address) ? 0 : passStringToWasm0(contract_address, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+                var len0 = WASM_VECTOR_LEN;
+                wasm.toriiclient_onIndexerUpdated(retptr, this.__wbg_ptr, ptr0, len0, addHeapObject(callback));
+                var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+                var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+                var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+                if (r2) {
+                    throw takeObject(r1);
+                }
+                return Subscription.__wrap(r0);
+            } finally {
+                wasm.__wbindgen_add_to_stack_pointer(16);
+            }
+        }
+        /**
+         * Subscribes to token balance updates
+         *
+         * # Parameters
+         * * `contract_addresses` - Array of contract addresses to filter (empty for all)
+         * * `account_addresses` - Array of account addresses to filter (empty for all)
+         * * `callback` - JavaScript function to call on updates
+         *
+         * # Returns
+         * Result containing subscription handle or error
+         * @param {(string)[]} contract_addresses
+         * @param {(string)[]} account_addresses
+         * @param {Function} callback
+         * @returns {Subscription}
+         */
+        onTokenBalanceUpdated(contract_addresses, account_addresses, callback) {
+            try {
+                const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+                const ptr0 = passArrayJsValueToWasm0(contract_addresses, wasm.__wbindgen_malloc);
+                const len0 = WASM_VECTOR_LEN;
+                const ptr1 = passArrayJsValueToWasm0(account_addresses, wasm.__wbindgen_malloc);
+                const len1 = WASM_VECTOR_LEN;
+                wasm.toriiclient_onTokenBalanceUpdated(retptr, this.__wbg_ptr, ptr0, len0, ptr1, len1, addHeapObject(callback));
+                var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+                var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+                var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+                if (r2) {
+                    throw takeObject(r1);
+                }
+                return Subscription.__wrap(r0);
+            } finally {
+                wasm.__wbindgen_add_to_stack_pointer(16);
+            }
+        }
+        /**
+         * Updates an existing token balance subscription
+         *
+         * # Parameters
+         * * `subscription` - Existing subscription to update
+         * * `contract_addresses` - New array of contract addresses to filter
+         * * `account_addresses` - New array of account addresses to filter
+         *
+         * # Returns
+         * Result containing unit or error
+         * @param {Subscription} subscription
+         * @param {(string)[]} contract_addresses
+         * @param {(string)[]} account_addresses
+         * @returns {Promise<void>}
+         */
+        updateTokenBalanceSubscription(subscription, contract_addresses, account_addresses) {
+            _assertClass(subscription, Subscription);
+            const ptr0 = passArrayJsValueToWasm0(contract_addresses, wasm.__wbindgen_malloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ptr1 = passArrayJsValueToWasm0(account_addresses, wasm.__wbindgen_malloc);
+            const len1 = WASM_VECTOR_LEN;
+            const ret = wasm.toriiclient_updateTokenBalanceSubscription(this.__wbg_ptr, subscription.__wbg_ptr, ptr0, len0, ptr1, len1);
             return takeObject(ret);
         }
         /**
@@ -2186,10 +2288,6 @@ let wasm_bindgen;
             const ret = getObject(arg0).subarray(arg1 >>> 0, arg2 >>> 0);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbg_subscription_new = function(arg0) {
-            const ret = Subscription.__wrap(arg0);
-            return addHeapObject(ret);
-        };
         imports.wbg.__wbg_text_693c6c8a197588c7 = function() { return handleError(function (arg0) {
             const ret = getObject(arg0).text();
             return addHeapObject(ret);
@@ -2276,44 +2374,44 @@ let wasm_bindgen;
             const ret = false;
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper1967 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 639, __wbg_adapter_50);
+        imports.wbg.__wbindgen_closure_wrapper2018 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 634, __wbg_adapter_50);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2951 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1019, __wbg_adapter_53);
+        imports.wbg.__wbindgen_closure_wrapper3002 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1013, __wbg_adapter_53);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2952 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1019, __wbg_adapter_53);
+        imports.wbg.__wbindgen_closure_wrapper3003 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1013, __wbg_adapter_53);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2953 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1019, __wbg_adapter_53);
+        imports.wbg.__wbindgen_closure_wrapper3004 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1013, __wbg_adapter_53);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2985 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1044, __wbg_adapter_60);
+        imports.wbg.__wbindgen_closure_wrapper3036 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1038, __wbg_adapter_60);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2986 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1044, __wbg_adapter_60);
+        imports.wbg.__wbindgen_closure_wrapper3037 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1038, __wbg_adapter_60);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper2987 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1044, __wbg_adapter_60);
+        imports.wbg.__wbindgen_closure_wrapper3038 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1038, __wbg_adapter_60);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper4748 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1801, __wbg_adapter_67);
+        imports.wbg.__wbindgen_closure_wrapper4799 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1795, __wbg_adapter_67);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper5596 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 2076, __wbg_adapter_70);
+        imports.wbg.__wbindgen_closure_wrapper5659 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 2070, __wbg_adapter_70);
             return addHeapObject(ret);
         };
-        imports.wbg.__wbindgen_closure_wrapper6260 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 2395, __wbg_adapter_73);
+        imports.wbg.__wbindgen_closure_wrapper6323 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 2389, __wbg_adapter_73);
             return addHeapObject(ret);
         };
         imports.wbg.__wbindgen_debug_string = function(arg0, arg1) {

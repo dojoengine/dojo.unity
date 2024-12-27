@@ -278,7 +278,7 @@ declare namespace wasm_bindgen {
 	    models: string[];
 	}
 	
-	export type MemberValue = { Primitive: Primitive } | { String: string };
+	export type MemberValue = { Primitive: Primitive } | { String: string } | { List: MemberValue[] };
 	
 	export interface MemberClause {
 	    model: string;
@@ -294,7 +294,7 @@ declare namespace wasm_bindgen {
 	
 	export type LogicalOperator = "And" | "Or";
 	
-	export type ComparisonOperator = "Eq" | "Neq" | "Gt" | "Gte" | "Lt" | "Lte";
+	export type ComparisonOperator = "Eq" | "Neq" | "Gt" | "Gte" | "Lt" | "Lte" | "In" | "NotIn";
 	
 	export interface Value {
 	    primitive_type: Primitive;
@@ -449,13 +449,13 @@ declare namespace wasm_bindgen {
 	   * Gets token balances for given accounts and contracts
 	   *
 	   * # Parameters
-	   * * `account_addresses` - Array of account addresses as hex strings
 	   * * `contract_addresses` - Array of contract addresses as hex strings
+	   * * `account_addresses` - Array of account addresses as hex strings
 	   *
 	   * # Returns
 	   * Result containing token balances or error
 	   */
-	  getTokenBalances(account_addresses: (string)[], contract_addresses: (string)[]): Promise<TokenBalances>;
+	  getTokenBalances(contract_addresses: (string)[], account_addresses: (string)[]): Promise<TokenBalances>;
 	  /**
 	   * Queries entities based on the provided query parameters
 	   *
@@ -498,7 +498,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onEntityUpdated(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	  onEntityUpdated(clauses: (EntityKeysClause)[], callback: Function): Subscription;
 	  /**
 	   * Updates an existing entity subscription
 	   *
@@ -521,7 +521,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onEventMessageUpdated(clauses: (EntityKeysClause)[], historical: boolean, callback: Function): Promise<Subscription>;
+	  onEventMessageUpdated(clauses: (EntityKeysClause)[], historical: boolean, callback: Function): Subscription;
 	  /**
 	   * Updates an existing event message subscription
 	   *
@@ -544,7 +544,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onStarknetEvent(clauses: (EntityKeysClause)[], callback: Function): Promise<Subscription>;
+	  onStarknetEvent(clauses: (EntityKeysClause)[], callback: Function): Subscription;
 	  /**
 	   * Subscribes to indexer updates
 	   *
@@ -555,7 +555,31 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onIndexerUpdated(contract_address: string | undefined, callback: Function): Promise<Subscription>;
+	  onIndexerUpdated(contract_address: string | undefined, callback: Function): Subscription;
+	  /**
+	   * Subscribes to token balance updates
+	   *
+	   * # Parameters
+	   * * `contract_addresses` - Array of contract addresses to filter (empty for all)
+	   * * `account_addresses` - Array of account addresses to filter (empty for all)
+	   * * `callback` - JavaScript function to call on updates
+	   *
+	   * # Returns
+	   * Result containing subscription handle or error
+	   */
+	  onTokenBalanceUpdated(contract_addresses: (string)[], account_addresses: (string)[], callback: Function): Subscription;
+	  /**
+	   * Updates an existing token balance subscription
+	   *
+	   * # Parameters
+	   * * `subscription` - Existing subscription to update
+	   * * `contract_addresses` - New array of contract addresses to filter
+	   * * `account_addresses` - New array of account addresses to filter
+	   *
+	   * # Returns
+	   * Result containing unit or error
+	   */
+	  updateTokenBalanceSubscription(subscription: Subscription, contract_addresses: (string)[], account_addresses: (string)[]): Promise<void>;
 	  /**
 	   * Publishes a message to the network
 	   *
@@ -575,7 +599,6 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
   readonly typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly signingKeyNew: (a: number) => void;
   readonly signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -605,15 +628,18 @@ declare interface InitOutput {
   readonly toriiclient_getEntities: (a: number, b: number) => number;
   readonly toriiclient_getAllEntities: (a: number, b: number, c: number) => number;
   readonly toriiclient_getEventMessages: (a: number, b: number, c: number) => number;
-  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: number, e: number) => void;
   readonly toriiclient_updateEntitySubscription: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number, e: number) => number;
+  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
   readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number, e: number) => number;
-  readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number) => number;
-  readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number) => number;
+  readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number, e: number) => void;
+  readonly toriiclient_onTokenBalanceUpdated: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
+  readonly toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
   readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
   readonly subscription_cancel: (a: number) => void;
   readonly createClient: (a: number) => number;
+  readonly clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
   readonly __wbg_toriiclient_free: (a: number, b: number) => void;
   readonly __wbg_provider_free: (a: number, b: number) => void;
   readonly __wbg_account_free: (a: number, b: number) => void;

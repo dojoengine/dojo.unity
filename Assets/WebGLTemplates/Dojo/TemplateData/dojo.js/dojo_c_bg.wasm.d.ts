@@ -1,7 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export const clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
 export const typedDataEncode: (a: number, b: number, c: number, d: number, e: number) => void;
 export const signingKeyNew: (a: number) => void;
 export const signingKeySign: (a: number, b: number, c: number, d: number, e: number) => void;
@@ -31,15 +30,18 @@ export const toriiclient_getTokenBalances: (a: number, b: number, c: number, d: 
 export const toriiclient_getEntities: (a: number, b: number) => number;
 export const toriiclient_getAllEntities: (a: number, b: number, c: number) => number;
 export const toriiclient_getEventMessages: (a: number, b: number, c: number) => number;
-export const toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: number) => number;
+export const toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: number, e: number) => void;
 export const toriiclient_updateEntitySubscription: (a: number, b: number, c: number, d: number) => number;
-export const toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number, e: number) => number;
+export const toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
 export const toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number, e: number) => number;
-export const toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number) => number;
-export const toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number) => number;
+export const toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: number, e: number) => void;
+export const toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: number, e: number) => void;
+export const toriiclient_onTokenBalanceUpdated: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
+export const toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number) => number;
 export const toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => number;
 export const subscription_cancel: (a: number) => void;
 export const createClient: (a: number) => number;
+export const clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => number;
 export const __wbg_toriiclient_free: (a: number, b: number) => void;
 export const __wbg_provider_free: (a: number, b: number) => void;
 export const __wbg_account_free: (a: number, b: number) => void;
