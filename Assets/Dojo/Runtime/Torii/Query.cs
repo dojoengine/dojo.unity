@@ -255,19 +255,31 @@ namespace Dojo.Torii
     public struct MemberValue
     {
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Primitive? Primitive;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? String;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Primitive? Primitive;
+        public MemberValue[]? List;
 
         public MemberValue(string value)
         {
             String = value;
             Primitive = null;
+            List = null;
+
         }
 
         public MemberValue(Primitive primitive)
         {
             Primitive = primitive;
+            String = null;
+            List = null;
+        }
+
+        public MemberValue(MemberValue[] list)
+        {
+            List = list;
+            Primitive = null;
             String = null;
         }
 
@@ -277,6 +289,8 @@ namespace Dojo.Torii
                 return new dojo.MemberValue { tag = dojo.MemberValue_Tag.String, @string = String };
             if (Primitive.HasValue)
                 return new dojo.MemberValue { tag = dojo.MemberValue_Tag.Primitive, primitive = Primitive.Value.ToNative() };
+            if (List != null)
+                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.List, list = List.Select(l => l.ToNative()).ToArray() };
 
             throw new InvalidOperationException("MemberValue must have one non-null value");
         }
