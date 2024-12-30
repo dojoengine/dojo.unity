@@ -73,5 +73,15 @@ jobs:
 
       - name: Check C# Formatting
         run: |
-          # Find all .csproj files and run format check on each
-          find . -name "*.csproj" -exec dotnet format --verify-no-changes {} \;
+          # Store exit codes
+          EXIT_CODE=0
+          
+          # Find Assembly-CSharp.csproj and run format check
+          while IFS= read -r proj; do
+            echo "Checking format for $proj"
+            if ! dotnet format --verify-no-changes "$proj"; then
+              EXIT_CODE=1
+            fi
+          done < <(find . -name "Assembly-CSharp.csproj")
+          
+          exit $EXIT_CODE
