@@ -283,6 +283,21 @@ namespace Dojo.Torii
             String = null;
         }
 
+        public static implicit operator MemberValue(string value)
+        {
+            return new MemberValue(value);
+        }
+
+        public static implicit operator MemberValue(Primitive primitive)
+        {
+            return new MemberValue(primitive);
+        }
+
+        public static implicit operator MemberValue(MemberValue[] list)
+        {
+            return new MemberValue(list);
+        }
+
         public dojo.MemberValue ToNative()
         {
             if (String != null)
