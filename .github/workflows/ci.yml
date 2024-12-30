@@ -72,4 +72,6 @@ jobs:
         run: dotnet tool install -g dotnet-format
 
       - name: Check C# Formatting
-        run: dotnet format --verify-no-changes
+        run: |
+          # Find all .csproj files and run format check on each
+          find . -name "*.csproj" -exec dotnet format --verify-no-changes {} \;
