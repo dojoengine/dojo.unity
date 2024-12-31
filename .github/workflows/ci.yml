@@ -73,5 +73,16 @@ jobs:
 
       - name: Check C# Formatting
         run: |
-          find . -name "*.csproj" -exec dotnet format --verify-no-changes {} \;
-          # The above command's exit code will be preserved and fail the action if needed
+          echo "Current working directory: $(pwd)"
+          echo "Directory contents:"
+          ls -la
+          
+          EXIT_CODE=0
+          while IFS= read -r project; do
+            echo "Checking format for: $project"
+            if ! dotnet format --verify-no-changes "$project"; then
+              echo "❌ Formatting issues found in $project"
+              EXIT_CODE=1
+            fi
+          done < <(find . -name "*.csproj")
+          exit $EXIT_CODE
