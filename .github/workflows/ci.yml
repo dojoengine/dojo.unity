@@ -85,10 +85,7 @@ jobs:
           dotnet new classlib -n TempProject
           rm ./TempProject/Class1.cs
           
-          # Add runtime marshalling setting to the project file
-          sed -i '/<PropertyGroup>/a \    <EnablePreviewFeatures>true</EnablePreviewFeatures>\n    <RuntimeMarshalling>EnableGeneratedCode</RuntimeMarshalling>' ./TempProject/TempProject.csproj
-          
-          # Copy all .cs files from Assets to the temp project
+          # Copy all .cs files from Assets to the temp project (adjust paths as needed)
           find ../Assets -name "*.cs" -exec cp {} ./TempProject/ \;
           
           # Add project to solution
@@ -98,7 +95,7 @@ jobs:
 
       # Run dotnet format on the temporary solution
       - name: Check C# Formatting
-        run: dotnet format ./_temp/TempSolution.sln --verify-no-changes --verbosity detailed
+        run: dotnet format ./_temp/TempSolution.sln --verify-no-changes --verbosity detailed --severity error
         
       # Cleanup
       - name: Cleanup temporary files
