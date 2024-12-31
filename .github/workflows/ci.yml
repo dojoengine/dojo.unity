@@ -72,15 +72,4 @@ jobs:
         run: dotnet tool install -g dotnet-format
 
       - name: Check C# Formatting
-        run: |
-          echo "Current working directory: $(pwd)"
-          echo "Directory contents:"
-          ls -la
-          
-          for file in $(find . -name "*.cs" -not -path "*/Library/*" -not -path "*/Temp/*"); do
-            echo "Checking format for: $file"
-            if ! dotnet format --verify-no-changes --include "$file"; then
-              echo "❌ Formatting issues found in $file"
-              exit 1
-            fi
-          done
+        run: dotnet format '.\' --folder --check --verbosity diagnostic
