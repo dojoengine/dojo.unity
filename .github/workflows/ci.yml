@@ -85,7 +85,10 @@ jobs:
           dotnet new classlib -n TempProject
           rm ./TempProject/Class1.cs
           
-          # Copy all .cs files from Assets to the temp project (adjust paths as needed)
+          # Add runtime marshalling setting to the project file
+          sed -i '/<PropertyGroup>/a \    <EnablePreviewFeatures>true</EnablePreviewFeatures>\n    <RuntimeMarshalling>EnableGeneratedCode</RuntimeMarshalling>' ./TempProject/TempProject.csproj
+          
+          # Copy all .cs files from Assets to the temp project
           find ../Assets -name "*.cs" -exec cp {} ./TempProject/ \;
           
           # Add project to solution
