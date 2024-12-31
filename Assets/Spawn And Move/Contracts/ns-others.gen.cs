@@ -10,14 +10,16 @@ using System.Linq;
 using Enum = Dojo.Starknet.Enum;
 
 // System definitions for `ns-others` contract
-public class Others : MonoBehaviour {
+public class Others : MonoBehaviour
+{
     // The address of this contract
     public string contractAddress;
 
-    
+
     // Call the `upgrade` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> upgrade(Account account, FieldElement new_class_hash) {
+    public async Task<FieldElement> upgrade(Account account, FieldElement new_class_hash)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(new_class_hash.Inner);
 
@@ -29,6 +31,5 @@ public class Others : MonoBehaviour {
             }
         });
     }
-            
+
 }
-        

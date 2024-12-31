@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using Enum = Dojo.Starknet.Enum;
 
 // Model definition for `dojo_examples::models::Moved` model
-public class ns_Moved : ModelInstance {
+public class ns_Moved : ModelInstance
+{
     [ModelField("player")]
     public FieldElement player;
 
@@ -16,12 +17,13 @@ public class ns_Moved : ModelInstance {
     public Direction direction;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
     }
 }
 
-        

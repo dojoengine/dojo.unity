@@ -9,7 +9,8 @@ using Enum = Dojo.Starknet.Enum;
 
 // Type definition for `dojo_examples::models::PlayerConfigValue` struct
 [Serializable]
-public struct PlayerConfigValue {
+public struct PlayerConfigValue
+{
     public string name;
     public PlayerItem[] items;
     public Option<uint> favorite_item;
@@ -17,7 +18,8 @@ public struct PlayerConfigValue {
 
 // Type definition for `dojo_examples::models::PlayerItem` struct
 [Serializable]
-public struct PlayerItem {
+public struct PlayerItem
+{
     public uint item_id;
     public uint quantity;
     public int score;
@@ -25,7 +27,8 @@ public struct PlayerItem {
 
 
 // Model definition for `dojo_examples::models::PlayerConfig` model
-public class ns_PlayerConfig : ModelInstance {
+public class ns_PlayerConfig : ModelInstance
+{
     [ModelField("player")]
     public FieldElement player;
 
@@ -39,12 +42,13 @@ public class ns_PlayerConfig : ModelInstance {
     public Option<uint> favorite_item;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
     }
 }
 
-        

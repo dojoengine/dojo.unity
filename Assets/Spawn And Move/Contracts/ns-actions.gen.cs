@@ -10,16 +10,18 @@ using System.Linq;
 using Enum = Dojo.Starknet.Enum;
 
 // System definitions for `ns-actions` contract
-public class Actions : MonoBehaviour {
+public class Actions : MonoBehaviour
+{
     // The address of this contract
     public string contractAddress;
 
-    
+
     // Call the `spawn` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> spawn(Account account) {
+    public async Task<FieldElement> spawn(Account account)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
-        
+
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
@@ -29,12 +31,13 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `move` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> move(Account account, Direction direction) {
+    public async Task<FieldElement> move(Account account, Direction direction)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(new FieldElement(Enum.GetIndex(direction)).Inner);
 
@@ -46,12 +49,13 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `set_player_config` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> set_player_config(Account account, string name) {
+    public async Task<FieldElement> set_player_config(Account account, string name)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.AddRange(ByteArray.Serialize(name).Select(f => f.Inner));
 
@@ -63,14 +67,15 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `reset_player_config` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> reset_player_config(Account account) {
+    public async Task<FieldElement> reset_player_config(Account account)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
-        
+
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
@@ -80,15 +85,16 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `set_player_server_profile` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> set_player_server_profile(Account account, uint server_id, string name) {
+    public async Task<FieldElement> set_player_server_profile(Account account, uint server_id, string name)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(new FieldElement(server_id).Inner);
-		calldata.AddRange(ByteArray.Serialize(name).Select(f => f.Inner));
+        calldata.AddRange(ByteArray.Serialize(name).Select(f => f.Inner));
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
@@ -98,15 +104,16 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `set_models` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> set_models(Account account, FieldElement seed, uint n_models) {
+    public async Task<FieldElement> set_models(Account account, FieldElement seed, uint n_models)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(seed.Inner);
-		calldata.Add(new FieldElement(n_models).Inner);
+        calldata.Add(new FieldElement(n_models).Inner);
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
@@ -116,12 +123,13 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `enter_dungeon` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> enter_dungeon(Account account, FieldElement dungeon_address) {
+    public async Task<FieldElement> enter_dungeon(Account account, FieldElement dungeon_address)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(dungeon_address.Inner);
 
@@ -133,19 +141,20 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `set_test` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> set_test(Account account, ns_Test test) {
+    public async Task<FieldElement> set_test(Account account, ns_Test test)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(new FieldElement(test.ok).Inner);
-		calldata.Add(new FieldElement(test.x).Inner);
-		calldata.Add(new FieldElement(test.y).Inner);
-		calldata.Add(new FieldElement(test.z).Inner);
-		calldata.Add(new FieldElement(test.a.high).Inner);
-		calldata.Add(new FieldElement(test.a.low).Inner);
+        calldata.Add(new FieldElement(test.x).Inner);
+        calldata.Add(new FieldElement(test.y).Inner);
+        calldata.Add(new FieldElement(test.z).Inner);
+        calldata.Add(new FieldElement(test.a.high).Inner);
+        calldata.Add(new FieldElement(test.a.low).Inner);
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
@@ -155,12 +164,13 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `upgrade` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> upgrade(Account account, FieldElement new_class_hash) {
+    public async Task<FieldElement> upgrade(Account account, FieldElement new_class_hash)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(new_class_hash.Inner);
 
@@ -172,6 +182,5 @@ public class Actions : MonoBehaviour {
             }
         });
     }
-            
+
 }
-        
