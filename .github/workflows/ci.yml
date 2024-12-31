@@ -73,8 +73,12 @@ jobs:
 
       - name: Check C# Formatting
         run: |
-          OUTPUT=$(find . -name "*.csproj" -exec dotnet format --verify-no-changes {} \; 2>&1)
-          echo "$OUTPUT"
-          if echo "$OUTPUT" | grep -i "error" > /dev/null; then
-            exit 1
-          fi
+          FOUND_ERROR=0
+          for proj in $(find . -name "*.csproj"); do
+            echo "Checking format for $proj"
+            if ! dotnet format --verify-no-changes "$proj"; then
+              echo "Found formatting issues in $proj"
+              FOUND_ERROR=1
+            fi
+          done
+          exit $FOUND_ERROR
