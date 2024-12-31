@@ -78,11 +78,11 @@ jobs:
           ls -la
           
           EXIT_CODE=0
-          while IFS= read -r project; do
-            echo "Checking format for: $project"
-            if ! dotnet format --verify-no-changes "$project"; then
-              echo "❌ Formatting issues found in $project"
+          while IFS= read -r file; do
+            echo "Checking format for: $file"
+            if ! dotnet format --verify-no-changes "$file"; then
+              echo "❌ Formatting issues found in $file"
               EXIT_CODE=1
             fi
-          done < <(find . -name "*.csproj")
+          done < <(find . -name "*.cs" -not -path "*/Library/*" -not -path "*/Temp/*")
           exit $EXIT_CODE
