@@ -9,13 +9,15 @@ using Enum = Dojo.Starknet.Enum;
 
 // Type definition for `dojo_examples::models::ServerProfileValue` struct
 [Serializable]
-public struct ServerProfileValue {
+public struct ServerProfileValue
+{
     public string name;
 }
 
 
 // Model definition for `dojo_examples::models::ServerProfile` model
-public class ns_ServerProfile : ModelInstance {
+public class ns_ServerProfile : ModelInstance
+{
     [ModelField("player")]
     public FieldElement player;
 
@@ -26,12 +28,13 @@ public class ns_ServerProfile : ModelInstance {
     public string name;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
     }
 }
 
-        

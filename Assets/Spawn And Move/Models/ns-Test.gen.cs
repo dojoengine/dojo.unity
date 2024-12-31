@@ -12,14 +12,16 @@ using Newtonsoft.Json;
 
 // Type definition for `core::integer::u256` struct
 [Serializable]
-public struct U256 {
+public struct U256
+{
     public BigInteger low;
     public BigInteger high;
 }
 
 
 // Model definition for `dojo_examples::models::Test` model
-public class ns_Test : ModelInstance {
+public class ns_Test : ModelInstance
+{
     [ModelField("ok")]
     public uint ok;
 
@@ -36,7 +38,8 @@ public class ns_Test : ModelInstance {
     public U256 a;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
         Debug.Log($"ok: {ok}");
         Debug.Log($"x: {x}");
         Debug.Log($"y: {y}");
@@ -45,8 +48,8 @@ public class ns_Test : ModelInstance {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
     }
 }
 
-        

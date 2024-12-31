@@ -8,13 +8,15 @@ using System.Collections.Generic;
 using Enum = Dojo.Starknet.Enum;
 
 // Type definition for `core::option::Option::<core::integer::u32>` enum
-public abstract record Option<A>() : Enum {
+public abstract record Option<A>() : Enum
+{
     public record Some(A value) : Option<A>;
     public record None() : Option<A>;
 }
 
 // Model definition for `dojo_examples::models::Message` model
-public class ns_Message : ModelInstance {
+public class ns_Message : ModelInstance
+{
     [ModelField("identity")]
     public FieldElement identity;
 
@@ -28,12 +30,13 @@ public class ns_Message : ModelInstance {
     public FieldElement salt;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
     }
 }
 
-        

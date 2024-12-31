@@ -10,20 +10,23 @@ using UnityEngine;
 
 // Type definition for `dojo_examples::models::PositionValue` struct
 [Serializable]
-public struct PositionValue {
+public struct PositionValue
+{
     public Vec2 vec;
 }
 
 // Type definition for `dojo_examples::models::Vec2` struct
 [Serializable]
-public struct Vec2 {
+public struct Vec2
+{
     public uint x;
     public uint y;
 }
 
 
 // Model definition for `dojo_examples::models::Position` model
-public class ns_Position : ModelInstance {
+public class ns_Position : ModelInstance
+{
     [ModelField("player")]
     public FieldElement player;
 
@@ -58,4 +61,3 @@ public class ns_Position : ModelInstance {
     }
 }
 
-        

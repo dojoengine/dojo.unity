@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+#   test:
+#     name: Run Tests
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+
+#        # Git LFS
+#       - name: Create LFS file list
+#         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+#       - name: Restore LFS cache
+#         uses: actions/cache@v3
+#         id: lfs-cache
+#         with:
+#           path: .git/lfs
+#           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+#       - name: Git LFS Pull
+#         run: |
+#           git lfs pull
+#           git add .
+#           git reset --hard
+
+#       # Cache
+#       - uses: actions/cache@v3
+#         with:
+#           path: Library
+#           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+#           restore-keys: |
+#             Library-
+
+#       - name: Run Unity Tests
+#         uses: game-ci/unity-test-runner@v4
+#         env:
+#           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+#           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+#           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+#         with:
+#           projectPath: .
+#           testMode: all
+#           artifactsPath: TestResults
+#           githubToken: ${{ secrets.GITHUB_TOKEN }}
+
+#       - name: Upload Test Results
+#         uses: actions/upload-artifact@v3
+#         if: always()
+#         with:
+#           name: Test Results
+#           path: TestResults
+
+  format:
+    name: Check Code Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Install dotnet-format
+        run: dotnet tool install -g dotnet-format
+
+      # Create a temporary solution and add all .cs files
+      - name: Create temporary solution
+        run: |
+          # Create a temporary directory for the solution
+          mkdir -p _temp
+          cd _temp
+          
+          # Create a new solution
+          dotnet new sln -n TempSolution
+          
+          # Create a temporary project and add all .cs files
+          dotnet new classlib -n TempProject
+          rm ./TempProject/Class1.cs
+          
+          # Copy all .cs files from Assets to the temp project (adjust paths as needed)
+          find ../Assets -name "*.cs" -exec cp {} ./TempProject/ \;
+          
+          # Add project to solution
+          dotnet sln add ./TempProject/TempProject.csproj
+          
+          cd ..
+
+      # Run dotnet format on the temporary solution
+      - name: Check C# Formatting
+        run: dotnet format ./_temp/TempSolution.sln --verify-no-changes --verbosity detailed --severity error
+        
+      # Cleanup
+      - name: Cleanup temporary files
+        run: rm -rf _temp

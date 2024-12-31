@@ -9,7 +9,8 @@ using Enum = Dojo.Starknet.Enum;
 using BigInteger = System.Numerics.BigInteger;
 
 // Model definition for `dojo_examples::models::MockToken` model
-public class ns_MockToken : ModelInstance {
+public class ns_MockToken : ModelInstance
+{
     [ModelField("account")]
     public FieldElement account;
 
@@ -17,12 +18,13 @@ public class ns_MockToken : ModelInstance {
     public BigInteger amount;
 
     // Start is called before the first frame update
-    void Start() {
+    void Start()
+    {
     }
 
     // Update is called once per frame
-    void Update() {
+    void Update()
+    {
     }
 }
 
-        

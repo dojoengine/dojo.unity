@@ -43,7 +43,7 @@ namespace Dojo.Starknet
 
         [DllImport("__Internal")]
         public static extern string AccountChainId(IntPtr account);
-        
+
         [DllImport("__Internal")]
         public static extern void AccountNonce(IntPtr account, Action<string> cb);
 
@@ -237,7 +237,7 @@ namespace Dojo.Starknet
         [DllImport("__Internal")]
         public static extern string PoseidonHash(CString str);
 
-          public static string PoseidonHash(FieldElement[] felts)
+        public static string PoseidonHash(FieldElement[] felts)
         {
             return PoseidonHash(new CString(JsonConvert.SerializeObject(felts.Select(f => f.Hex()).ToArray())));
         }

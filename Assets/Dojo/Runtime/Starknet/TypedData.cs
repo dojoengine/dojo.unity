@@ -93,7 +93,7 @@ namespace Dojo.Starknet
                 // model name
                 { "model", model.Name }
             };
-            
+
             // model members
             var members = new Dictionary<string, object>();
             foreach (var member in model.Members)
@@ -211,52 +211,65 @@ namespace Dojo.Starknet
 #endif
         }
 
-        static object mapModelInstanceMember(object member) {
+        static object mapModelInstanceMember(object member)
+        {
             var type = member.GetType();
 
             // enums
-            if (member is Enum) {
+            if (member is Enum)
+            {
                 object value;
-                if (type.GetProperty("value") is PropertyInfo prop) {
+                if (type.GetProperty("value") is PropertyInfo prop)
+                {
                     value = prop.GetValue(member);
-                } else {
+                }
+                else
+                {
                     value = ValueTuple.Create();
                 }
 
                 // format name to include generic types, like Option<u32>
                 var name = type.BaseType.Name.Split('`')[0];
-                if (type.GenericTypeArguments.Length > 0) {
+                if (type.GenericTypeArguments.Length > 0)
+                {
                     name += "<" + string.Join(",", type.GenericTypeArguments.Select(t => t.Name)) + ">";
                 }
 
                 return new Model.Enum(name, type.Name, mapModelInstanceMember(value));
-            // tuple -> array
-            } else if (type.FullName.StartsWith(typeof(ValueTuple).FullName)) {
+                // tuple -> array
+            }
+            else if (type.FullName.StartsWith(typeof(ValueTuple).FullName))
+            {
                 // get all fields of the tuple
                 // and cast them to object[] array
                 var fields = type.GetFields();
                 var values = new object[fields.Length];
-                for (var i = 0; i < fields.Length; i++) {
+                for (var i = 0; i < fields.Length; i++)
+                {
                     values[i] = mapModelInstanceMember(fields[i].GetValue(member));
                 }
 
                 return values;
             }
             // array -> List
-            else if (type.IsArray) {
+            else if (type.IsArray)
+            {
                 var array = (Array)member;
                 var list = new List<object>();
-                for (var i = 0; i < array.Length; i++) {
+                for (var i = 0; i < array.Length; i++)
+                {
                     list.Add(mapModelInstanceMember(array.GetValue(i)));
                 }
 
                 return list;
             }
             // struct
-            else if (type.IsValueType && !type.IsPrimitive && !type.IsEnum) {
+            else if (type.IsValueType && !type.IsPrimitive && !type.IsEnum)
+            {
                 var fields = type.GetFields();
                 var dict = new Dictionary<string, object>();
-                foreach (var field in fields) {
+                foreach (var field in fields)
+                {
                     dict.Add(field.Name, mapModelInstanceMember(field.GetValue(member)));
                 }
 
@@ -272,7 +285,8 @@ namespace Dojo.Starknet
             var members = new Dictionary<string, object>();
 
             // map all fields of the model instance
-            foreach (var field in fields) {
+            foreach (var field in fields)
+            {
                 // Check if the field has the ModelField attribute
                 var attribute = field.GetCustomAttributes(typeof(ModelField), false);
                 if (attribute.Length == 0)

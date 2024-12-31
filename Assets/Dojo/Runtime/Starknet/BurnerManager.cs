@@ -48,7 +48,7 @@ namespace Dojo.Starknet
 
             Burners.Add(await masterAccount.DeployBurner(provider, signingKey));
             currentBurnerIndex = Burners.Count - 1;
-            
+
 
             if (UseStorage)
             {

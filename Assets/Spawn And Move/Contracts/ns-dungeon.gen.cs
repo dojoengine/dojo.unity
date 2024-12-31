@@ -10,16 +10,18 @@ using System.Linq;
 using Enum = Dojo.Starknet.Enum;
 
 // System definitions for `ns-dungeon` contract
-public class Dungeon : MonoBehaviour {
+public class Dungeon : MonoBehaviour
+{
     // The address of this contract
     public string contractAddress;
 
-    
+
     // Call the `enter` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> enter(Account account) {
+    public async Task<FieldElement> enter(Account account)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
-        
+
 
         return await account.ExecuteRaw(new dojo.Call[] {
             new dojo.Call{
@@ -29,12 +31,13 @@ public class Dungeon : MonoBehaviour {
             }
         });
     }
-            
 
-    
+
+
     // Call the `upgrade` system with the specified Account and calldata
     // Returns the transaction hash. Use `WaitForTransaction` to wait for the transaction to be confirmed.
-    public async Task<FieldElement> upgrade(Account account, FieldElement new_class_hash) {
+    public async Task<FieldElement> upgrade(Account account, FieldElement new_class_hash)
+    {
         List<dojo.FieldElement> calldata = new List<dojo.FieldElement>();
         calldata.Add(new_class_hash.Inner);
 
@@ -46,6 +49,5 @@ public class Dungeon : MonoBehaviour {
             }
         });
     }
-            
+
 }
-        
