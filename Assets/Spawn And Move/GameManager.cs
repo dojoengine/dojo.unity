@@ -18,7 +18,7 @@ using System.ComponentModel;
 namespace System.Runtime.CompilerServices
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
-    internal class IsExternalInit{}
+    internal class IsExternalInit { }
 }
 
 public class GameManager : MonoBehaviour
@@ -124,7 +124,7 @@ public class GameManager : MonoBehaviour
     {
         // check if entity has position component
         if (!entity.TryGetComponent(out ns_Position position)) return;
-        
+
         var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         // change color of capsule to a random color
         capsule.GetComponent<Renderer>().material.color = Random.ColorHSV();

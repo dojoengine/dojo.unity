@@ -10,7 +10,8 @@ using UnityEngine;
 
 namespace Dojo.Starknet
 {
-    class FieldElementConverter : JsonConverter {
+    class FieldElementConverter : JsonConverter
+    {
         public override bool CanConvert(Type objectType)
         {
             return objectType == typeof(FieldElement);
@@ -84,7 +85,8 @@ namespace Dojo.Starknet
         // This handles BigIntegers as well as primitive types
         public FieldElement(BigInteger bigInteger)
         {
-            if (bigInteger.Sign < 0) {
+            if (bigInteger.Sign < 0)
+            {
                 bigInteger = StarkField - bigInteger;
             }
 
