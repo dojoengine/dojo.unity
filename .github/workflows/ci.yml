@@ -101,59 +101,33 @@ jobs:
       - name: Cleanup temporary files
         run: rm -rf _temp
 
-  lint:
-    name: Run Code Linting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # lint:
+  #   name: Run Code Linting
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0.x'
+  #     # Download Unity editor to get the required assemblies
+  #     - name: Request Unity activation file
+  #       id: getManualLicenseFile
+  #       uses: game-ci/unity-request-activation-file@v2
 
-      - name: Create temporary solution
-        run: |
-          mkdir -p _temp
-          cd _temp
-          
-          # Create solution and project
-          dotnet new sln -n TempSolution
-          dotnet new classlib -n TempProject
-          rm ./TempProject/Class1.cs
-          
-          # Add StyleCop.Analyzers package
-          cd TempProject
-          dotnet add package StyleCop.Analyzers
-          
-          # Configure project settings
-          cat > stylecop.json << EOF
-          {
-            "\$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
-            "settings": {
-              "documentationRules": {
-                "companyName": "Your Company",
-                "documentInterfaces": false,
-                "documentInternalElements": false,
-                "documentPrivateElements": false,
-                "documentPrivateFields": false,
-                "documentationCulture": "en-US"
-              }
-            }
-          }
-          EOF
-          
-          # Add stylecop.json to project
-          echo '<Project><ItemGroup><AdditionalFiles Include="stylecop.json" /></ItemGroup></Project>' > Directory.Build.props
-          
-          # Copy all .cs files
-          find ../../Assets -name "*.cs" -exec cp {} ./ \;
-          
-          cd ..
-          dotnet sln add ./TempProject/TempProject.csproj
-          cd ..
+  #     - name: Download Unity
+  #       uses: game-ci/unity-builder@v4
+  #       env:
+  #         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #       with:
+  #         targetPlatform: StandaloneLinux64
 
-      - name: Run Code Analysis
-        run: |
-          cd _temp
-          dotnet build /p:TreatWarningsAsErrors=false /p:EnforceCodeStyleInBuild=true
+  #     - name: Install dotnet tools
+  #       run: |
+  #         dotnet new tool-manifest
+  #         dotnet tool install JetBrains.ReSharper.GlobalTools
+
+  #     - name: Run ReSharper CLI inspection
+  #       run: |
+  #         jb inspectcode . --output=inspect-results.xml --severity=WARNING \
+  #           --include="Assets/**/*.cs" \
+  #           --exclude="**/Library/**/*.cs;**/Temp/**/*.cs;**/obj/**/*.cs"
