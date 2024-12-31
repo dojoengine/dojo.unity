@@ -66,10 +66,37 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '6.0.x'
 
       - name: Install dotnet-format
         run: dotnet tool install -g dotnet-format
 
+      # Create a temporary solution and add all .cs files
+      - name: Create temporary solution
+        run: |
+          # Create a temporary directory for the solution
+          mkdir -p _temp
+          cd _temp
+          
+          # Create a new solution
+          dotnet new sln -n TempSolution
+          
+          # Create a temporary project and add all .cs files
+          dotnet new classlib -n TempProject
+          rm ./TempProject/Class1.cs
+          
+          # Copy all .cs files from Assets to the temp project (adjust paths as needed)
+          find ../Assets -name "*.cs" -exec cp {} ./TempProject/ \;
+          
+          # Add project to solution
+          dotnet sln add ./TempProject/TempProject.csproj
+          
+          cd ..
+
+      # Run dotnet format on the temporary solution
       - name: Check C# Formatting
-        run: dotnet format '.\' --folder --check --verbosity diagnostic
+        run: dotnet format ./_temp/TempSolution.sln --verify-no-changes --verbosity detailed
+        
+      # Cleanup
+      - name: Cleanup temporary files
+        run: rm -rf _temp
