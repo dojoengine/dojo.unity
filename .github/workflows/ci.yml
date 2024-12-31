@@ -73,16 +73,5 @@ jobs:
 
       - name: Check C# Formatting
         run: |
-          FOUND_ERROR=0
-          cd $GITHUB_WORKSPACE
-          for proj in $(find . -name "*.csproj"); do
-            echo "Checking format for $proj"
-            DIR=$(dirname "$proj")
-            cd "$DIR"
-            if ! dotnet format --verify-no-changes "$(basename "$proj")"; then
-              echo "Found formatting issues in $proj"
-              FOUND_ERROR=1
-            fi
-            cd $GITHUB_WORKSPACE
-          done
-          exit $FOUND_ERROR
+          find . -name "*.csproj" -exec dotnet format --verify-no-changes {} \;
+          # The above command's exit code will be preserved and fail the action if needed
