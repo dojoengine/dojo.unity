@@ -100,3 +100,34 @@ jobs:
       # Cleanup
       - name: Cleanup temporary files
         run: rm -rf _temp
+
+  # lint:
+  #   name: Run Code Linting
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+
+  #     # Download Unity editor to get the required assemblies
+  #     - name: Request Unity activation file
+  #       id: getManualLicenseFile
+  #       uses: game-ci/unity-request-activation-file@v2
+
+  #     - name: Download Unity
+  #       uses: game-ci/unity-builder@v4
+  #       env:
+  #         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #       with:
+  #         targetPlatform: StandaloneLinux64
+
+  #     - name: Install dotnet tools
+  #       run: |
+  #         dotnet new tool-manifest
+  #         dotnet tool install JetBrains.ReSharper.GlobalTools
+
+  #     - name: Run ReSharper CLI inspection
+  #       run: |
+  #         jb inspectcode . --output=inspect-results.xml --severity=WARNING \
+  #           --include="Assets/**/*.cs" \
+  #           --exclude="**/Library/**/*.cs;**/Temp/**/*.cs;**/obj/**/*.cs"
