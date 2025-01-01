@@ -101,39 +101,57 @@ jobs:
       - name: Cleanup temporary files
         run: rm -rf _temp
 
-  lint:
-    name: Run Code Linting
+  build:
+    name: Build Package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          lfs: true
 
-      - name: Install dotnet tools
-        run: |
-          dotnet new tool-manifest
-          dotnet tool install JetBrains.ReSharper.GlobalTools
+      # Git LFS
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-      # Create a temporary solution and add all .cs files
-      - name: Create temporary solution
-        run: |
-          # Create a temporary directory for the solution
-          mkdir -p _temp
-          cd _temp
-          
-          # Create a new solution
-          dotnet new sln -n TempSolution
-          
-          # Create a temporary project and add all .cs files
-          dotnet new classlib -n TempProject
-          rm ./TempProject/Class1.cs
-          
-          # Copy all .cs files from Assets to the temp project
-          find ../Assets -name "*.cs" -exec cp {} ./TempProject/ \;
-          
-          # Add project to solution
-          dotnet sln add ./TempProject/TempProject.csproj
-          
-          cd ..
+      - name: Restore LFS cache
+        uses: actions/cache@v3
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
 
-      - name: Run ReSharper CLI inspection
+      - name: Git LFS Pull
         run: |
-          dotnet jb inspectcode ./_temp/TempSolution.sln --output=inspect-results.xml --severity=WARNING
+          git lfs pull
+          git add .
+          git reset --hard
+
+      # Unity Cache
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-Build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-Build-
+
+      # Build
+      - name: Build Unity Package
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneLinux64
+          buildMethod: Editor.Builder.BuildPackage
+
+      # Upload package to release
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./Build/dojo.unitypackage
+          asset_name: dojo.unitypackage
+          asset_content_type: application/octet-stream 
