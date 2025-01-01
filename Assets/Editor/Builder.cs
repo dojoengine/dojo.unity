@@ -7,12 +7,12 @@ namespace Editor
         public static void BuildPackage()
         {
             // Define which assets to include in the package
-            string[] assets = new string[] 
+            string[] assets = new string[]
             {
                 "Assets",
                 "Packages/manifest.json",
                 "Packages/packages-lock.json"
-            };
+            };das
 
             // Build the package
             AssetDatabase.ExportPackage(
@@ -22,4 +22,4 @@ namespace Editor
             );
         }
     }
-} 
+}
