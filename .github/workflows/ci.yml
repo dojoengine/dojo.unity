@@ -114,6 +114,7 @@ jobs:
 
       - name: Run ReSharper CLI inspection
         run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
           jb inspectcode . --output=inspect-results.xml --severity=WARNING \
             --include="Assets/**/*.cs" \
             --exclude="**/Library/**/*.cs;**/Temp/**/*.cs;**/obj/**/*.cs"
