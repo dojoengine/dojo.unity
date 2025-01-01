@@ -12,7 +12,7 @@ namespace Editor
                 "Assets",
                 "Packages/manifest.json",
                 "Packages/packages-lock.json"
-            };das
+            };
 
             // Build the package
             AssetDatabase.ExportPackage(
