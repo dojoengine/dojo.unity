@@ -101,33 +101,46 @@ jobs:
       - name: Cleanup temporary files
         run: rm -rf _temp
 
-  # lint:
-  #   name: Run Code Linting
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
+  build:
+    name: Build Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          lfs: true
 
-  #     # Download Unity editor to get the required assemblies
-  #     - name: Request Unity activation file
-  #       id: getManualLicenseFile
-  #       uses: game-ci/unity-request-activation-file@v2
+      # Git LFS
+      - name: Create LFS file list
+        run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-  #     - name: Download Unity
-  #       uses: game-ci/unity-builder@v4
-  #       env:
-  #         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-  #       with:
-  #         targetPlatform: StandaloneLinux64
+      - name: Restore LFS cache
+        uses: actions/cache@v3
+        id: lfs-cache
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
 
-  #     - name: Install dotnet tools
-  #       run: |
-  #         dotnet new tool-manifest
-  #         dotnet tool install JetBrains.ReSharper.GlobalTools
+      - name: Git LFS Pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
 
-  #     - name: Run ReSharper CLI inspection
-  #       run: |
-  #         jb inspectcode . --output=inspect-results.xml --severity=WARNING \
-  #           --include="Assets/**/*.cs" \
-  #           --exclude="**/Library/**/*.cs;**/Temp/**/*.cs;**/obj/**/*.cs"
+      # Unity Cache
+      - uses: actions/cache@v3
+        with:
+          path: Library
+          key: Library-Build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-Build-
+
+      # Build
+      - name: Build Unity Package
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneLinux64
+          buildMethod: Editor.Builder.BuildPackage
