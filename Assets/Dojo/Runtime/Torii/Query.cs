@@ -303,7 +303,7 @@ namespace Dojo.Torii
             if (String != null)
                 return new dojo.MemberValue { tag = dojo.MemberValue_Tag.String, @string = String };
             if (Primitive.HasValue)
-                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.Primitive, primitive = Primitive.Value.ToNative() };
+                return new dojo.MemberValue { tag = dojo.MemberValue_Tag.PrimitiveValue, primitive_value = Primitive.Value.ToNative() };
             if (List != null)
                 return new dojo.MemberValue { tag = dojo.MemberValue_Tag.List, list = List.Select(l => l.ToNative()).ToArray() };
 
