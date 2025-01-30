@@ -36,7 +36,7 @@ namespace Dojo
 
         private static dojo.FnPtr_ControllerPtr_Void onConnectCallback;
         private static TaskCompletionSource<Controller> connectionTask;
-    
+
         private Controller(dojo.Controller* controller)
         {
             this.controller = controller;
