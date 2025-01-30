@@ -42,7 +42,7 @@ namespace Dojo.Starknet
         {
             var connectionTask = new TaskCompletionSource<Controller>();
             CString crpcUrl = CString.FromString(rpcUrl);
-            
+
             dojo.Policy* policiesPtr = null;
             if (policies.Length > 0)
             {
@@ -59,7 +59,7 @@ namespace Dojo.Starknet
             });
 
             dojo.controller_connect(crpcUrl, policiesPtr, (UIntPtr)policies.Length, onConnect);
-            
+
             return await connectionTask.Task;
         }
 
