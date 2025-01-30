@@ -30,8 +30,6 @@ fi
 print_status "Setting up linkers..."
 
 # Configure linkers
-# Linux linker
-export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=x86_64-unknown-linux-gnu-gcc
 # Windows linker
 export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
 # Replace by Unity path
@@ -48,10 +46,20 @@ for target in "${targets[@]}"; do
     rm -rf "../../Assets/Dojo/Libraries/$target"
 
     # Build binary for the target
-    if [[ "$build" == "release" ]]; then
-        cargo build --release --target "$target" > /dev/null 2>&1
+    if [[ "$target" == "x86_64-unknown-linux-gnu" ]]; then
+        # Use cross for Linux build
+        if [[ "$build" == "release" ]]; then
+            cross build --release --target "$target" > /dev/null 2>&1
+        else
+            cross build --target "$target" > /dev/null 2>&1
+        fi
     else
-        cargo build --target "$target" > /dev/null 2>&1
+        # Regular cargo build for other targets
+        if [[ "$build" == "release" ]]; then
+            cargo build --release --target "$target" > /dev/null 2>&1
+        else
+            cargo build --target "$target" > /dev/null 2>&1
+        fi
     fi
     
     if [ $? -ne 0 ]; then
