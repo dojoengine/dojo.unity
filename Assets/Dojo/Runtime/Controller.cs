@@ -34,6 +34,9 @@ namespace Dojo
         public FieldElement ChainId => new FieldElement(dojo.controller_chain_id(controller));
         public string Username => CString.ToString(dojo.controller_username(controller));
 
+        private static dojo.FnPtr_ControllerPtr_Void onConnectCallback;
+        private static TaskCompletionSource<Controller> connectionTask;
+    
         private Controller(dojo.Controller* controller)
         {
             this.controller = controller;
@@ -63,8 +66,8 @@ namespace Dojo
 
         public static Task<Controller> Connect(string rpcUrl, Policy[] policies)
         {
+            connectionTask = new TaskCompletionSource<Controller>();
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
-            var connectionTask = new TaskCompletionSource<Controller>();
             CString crpcUrl = CString.FromString(rpcUrl);
 
             dojo.Policy* policiesPtr = null;
@@ -76,13 +79,13 @@ namespace Dojo
                 }
             }
 
-            var onConnect = new dojo.FnPtr_ControllerPtr_Void((controllerPtr) =>
+            onConnectCallback = new dojo.FnPtr_ControllerPtr_Void((controllerPtr) =>
             {
                 var controller = new Controller(controllerPtr);
-                connectionTask.SetResult(controller);
+                connectionTask.TrySetResult(controller);
             });
 
-            dojo.controller_connect(crpcUrl, policiesPtr, (UIntPtr)policies.Length, onConnect);
+            dojo.controller_connect(crpcUrl, policiesPtr, (UIntPtr)policies.Length, onConnectCallback);
 
             return connectionTask.Task;
         }
