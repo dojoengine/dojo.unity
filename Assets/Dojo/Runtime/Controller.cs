@@ -18,7 +18,7 @@ namespace Dojo.Starknet
             this.controller = controller;
         }
 
-        public static Controller GetAccount(Policy[] policies, FieldElement chainId)
+        public static Controller? GetAccount(Policy[] policies, FieldElement chainId)
         {
             dojo.Policy* policiesPtr = null;
             if (policies.Length > 0)
@@ -32,7 +32,8 @@ namespace Dojo.Starknet
             var result = dojo.controller_account(policiesPtr, (UIntPtr)policies.Length, chainId.Inner);
             if (result.tag == dojo.ResultController_Tag.ErrController)
             {
-                throw new Exception(result.err.message);
+                Debug.LogWarning(result.err.message);
+                return null;
             }
 
             return new Controller(result._ok);
