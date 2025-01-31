@@ -44,12 +44,18 @@ public class GameManager : MonoBehaviour
         burnerManager = new BurnerManager(provider, masterAccount);
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
-        foreach (var entity in worldManager.Entities<ns_Position>())
+        foreach (var entity in worldManager.Entities<dojo_starter_Position>())
         {
             InitEntity(entity);
         }
     }
 
+    public async void SpawnEntity()
+    {
+        var burner = await burnerManager.DeployBurner();
+        spawnedAccounts[burner.Address] = null;
+        var txHash = await actions.spawn(burner);
+    }
     async void Update()
     {
         // dont register inputs if our chat is open
@@ -75,7 +81,7 @@ public class GameManager : MonoBehaviour
             if (hit && hitInfo.transform.parent != null)
             {
                 var entity = hitInfo.transform.parent;
-                ns_Position position;
+                dojo_starter_Position position;
                 entity.TryGetComponent(out position);
 
                 if (position && spawnedAccounts.ContainsValue(entity.name))
@@ -83,15 +89,15 @@ public class GameManager : MonoBehaviour
                     var previousBurner = burnerManager.CurrentBurner;
                     if (previousBurner != null)
                     {
-                        worldManager.Entity(spawnedAccounts[previousBurner.Address])
-                            .GetComponent<ns_Position>().textTag.color = Color.black;
+                        // worldManager.Entity(spawnedAccounts[previousBurner.Address])
+                        //     .GetComponent<dojo_starter_Position>().textTag.color = Color.black;
                     }
 
                     var burner = spawnedAccounts.First(b => b.Value == entity.name);
                     var burnerAddress = burner.Key;
                     var burnerInstance = burnerManager.Burners.First(b => b.Address == burnerAddress);
 
-                    position.textTag.color = Color.blue;
+                    //position.textTag.color = Color.blue;
                 }
             }
         }
@@ -115,7 +121,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private async void Move(Direction direction)
+    public async void Move(Direction direction)
     {
         await actions.move(burnerManager.CurrentBurner ?? masterAccount, direction);
     }
@@ -123,7 +129,7 @@ public class GameManager : MonoBehaviour
     private void InitEntity(GameObject entity)
     {
         // check if entity has position component
-        if (!entity.TryGetComponent(out ns_Position position)) return;
+        if (!entity.TryGetComponent(out dojo_starter_Position position)) return;
 
         var capsule = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         // change color of capsule to a random color

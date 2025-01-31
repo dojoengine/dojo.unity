@@ -74,19 +74,19 @@ public class ChatManager : MonoBehaviour
 
         salt = salt.Reverse().ToArray();
 
-        var typed_data = TypedData.From(new ns_Message
-        {
-            identity = account.Address,
-            message = message,
-            channel = channel,
-            salt = new FieldElement(salt),
-        });
+        // var typed_data = TypedData.From(new dojo_starter_Message
+        // {
+        //     identity = account.Address,
+        //     message = message,
+        //     channel = channel,
+        //     salt = new FieldElement(salt),
+        // });
 
-        Debug.Log(JsonConvert.SerializeObject(typed_data));
-
-        FieldElement messageHash = typed_data.encode(account.Address);
-        Signature signature = account.Signer.Sign(messageHash);
-
-        await worldManager.Publish(typed_data, signature.ToFeltArray());
+        // Debug.Log(JsonConvert.SerializeObject(typed_data));
+        //
+        // FieldElement messageHash = typed_data.encode(account.Address);
+        // Signature signature = account.Signer.Sign(messageHash);
+        //
+        // await worldManager.Publish(typed_data, signature.ToFeltArray());
     }
 }
