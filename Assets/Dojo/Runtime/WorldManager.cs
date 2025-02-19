@@ -18,12 +18,10 @@ namespace Dojo
         async void Awake()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            wasmClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.rpcUrl,
-                                                dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
+            wasmClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
             await wasmClient.CreateClient();
 #else
-            toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.rpcUrl,
-                                            dojoConfig.relayUrl, dojoConfig.worldAddress);
+            toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.relayUrl, dojoConfig.worldAddress);
 #endif
 
             /*  fetch entities from the world

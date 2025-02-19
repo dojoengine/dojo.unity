@@ -337,8 +337,6 @@ namespace Dojo.Torii
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? U256;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public uint? USize;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public bool? Bool;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public FieldElement? Felt252;
@@ -346,6 +344,8 @@ namespace Dojo.Torii
         public FieldElement? ClassHash;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public FieldElement? ContractAddress;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public FieldElement? EthAddress;
 
         public dojo.Primitive ToNative()
         {
@@ -371,8 +371,6 @@ namespace Dojo.Torii
                 return new dojo.Primitive { tag = dojo.Primitive_Tag.U128, u128 = U128.Inner.data };
             if (U256 != null)
                 throw new NotImplementedException("U256 conversion not implemented");
-            if (USize.HasValue)
-                return new dojo.Primitive { tag = dojo.Primitive_Tag.USize, u_size = USize.Value };
             if (Bool.HasValue)
                 return new dojo.Primitive { tag = dojo.Primitive_Tag.Bool, bool_ = Bool.Value };
             if (Felt252 != null)
@@ -381,6 +379,8 @@ namespace Dojo.Torii
                 return new dojo.Primitive { tag = dojo.Primitive_Tag.ClassHash, class_hash = ClassHash.Inner };
             if (ContractAddress != null)
                 return new dojo.Primitive { tag = dojo.Primitive_Tag.ContractAddress, contract_address = ContractAddress.Inner };
+            if (EthAddress != null)
+                return new dojo.Primitive { tag = dojo.Primitive_Tag.EthAddress, eth_address = EthAddress.Inner };
 
             throw new InvalidOperationException("Primitive must have one non-null value");
         }

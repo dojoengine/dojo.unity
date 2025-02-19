@@ -14,7 +14,6 @@ namespace Dojo.Torii
     public class ToriiWasmClient
     {
         private string toriiUrl;
-        private string rpcUrl;
         private string relayUrl;
         private FieldElement world;
         public IntPtr clientPtr;
@@ -22,10 +21,9 @@ namespace Dojo.Torii
         IntPtr entitySubscription;
         IntPtr eventMessageSubscription;
 
-        public ToriiWasmClient(string toriiUrl, string rpcUrl, string relayUrl, FieldElement world)
+        public ToriiWasmClient(string toriiUrl, string relayUrl, FieldElement world)
         {
             this.toriiUrl = toriiUrl;
-            this.rpcUrl = rpcUrl;
             this.relayUrl = relayUrl;
             this.world = world;
         }
@@ -44,7 +42,7 @@ namespace Dojo.Torii
         public async Task CreateClient()
         {
             CreateClientHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            ToriiWasmInterop.CreateClient(new CString(rpcUrl), new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
+            ToriiWasmInterop.CreateClient(new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
             clientPtr = await CreateClientHelper.Tcs.Task;
 
             entitySubscription = await RegisterEntityStateUpdateEvent(new KeysClause[] { });

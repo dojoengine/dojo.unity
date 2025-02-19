@@ -1,16 +1,12 @@
 mergeInto(LibraryManager.library, {
   // Creates a new client and returns the pointer to it
   CreateClient: async function (
-    rpcUrl,
     toriiUrl,
     relayUrl,
     worldAddress,
-    // callbackObjectName,
-    // callbackMethodName
     cb
   ) {
     let client = await wasm_bindgen.createClient({
-      rpcUrl: UTF8ToString(rpcUrl),
       toriiUrl: UTF8ToString(toriiUrl),
       relayUrl: UTF8ToString(relayUrl),
       worldAddress: UTF8ToString(worldAddress),
