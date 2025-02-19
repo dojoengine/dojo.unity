@@ -36,7 +36,7 @@ public class Tests
     [SetUp]
     public void SetupTorii()
     {
-        client = new ToriiClient(toriiUrl, rpcUrl, relayUrl, worldAddress, false);
+        client = new ToriiClient(toriiUrl, relayUrl, worldAddress, false);
 
         if (client == null) throw new Exception("client is null");
     }
