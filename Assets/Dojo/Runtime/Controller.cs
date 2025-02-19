@@ -29,15 +29,15 @@ namespace Dojo
 
     public unsafe class Controller
     {
-        private dojo.Controller* controller;
+        private dojo.ControllerAccount* controller;
         public FieldElement Address => new FieldElement(dojo.controller_address(controller));
         public FieldElement ChainId => new FieldElement(dojo.controller_chain_id(controller));
         public string Username => CString.ToString(dojo.controller_username(controller));
 
-        private static dojo.FnPtr_ControllerPtr_Void onConnectCallback;
+        private static dojo.FnPtr_ControllerAccountPtr_Void onConnectCallback;
         private static TaskCompletionSource<Controller> connectionTask;
 
-        private Controller(dojo.Controller* controller)
+        private Controller(dojo.ControllerAccount* controller)
         {
             this.controller = controller;
         }
@@ -55,7 +55,7 @@ namespace Dojo
             }
 
             var result = dojo.controller_account(policiesPtr, (UIntPtr)policies.Length, chainId.Inner);
-            if (result.tag == dojo.ResultController_Tag.ErrController)
+            if (result.tag == dojo.ResultControllerAccount_Tag.ErrControllerAccount)
             {
                 Debug.LogWarning(result.err.message);
                 return null;
@@ -79,7 +79,7 @@ namespace Dojo
                 }
             }
 
-            onConnectCallback = new dojo.FnPtr_ControllerPtr_Void((controllerPtr) =>
+            onConnectCallback = new dojo.FnPtr_ControllerAccountPtr_Void((controllerPtr) =>
             {
                 var controller = new Controller(controllerPtr);
                 connectionTask.TrySetResult(controller);
