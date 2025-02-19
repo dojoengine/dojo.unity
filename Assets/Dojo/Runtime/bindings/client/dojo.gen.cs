@@ -3975,7 +3975,7 @@ namespace dojo_bindings
             U32 = 7,
             U64 = 8,
             U128 = 9,
-            U256_ = 10,
+            U256 = 10,
             Bool = 11,
             Felt252 = 12,
             ClassHash = 13,
