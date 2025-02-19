@@ -25,8 +25,6 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] WorldManager worldManager;
     [SerializeField] ChatManager chatManager;
-
-    [SerializeField] WorldManagerData dojoConfig;
     [SerializeField] GameManagerData gameManagerData;
 
     public BurnerManager burnerManager;
@@ -39,7 +37,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        provider = new JsonRpcClient(dojoConfig.rpcUrl);
+        provider = new JsonRpcClient(gameManagerData.rpcUrl);
         masterAccount = new Account(provider, new SigningKey(gameManagerData.masterPrivateKey), new FieldElement(gameManagerData.masterAddress));
         burnerManager = new BurnerManager(provider, masterAccount);
 
