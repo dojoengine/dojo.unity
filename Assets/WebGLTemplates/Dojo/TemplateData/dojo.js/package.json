@@ -1,6 +1,6 @@
 {
   "name": "dojo-c",
-  "version": "1.0.4",
+  "version": "1.2.1",
   "files": [
     "dojo_c_bg.wasm",
     "dojo_c.js",
