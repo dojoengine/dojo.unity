@@ -83,14 +83,14 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
                     dojo.Primitive_Tag.U64 => ty.primitive.u64,
                     dojo.Primitive_Tag.U128 => ConvertTwosComplementToBigInteger(ty.primitive.u128.ToArray(), unsigned: true, bits: 128),
-                    dojo.Primitive_Tag.U256 => new Struct("U256", new Dictionary<string, object>(){
+                    dojo.Primitive_Tag.U256_ => new Struct("U256", new Dictionary<string, object>(){
                         {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
                         {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
                     }),
-                    dojo.Primitive_Tag.USize => ty.primitive.u_size,
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
                     dojo.Primitive_Tag.ContractAddress => new FieldElement(ty.primitive.contract_address),
+                    dojo.Primitive_Tag.EthAddress => new FieldElement(ty.primitive.eth_address),
                     _ => throw new Exception("Unknown primitive type: " + ty.primitive.tag)
                 },
                 dojo.Ty_Tag.ByteArray => ty.byte_array,
@@ -135,11 +135,11 @@ namespace Dojo.Torii
                         {"high", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(2, 32)).Reverse().ToArray())},
                         {"low", new BigInteger(hexStringToByteArray(value.value.ToObject<string>().Substring(34, 32)).Reverse().ToArray())}
                     }),
-                    "usize" => value.value.ToObject<uint>(),
                     // these should be fine
                     "felt252" => new FieldElement(value.value.ToObject<string>()),
                     "classhash" => new FieldElement(value.value.ToObject<string>()),
                     "contractaddress" => new FieldElement(value.value.ToObject<string>()),
+                    "ethaddress" => new FieldElement(value.value.ToObject<string>()),
                     _ => throw new Exception("Unknown primitive type: " + value.type_name)
                 },
                 _ => throw new Exception("Unknown type: " + value.type)
