@@ -131,6 +131,10 @@
 #endif
       loadingBar.style.display = "block";
 
+      var controllerScript = document.createElement("script");
+      controllerScript.src = "TemplateData/controller/index.cjs";
+      document.body.appendChild(controllerScript);
+
       var dojoScript = document.createElement("script");
       dojoScript.src = "TemplateData/dojo.js/dojo_c.js";
       dojoScript.onload = async () => {
