@@ -95,12 +95,13 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
   },
-  OnEventMessageUpdated: async function (clientPtr, clausesStr, cb, subCb) {
+  OnEventMessageUpdated: async function (clientPtr, clausesStr, historical, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
     const subscription = await client.onEventMessageUpdated(
       clauses,
+      historical,
       (entities) => {
         // stringify the entities
         let entitiesString = JSON.stringify(entities);
@@ -116,12 +117,12 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
-  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr) {
+  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr, historical) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
-    await client.updateEventMessageSubscription(subscription, clauses);
+    await client.updateEventMessageSubscription(subscription, clauses, historical);
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
