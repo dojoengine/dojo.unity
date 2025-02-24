@@ -6,6 +6,7 @@ using dojo_bindings;
 using Dojo.Starknet;
 using Newtonsoft.Json;
 using System.Linq;
+
 namespace Dojo.Torii
 {
     public unsafe class ToriiClient
@@ -31,7 +32,7 @@ namespace Dojo.Torii
             dojo.client_set_logger(client, new dojo.FnPtr_CString_Void((msg) => Debug.Log(msg)));
 
             RegisterEntityStateUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
-            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
+            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, false, dispatchEventsToMainThread);
         }
 
         // We assume the torii client won't be copied around.
