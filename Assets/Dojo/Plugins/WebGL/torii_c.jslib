@@ -98,19 +98,23 @@ mergeInto(LibraryManager.library, {
   OnEventMessageUpdated: async function (clientPtr, clausesStr, historical, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
+    console.log(clauses);
 
     const subscription = await client.onEventMessageUpdated(
       clauses,
       historical,
-      (entities) => {
+      (hashed_keys, models) => {
         // stringify the entities
-        let entitiesString = JSON.stringify(entities);
+        let modelsString = JSON.stringify(models);
         // return buffer
-        let bufferSize = lengthBytesUTF8(entitiesString) + 1;
-        let buffer = _malloc(bufferSize);
-        stringToUTF8(entitiesString, buffer, bufferSize);
+        let hashedKeysBufferSize = lengthBytesUTF8(hashed_keys) + 1;
+        let hashedKeysBuffer = _malloc(hashedKeysBufferSize);
+        let modelsBufferSize = lengthBytesUTF8(modelsString) + 1;
+        let modelsBuffer = _malloc(modelsBufferSize);
+        stringToUTF8(hashed_keys, hashedKeysBuffer, hashedKeysBufferSize);
+        stringToUTF8(modelsString, modelsBuffer, modelsBufferSize);
 
-        dynCall_vi(cb, buffer);
+        dynCall_vii(cb, hashedKeysBuffer, modelsBuffer);
       }
     );
 

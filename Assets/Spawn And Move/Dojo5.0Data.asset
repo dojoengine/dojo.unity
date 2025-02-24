@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   masterPrivateKey: 0x1800000000300000180000000000030000000000003006001800006600
   masterAddress: 0x6162896d1d7ab204c7ccac6dd5f8e9e7c25ecd5ae4fcb4ad32e57786bb46e03
+  rpcUrl: http://localhost:5050
