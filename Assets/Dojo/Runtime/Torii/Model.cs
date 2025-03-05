@@ -83,9 +83,9 @@ namespace Dojo.Torii
                     dojo.Primitive_Tag.U32 => ty.primitive.u32,
                     dojo.Primitive_Tag.U64 => ty.primitive.u64,
                     dojo.Primitive_Tag.U128 => ConvertTwosComplementToBigInteger(ty.primitive.u128.ToArray(), unsigned: true, bits: 128),
-                    dojo.Primitive_Tag.U256 => new Struct("U256", new Dictionary<string, object>(){
-                        {"high", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(16, 16).ToArray())},
-                        {"low", new BigInteger(MemoryMarshal.Cast<ulong, byte>(ty.primitive.u256).Slice(0, 16).ToArray())}
+                    dojo.Primitive_Tag.U256_ => new Struct("U256", new Dictionary<string, object>(){
+                        {"high", new BigInteger(ty.primitive.u256.data.Slice(16, 16).ToArray())},
+                        {"low", new BigInteger(ty.primitive.u256.data.Slice(0, 16).ToArray())}
                     }),
                     dojo.Primitive_Tag.Felt252 => new FieldElement(ty.primitive.felt252),
                     dojo.Primitive_Tag.ClassHash => new FieldElement(ty.primitive.class_hash),
