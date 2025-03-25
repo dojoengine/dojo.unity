@@ -15,10 +15,10 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, client.__destroy_into_raw());
   },
   // Returns a dictionary of all of the entities
-  GetEntities: async function (clientPtr, queryString, cb) {
+  GetEntities: async function (clientPtr, queryString, historical, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
-    let entities = await client.getEntities(query);
+    let entities = await client.getEntities(query, historical);
 
     // stringify the entities
     let entitiesString = JSON.stringify(entities);
@@ -31,10 +31,10 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   // Returns a dictionary of all of the eventmessages
-  GetEventMessages: async function (clientPtr, queryString, cb) {
+  GetEventMessages: async function (clientPtr, queryString, historical, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
-    let entities = await client.getEventMessages(query);
+    let entities = await client.getEventMessages(query, historical);
 
     // stringify the entities
     let entitiesString = JSON.stringify(entities);
@@ -95,14 +95,12 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
   },
-  OnEventMessageUpdated: async function (clientPtr, clausesStr, historical, cb, subCb) {
+  OnEventMessageUpdated: async function (clientPtr, clausesStr, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
-    console.log(clauses);
 
     const subscription = await client.onEventMessageUpdated(
       clauses,
-      historical,
       (hashed_keys, models) => {
         // stringify the entities
         let modelsString = JSON.stringify(models);
@@ -121,12 +119,12 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
-  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr, historical) {
+  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
     let clauses = JSON.parse(UTF8ToString(clausesStr));
 
-    await client.updateEventMessageSubscription(subscription, clauses, historical);
+    await client.updateEventMessageSubscription(subscription, clauses);
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();

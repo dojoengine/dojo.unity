@@ -38,10 +38,10 @@ namespace Dojo.Torii
 
         // Returns a dictionary of all of the entities
         [DllImport("__Internal")]
-        public static extern void GetEntities(IntPtr clientPtr, CString query, Action<string> cb);
+        public static extern void GetEntities(IntPtr clientPtr, CString query, bool historical, Action<string> cb);
 
         [DllImport("__Internal")]
-        public static extern void GetEventMessages(IntPtr clientPtr, CString query, Action<string> cb);
+        public static extern void GetEventMessages(IntPtr clientPtr, CString query, bool historical, Action<string> cb);
 
         // Get the value of a model for a specific set of keys
         [DllImport("__Internal")]
@@ -56,10 +56,10 @@ namespace Dojo.Torii
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on event mnessage updated
         [DllImport("__Internal")]
-        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clauses, bool historical, Action<string, string> cb, Action<IntPtr> subCb);
+        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clauses, Action<string, string> cb, Action<IntPtr> subCb);
 
         [DllImport("__Internal")]
-        public static extern void UpdateEventMessageSubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses, bool historical);
+        public static extern void UpdateEventMessageSubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses);
 
         // Add models to sync
         [DllImport("__Internal")]
