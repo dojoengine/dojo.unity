@@ -45,27 +45,36 @@ for target in "${targets[@]}"; do
     print_status "Building for $target..."
     rm -rf "../../Assets/Dojo/Libraries/$target"
 
+    # Create temporary log file
+    log_file=$(mktemp)
+
     # Build binary for the target
     if [[ "$target" == "x86_64-unknown-linux-gnu" ]]; then
         # Use cross for Linux build
         if [[ "$build" == "release" ]]; then
-            cross build --release --target "$target" > /dev/null 2>&1
+            cross build --release --target "$target" > "$log_file" 2>&1
         else
-            cross build --target "$target" > /dev/null 2>&1
+            cross build --target "$target" > "$log_file" 2>&1
         fi
     else
         # Regular cargo build for other targets
         if [[ "$build" == "release" ]]; then
-            cargo build --release --target "$target" > /dev/null 2>&1
+            cargo build --release --target "$target" > "$log_file" 2>&1
         else
-            cargo build --target "$target" > /dev/null 2>&1
+            cargo build --target "$target" > "$log_file" 2>&1
         fi
     fi
     
-    if [ $? -ne 0 ]; then
+    build_status=$?
+    if [ $build_status -ne 0 ]; then
         print_error "Failed to build for $target"
-        exit 1
+        print_error "Build output:"
+        cat "$log_file"
+        rm "$log_file"
+        exit $build_status
     fi
+    
+    rm "$log_file"
 done
 
 print_status "Copying binaries to Unity project..."
@@ -95,3 +104,4 @@ cp -f "target/aarch64-apple-ios/$build/libdojo_c.a" "../../Assets/Dojo/Plugins/i
 
 print_success "✨ Build complete!"
 print_status "Done! 🎮"
+
