@@ -32,7 +32,7 @@ namespace Dojo.Torii
             dojo.client_set_logger(client, new dojo.FnPtr_CString_Void((msg) => Debug.Log(msg)));
 
             RegisterEntityStateUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
-            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, false, dispatchEventsToMainThread);
+            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
         }
 
         // We assume the torii client won't be copied around.
@@ -78,11 +78,11 @@ namespace Dojo.Torii
         //     return new Ty(result.ok._some.);
         // }
 
-        public List<Entity> Entities(Query query)
+        public List<Entity> Entities(Query query, bool historical = false)
         {
             var nativeQuery = query.ToNative();
 
-            dojo.ResultCArrayEntity result = dojo.client_entities(client, &nativeQuery);
+            dojo.ResultCArrayEntity result = dojo.client_entities(client, &nativeQuery, historical);
             if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
             {
                 throw new Exception(result.err.message);
@@ -178,7 +178,7 @@ namespace Dojo.Torii
             dojo.client_update_entity_subscription(client, entitySubscription, clausesPtr, (UIntPtr)clauses.Length);
         }
 
-        private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool historical = false, bool dispatchToMainThread = true)
+        private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
         {
             onEventMessagesUpdate = (key, models) =>
             {
@@ -217,7 +217,7 @@ namespace Dojo.Torii
                 }
             }
 
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, historical, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -226,7 +226,7 @@ namespace Dojo.Torii
             eventMessagesSubscription = res._ok;
         }
 
-        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses, bool historical = false)
+        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses)
         {
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
             dojo.EntityKeysClause* clausesPtr;
@@ -235,7 +235,7 @@ namespace Dojo.Torii
                 clausesPtr = ptr;
             }
 
-            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length, historical);
+            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length);
         }
 
         public Span<byte> PublishMessage(TypedData typedData, FieldElement[] signature)
