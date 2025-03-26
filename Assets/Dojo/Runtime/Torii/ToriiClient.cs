@@ -10,13 +10,17 @@ using System.Numerics;
 
 namespace Dojo.Torii
 {
-    public unsafe class ToriiClient
+    public unsafe class ToriiClient : ToriiEvents
     {
         private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEntityStateUpdate;
         private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEventMessagesUpdate;
+        private dojo.FnPtr_Token_Void.@delegate onTokenUpdate;
+        private dojo.FnPtr_TokenBalance_Void.@delegate onTokenBalanceUpdate;
         private dojo.ToriiClient* client;
         private dojo.Subscription* entitySubscription;
         private dojo.Subscription* eventMessagesSubscription;
+        private dojo.Subscription* tokenUpdateSubscription;
+        private dojo.Subscription* tokenBalanceUpdateSubscription;
 
         public ToriiClient(string toriiUrl, string relayUrl, FieldElement worldAddress, bool dispatchEventsToMainThread = true)
         {
@@ -195,11 +199,11 @@ namespace Dojo.Torii
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => this.EntityUpdated(new FieldElement(key), mappedModels));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels);
+                    this.EntityUpdated(new FieldElement(key), mappedModels);
                 }
 
                 // cleanup
@@ -227,6 +231,61 @@ namespace Dojo.Torii
             entitySubscription = res._ok;
         }
 
+        public void RegisterTokenUpdateEvent(FieldElement[] contractAddresses, BigInteger[] tokenIds)
+        {
+            var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
+            var nativeTokenIds = tokenIds.Select(t => new dojo.U256 { data = t.ToByteArray() }).ToArray();
+
+            dojo.FieldElement* nativeContractAddressesPtr;
+            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            {
+                nativeContractAddressesPtr = ptr;
+            }
+
+            dojo.U256* nativeTokenIdsPtr;
+            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            {
+                nativeTokenIdsPtr = ptr;
+            }
+
+            dojo.ResultSubscription res = dojo.client_on_token_update(client, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length, new dojo.FnPtr_Token_Void(onTokenUpdate));
+            if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
+            {
+                throw new Exception(res.err.message);
+            }
+
+            tokenUpdateSubscription = res._ok;
+        }
+
+        public void RegisterTokenBalanceUpdateEvent(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds)
+        {
+            var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
+            var nativeAccountAddresses = accountAddresses.Select(a => a.Inner).ToArray();
+            var nativeTokenIds = tokenIds.Select(t => new dojo.U256 { data = t.ToByteArray() }).ToArray();
+
+            dojo.FieldElement* nativeAccountAddressesPtr;
+            fixed (dojo.FieldElement* ptr = &nativeAccountAddresses[0])
+            {
+                nativeAccountAddressesPtr = ptr;
+            }
+
+            dojo.FieldElement* nativeContractAddressesPtr;
+            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            {
+                nativeContractAddressesPtr = ptr;
+            }
+
+            dojo.U256* nativeTokenIdsPtr;
+            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            {
+                nativeTokenIdsPtr = ptr;
+            }
+
+            dojo.ResultSubscription res = dojo.client_on_token_balance_update(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length, new dojo.FnPtr_TokenBalance_Void(onTokenBalanceUpdate));
+            
+            
+
+        }
         public void UpdateEntitySubscription(EntityKeysClause[] clauses)
         {
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
@@ -255,11 +314,11 @@ namespace Dojo.Torii
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => this.EventMessageUpdated(new FieldElement(key), mappedModels));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels);
+                    this.EventMessageUpdated(new FieldElement(key), mappedModels);
                 }
 
                 // cleanup
