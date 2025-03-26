@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Dojo.Torii
 {
-    public class ToriiWasmClient
+    public class ToriiWasmClient : ToriiEvents
     {
         private string toriiUrl;
         private string relayUrl;

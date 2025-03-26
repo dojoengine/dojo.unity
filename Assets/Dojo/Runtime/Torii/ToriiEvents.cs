@@ -34,27 +34,27 @@ namespace Dojo.Torii
         public event OnTokenUpdateDelegate OnTokenUpdated;
         public event OnTokenBalanceUpdateDelegate OnTokenBalanceUpdated;
 
-        protected void EventMessageUpdated(FieldElement key, Model[] models)
+        public void EventMessageUpdated(FieldElement key, Model[] models)
         {
             OnEventMessageUpdated?.Invoke(key, models);
         }
 
-        protected void EntityUpdated(FieldElement key, Model[] models)
+        public void EntityUpdated(FieldElement key, Model[] models)
         {
             OnEntityUpdated?.Invoke(key, models);
         }
 
-        protected void SyncModelUpdated()
+        public void SyncModelUpdated()
         {
             OnSyncModelUpdated?.Invoke();
         }
 
-        protected void TokenUpdated(Token token)
+        public void TokenUpdated(Token token)
         {
             OnTokenUpdated?.Invoke(token);
         }
 
-        protected void TokenBalanceUpdated(TokenBalance tokenBalance)
+        public void TokenBalanceUpdated(TokenBalance tokenBalance)
         {
             OnTokenBalanceUpdated?.Invoke(tokenBalance);
         }
