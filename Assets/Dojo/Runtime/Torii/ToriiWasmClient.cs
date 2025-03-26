@@ -177,5 +177,18 @@ namespace Dojo.Torii
             return PublishMessageHelper.Tcs.Task;
         }
 
+        private static class OnTokenUpdatedHelper
+        {
+            public static TaskCompletionSource<Token> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string token)
+            {
+                var parsedToken = JsonConvert.DeserializeObject<WasmToken>(token);
+                Tcs.SetResult(new Token(new FieldElement(parsedToken.contract_address), new BigInteger(parsedToken.token_id), parsedToken.name, parsedToken.symbol, parsedToken.decimals, parsedToken.metadata));
+            }
+        }
+        
+
     }
 }

@@ -14,6 +14,32 @@ mergeInto(LibraryManager.library, {
 
     dynCall_vi(cb, client.__destroy_into_raw());
   },
+  // Returns an array of all tokens
+  GetTokens: async function (clientPtr, contractAddresses, tokenIds, cb) {
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const tokens = await client.getTokens(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(tokenIds)));
+
+    const tokensString = JSON.stringify(tokens);
+    const bufferSize = lengthBytesUTF8(tokensString) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(tokensString, buffer, bufferSize);
+
+    client.__destroy_into_raw();
+    dynCall_vi(cb, buffer);
+  },
+  // Returns an array of all token balances
+  GetTokenBalances: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, cb) {
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const balances = await client.getTokenBalances(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(accountAddresses)), JSON.parse(UTF8ToString(tokenIds)));
+
+    const balancesString = JSON.stringify(balances);
+    const bufferSize = lengthBytesUTF8(balancesString) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(balancesString, buffer, bufferSize);
+
+    client.__destroy_into_raw();
+    dynCall_vi(cb, buffer);
+  },
   // Returns a dictionary of all of the entities
   GetEntities: async function (clientPtr, queryString, historical, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
@@ -63,6 +89,43 @@ mergeInto(LibraryManager.library, {
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
+  },
+  OnTokenUpdated: async function (clientPtr, contractAddresses, tokenIds, cb, subCb) {
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const subscription = await client.onTokenUpdated(
+      JSON.parse(UTF8ToString(contractAddresses)),
+      JSON.parse(UTF8ToString(tokenIds)),
+      (token) => {
+        const tokenString = JSON.stringify(token);
+        const bufferSize = lengthBytesUTF8(tokenString) + 1;
+        const buffer = _malloc(bufferSize);
+        stringToUTF8(tokenString, buffer, bufferSize);
+
+      client.__destroy_into_raw();
+      dynCall_vi(cb, buffer);
+    });
+
+    client.__destroy_into_raw();
+    dynCall_vi(subCb, subscription.__destroy_into_raw());
+  },
+  OnTokenBalanceUpdated: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, cb, subCb) {
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const subscription = await client.onTokenBalanceUpdated(
+      JSON.parse(UTF8ToString(contractAddresses)),
+      JSON.parse(UTF8ToString(accountAddresses)),
+      JSON.parse(UTF8ToString(tokenIds)),
+      (balance) => {
+        const balanceString = JSON.stringify(balance);
+        const bufferSize = lengthBytesUTF8(balanceString) + 1;
+        const buffer = _malloc(bufferSize);
+        stringToUTF8(balanceString, buffer, bufferSize);
+
+      client.__destroy_into_raw();
+      dynCall_vi(cb, buffer);
+    });
+
+    client.__destroy_into_raw();
+    dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
   OnEntityUpdated: async function (clientPtr, clausesStr, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
