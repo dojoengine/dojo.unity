@@ -6,6 +6,7 @@ using dojo_bindings;
 using Dojo.Starknet;
 using Newtonsoft.Json;
 using System.Linq;
+using System.Numerics;
 
 namespace Dojo.Torii
 {
@@ -77,6 +78,66 @@ namespace Dojo.Torii
         //     // which will free the underlying c ty when it is garbage collected
         //     return new Ty(result.ok._some.);
         // }
+
+        public List<Token> Tokens(FieldElement[] contractAddresses, BigInteger[] tokenIds)
+        {
+            var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
+            var nativeTokenIds = tokenIds.Select(t => new dojo.U256 { data = t.ToByteArray() }).ToArray();
+
+            dojo.FieldElement* nativeContractAddressesPtr;
+            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            {
+                nativeContractAddressesPtr = ptr;
+            }
+
+            dojo.U256* nativeTokenIdsPtr;
+            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            {
+                nativeTokenIdsPtr = ptr;
+            }
+
+            dojo.ResultCArrayToken result = dojo.client_tokens(client, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
+            if (result.tag == dojo.ResultCArrayToken_Tag.ErrCArrayToken)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            return result.ok.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data), t.name, t.symbol, t.decimals, t.metadata)).ToList();
+        }
+
+        public List<TokenBalance> TokenBalances(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds)
+        {
+            var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
+            var nativeAccountAddresses = accountAddresses.Select(a => a.Inner).ToArray();
+            var nativeTokenIds = tokenIds.Select(t => new dojo.U256 { data = t.ToByteArray() }).ToArray();
+
+            dojo.FieldElement* nativeAccountAddressesPtr;
+            fixed (dojo.FieldElement* ptr = &nativeAccountAddresses[0])
+            {
+                nativeAccountAddressesPtr = ptr;
+            }
+
+            dojo.FieldElement* nativeContractAddressesPtr;
+            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            {
+                nativeContractAddressesPtr = ptr;
+            }
+
+            dojo.U256* nativeTokenIdsPtr;
+            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            {
+                nativeTokenIdsPtr = ptr;
+            }
+
+            dojo.ResultCArrayTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
+            if (result.tag == dojo.ResultCArrayTokenBalance_Tag.ErrCArrayTokenBalance)
+            {
+                throw new Exception(result.err.message);
+            }
+
+            return result.ok.ToArray().Select(t => new TokenBalance(new BigInteger(t.balance.data), new FieldElement(t.account_address), new FieldElement(t.contract_address), new BigInteger(t.token_id.data))).ToList();
+        }
+
 
         public List<Entity> Entities(Query query, bool historical = false)
         {
