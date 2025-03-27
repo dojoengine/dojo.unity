@@ -66,27 +66,6 @@ namespace Dojo.Torii
             return result.ok;
         }
 
-        // NOT USED? potentially deprecated
-        // [CanBeNull]
-        // public Model Model(dojo.KeysClause query)
-        // {
-        //     dojo.ResultCOptionTy result = dojo.client_model(client, &query);
-        //     if (result.tag == dojo.ResultCOptionTy_Tag.ErrCOptionTy)
-        //     {
-        //         throw new Exception(result.err.message);
-        //     }
-
-        //     // can be None - nullable
-        //     if (result.ok.tag == dojo.COptionTy_Tag.NoneTy)
-        //     {
-        //         return null;
-        //     }
-
-        //     // we instantiate a new managed Ty object
-        //     // which will free the underlying c ty when it is garbage collected
-        //     return new Ty(result.ok._some.);
-        // }
-
         public List<Token> Tokens(FieldElement[] contractAddresses, BigInteger[] tokenIds)
         {
             var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
@@ -98,13 +77,14 @@ namespace Dojo.Torii
             }).ToArray();
 
             dojo.FieldElement* nativeContractAddressesPtr;
-            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            fixed (dojo.FieldElement* ptr = nativeContractAddresses)
             {
                 nativeContractAddressesPtr = ptr;
             }
 
+
             dojo.U256* nativeTokenIdsPtr;
-            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            fixed (dojo.U256* ptr = nativeTokenIds)
             {
                 nativeTokenIdsPtr = ptr;
             }
@@ -130,22 +110,23 @@ namespace Dojo.Torii
             }).ToArray();
 
             dojo.FieldElement* nativeAccountAddressesPtr;
-            fixed (dojo.FieldElement* ptr = &nativeAccountAddresses[0])
+            fixed (dojo.FieldElement* ptr = nativeAccountAddresses)
             {
                 nativeAccountAddressesPtr = ptr;
             }
 
             dojo.FieldElement* nativeContractAddressesPtr;
-            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            fixed (dojo.FieldElement* ptr = nativeContractAddresses)
             {
                 nativeContractAddressesPtr = ptr;
             }
 
             dojo.U256* nativeTokenIdsPtr;
-            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            fixed (dojo.U256* ptr = nativeTokenIds)
             {
                 nativeTokenIdsPtr = ptr;
             }
+
 
             dojo.ResultCArrayTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
             if (result.tag == dojo.ResultCArrayTokenBalance_Tag.ErrCArrayTokenBalance)
@@ -226,14 +207,11 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* clausesPtr = null;
+            dojo.EntityKeysClause* clausesPtr;
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            if (mappedClauses.Length > 0)
+            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
             {
-                fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
-                {
-                    clausesPtr = ptr;
-                }
+                clausesPtr = ptr;
             }
 
             dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
@@ -256,13 +234,14 @@ namespace Dojo.Torii
             }).ToArray();
 
             dojo.FieldElement* nativeContractAddressesPtr;
-            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            fixed (dojo.FieldElement* ptr = nativeContractAddresses)
             {
                 nativeContractAddressesPtr = ptr;
             }
 
+
             dojo.U256* nativeTokenIdsPtr;
-            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            fixed (dojo.U256* ptr = nativeTokenIds)
             {
                 nativeTokenIdsPtr = ptr;
             }
@@ -302,19 +281,20 @@ namespace Dojo.Torii
             }).ToArray();
 
             dojo.FieldElement* nativeAccountAddressesPtr;
-            fixed (dojo.FieldElement* ptr = &nativeAccountAddresses[0])
+            fixed (dojo.FieldElement* ptr = nativeAccountAddresses)
             {
                 nativeAccountAddressesPtr = ptr;
             }
 
             dojo.FieldElement* nativeContractAddressesPtr;
-            fixed (dojo.FieldElement* ptr = &nativeContractAddresses[0])
+            fixed (dojo.FieldElement* ptr = nativeContractAddresses)
             {
                 nativeContractAddressesPtr = ptr;
             }
 
+
             dojo.U256* nativeTokenIdsPtr;
-            fixed (dojo.U256* ptr = &nativeTokenIds[0])
+            fixed (dojo.U256* ptr = nativeTokenIds)
             {
                 nativeTokenIdsPtr = ptr;
             }
@@ -345,7 +325,7 @@ namespace Dojo.Torii
         {
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
             dojo.EntityKeysClause* clausesPtr;
-            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
             {
                 clausesPtr = ptr;
             }
@@ -382,14 +362,11 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* clausesPtr = null;
+            dojo.EntityKeysClause* clausesPtr;
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            if (mappedClauses.Length > 0)
+            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
             {
-                fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
-                {
-                    clausesPtr = ptr;
-                }
+                clausesPtr = ptr;
             }
 
             dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
@@ -405,10 +382,11 @@ namespace Dojo.Torii
         {
             var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
             dojo.EntityKeysClause* clausesPtr;
-            fixed (dojo.EntityKeysClause* ptr = &mappedClauses[0])
+            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
             {
                 clausesPtr = ptr;
             }
+
 
             dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length);
         }
@@ -417,7 +395,7 @@ namespace Dojo.Torii
         {
             var mappedSignature = signature.Select(s => s.Inner).ToArray();
             dojo.FieldElement* signaturePtr;
-            fixed (dojo.FieldElement* ptr = &mappedSignature[0])
+            fixed (dojo.FieldElement* ptr = mappedSignature)
             {
                 signaturePtr = ptr;
             }
