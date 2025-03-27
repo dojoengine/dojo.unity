@@ -28,6 +28,8 @@ namespace Dojo
         public UnityEvent<GameObject> OnEntitySpawned;
         public UnityEvent<ModelInstance> OnModelUpdated;
         public UnityEvent<ModelInstance> OnEventMessage;
+        public UnityEvent<TokenBalance> OnTokenBalanceUpdated;
+        public UnityEvent<Token> OnTokenUpdated;
 
         // Awake is called when the script instance is being loaded.
         void Awake()
@@ -157,6 +159,25 @@ namespace Dojo
         {
             ToriiEvents.Instance.OnEventMessageUpdated += HandleEventMessage;
         }
+
+        // Register token callbacks
+        public void RegisterTokenCallbacks()
+        {
+            ToriiEvents.Instance.OnTokenUpdated += (token) =>
+            {
+                OnTokenUpdated?.Invoke(token);
+            };
+        }
+
+        // Register token balance callbacks
+        public void RegisterTokenBalanceCallbacks()
+        {
+            ToriiEvents.Instance.OnTokenBalanceUpdated += (tokenBalance) =>
+            {
+                OnTokenBalanceUpdated?.Invoke(tokenBalance);
+            };
+        }
+
 
         private ModelInstance[] LoadModels()
         {
