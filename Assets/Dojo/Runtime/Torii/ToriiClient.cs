@@ -48,6 +48,8 @@ namespace Dojo.Torii
         {
             dojo.subscription_cancel(entitySubscription);
             dojo.subscription_cancel(eventMessagesSubscription);
+            dojo.subscription_cancel(tokenUpdateSubscription);
+            dojo.subscription_cancel(tokenBalanceUpdateSubscription);
 
             dojo.client_free(client);
         }
