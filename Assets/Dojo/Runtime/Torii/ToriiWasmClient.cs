@@ -218,7 +218,7 @@ namespace Dojo.Torii
             GetTokenBalancesHelper.Tcs = new TaskCompletionSource<TokenBalance[]>();
             ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), GetTokenBalancesHelper.Callback);
             return GetTokenBalancesHelper.Tcs.Task;
-        }        
+        }
 
         private static class OnTokenUpdatedHelper
         {
