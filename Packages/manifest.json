@@ -2,6 +2,7 @@
   "dependencies": {
     "com.unity.collab-proxy": "2.3.1",
     "com.unity.feature.development": "1.0.1",
+    "com.unity.ide.cursor": "https://github.com/boxqkrtm/com.unity.ide.cursor.git",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.6",
