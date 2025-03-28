@@ -75,6 +75,7 @@ namespace Dojo.Torii
     {
         public string model;
         public string member;
+        [JsonConverter(typeof(StringEnumConverter))]
         public dojo.OrderDirection direction;
 
         public OrderBy(string model, string member, dojo.OrderDirection direction)
