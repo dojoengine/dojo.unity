@@ -190,12 +190,15 @@ namespace Dojo.Torii
             public static void Callback(string tokens)
             {
                 var parsedTokens = JsonConvert.DeserializeObject<WasmToken[]>(tokens);
-                Tcs.SetResult(parsedTokens.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, t.metadata)).ToArray());
+                Tcs.SetResult(parsedTokens.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray());
             }
         }
 
-        public Task<Token[]> Tokens(FieldElement[] contractAddresses, BigInteger[] tokenIds)
+        public Task<Token[]> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             GetTokensHelper.Tcs = new TaskCompletionSource<Token[]>();
             ToriiWasmInterop.GetTokens(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), GetTokensHelper.Callback);
             return GetTokensHelper.Tcs.Task;
@@ -213,8 +216,12 @@ namespace Dojo.Torii
             }
         }
 
-        public Task<TokenBalance[]> TokenBalances(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds)
+        public Task<TokenBalance[]> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (accountAddresses == null) accountAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             GetTokenBalancesHelper.Tcs = new TaskCompletionSource<TokenBalance[]>();
             ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), GetTokenBalancesHelper.Callback);
             return GetTokenBalancesHelper.Tcs.Task;
@@ -229,7 +236,7 @@ namespace Dojo.Torii
                 var parsedToken = JsonConvert.DeserializeObject<WasmToken>(token);
                 // go from hex string to BigInteger
                 var tokenId = BigInteger.Parse(parsedToken.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber);
-                ToriiEvents.Instance.TokenUpdated(new Token(new FieldElement(parsedToken.contract_address), tokenId, parsedToken.name, parsedToken.symbol, parsedToken.decimals, parsedToken.metadata));
+                ToriiEvents.Instance.TokenUpdated(new Token(new FieldElement(parsedToken.contract_address), tokenId, parsedToken.name, parsedToken.symbol, parsedToken.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(parsedToken.metadata)));
             }
         }
 

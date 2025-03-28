@@ -66,8 +66,11 @@ namespace Dojo.Torii
             return result.ok;
         }
 
-        public List<Token> Tokens(FieldElement[] contractAddresses, BigInteger[] tokenIds)
+        public List<Token> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
             var nativeTokenIds = tokenIds.Select(t =>
             {
@@ -95,11 +98,15 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            return result.ok.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true), t.name, t.symbol, t.decimals, t.metadata)).ToList();
+            return result.ok.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToList();
         }
 
-        public List<TokenBalance> TokenBalances(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds)
+        public List<TokenBalance> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (accountAddresses == null) accountAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
             var nativeAccountAddresses = accountAddresses.Select(a => a.Inner).ToArray();
             var nativeTokenIds = tokenIds.Select(t =>
@@ -248,7 +255,7 @@ namespace Dojo.Torii
 
             onTokenUpdate = (token) =>
             {
-                var mappedToken = new Token(new FieldElement(token.contract_address), new BigInteger(token.token_id.data, false, true), token.name, token.symbol, token.decimals, token.metadata);
+                var mappedToken = new Token(new FieldElement(token.contract_address), new BigInteger(token.token_id.data, false, true), token.name, token.symbol, token.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(token.metadata));
                 Action emit = () => ToriiEvents.Instance.TokenUpdated(mappedToken);
                 if (dispatchToMainThread)
                 {
