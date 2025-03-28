@@ -220,7 +220,7 @@ namespace Dojo.Torii
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (accountAddresses == null) accountAddresses = new FieldElement[] { };
-            if (tokenIds == null) tokenIds = new BigInteger[] { };  
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
 
             GetTokenBalancesHelper.Tcs = new TaskCompletionSource<TokenBalance[]>();
             ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), GetTokenBalancesHelper.Callback);
