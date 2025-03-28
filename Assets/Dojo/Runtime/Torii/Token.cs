@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using Dojo.Starknet;
 
@@ -10,9 +11,9 @@ namespace Dojo.Torii
         public string name;
         public string symbol;
         public int decimals;
-        public string metadata;
+        public Dictionary<string, object> metadata;
 
-        public Token(FieldElement contractAddress, BigInteger tokenId, string name, string symbol, int decimals, string metadata)
+        public Token(FieldElement contractAddress, BigInteger tokenId, string name, string symbol, int decimals, Dictionary<string, object> metadata)
         {
             this.contractAddress = contractAddress;
             this.tokenId = tokenId;

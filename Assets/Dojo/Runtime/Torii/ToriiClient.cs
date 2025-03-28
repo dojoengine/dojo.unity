@@ -95,7 +95,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            return result.ok.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true), t.name, t.symbol, t.decimals, t.metadata)).ToList();
+            return result.ok.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToList();
         }
 
         public List<TokenBalance> TokenBalances(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds)
@@ -248,7 +248,7 @@ namespace Dojo.Torii
 
             onTokenUpdate = (token) =>
             {
-                var mappedToken = new Token(new FieldElement(token.contract_address), new BigInteger(token.token_id.data, false, true), token.name, token.symbol, token.decimals, token.metadata);
+                var mappedToken = new Token(new FieldElement(token.contract_address), new BigInteger(token.token_id.data, false, true), token.name, token.symbol, token.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(token.metadata));
                 Action emit = () => ToriiEvents.Instance.TokenUpdated(mappedToken);
                 if (dispatchToMainThread)
                 {

@@ -190,7 +190,7 @@ namespace Dojo.Torii
             public static void Callback(string tokens)
             {
                 var parsedTokens = JsonConvert.DeserializeObject<WasmToken[]>(tokens);
-                Tcs.SetResult(parsedTokens.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, t.metadata)).ToArray());
+                Tcs.SetResult(parsedTokens.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray());
             }
         }
 
@@ -229,7 +229,7 @@ namespace Dojo.Torii
                 var parsedToken = JsonConvert.DeserializeObject<WasmToken>(token);
                 // go from hex string to BigInteger
                 var tokenId = BigInteger.Parse(parsedToken.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber);
-                ToriiEvents.Instance.TokenUpdated(new Token(new FieldElement(parsedToken.contract_address), tokenId, parsedToken.name, parsedToken.symbol, parsedToken.decimals, parsedToken.metadata));
+                ToriiEvents.Instance.TokenUpdated(new Token(new FieldElement(parsedToken.contract_address), tokenId, parsedToken.name, parsedToken.symbol, parsedToken.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(parsedToken.metadata)));
             }
         }
 
