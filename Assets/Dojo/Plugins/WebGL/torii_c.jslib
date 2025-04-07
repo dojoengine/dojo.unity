@@ -15,9 +15,9 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, client.__destroy_into_raw());
   },
   // Returns an array of all tokens
-  GetTokens: async function (clientPtr, contractAddresses, tokenIds, cb) {
+  GetTokens: async function (clientPtr, contractAddresses, tokenIds, limit, offset, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const tokens = await client.getTokens(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(tokenIds)));
+    const tokens = await client.getTokens(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, offset);
 
     const tokensString = JSON.stringify(tokens);
     const bufferSize = lengthBytesUTF8(tokensString) + 1;
@@ -28,9 +28,9 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   // Returns an array of all token balances
-  GetTokenBalances: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, cb) {
+  GetTokenBalances: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, limit, offset, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const balances = await client.getTokenBalances(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(accountAddresses)), JSON.parse(UTF8ToString(tokenIds)));
+    const balances = await client.getTokenBalances(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(accountAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, offset);
 
     const balancesString = JSON.stringify(balances);
     const bufferSize = lengthBytesUTF8(balancesString) + 1;

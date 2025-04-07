@@ -58,11 +58,11 @@ namespace Dojo.Torii
 
         // Returns an array of all tokens
         [DllImport("__Internal")]
-        public static extern void GetTokens(IntPtr clientPtr, CString contractAddresses, CString tokenIds, Action<string> cb);
+        public static extern void GetTokens(IntPtr clientPtr, CString contractAddresses, CString tokenIds, int limit, int offset, Action<string> cb);
 
         // Returns an array of all token balances
         [DllImport("__Internal")]
-        public static extern void GetTokenBalances(IntPtr clientPtr, CString contractAddresses, CString accountAddresses, CString tokenIds, Action<string> cb);
+        public static extern void GetTokenBalances(IntPtr clientPtr, CString contractAddresses, CString accountAddresses, CString tokenIds, int limit, int offset, Action<string> cb);
 
         // Returns a dictionary of all of the entities
         [DllImport("__Internal")]
