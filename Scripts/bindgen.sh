@@ -46,7 +46,7 @@ fi
 print_status "Generating C# bindings..."
 
 # Generate C# bindings
-./c2cs/artifacts/bin/C2CS.Tool/release/C2CS.Tool generate --config Bindings/config-generate-cs.json
+./c2cs/artifacts/bin/C2CS.Tool/release/C2CS.Tool generate --config Bindings/config-generate-cs.json > /dev/null 2>&1
 if [ $? -ne 0 ]; then
     print_error "Failed to generate C# bindings"
     exit 1
