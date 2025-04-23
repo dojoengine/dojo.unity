@@ -48,8 +48,8 @@ namespace Dojo.Torii
             ToriiWasmInterop.CreateClient(new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
             clientPtr = await CreateClientHelper.Tcs.Task;
 
-            entitySubscription = await RegisterEntityStateUpdateEvent(new KeysClause[] { });
-            eventMessageSubscription = await RegisterEventMessageUpdateEvent(new KeysClause[] { });
+            entitySubscription = await RegisterEntityStateUpdateEvent(new EntityKeysClause[] { });
+            eventMessageSubscription = await RegisterEventMessageUpdateEvent(new EntityKeysClause[] { });
             tokenSubscription = await RegisterTokenUpdateEvent(new FieldElement[] { }, new BigInteger[] { });
             tokenBalanceSubscription = await RegisterTokenBalanceUpdateEvent(new FieldElement[] { }, new FieldElement[] { }, new BigInteger[] { });
         }
@@ -125,14 +125,14 @@ namespace Dojo.Torii
             }
         }
 
-        public async Task<IntPtr> RegisterEntityStateUpdateEvent(KeysClause[] clauses)
+        public async Task<IntPtr> RegisterEntityStateUpdateEvent(EntityKeysClause[] clauses)
         {
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
             ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
         }
 
-        public void UpdateEntitySubscription(KeysClause[] clauses)
+        public void UpdateEntitySubscription(EntityKeysClause[] clauses)
         {
             ToriiWasmInterop.UpdateEntitySubscription(clientPtr, entitySubscription, new CString(JsonConvert.SerializeObject(clauses)));
         }
@@ -152,14 +152,14 @@ namespace Dojo.Torii
             }
         }
 
-        public async Task<IntPtr> RegisterEventMessageUpdateEvent(KeysClause[] clauses)
+        public async Task<IntPtr> RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses)
         {
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
             ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
         }
 
-        public void UpdateEventMessageSubscription(KeysClause[] clauses)
+        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses)
         {
             ToriiWasmInterop.UpdateEventMessageSubscription(clientPtr, eventMessageSubscription, new CString(JsonConvert.SerializeObject(clauses)));
         }
