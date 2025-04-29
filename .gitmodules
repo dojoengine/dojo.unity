@@ -4,3 +4,6 @@
 [submodule "Bindings/dojo.c"]
 	path = Bindings/dojo.c
 	url = https://github.com/dojoengine/dojo.c
+[submodule "CAstFfi"]
+	path = CAstFfi
+	url = https://github.com/Larkooo/CAstFfi
