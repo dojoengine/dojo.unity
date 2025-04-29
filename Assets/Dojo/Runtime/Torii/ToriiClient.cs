@@ -135,13 +135,13 @@ namespace Dojo.Torii
             }
 
 
-            dojo.ResultCArrayTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
-            if (result.tag == dojo.ResultCArrayTokenBalance_Tag.ErrCArrayTokenBalance)
+            dojo.ResultPageTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
+            if (result.tag == dojo.ResultPageTokenBalance_Tag.ErrPageTokenBalance)
             {
                 throw new Exception(result.err.message);
             }
 
-            return result.ok.ToArray().Select(t => new TokenBalance(new BigInteger(t.balance.data, false, true), new FieldElement(t.account_address), new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true))).ToList();
+            return new Page;
         }
 
 
