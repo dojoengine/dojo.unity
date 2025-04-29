@@ -1,4 +1,12 @@
 mergeInto(LibraryManager.library, {
+  Connect: async function (controllerConfig) {
+    // parse the controller config string
+    const prvider = new ControllerProvider(config)
+    await prvider.connect()
+
+    prvider.account.execute(  )
+  }
+
   // Creates a new client and returns the pointer to it
   CreateClient: async function (
     toriiUrl,
