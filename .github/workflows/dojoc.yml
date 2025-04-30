@@ -35,7 +35,24 @@ jobs:
 
       # Install clang needed by CAstFfi.Tool
       - name: Install Clang and Dev Library
-        run: sudo apt-get update && sudo apt-get install -y libclang-dev
+        run: sudo apt-get update && sudo apt-get install -y clang libclang-dev
+
+      # Find and link libclang.so
+      - name: Link libclang.so
+        run: |
+          find /usr/lib/ -name "libclang.so*" -print -quit
+          # Find the main libclang shared object (e.g., /usr/lib/x86_64-linux-gnu/libclang.so.14)
+          # The exact path might vary depending on the Ubuntu version and installed clang version
+          LIBCLANG_PATH=$(find /usr/lib/ -name "libclang.so*" | head -n 1)
+          if [ -n "$LIBCLANG_PATH" ]; then
+            echo "Found libclang at: $LIBCLANG_PATH"
+            # Create symlink in /usr/lib where the tool searches
+            sudo ln -s "$LIBCLANG_PATH" /usr/lib/libclang.so
+            echo "Created symlink /usr/lib/libclang.so -> $LIBCLANG_PATH"
+          else
+            echo "::error::Could not find libclang.so after installation."
+            exit 1
+          fi
 
       # Assuming the tools need to be built
       - name: Build CAstFfi.Tool
