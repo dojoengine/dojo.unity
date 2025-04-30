@@ -35,10 +35,10 @@ jobs:
 
       # Assuming the tools need to be built
       - name: Build CAstFfi.Tool
-        run: dotnet build ./CAstFfi/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release # Adjust path/command if needed
+        run: dotnet build ./CAstFfi/src/cs/production/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release # Adjust path/command if needed
 
       - name: Build C2CS.Tool
-        run: dotnet build ./c2cs/src/C2CS.Tool/C2CS.Tool.csproj -c release # Adjust path/command if needed
+        run: dotnet build ./c2cs/src/cs/production/C2CS.Tool/C2CS.Tool.csproj -c release # Adjust path/command if needed
 
       - name: Extract Platform Bindings (Linux, macOS, Windows)
         working-directory: ./Bindings/dojo.c # Run from where dojo.h is expected
