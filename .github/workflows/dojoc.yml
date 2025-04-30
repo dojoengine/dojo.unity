@@ -266,7 +266,7 @@ jobs:
         with:
           submodules: 'recursive'
           # Need a token with write permissions to push changes
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }} # Use PAT if pushing to protected branch
+          token: ${{ secrets.GITHUB_TOKEN }} # Use PAT if pushing to protected branch
 
       - name: Clean existing directories # Ensure clean state before copying
         run: |
