@@ -1,0 +1,311 @@
+name: Generate DojoC Artifacts
+
+on:
+  push:
+    branches:
+      - main # Adjust branch name if needed
+  workflow_dispatch: # Allows manual triggering
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_VERSION: 1.85.0 # Match the version in release.yml
+  DOTNET_VERSION: '8.0.x' # Assuming .NET 8 for binding tools
+
+jobs:
+  generate_bindings:
+    name: Generate C# Bindings
+    runs-on: ubuntu-latest
+    outputs:
+      bindings_path: Assets/Dojo/Runtime/Bindings/Dojo.cs # Define expected output path
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+
+      # Assuming the tools need to be built
+      - name: Build CAstFfi.Tool
+        run: dotnet build ./CAstFfi/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release # Adjust path/command if needed
+
+      - name: Build C2CS.Tool
+        run: dotnet build ./c2cs/src/C2CS.Tool/C2CS.Tool.csproj -c release # Adjust path/command if needed
+
+      - name: Extract Platform Bindings (Linux, macOS, Windows)
+        working-directory: ./Bindings/dojo.c # Run from where dojo.h is expected
+        run: |
+          # Need to adjust tool paths relative to working-directory or use absolute paths
+          ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-linux.json
+          ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-macos.json
+          ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-windows.json
+        # Note: Errors are ignored in bindgen.sh with > /dev/null 2>&1, consider adding error checks
+
+      - name: Merge Platform Bindings
+        working-directory: ./Bindings/dojo.c
+        run: |
+           ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool merge --inputDirectoryPath ../ast --outputFilePath ../ast/cross-platform.json
+
+      - name: Generate C# Bindings
+        working-directory: ./Bindings/dojo.c
+        run: |
+          ../../c2cs/artifacts/bin/C2CS.Tool/release/C2CS.Tool generate --config ../config-generate-cs.json
+        # This should generate the file at the path specified in config-generate-cs.json
+        # Assuming it's Assets/Dojo/Runtime/Bindings/Dojo.cs relative to repo root
+
+      - name: Upload C# Bindings Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bindings-artifact
+          path: Assets/Dojo/Runtime/Bindings/Dojo.cs # Use the path defined in outputs
+
+  build_libs:
+    name: Build Native Libs (${{ matrix.job.target }})
+    needs: generate_bindings # Optional: Can run in parallel if bindgen doesn't affect lib build
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        job:
+          # Replicating targets from libgen.sh (using msvc for windows)
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            artifact_name: linux-x86_64-artifact
+            lib_name: libdojo_c.so
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            artifact_name: macos-x86_64-artifact
+            lib_name: libdojo_c.dylib
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            artifact_name: macos-arm64-artifact
+            lib_name: libdojo_c.dylib
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            artifact_name: windows-x86_64-artifact
+            lib_name: dojo_c.dll
+          - os: macos-latest # iOS builds typically done on macOS
+            target: aarch64-apple-ios
+            artifact_name: ios-arm64-artifact
+            lib_name: libdojo_c.a
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          targets: ${{ matrix.job.target }}
+
+      - name: Setup Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          # Cache key includes the target
+          key: ${{ runner.os }}-${{ matrix.job.target }}
+
+      # Install cross for Linux builds if needed (currently only linux-gnu target)
+      - name: Install cross
+        if: runner.os == 'Linux' && matrix.job.target == 'x86_64-unknown-linux-gnu'
+        run: cargo install cross --git https://github.com/cross-rs/cross --rev main # Use main branch for latest fixes
+
+      # Apple M1/iOS setup
+      - name: Apple Setup
+        if: runner.os == 'macOS'
+        run: |
+          rustup target add ${{ matrix.job.target }}
+          # Potentially more setup needed for iOS cross-compilation SDKs/env vars
+          if [[ "${{ matrix.job.target }}" == "aarch64-apple-darwin" || "${{ matrix.job.target }}" == "aarch64-apple-ios" ]]; then
+            echo "SDKROOT=$(xcrun -sdk macosx --show-sdk-path)" >> $GITHUB_ENV
+            echo "MACOSX_DEPLOYMENT_TARGET=$(xcrun -sdk macosx --show-sdk-platform-version)" >> $GITHUB_ENV
+            # Additional flags might be needed for iOS
+          fi
+
+      - name: Build Binary
+        working-directory: ./Bindings/dojo.c
+        shell: bash
+        run: |
+          BUILD_CMD="cargo build"
+          if [[ "${{ runner.os }}" == "Linux" && "${{ matrix.job.target }}" == "x86_64-unknown-linux-gnu" ]]; then
+             # Cross is mainly for *to* Linux/Windows from Linux, or other complex cases.
+             # If building Linux on Linux, regular cargo might be fine unless specific linkers needed.
+             # Use cross if encountering issues. Build directly for now.
+             # BUILD_CMD="cross build"
+             echo "Using cargo build for Linux on Linux"
+          elif [[ "${{ runner.os }}" == "Linux" ]]; then
+             # If other targets run on Linux in future (e.g., cross-compiling Windows)
+             BUILD_CMD="cross build"
+          fi
+
+          # Build
+          $BUILD_CMD --release --target ${{ matrix.job.target }}
+
+      - name: Prepare Artifact Directory
+        run: mkdir -p artifact
+
+      - name: Copy Files to Artifact Directory
+        shell: bash
+        run: |
+          cp Bindings/dojo.c/target/${{ matrix.job.target }}/release/${{ matrix.job.lib_name }} artifact/
+          cp Bindings/dojo.c/dojo.h artifact/
+
+      - name: Upload Lib Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.job.artifact_name }}
+          path: artifact/
+
+  build_macos_universal:
+    name: Build macOS Universal Binary
+    needs: build_libs # Waits for both x86_64 and arm64 macos builds
+    runs-on: macos-latest
+    # Only run if both macOS builds succeeded (implicit via needs)
+    steps:
+      - name: Checkout sources # Needed for dojo.h
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Download macOS x86_64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-x86_64-artifact
+          path: macos-x86_64
+
+      - name: Download macOS arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-arm64-artifact
+          path: macos-arm64
+
+      - name: Create Universal Binary
+        run: |
+          lipo -create -output libdojo_c.bundle macos-x86_64/libdojo_c.dylib macos-arm64/libdojo_c.dylib
+
+      - name: Prepare Artifact Directory
+        run: mkdir -p artifact
+
+      - name: Copy Files to Artifact Directory
+        run: |
+          cp libdojo_c.bundle artifact/
+          # Copy header from one of the downloads
+          cp macos-x86_64/dojo.h artifact/
+
+      - name: Upload macOS Universal Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-universal-artifact
+          path: artifact/
+
+  build_wasm:
+    name: Build WASM Package (Web)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          targets: wasm32-unknown-unknown
+
+      - name: Setup Protoc
+        uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ runner.os }}-wasm
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build WASM (web)
+        working-directory: ./Bindings/dojo.c
+        run: wasm-pack build --out-dir pkg-web --release --target web
+
+      - name: Upload WASM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasm-artifact
+          path: ./Bindings/dojo.c/pkg-web # Upload the contents
+
+  commit_files:
+    name: Commit Updated Files
+    needs:
+      - generate_bindings
+      - build_libs # Need all non-macOS libs
+      - build_macos_universal # Need combined macOS lib
+      - build_wasm
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          # Need a token with write permissions to push changes
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }} # Use PAT if pushing to protected branch
+
+      - name: Clean existing directories # Ensure clean state before copying
+        run: |
+          rm -rf Assets/Dojo/Runtime/Bindings/*
+          rm -rf Assets/Dojo/Plugins/Linux/*
+          rm -rf Assets/Dojo/Plugins/Windows/*
+          rm -rf Assets/Dojo/Plugins/macOS/*
+          rm -rf Assets/Dojo/Plugins/iOS/*
+          rm -rf Assets/WebGLTemplates/Dojo/TemplateData/dojo.js/*
+          mkdir -p Assets/Dojo/Runtime/Bindings
+          mkdir -p Assets/Dojo/Plugins/Linux
+          mkdir -p Assets/Dojo/Plugins/Windows
+          mkdir -p Assets/Dojo/Plugins/macOS
+          mkdir -p Assets/Dojo/Plugins/iOS
+          mkdir -p Assets/WebGLTemplates/Dojo/TemplateData/dojo.js
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts # Download all to a single directory
+
+      - name: Organize downloaded files
+        run: |
+          # Bindings
+          cp artifacts/bindings-artifact/Dojo.cs Assets/Dojo/Runtime/Bindings/Dojo.cs
+          # Libs
+          cp artifacts/linux-x86_64-artifact/libdojo_c.so Assets/Dojo/Plugins/Linux/libdojo_c.so
+          cp artifacts/windows-x86_64-artifact/dojo_c.dll Assets/Dojo/Plugins/Windows/libdojo_c.dll
+          cp artifacts/ios-arm64-artifact/libdojo_c.a Assets/Dojo/Plugins/iOS/libdojo_c.a
+          cp artifacts/macos-universal-artifact/libdojo_c.bundle Assets/Dojo/Plugins/macOS/libdojo_c.bundle
+          # WASM
+          cp -r artifacts/wasm-artifact/* Assets/WebGLTemplates/Dojo/TemplateData/dojo.js/
+
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: Update generated bindings and libraries"
+          branch: main # Branch to push to (same as trigger branch)
+          # Add file patterns if needed, otherwise commits all changes
+          # file_pattern: Assets/
+          commit_user_name: "github-actions[bot]"
+          commit_user_email: "github-actions[bot]@users.noreply.github.com" 
