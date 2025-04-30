@@ -33,6 +33,10 @@ jobs:
         with:
           toolchain: ${{ env.RUST_VERSION }}
 
+      # Install clang needed by CAstFfi.Tool
+      - name: Install Clang
+        run: sudo apt-get update && sudo apt-get install -y clang
+
       # Assuming the tools need to be built
       - name: Build CAstFfi.Tool
         run: dotnet build ./CAstFfi/src/cs/production/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release # Adjust path/command if needed
