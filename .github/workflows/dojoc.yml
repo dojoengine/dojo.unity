@@ -34,8 +34,8 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
 
       # Install clang needed by CAstFfi.Tool
-      - name: Install Clang
-        run: sudo apt-get update && sudo apt-get install -y clang
+      - name: Install Clang and Dev Library
+        run: sudo apt-get update && sudo apt-get install -y libclang-dev
 
       # Assuming the tools need to be built
       - name: Build CAstFfi.Tool
