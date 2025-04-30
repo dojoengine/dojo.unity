@@ -1,12 +1,4 @@
 mergeInto(LibraryManager.library, {
-  Connect: async function (controllerConfig) {
-    // parse the controller config string
-    const prvider = new ControllerProvider(config)
-    await prvider.connect()
-
-    prvider.account.execute(  )
-  }
-
   // Creates a new client and returns the pointer to it
   CreateClient: async function (
     toriiUrl,
@@ -14,11 +6,11 @@ mergeInto(LibraryManager.library, {
     worldAddress,
     cb
   ) {
-    let client = await wasm_bindgen.createClient({
+    let client = await (new wasm_bindgen.ToriiClient({
       toriiUrl: UTF8ToString(toriiUrl),
       relayUrl: UTF8ToString(relayUrl),
       worldAddress: UTF8ToString(worldAddress),
-    });
+    }));
 
     dynCall_vi(cb, client.__destroy_into_raw());
   },
@@ -137,30 +129,17 @@ mergeInto(LibraryManager.library, {
   },
   OnEntityUpdated: async function (clientPtr, clauseStr, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let clause = null;
-    if (clauseStr) {
-        let clauseJsonString = UTF8ToString(clauseStr);
-        if (clauseJsonString && clauseJsonString !== "null") {
-            try {
-                clause = JSON.parse(clauseJsonString); 
-            } catch (e) {
-                console.error("Failed to parse clause JSON in OnEntityUpdated:", clauseJsonString, e);
-            }
-        }
-    }
+    let clause = UTF8ToString(clauseStr);
 
-    const subscription = await client.onEntityUpdated(clause, (hashed_keys, models) => {
-      // stringify the models
-      let modelsString = JSON.stringify(models);
+    const subscription = await client.onEntityUpdated(clause !== "" ? JSON.parse(clause) : undefined, (entity) => {
+      // stringify the entity
+      let entityString = JSON.stringify(entity);
       // return buffer
-      let hashedKeysBufferSize = lengthBytesUTF8(hashed_keys) + 1;
-      let hashedKeysBuffer = _malloc(hashedKeysBufferSize);
-      let modelsBufferSize = lengthBytesUTF8(modelsString) + 1;
-      let modelsBuffer = _malloc(modelsBufferSize);
-      stringToUTF8(hashed_keys, hashedKeysBuffer, hashedKeysBufferSize);
-      stringToUTF8(modelsString, modelsBuffer, modelsBufferSize);
+      let bufferSize = lengthBytesUTF8(entityString) + 1;
+      let buffer = _malloc(bufferSize);
+      stringToUTF8(entityString, buffer, bufferSize);
 
-      dynCall_vii(cb, hashedKeysBuffer, modelsBuffer);
+      dynCall_vi(cb, buffer);
     });
 
     client.__destroy_into_raw();
@@ -169,51 +148,28 @@ mergeInto(LibraryManager.library, {
   UpdateEntitySubscription: async function (clientPtr, subPtr, clauseStr) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
-    let clause = null;
-    if (clauseStr) {
-        let clauseJsonString = UTF8ToString(clauseStr);
-        if (clauseJsonString && clauseJsonString !== "null") {
-            try {
-                clause = JSON.parse(clauseJsonString); 
-            } catch (e) {
-                console.error("Failed to parse clause JSON in UpdateEntitySubscription:", clauseJsonString, e);
-            }
-        }
-    }
+    let clause = UTF8ToString(clauseStr);
 
-    await client.updateEntitySubscription(subscription, clause);
+    await client.updateEntitySubscription(subscription, clause !== "" ? JSON.parse(clause) : undefined);
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
   },
   OnEventMessageUpdated: async function (clientPtr, clauseStr, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let clause = null;
-    if (clauseStr) {
-        let clauseJsonString = UTF8ToString(clauseStr);
-        if (clauseJsonString && clauseJsonString !== "null") {
-            try {
-                clause = JSON.parse(clauseJsonString); 
-            } catch (e) {
-                console.error("Failed to parse clause JSON in OnEventMessageUpdated:", clauseJsonString, e);
-            }
-        }
-    }
+    let clause = UTF8ToString(clauseStr);
 
     const subscription = await client.onEventMessageUpdated(
-      clause,
-      (hashed_keys, models) => {
-        // stringify the entities
-        let modelsString = JSON.stringify(models);
+      clause !== "" ? JSON.parse(clause) : undefined,
+      (entity) => {
+        // stringify the entity
+        let entityString = JSON.stringify(entity);
         // return buffer
-        let hashedKeysBufferSize = lengthBytesUTF8(hashed_keys) + 1;
-        let hashedKeysBuffer = _malloc(hashedKeysBufferSize);
-        let modelsBufferSize = lengthBytesUTF8(modelsString) + 1;
-        let modelsBuffer = _malloc(modelsBufferSize);
-        stringToUTF8(hashed_keys, hashedKeysBuffer, hashedKeysBufferSize);
-        stringToUTF8(modelsString, modelsBuffer, modelsBufferSize);
+        let bufferSize = lengthBytesUTF8(entityString) + 1;
+        let buffer = _malloc(bufferSize);
+        stringToUTF8(entityString, buffer, bufferSize);
 
-        dynCall_vii(cb, hashedKeysBuffer, modelsBuffer);
+        dynCall_vi(cb, buffer);
       }
     );
 
@@ -223,19 +179,9 @@ mergeInto(LibraryManager.library, {
   UpdateEventMessageSubscription: async function (clientPtr, subPtr, clauseStr) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
-    let clause = null;
-    if (clauseStr) {
-        let clauseJsonString = UTF8ToString(clauseStr);
-        if (clauseJsonString && clauseJsonString !== "null") {
-            try {
-                clause = JSON.parse(clauseJsonString); 
-            } catch (e) {
-                console.error("Failed to parse clause JSON in UpdateEventMessageSubscription:", clauseJsonString, e);
-            }
-        }
-    }
+    let clause = UTF8ToString(clauseStr);
 
-    await client.updateEventMessageSubscription(subscription, clause);
+    await client.updateEventMessageSubscription(subscription, clause !== "" ? JSON.parse(clause) : undefined);
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();

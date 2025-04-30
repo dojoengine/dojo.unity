@@ -177,10 +177,10 @@ public class Tests
     [Test, Order(1)]
     public void TestEntities()
     {
-        var query = new Query(5, 0);
+        var query = new Query(new Pagination(5, 0));
 
         var entities = client.Entities(query);
-        Assert.That(entities.Count, Is.GreaterThanOrEqualTo(1));
+        Assert.That(entities.items.Length, Is.GreaterThanOrEqualTo(1));
     }
 
     // Deprecated?

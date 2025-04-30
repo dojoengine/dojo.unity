@@ -25,6 +25,7 @@ export const account_setBlockId: (a: number, b: number, c: number) => [number, n
 export const account_executeRaw: (a: number, b: number, c: number) => any;
 export const account_deployBurner: (a: number, b: number, c: number) => any;
 export const account_nonce: (a: number) => any;
+export const account_provider: (a: number) => number;
 export const getContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
 export const getSelectorFromTag: (a: number, b: number) => [number, number];
 export const bytearray_new: (a: number, b: number) => [number, number, number];
@@ -54,6 +55,7 @@ export const toriiclient_onTokenBalanceUpdated: (a: number, b: number, c: number
 export const toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
 export const toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => any;
 export const subscription_cancel: (a: number) => void;
+export const verifyingkey_fromSigningKey: (a: number) => [number, number, number];
 export const __wbg_toriiclient_free: (a: number, b: number) => void;
 export const __wbg_provider_free: (a: number, b: number) => void;
 export const __wbg_account_free: (a: number, b: number) => void;

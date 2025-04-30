@@ -102,15 +102,16 @@ namespace Dojo.Torii
         private static class OnEntityUpdatedHelper
         {
 
-            [MonoPInvokeCallback(typeof(Action<string, string>))]
-            public static void Callback(string hashed_keys, string models)
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string entity)
             {
-                var parsedModels = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, WasmValue>>>(models).Select(m => new Model(
+                var parsedEntity = JsonConvert.DeserializeObject<WasmEntity>(entity);
+                var parsedModels = parsedEntity.models.Select(m => new Model(
                     m.Key,
                     m.Value
                 )).ToArray();
 
-                ToriiEvents.Instance.EntityUpdated(new FieldElement(hashed_keys), parsedModels);
+                ToriiEvents.Instance.EntityUpdated(new FieldElement(parsedEntity.hashed_keys), parsedModels);
             }
         }
 
@@ -128,40 +129,41 @@ namespace Dojo.Torii
         public async Task<IntPtr> RegisterEntityStateUpdateEvent(Clause? clause = null)
         {
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clause)), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(clause != null ? JsonConvert.SerializeObject(clause) : ""), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
         }
 
         public void UpdateEntitySubscription(Clause? clause = null)
         {
-            ToriiWasmInterop.UpdateEntitySubscription(clientPtr, entitySubscription, new CString(JsonConvert.SerializeObject(clause)));
+            ToriiWasmInterop.UpdateEntitySubscription(clientPtr, entitySubscription, new CString(clause != null ? JsonConvert.SerializeObject(clause) : ""));
         }
 
         private static class OnEventMessageUpdatedHelper
         {
 
-            [MonoPInvokeCallback(typeof(Action<string, string>))]
-            public static void Callback(string hashed_keys, string models)
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string entity)
             {
-                var parsedModels = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, WasmValue>>>(models).Select(m => new Model(
+                var parsedEntity = JsonConvert.DeserializeObject<WasmEntity>(entity);
+                var parsedModels = parsedEntity.models.Select(m => new Model(
                     m.Key,
                     m.Value
                 )).ToArray();
 
-                ToriiEvents.Instance.EventMessageUpdated(new FieldElement(hashed_keys), parsedModels);
+                ToriiEvents.Instance.EventMessageUpdated(new FieldElement(parsedEntity.hashed_keys), parsedModels);
             }
         }
 
         public async Task<IntPtr> RegisterEventMessageUpdateEvent(Clause? clause = null)
         {
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clause)), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(clause != null ? JsonConvert.SerializeObject(clause) : ""), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
         }
 
         public void UpdateEventMessageSubscription(Clause? clause = null)
         {
-            ToriiWasmInterop.UpdateEventMessageSubscription(clientPtr, eventMessageSubscription, new CString(JsonConvert.SerializeObject(clause)));
+            ToriiWasmInterop.UpdateEventMessageSubscription(clientPtr, eventMessageSubscription, new CString(clause != null ? JsonConvert.SerializeObject(clause) : ""));
         }
 
         private static class PublishMessageHelper
@@ -194,7 +196,7 @@ namespace Dojo.Torii
             }
         }
 
-        public Task<Page<Token>> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = null)
+        public Task<Page<Token>> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = "")
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (tokenIds == null) tokenIds = new BigInteger[] { };
@@ -216,7 +218,7 @@ namespace Dojo.Torii
             }
         }
 
-        public Task<Page<TokenBalance>> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = null)
+        public Task<Page<TokenBalance>> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = "")
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (accountAddresses == null) accountAddresses = new FieldElement[] { };

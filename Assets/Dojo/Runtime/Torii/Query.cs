@@ -18,7 +18,16 @@ namespace Dojo.Torii
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? cursor;
         public OrderBy[] order_by;
+        [JsonConverter(typeof(StringEnumConverter))]
         public dojo.PaginationDirection direction;
+
+        public Pagination(uint limit = 1000, dojo.PaginationDirection direction = dojo.PaginationDirection.Forward, string? cursor = null, OrderBy[]? order_by = null)
+        {
+            this.limit = limit;
+            this.cursor = cursor;
+            this.direction = direction;
+            this.order_by = order_by ?? Array.Empty<OrderBy>();
+        }
 
         public dojo.Pagination ToNative()
         {
@@ -40,13 +49,15 @@ namespace Dojo.Torii
         public Clause? clause;
         public bool no_hashed_keys;
         public string[] models;
+        public bool historical;
 
-        public Query(Pagination pagination, Clause? clause = null, bool no_hashed_keys = false, string[]? models = null)
+        public Query(Pagination? pagination = null, Clause? clause = null, bool no_hashed_keys = false, string[]? models = null, bool historical = false)
         {
-            this.pagination = pagination;
+            this.pagination = pagination ?? new Pagination();
             this.clause = clause;
             this.no_hashed_keys = no_hashed_keys;
             this.models = models ?? Array.Empty<string>();
+            this.historical = historical;
         }
 
         public dojo.Query ToNative()
@@ -56,7 +67,8 @@ namespace Dojo.Torii
                 pagination = pagination.ToNative(),
                 clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause },
                 no_hashed_keys = no_hashed_keys,
-                models = models
+                models = models,
+                historical = historical
             };
 
             if (clause.HasValue)

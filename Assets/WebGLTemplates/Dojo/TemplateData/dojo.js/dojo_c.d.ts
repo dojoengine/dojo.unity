@@ -301,6 +301,13 @@ declare namespace wasm_bindgen {
 	   * Result containing nonce as hex string or error
 	   */
 	  nonce(): Promise<string>;
+	  /**
+	   * Gets the provider of the account
+	   *
+	   * # Returns
+	   * Result containing provider as hex string or error
+	   */
+	  provider(): Provider;
 	}
 	export class ByteArray {
 	  free(): void;
@@ -664,15 +671,25 @@ declare namespace wasm_bindgen {
 	export class VerifyingKey {
 	  free(): void;
 	  /**
-	   * Derives a verifying (public) key from a signing (private) key
+	   * Initializes a new verifying key from a scalar
+	   *
+	   * # Parameters
+	   * * `verifying_key` - Verifying key as hex string
+	   *
+	   * # Returns
+	   * Result containing verifying key or error
+	   */
+	  constructor(verifying_key: string);
+	  /**
+	   * Derives a verifying key from a signing key
 	   *
 	   * # Parameters
 	   * * `signing_key` - Signing key as hex string
 	   *
 	   * # Returns
-	   * Result containing verifying key as hex string or error
+	   * Result containing verifying key or error
 	   */
-	  constructor(signing_key: string);
+	  static fromSigningKey(signing_key: SigningKey): VerifyingKey;
 	  /**
 	   * Returns the scalar of the verifying key
 	   *
@@ -724,6 +741,7 @@ declare interface InitOutput {
   readonly account_executeRaw: (a: number, b: number, c: number) => any;
   readonly account_deployBurner: (a: number, b: number, c: number) => any;
   readonly account_nonce: (a: number) => any;
+  readonly account_provider: (a: number) => number;
   readonly getContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
   readonly getSelectorFromTag: (a: number, b: number) => [number, number];
   readonly bytearray_new: (a: number, b: number) => [number, number, number];
@@ -753,6 +771,7 @@ declare interface InitOutput {
   readonly toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
   readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => any;
   readonly subscription_cancel: (a: number) => void;
+  readonly verifyingkey_fromSigningKey: (a: number) => [number, number, number];
   readonly __wbg_toriiclient_free: (a: number, b: number) => void;
   readonly __wbg_provider_free: (a: number, b: number) => void;
   readonly __wbg_account_free: (a: number, b: number) => void;

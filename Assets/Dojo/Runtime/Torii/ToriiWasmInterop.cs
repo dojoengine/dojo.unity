@@ -83,14 +83,14 @@ namespace Dojo.Torii
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
-        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clause, Action<string, string> cb, Action<IntPtr> subCb);
+        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clause, Action<string> cb, Action<IntPtr> subCb);
 
         [DllImport("__Internal")]
         public static extern void UpdateEntitySubscription(IntPtr clientPtr, IntPtr subPtr, CString clause);
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on event mnessage updated
         [DllImport("__Internal")]
-        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clause, Action<string, string> cb, Action<IntPtr> subCb);
+        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clause, Action<string> cb, Action<IntPtr> subCb);
 
         [DllImport("__Internal")]
         public static extern void UpdateEventMessageSubscription(IntPtr clientPtr, IntPtr subPtr, CString clause);
