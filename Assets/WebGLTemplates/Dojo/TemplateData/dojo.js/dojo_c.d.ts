@@ -2,67 +2,6 @@ declare namespace wasm_bindgen {
 	/* tslint:disable */
 	/* eslint-disable */
 	/**
-	 * Encodes typed data according to Starknet's typed data specification
-	 *
-	 * # Parameters
-	 * * `typed_data` - JSON string containing the typed data
-	 * * `address` - Address as hex string
-	 *
-	 * # Returns
-	 * Result containing encoded data as hex string or error
-	 */
-	export function typedDataEncode(typed_data: string, address: string): string;
-	/**
-	 * Generates a new random signing key
-	 *
-	 * # Returns
-	 * Private key as hex string
-	 */
-	export function signingKeyNew(): string;
-	/**
-	 * Signs a message hash with a private key
-	 *
-	 * # Parameters
-	 * * `private_key` - Private key as hex string
-	 * * `hash` - Message hash as hex string
-	 *
-	 * # Returns
-	 * Result containing signature or error
-	 */
-	export function signingKeySign(private_key: string, hash: string): Signature;
-	/**
-	 * Derives a verifying (public) key from a signing (private) key
-	 *
-	 * # Parameters
-	 * * `signing_key` - Signing key as hex string
-	 *
-	 * # Returns
-	 * Result containing verifying key as hex string or error
-	 */
-	export function verifyingKeyNew(signing_key: string): string;
-	/**
-	 * Verifies a signature against a message hash using a verifying key
-	 *
-	 * # Parameters
-	 * * `verifying_key` - Verifying key as hex string
-	 * * `hash` - Message hash as hex string
-	 * * `signature` - Signature to verify
-	 *
-	 * # Returns
-	 * Result containing verification success boolean or error
-	 */
-	export function verifyingKeyVerify(verifying_key: string, hash: string, signature: Signature): boolean;
-	/**
-	 * Creates a new Starknet provider instance for a given RPC URL
-	 *
-	 * # Parameters
-	 * * `rpc_url` - URL of the RPC endpoint
-	 *
-	 * # Returns
-	 * Result containing Provider instance or error
-	 */
-	export function createProvider(rpc_url: string): Provider;
-	/**
 	 * Computes a contract address from deployment parameters
 	 *
 	 * # Parameters
@@ -74,7 +13,7 @@ declare namespace wasm_bindgen {
 	 * # Returns
 	 * Result containing computed contract address as hex string or error
 	 */
-	export function hashGetContractAddress(class_hash: string, salt: string, constructor_calldata: (string)[], deployer_address: string): string;
+	export function getContractAddress(class_hash: string, salt: string, constructor_calldata: string[], deployer_address: string): string;
 	/**
 	 * Computes a selector from a tag string
 	 *
@@ -86,26 +25,6 @@ declare namespace wasm_bindgen {
 	 */
 	export function getSelectorFromTag(tag: string): string;
 	/**
-	 * Serializes a string into a Cairo byte array
-	 *
-	 * # Parameters
-	 * * `str` - String to serialize
-	 *
-	 * # Returns
-	 * Result containing array of field elements as hex strings or error
-	 */
-	export function byteArraySerialize(str: string): (string)[];
-	/**
-	 * Deserializes a Cairo byte array into a string
-	 *
-	 * # Parameters
-	 * * `felts` - Array of field elements as hex strings
-	 *
-	 * # Returns
-	 * Result containing deserialized string or error
-	 */
-	export function byteArrayDeserialize(felts: (string)[]): string;
-	/**
 	 * Computes a Poseidon hash of the inputs
 	 *
 	 * # Parameters
@@ -114,7 +33,7 @@ declare namespace wasm_bindgen {
 	 * # Returns
 	 * Result containing hash as hex string or error
 	 */
-	export function poseidonHash(inputs: (string)[]): string;
+	export function poseidonHash(inputs: string[]): string;
 	/**
 	 * Gets a selector from a function name
 	 *
@@ -156,21 +75,16 @@ declare namespace wasm_bindgen {
 	 */
 	export function parseCairoShortString(str: string): string;
 	/**
-	 * Creates a new Torii client with the given configuration
-	 *
-	 * # Parameters
-	 * * `config` - Client configuration including URLs and world address
-	 *
-	 * # Returns
-	 * Result containing ToriiClient instance or error
-	 */
-	export function createClient(config: ClientConfig): Promise<ToriiClient>;
-	/**
 	 * The `ReadableStreamType` enum.
 	 *
 	 * *This API requires the following crate features to be activated: `ReadableStreamType`*
 	 */
 	type ReadableStreamType = "bytes";
+	export interface Page<T> {
+	    items: T[];
+	    next_cursor: string | undefined;
+	}
+	
 	export type WasmU256 = string;
 	
 	export type Controllers = Controller[];
@@ -181,9 +95,9 @@ declare namespace wasm_bindgen {
 	    deployed_at_timestamp: number;
 	}
 	
-	export type Tokens = Token[];
+	export type Tokens = Page<Token>;
 	
-	export type TokenBalances = TokenBalance[];
+	export type TokenBalances = Page<TokenBalance>;
 	
 	export interface Token {
 	    contract_address: string;
@@ -235,9 +149,12 @@ declare namespace wasm_bindgen {
 	
 	export type Model = Record<string, Ty>;
 	
-	export type Entity = Record<string, Model>;
+	export interface Entity {
+	    hashed_keys: string;
+	    models: Record<string, Model>;
+	}
 	
-	export type Entities = Record<string, Entity>;
+	export type Entities = Page<Entity>;
 	
 	export interface Call {
 	    to: string;
@@ -250,14 +167,21 @@ declare namespace wasm_bindgen {
 	export type BlockId = { Hash: string } | { Number: number } | { BlockTag: BlockTag };
 	
 	export interface Query {
-	    limit: number;
-	    offset: number;
+	    pagination: Pagination;
 	    clause: Clause | undefined;
-	    dont_include_hashed_keys: boolean;
-	    order_by: OrderBy[];
-	    entity_models: string[];
-	    entity_updated_after: number;
+	    no_hashed_keys: boolean;
+	    models: string[];
+	    historical: boolean;
 	}
+	
+	export interface Pagination {
+	    limit: number;
+	    cursor: string | undefined;
+	    direction: PaginationDirection;
+	    order_by: OrderBy[];
+	}
+	
+	export type PaginationDirection = "Forward" | "Backward";
 	
 	export interface OrderBy {
 	    model: string;
@@ -267,26 +191,17 @@ declare namespace wasm_bindgen {
 	
 	export type OrderDirection = "Asc" | "Desc";
 	
-	export type Clause = { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
-	
-	export type KeysClauses = EntityKeysClause[];
-	
-	export type ModelKeysClauses = ModelKeysClause[];
-	
-	export interface ModelKeysClause {
-	    model: string;
-	    keys: string[];
-	}
+	export type Clause = { HashedKeys: string[] } | { Keys: KeysClause } | { Member: MemberClause } | { Composite: CompositeClause };
 	
 	export type PatternMatching = "FixedLen" | "VariableLen";
-	
-	export type EntityKeysClause = { HashedKeys: string[] } | { Keys: KeysClause };
 	
 	export interface KeysClause {
 	    keys: (string | undefined)[];
 	    pattern_matching: PatternMatching;
 	    models: string[];
 	}
+	
+	export type KeysClauses = KeysClause[];
 	
 	export type MemberValue = { Primitive: Primitive } | { String: string } | { List: MemberValue[] };
 	
@@ -322,8 +237,19 @@ declare namespace wasm_bindgen {
 	}
 	
 	export class Account {
-	  private constructor();
 	  free(): void;
+	  /**
+	   * Creates a new account instance with the given private key and address
+	   *
+	   * # Parameters
+	   * * `provider` - Provider instance
+	   * * `private_key` - Private key as hex string
+	   * * `address` - Account address as hex string
+	   *
+	   * # Returns
+	   * Result containing Account instance or error
+	   */
+	  constructor(provider: Provider, private_key: string, address: string);
 	  /**
 	   * Returns the account's address
 	   *
@@ -357,7 +283,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing transaction hash as hex string or error
 	   */
-	  executeRaw(calldata: (Call)[]): Promise<string>;
+	  executeRaw(calldata: Call[]): Promise<string>;
 	  /**
 	   * Deploys a burner wallet
 	   *
@@ -375,6 +301,43 @@ declare namespace wasm_bindgen {
 	   * Result containing nonce as hex string or error
 	   */
 	  nonce(): Promise<string>;
+	}
+	export class ByteArray {
+	  free(): void;
+	  /**
+	   * Serializes a string into a Cairo byte array
+	   *
+	   * # Parameters
+	   * * `str` - String to serialize
+	   *
+	   * # Returns
+	   * Result containing array of field elements as hex strings or error
+	   */
+	  constructor(str: string);
+	  /**
+	   * Serializes a Cairo byte array into a vector of field elements as hex strings
+	   *
+	   * # Returns
+	   * Result containing vector of field elements as hex strings or error
+	   */
+	  toRaw(): string[];
+	  /**
+	   * Deserializes a Cairo byte array into a string
+	   *
+	   * # Parameters
+	   * * `felts` - Array of field elements as hex strings
+	   *
+	   * # Returns
+	   * Result containing deserialized string or error
+	   */
+	  static fromRaw(felts: string[]): ByteArray;
+	  /**
+	   * Converts a Cairo byte array to a string
+	   *
+	   * # Returns
+	   * Result containing string representation of the byte array or error
+	   */
+	  toString(): string;
 	}
 	export class ControllerAccount {
 	  private constructor();
@@ -403,19 +366,17 @@ declare namespace wasm_bindgen {
 	  cancel(): void;
 	}
 	export class Provider {
-	  private constructor();
 	  free(): void;
 	  /**
-	   * Creates a new account instance with the given private key and address
+	   * Creates a new Starknet provider instance for a given RPC URL
 	   *
 	   * # Parameters
-	   * * `private_key` - Private key as hex string
-	   * * `address` - Account address as hex string
+	   * * `rpc_url` - URL of the RPC endpoint
 	   *
 	   * # Returns
-	   * Result containing Account instance or error
+	   * Result containing Provider instance or error
 	   */
-	  createAccount(private_key: string, address: string): Promise<Account>;
+	  constructor(rpc_url: string);
 	  /**
 	   * Calls a Starknet contract view function
 	   *
@@ -438,6 +399,51 @@ declare namespace wasm_bindgen {
 	   */
 	  waitForTransaction(txn_hash: string): Promise<boolean>;
 	}
+	export class SigningKey {
+	  free(): void;
+	  /**
+	   * Generates a new random signing key
+	   *
+	   * # Returns
+	   * Private key as hex string
+	   */
+	  constructor();
+	  /**
+	   * Initializes a new signing key from a secret scalar
+	   *
+	   * # Parameters
+	   * * `secret_scalar` - Secret scalar as hex string
+	   *
+	   * # Returns
+	   * Result containing signing key or error
+	   */
+	  static fromSecretScalar(secret_scalar: string): SigningKey;
+	  /**
+	   * Returns the secret scalar of the signing key
+	   *
+	   * # Returns
+	   * Result containing secret scalar as hex string or error
+	   */
+	  secretScalar(): string;
+	  /**
+	   * Signs a message hash with a private key
+	   *
+	   * # Parameters
+	   * * `private_key` - Private key as hex string
+	   * * `hash` - Message hash as hex string
+	   *
+	   * # Returns
+	   * Result containing signature or error
+	   */
+	  sign(hash: string): Signature;
+	  /**
+	   * Returns the verifying key of the signing key
+	   *
+	   * # Returns
+	   * Result containing verifying key or error
+	   */
+	  verifyingKey(): VerifyingKey;
+	}
 	export class Subscription {
 	  private constructor();
 	  free(): void;
@@ -447,8 +453,17 @@ declare namespace wasm_bindgen {
 	  cancel(): void;
 	}
 	export class ToriiClient {
-	  private constructor();
 	  free(): void;
+	  /**
+	   * Creates a new Torii client with the given configuration
+	   *
+	   * # Parameters
+	   * * `config` - Client configuration including URLs and world address
+	   *
+	   * # Returns
+	   * Result containing ToriiClient instance or error
+	   */
+	  constructor(config: ClientConfig);
 	  /**
 	   * Gets controllers along with their usernames for the given contract addresses
 	   *
@@ -459,17 +474,20 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing controllers or error
 	   */
-	  getControllers(contract_addresses: (string)[]): Promise<Controllers>;
+	  getControllers(contract_addresses: string[]): Promise<Controllers>;
 	  /**
 	   * Gets token information for the given contract addresses
 	   *
 	   * # Parameters
 	   * * `contract_addresses` - Array of contract addresses as hex strings
+	   * * `token_ids` - Array of token ids
+	   * * `limit` - Maximum number of tokens to return
+	   * * `cursor` - Cursor to start from
 	   *
 	   * # Returns
 	   * Result containing token information or error
 	   */
-	  getTokens(contract_addresses: (string)[], token_ids: (WasmU256)[]): Promise<Tokens>;
+	  getTokens(contract_addresses?: string[] | null, token_ids?: WasmU256[] | null, limit?: number | null, cursor?: string | null): Promise<Tokens>;
 	  /**
 	   * Subscribes to token updates
 	   *
@@ -480,18 +498,21 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onTokenUpdated(contract_addresses: (string)[], token_ids: (WasmU256)[], callback: Function): Subscription;
+	  onTokenUpdated(contract_addresses: string[] | null | undefined, token_ids: WasmU256[] | null | undefined, callback: Function): Subscription;
 	  /**
 	   * Gets token balances for given accounts and contracts
 	   *
 	   * # Parameters
 	   * * `contract_addresses` - Array of contract addresses as hex strings
 	   * * `account_addresses` - Array of account addresses as hex strings
+	   * * `token_ids` - Array of token ids
+	   * * `limit` - Maximum number of token balances to return
+	   * * `cursor` - Cursor to start from
 	   *
 	   * # Returns
 	   * Result containing token balances or error
 	   */
-	  getTokenBalances(contract_addresses: (string)[], account_addresses: (string)[], token_ids: (WasmU256)[]): Promise<TokenBalances>;
+	  getTokenBalances(contract_addresses?: string[] | null, account_addresses?: string[] | null, token_ids?: WasmU256[] | null, limit?: number | null, cursor?: string | null): Promise<TokenBalances>;
 	  /**
 	   * Queries entities based on the provided query parameters
 	   *
@@ -501,29 +522,28 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing matching entities or error
 	   */
-	  getEntities(query: Query, historical: boolean): Promise<Entities>;
+	  getEntities(query: Query): Promise<Entities>;
 	  /**
 	   * Gets all entities with pagination
 	   *
 	   * # Parameters
 	   * * `limit` - Maximum number of entities to return
-	   * * `offset` - Number of entities to skip
+	   * * `cursor` - Cursor to start from
 	   *
 	   * # Returns
 	   * Result containing paginated entities or error
 	   */
-	  getAllEntities(limit: number, offset: number, historical: boolean): Promise<Entities>;
+	  getAllEntities(limit: number, cursor?: string | null): Promise<Entities>;
 	  /**
 	   * Gets event messages based on query parameters
 	   *
 	   * # Parameters
 	   * * `query` - Query parameters for filtering messages
-	   * * `historical` - Whether to include historical messages
 	   *
 	   * # Returns
 	   * Result containing matching event messages or error
 	   */
-	  getEventMessages(query: Query, historical: boolean): Promise<Entities>;
+	  getEventMessages(query: Query): Promise<Entities>;
 	  /**
 	   * Subscribes to entity updates
 	   *
@@ -534,7 +554,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onEntityUpdated(clauses: (EntityKeysClause)[], callback: Function): Subscription;
+	  onEntityUpdated(clause: Clause | null | undefined, callback: Function): Subscription;
 	  /**
 	   * Updates an existing entity subscription
 	   *
@@ -545,7 +565,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing unit or error
 	   */
-	  updateEntitySubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
+	  updateEntitySubscription(subscription: Subscription, clause?: Clause | null): Promise<void>;
 	  /**
 	   * Subscribes to event message updates
 	   *
@@ -556,7 +576,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onEventMessageUpdated(clauses: (EntityKeysClause)[], callback: Function): Subscription;
+	  onEventMessageUpdated(clause: Clause | null | undefined, callback: Function): Subscription;
 	  /**
 	   * Updates an existing event message subscription
 	   *
@@ -567,7 +587,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing unit or error
 	   */
-	  updateEventMessageSubscription(subscription: Subscription, clauses: (EntityKeysClause)[]): Promise<void>;
+	  updateEventMessageSubscription(subscription: Subscription, clause?: Clause | null): Promise<void>;
 	  /**
 	   * Subscribes to Starknet events
 	   *
@@ -578,7 +598,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onStarknetEvent(clauses: (EntityKeysClause)[], callback: Function): Subscription;
+	  onStarknetEvent(clauses: KeysClause[], callback: Function): Subscription;
 	  /**
 	   * Subscribes to indexer updates
 	   *
@@ -589,7 +609,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onIndexerUpdated(contract_address: string | undefined, callback: Function): Subscription;
+	  onIndexerUpdated(contract_address: string | null | undefined, callback: Function): Subscription;
 	  /**
 	   * Subscribes to token balance updates
 	   *
@@ -601,7 +621,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onTokenBalanceUpdated(contract_addresses: (string)[], account_addresses: (string)[], token_ids: (WasmU256)[], callback: Function): Subscription;
+	  onTokenBalanceUpdated(contract_addresses: string[] | null | undefined, account_addresses: string[] | null | undefined, token_ids: WasmU256[] | null | undefined, callback: Function): Subscription;
 	  /**
 	   * Updates an existing token balance subscription
 	   *
@@ -613,7 +633,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing unit or error
 	   */
-	  updateTokenBalanceSubscription(subscription: Subscription, contract_addresses: (string)[], account_addresses: (string)[], token_ids: (WasmU256)[]): Promise<void>;
+	  updateTokenBalanceSubscription(subscription: Subscription, contract_addresses: string[], account_addresses: string[], token_ids: WasmU256[]): Promise<void>;
 	  /**
 	   * Publishes a message to the network
 	   *
@@ -624,7 +644,54 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing message ID as byte array or error
 	   */
-	  publishMessage(message: string, signature: (string)[]): Promise<Uint8Array>;
+	  publishMessage(message: string, signature: string[]): Promise<Uint8Array>;
+	}
+	export class TypedData {
+	  free(): void;
+	  constructor(typed_data: string);
+	  /**
+	   * Encodes typed data according to Starknet's typed data specification
+	   *
+	   * # Parameters
+	   * * `typed_data` - JSON string containing the typed data
+	   * * `address` - Address as hex string
+	   *
+	   * # Returns
+	   * Result containing encoded data as hex string or error
+	   */
+	  encode(address: string): string;
+	}
+	export class VerifyingKey {
+	  free(): void;
+	  /**
+	   * Derives a verifying (public) key from a signing (private) key
+	   *
+	   * # Parameters
+	   * * `signing_key` - Signing key as hex string
+	   *
+	   * # Returns
+	   * Result containing verifying key as hex string or error
+	   */
+	  constructor(signing_key: string);
+	  /**
+	   * Returns the scalar of the verifying key
+	   *
+	   * # Returns
+	   * Result containing scalar as hex string or error
+	   */
+	  scalar(): string;
+	  /**
+	   * Verifies a signature against a message hash using a verifying key
+	   *
+	   * # Parameters
+	   * * `verifying_key` - Verifying key as hex string
+	   * * `hash` - Message hash as hex string
+	   * * `signature` - Signature to verify
+	   *
+	   * # Returns
+	   * Result containing verification success boolean or error
+	   */
+	  verify(hash: string, signature: Signature): boolean;
 	}
 	
 }
@@ -633,58 +700,64 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly typedDataEncode: (a: number, b: number, c: number, d: number) => [number, number, number, number];
-  readonly signingKeyNew: () => [number, number];
-  readonly signingKeySign: (a: number, b: number, c: number, d: number) => [number, number, number];
-  readonly verifyingKeyNew: (a: number, b: number) => [number, number, number, number];
-  readonly verifyingKeyVerify: (a: number, b: number, c: number, d: number, e: any) => [number, number, number];
-  readonly createProvider: (a: number, b: number) => [number, number, number];
-  readonly provider_createAccount: (a: number, b: number, c: number, d: number, e: number) => any;
+  readonly __wbg_signingkey_free: (a: number, b: number) => void;
+  readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
+  readonly __wbg_typeddata_free: (a: number, b: number) => void;
+  readonly __wbg_bytearray_free: (a: number, b: number) => void;
+  readonly signingkey_new: () => number;
+  readonly signingkey_fromSecretScalar: (a: number, b: number) => [number, number, number];
+  readonly signingkey_secretScalar: (a: number) => [number, number, number, number];
+  readonly signingkey_sign: (a: number, b: number, c: number) => [number, number, number];
+  readonly signingkey_verifyingKey: (a: number) => [number, number, number];
+  readonly verifyingkey_new: (a: number, b: number) => [number, number, number];
+  readonly verifyingkey_scalar: (a: number) => [number, number, number, number];
+  readonly verifyingkey_verify: (a: number, b: number, c: number, d: any) => [number, number, number];
+  readonly typeddata_new: (a: number, b: number) => [number, number, number];
+  readonly typeddata_encode: (a: number, b: number, c: number) => [number, number, number, number];
+  readonly provider_new: (a: number, b: number) => [number, number, number];
   readonly provider_call: (a: number, b: any, c: any) => any;
   readonly provider_waitForTransaction: (a: number, b: number, c: number) => any;
+  readonly account_new: (a: number, b: number, c: number, d: number, e: number) => any;
   readonly account_address: (a: number) => [number, number, number, number];
   readonly account_chainId: (a: number) => [number, number, number, number];
   readonly account_setBlockId: (a: number, b: number, c: number) => [number, number];
   readonly account_executeRaw: (a: number, b: number, c: number) => any;
   readonly account_deployBurner: (a: number, b: number, c: number) => any;
   readonly account_nonce: (a: number) => any;
-  readonly hashGetContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
+  readonly getContractAddress: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => [number, number, number, number];
   readonly getSelectorFromTag: (a: number, b: number) => [number, number];
-  readonly byteArraySerialize: (a: number, b: number) => [number, number, number, number];
-  readonly byteArrayDeserialize: (a: number, b: number) => [number, number, number, number];
+  readonly bytearray_new: (a: number, b: number) => [number, number, number];
+  readonly bytearray_toRaw: (a: number) => [number, number, number, number];
+  readonly bytearray_fromRaw: (a: number, b: number) => [number, number, number];
+  readonly bytearray_toString: (a: number) => [number, number, number, number];
   readonly poseidonHash: (a: number, b: number) => [number, number, number, number];
   readonly getSelectorFromName: (a: number, b: number) => [number, number, number, number];
   readonly starknetKeccak: (a: any) => [number, number, number, number];
   readonly cairoShortStringToFelt: (a: number, b: number) => [number, number, number, number];
   readonly parseCairoShortString: (a: number, b: number) => [number, number, number, number];
+  readonly toriiclient_new: (a: any) => any;
   readonly toriiclient_getControllers: (a: number, b: number, c: number) => any;
-  readonly toriiclient_getTokens: (a: number, b: number, c: number, d: number, e: number) => any;
+  readonly toriiclient_getTokens: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
   readonly toriiclient_onTokenUpdated: (a: number, b: number, c: number, d: number, e: number, f: any) => [number, number, number];
-  readonly toriiclient_getTokenBalances: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => any;
-  readonly toriiclient_getEntities: (a: number, b: any, c: number) => any;
+  readonly toriiclient_getTokenBalances: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => any;
+  readonly toriiclient_getEntities: (a: number, b: any) => any;
   readonly toriiclient_getAllEntities: (a: number, b: number, c: number, d: number) => any;
-  readonly toriiclient_getEventMessages: (a: number, b: any, c: number) => any;
-  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: number, d: any) => [number, number, number];
-  readonly toriiclient_updateEntitySubscription: (a: number, b: number, c: number, d: number) => any;
-  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: number, d: any) => [number, number, number];
-  readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number, d: number) => any;
+  readonly toriiclient_getEventMessages: (a: number, b: any) => any;
+  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: any) => [number, number, number];
+  readonly toriiclient_updateEntitySubscription: (a: number, b: number, c: number) => any;
+  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: any) => [number, number, number];
+  readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number) => any;
   readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: any) => [number, number, number];
   readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: any) => [number, number, number];
   readonly toriiclient_onTokenBalanceUpdated: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: any) => [number, number, number];
   readonly toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
   readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => any;
   readonly subscription_cancel: (a: number) => void;
-  readonly createClient: (a: any) => any;
-  readonly clientconfig_new: (a: number, b: number, c: number, d: number, e: number, f: number) => any;
   readonly __wbg_toriiclient_free: (a: number, b: number) => void;
   readonly __wbg_provider_free: (a: number, b: number) => void;
   readonly __wbg_account_free: (a: number, b: number) => void;
   readonly __wbg_controlleraccount_free: (a: number, b: number) => void;
   readonly __wbg_subscription_free: (a: number, b: number) => void;
-  readonly __wbg_intounderlyingsink_free: (a: number, b: number) => void;
-  readonly intounderlyingsink_write: (a: number, b: any) => any;
-  readonly intounderlyingsink_close: (a: number) => any;
-  readonly intounderlyingsink_abort: (a: number, b: any) => any;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
@@ -694,6 +767,10 @@ declare interface InitOutput {
   readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
   readonly intounderlyingsource_pull: (a: number, b: any) => any;
   readonly intounderlyingsource_cancel: (a: number) => void;
+  readonly __wbg_intounderlyingsink_free: (a: number, b: number) => void;
+  readonly intounderlyingsink_write: (a: number, b: any) => any;
+  readonly intounderlyingsink_close: (a: number) => any;
+  readonly intounderlyingsink_abort: (a: number, b: any) => any;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;
@@ -703,12 +780,12 @@ declare interface InitOutput {
   readonly __externref_table_dealloc: (a: number) => void;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h634291d4c998af85: (a: number, b: number) => void;
-  readonly closure1030_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1055_externref_shim: (a: number, b: number, c: any) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h460ada3bb74aca3e: (a: number, b: number) => void;
-  readonly closure2303_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure2475_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h25a2d6c0cac360bc: (a: number, b: number) => void;
+  readonly closure1134_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1159_externref_shim: (a: number, b: number, c: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hfd0262bcce7a58a4: (a: number, b: number) => void;
+  readonly closure2500_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure2676_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 

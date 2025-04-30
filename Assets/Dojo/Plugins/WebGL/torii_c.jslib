@@ -23,59 +23,59 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, client.__destroy_into_raw());
   },
   // Returns an array of all tokens
-  GetTokens: async function (clientPtr, contractAddresses, tokenIds, limit, offset, cb) {
+  GetTokens: async function (clientPtr, contractAddresses, tokenIds, limit, cursor, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const tokens = await client.getTokens(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, offset);
+    const tokensPage = await client.getTokens(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, UTF8ToString(cursor));
 
-    const tokensString = JSON.stringify(tokens);
-    const bufferSize = lengthBytesUTF8(tokensString) + 1;
+    const tokensPageString = JSON.stringify(tokensPage);
+    const bufferSize = lengthBytesUTF8(tokensPageString) + 1;
     const buffer = _malloc(bufferSize);
-    stringToUTF8(tokensString, buffer, bufferSize);
+    stringToUTF8(tokensPageString, buffer, bufferSize);
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns an array of all token balances
-  GetTokenBalances: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, limit, offset, cb) {
+  GetTokenBalances: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, limit, cursor, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const balances = await client.getTokenBalances(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(accountAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, offset);
+    const balancesPage = await client.getTokenBalances(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(accountAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, UTF8ToString(cursor));
 
-    const balancesString = JSON.stringify(balances);
-    const bufferSize = lengthBytesUTF8(balancesString) + 1;
+    const balancesPageString = JSON.stringify(balancesPage);
+    const bufferSize = lengthBytesUTF8(balancesPageString) + 1;
     const buffer = _malloc(bufferSize);
-    stringToUTF8(balancesString, buffer, bufferSize);
+    stringToUTF8(balancesPageString, buffer, bufferSize);
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns a dictionary of all of the entities
-  GetEntities: async function (clientPtr, queryString, historical, cb) {
+  GetEntities: async function (clientPtr, queryString, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
-    let entities = await client.getEntities(query, historical);
+    let entitiesPage = await client.getEntities(query);
 
-    // stringify the entities
-    let entitiesString = JSON.stringify(entities);
+    // stringify the entities page
+    let entitiesPageString = JSON.stringify(entitiesPage);
     // return buffer
-    let bufferSize = lengthBytesUTF8(entitiesString) + 1;
+    let bufferSize = lengthBytesUTF8(entitiesPageString) + 1;
     let buffer = _malloc(bufferSize);
-    stringToUTF8(entitiesString, buffer, bufferSize);
+    stringToUTF8(entitiesPageString, buffer, bufferSize);
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns a dictionary of all of the eventmessages
-  GetEventMessages: async function (clientPtr, queryString, historical, cb) {
+  GetEventMessages: async function (clientPtr, queryString, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
-    let entities = await client.getEventMessages(query, historical);
+    let eventMessagesPage = await client.getEventMessages(query);
 
-    // stringify the entities
-    let entitiesString = JSON.stringify(entities);
+    // stringify the event messages page
+    let eventMessagesPageString = JSON.stringify(eventMessagesPage);
     // return buffer
-    let bufferSize = lengthBytesUTF8(entitiesString) + 1;
+    let bufferSize = lengthBytesUTF8(eventMessagesPageString) + 1;
     let buffer = _malloc(bufferSize);
-    stringToUTF8(entitiesString, buffer, bufferSize);
+    stringToUTF8(eventMessagesPageString, buffer, bufferSize);
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
@@ -135,11 +135,21 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
-  OnEntityUpdated: async function (clientPtr, clausesStr, cb, subCb) {
+  OnEntityUpdated: async function (clientPtr, clauseStr, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let clauses = JSON.parse(UTF8ToString(clausesStr));
+    let clause = null;
+    if (clauseStr) {
+        let clauseJsonString = UTF8ToString(clauseStr);
+        if (clauseJsonString && clauseJsonString !== "null") {
+            try {
+                clause = JSON.parse(clauseJsonString); 
+            } catch (e) {
+                console.error("Failed to parse clause JSON in OnEntityUpdated:", clauseJsonString, e);
+            }
+        }
+    }
 
-    const subscription = await client.onEntityUpdated(clauses, (hashed_keys, models) => {
+    const subscription = await client.onEntityUpdated(clause, (hashed_keys, models) => {
       // stringify the models
       let modelsString = JSON.stringify(models);
       // return buffer
@@ -156,22 +166,42 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
-  UpdateEntitySubscription: async function (clientPtr, subPtr, clausesStr) {
+  UpdateEntitySubscription: async function (clientPtr, subPtr, clauseStr) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
-    let clauses = JSON.parse(UTF8ToString(clausesStr));
+    let clause = null;
+    if (clauseStr) {
+        let clauseJsonString = UTF8ToString(clauseStr);
+        if (clauseJsonString && clauseJsonString !== "null") {
+            try {
+                clause = JSON.parse(clauseJsonString); 
+            } catch (e) {
+                console.error("Failed to parse clause JSON in UpdateEntitySubscription:", clauseJsonString, e);
+            }
+        }
+    }
 
-    await client.updateEntitySubscription(subscription, clauses);
+    await client.updateEntitySubscription(subscription, clause);
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
   },
-  OnEventMessageUpdated: async function (clientPtr, clausesStr, cb, subCb) {
+  OnEventMessageUpdated: async function (clientPtr, clauseStr, cb, subCb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let clauses = JSON.parse(UTF8ToString(clausesStr));
+    let clause = null;
+    if (clauseStr) {
+        let clauseJsonString = UTF8ToString(clauseStr);
+        if (clauseJsonString && clauseJsonString !== "null") {
+            try {
+                clause = JSON.parse(clauseJsonString); 
+            } catch (e) {
+                console.error("Failed to parse clause JSON in OnEventMessageUpdated:", clauseJsonString, e);
+            }
+        }
+    }
 
     const subscription = await client.onEventMessageUpdated(
-      clauses,
+      clause,
       (hashed_keys, models) => {
         // stringify the entities
         let modelsString = JSON.stringify(models);
@@ -190,12 +220,22 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(subCb, subscription.__destroy_into_raw());
   },
-  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clausesStr) {
+  UpdateEventMessageSubscription: async function (clientPtr, subPtr, clauseStr) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
-    let clauses = JSON.parse(UTF8ToString(clausesStr));
+    let clause = null;
+    if (clauseStr) {
+        let clauseJsonString = UTF8ToString(clauseStr);
+        if (clauseJsonString && clauseJsonString !== "null") {
+            try {
+                clause = JSON.parse(clauseJsonString); 
+            } catch (e) {
+                console.error("Failed to parse clause JSON in UpdateEventMessageSubscription:", clauseJsonString, e);
+            }
+        }
+    }
 
-    await client.updateEventMessageSubscription(subscription, clauses);
+    await client.updateEventMessageSubscription(subscription, clause);
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();

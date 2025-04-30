@@ -48,26 +48,26 @@ namespace Dojo.Torii
             ToriiWasmInterop.CreateClient(new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
             clientPtr = await CreateClientHelper.Tcs.Task;
 
-            entitySubscription = await RegisterEntityStateUpdateEvent(new EntityKeysClause[] { });
-            eventMessageSubscription = await RegisterEventMessageUpdateEvent(new EntityKeysClause[] { });
-            tokenSubscription = await RegisterTokenUpdateEvent(new FieldElement[] { }, new BigInteger[] { });
-            tokenBalanceSubscription = await RegisterTokenBalanceUpdateEvent(new FieldElement[] { }, new FieldElement[] { }, new BigInteger[] { });
+            entitySubscription = await RegisterEntityStateUpdateEvent();
+            eventMessageSubscription = await RegisterEventMessageUpdateEvent();
+            tokenSubscription = await RegisterTokenUpdateEvent();
+            tokenBalanceSubscription = await RegisterTokenBalanceUpdateEvent();
         }
 
         private static class GetEntitiesHelper
         {
-            public static TaskCompletionSource<List<Entity>> Tcs;
+            public static TaskCompletionSource<Page<Entity>> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string entities)
             {
-                var parsedEntities = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, Dictionary<string, WasmValue>>>>(entities);
+                var parsedEntities = JsonConvert.DeserializeObject<Page<WasmEntity>>(entities);
                 var entityList = new List<Entity>();
 
-                foreach (var entity in parsedEntities)
+                foreach (var entity in parsedEntities.items)
                 {
                     var models = new Dictionary<string, Model>();
-                    foreach (var model in entity.Value)
+                    foreach (var model in entity.models)
                     {
                         models.Add(model.Key, new Model(
                             model.Key,
@@ -78,24 +78,24 @@ namespace Dojo.Torii
                         ));
                     }
 
-                    entityList.Add(new Entity(new FieldElement(entity.Key), models));
+                    entityList.Add(new Entity(new FieldElement(entity.hashed_keys), models));
                 }
 
-                Tcs.SetResult(entityList);
+                Tcs.SetResult(new Page<Entity>(entityList.ToArray(), null));
             }
         }
 
-        public Task<List<Entity>> Entities(Query query, bool historical = false)
+        public Task<Page<Entity>> Entities(Query query)
         {
-            GetEntitiesHelper.Tcs = new TaskCompletionSource<List<Entity>>();
-            ToriiWasmInterop.GetEntities(clientPtr, new CString(JsonConvert.SerializeObject(query)), historical, GetEntitiesHelper.Callback);
+            GetEntitiesHelper.Tcs = new TaskCompletionSource<Page<Entity>>();
+            ToriiWasmInterop.GetEntities(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetEntitiesHelper.Callback);
             return GetEntitiesHelper.Tcs.Task;
         }
 
-        public Task<List<Entity>> EventMessages(Query query, bool historical = false)
+        public Task<Page<Entity>> EventMessages(Query query)
         {
-            GetEntitiesHelper.Tcs = new TaskCompletionSource<List<Entity>>();
-            ToriiWasmInterop.GetEventMessages(clientPtr, new CString(JsonConvert.SerializeObject(query)), historical, GetEntitiesHelper.Callback);
+            GetEntitiesHelper.Tcs = new TaskCompletionSource<Page<Entity>>();
+            ToriiWasmInterop.GetEventMessages(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetEntitiesHelper.Callback);
             return GetEntitiesHelper.Tcs.Task;
         }
 
@@ -125,16 +125,16 @@ namespace Dojo.Torii
             }
         }
 
-        public async Task<IntPtr> RegisterEntityStateUpdateEvent(EntityKeysClause[] clauses)
+        public async Task<IntPtr> RegisterEntityStateUpdateEvent(Clause? clause = null)
         {
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            ToriiWasmInterop.OnEntityUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clause)), OnEntityUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
         }
 
-        public void UpdateEntitySubscription(EntityKeysClause[] clauses)
+        public void UpdateEntitySubscription(Clause? clause = null)
         {
-            ToriiWasmInterop.UpdateEntitySubscription(clientPtr, entitySubscription, new CString(JsonConvert.SerializeObject(clauses)));
+            ToriiWasmInterop.UpdateEntitySubscription(clientPtr, entitySubscription, new CString(JsonConvert.SerializeObject(clause)));
         }
 
         private static class OnEventMessageUpdatedHelper
@@ -152,16 +152,16 @@ namespace Dojo.Torii
             }
         }
 
-        public async Task<IntPtr> RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses)
+        public async Task<IntPtr> RegisterEventMessageUpdateEvent(Clause? clause = null)
         {
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clauses)), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
+            ToriiWasmInterop.OnEventMessageUpdated(clientPtr, new CString(JsonConvert.SerializeObject(clause)), OnEventMessageUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
         }
 
-        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses)
+        public void UpdateEventMessageSubscription(Clause? clause = null)
         {
-            ToriiWasmInterop.UpdateEventMessageSubscription(clientPtr, eventMessageSubscription, new CString(JsonConvert.SerializeObject(clauses)));
+            ToriiWasmInterop.UpdateEventMessageSubscription(clientPtr, eventMessageSubscription, new CString(JsonConvert.SerializeObject(clause)));
         }
 
         private static class PublishMessageHelper
@@ -184,46 +184,46 @@ namespace Dojo.Torii
 
         private static class GetTokensHelper
         {
-            public static TaskCompletionSource<Token[]> Tcs;
+            public static TaskCompletionSource<Page<Token>> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string tokens)
             {
-                var parsedTokens = JsonConvert.DeserializeObject<WasmToken[]>(tokens);
-                Tcs.SetResult(parsedTokens.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray());
+                var parsedTokens = JsonConvert.DeserializeObject<Page<WasmToken>>(tokens);
+                Tcs.SetResult(new Page<Token>(parsedTokens.items.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray(), parsedTokens.nextCursor));
             }
         }
 
-        public Task<Token[]> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, int limit = 0, int offset = 0)
+        public Task<Page<Token>> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = null)
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (tokenIds == null) tokenIds = new BigInteger[] { };
 
-            GetTokensHelper.Tcs = new TaskCompletionSource<Token[]>();
-            ToriiWasmInterop.GetTokens(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), limit, offset, GetTokensHelper.Callback);
+            GetTokensHelper.Tcs = new TaskCompletionSource<Page<Token>>();
+            ToriiWasmInterop.GetTokens(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), limit, new CString(cursor), GetTokensHelper.Callback);
             return GetTokensHelper.Tcs.Task;
         }
 
         private static class GetTokenBalancesHelper
         {
-            public static TaskCompletionSource<TokenBalance[]> Tcs;
+            public static TaskCompletionSource<Page<TokenBalance>> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string tokenBalances)
             {
-                var parsedTokenBalances = JsonConvert.DeserializeObject<WasmTokenBalance[]>(tokenBalances);
-                Tcs.SetResult(parsedTokenBalances.Select(t => new TokenBalance(BigInteger.Parse(t.balance.Substring(2), System.Globalization.NumberStyles.HexNumber), new FieldElement(t.account_address), new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber))).ToArray());
+                var parsedTokenBalances = JsonConvert.DeserializeObject<Page<WasmTokenBalance>>(tokenBalances);
+                Tcs.SetResult(new Page<TokenBalance>(parsedTokenBalances.items.Select(t => new TokenBalance(BigInteger.Parse(t.balance.Substring(2), System.Globalization.NumberStyles.HexNumber), new FieldElement(t.account_address), new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber))).ToArray(), parsedTokenBalances.nextCursor));
             }
         }
 
-        public Task<TokenBalance[]> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, int limit = 0, int offset = 0)
+        public Task<Page<TokenBalance>> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = null)
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (accountAddresses == null) accountAddresses = new FieldElement[] { };
             if (tokenIds == null) tokenIds = new BigInteger[] { };
 
-            GetTokenBalancesHelper.Tcs = new TaskCompletionSource<TokenBalance[]>();
-            ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), limit, offset, GetTokenBalancesHelper.Callback);
+            GetTokenBalancesHelper.Tcs = new TaskCompletionSource<Page<TokenBalance>>();
+            ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), limit, new CString(cursor), GetTokenBalancesHelper.Callback);
             return GetTokenBalancesHelper.Tcs.Task;
         }
 
@@ -240,8 +240,11 @@ namespace Dojo.Torii
             }
         }
 
-        public async Task<IntPtr> RegisterTokenUpdateEvent(FieldElement[] contractAddresses, BigInteger[] tokenIds)
+        public async Task<IntPtr> RegisterTokenUpdateEvent(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
             ToriiWasmInterop.OnTokenUpdated(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), OnTokenUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;
@@ -259,8 +262,12 @@ namespace Dojo.Torii
             }
         }
 
-        public async Task<IntPtr> RegisterTokenBalanceUpdateEvent(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds)
+        public async Task<IntPtr> RegisterTokenBalanceUpdateEvent(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (accountAddresses == null) accountAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             SubscriptionHelper.Tcs = new TaskCompletionSource<IntPtr>();
             ToriiWasmInterop.OnTokenBalanceUpdated(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), OnTokenBalanceUpdatedHelper.Callback, SubscriptionHelper.Callback);
             return await SubscriptionHelper.Tcs.Task;

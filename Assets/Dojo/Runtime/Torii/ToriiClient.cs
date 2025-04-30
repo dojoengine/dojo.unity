@@ -226,8 +226,11 @@ namespace Dojo.Torii
             entitySubscription = res._ok;
         }
 
-        public void RegisterTokenUpdateEvent(FieldElement[] contractAddresses, BigInteger[] tokenIds, bool dispatchToMainThread = true)
+        public void RegisterTokenUpdateEvent(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, bool dispatchToMainThread = true)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
             var nativeTokenIds = tokenIds.Select(t =>
             {
@@ -272,8 +275,12 @@ namespace Dojo.Torii
             tokenUpdateSubscription = res._ok;
         }
 
-        public void RegisterTokenBalanceUpdateEvent(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds, bool dispatchToMainThread = true)
+        public void RegisterTokenBalanceUpdateEvent(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, bool dispatchToMainThread = true)
         {
+            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
+            if (accountAddresses == null) accountAddresses = new FieldElement[] { };
+            if (tokenIds == null) tokenIds = new BigInteger[] { };
+
             var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
             var nativeAccountAddresses = accountAddresses.Select(a => a.Inner).ToArray();
             var nativeTokenIds = tokenIds.Select(t =>

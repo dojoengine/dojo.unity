@@ -15,6 +15,12 @@ using Newtonsoft.Json.Linq;
 namespace Dojo.Torii
 {
     [Serializable]
+    public struct WasmEntity {
+        public string hashed_keys;
+        public Dictionary<string, Dictionary<string, WasmValue>> models;
+    }
+    
+    [Serializable]
     public struct WasmValue
     {
         public string type;
@@ -58,18 +64,18 @@ namespace Dojo.Torii
 
         // Returns an array of all tokens
         [DllImport("__Internal")]
-        public static extern void GetTokens(IntPtr clientPtr, CString contractAddresses, CString tokenIds, int limit, int offset, Action<string> cb);
+        public static extern void GetTokens(IntPtr clientPtr, CString contractAddresses, CString tokenIds, int limit, CString cursor, Action<string> cb);
 
         // Returns an array of all token balances
         [DllImport("__Internal")]
-        public static extern void GetTokenBalances(IntPtr clientPtr, CString contractAddresses, CString accountAddresses, CString tokenIds, int limit, int offset, Action<string> cb);
+        public static extern void GetTokenBalances(IntPtr clientPtr, CString contractAddresses, CString accountAddresses, CString tokenIds, int limit, CString cursor, Action<string> cb);
 
         // Returns a dictionary of all of the entities
         [DllImport("__Internal")]
-        public static extern void GetEntities(IntPtr clientPtr, CString query, bool historical, Action<string> cb);
+        public static extern void GetEntities(IntPtr clientPtr, CString query, Action<string> cb);
 
         [DllImport("__Internal")]
-        public static extern void GetEventMessages(IntPtr clientPtr, CString query, bool historical, Action<string> cb);
+        public static extern void GetEventMessages(IntPtr clientPtr, CString query, Action<string> cb);
 
         // Get the value of a model for a specific set of keys
         [DllImport("__Internal")]
@@ -77,17 +83,17 @@ namespace Dojo.Torii
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
-        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clauses, Action<string, string> cb, Action<IntPtr> subCb);
+        public static extern void OnEntityUpdated(IntPtr clientPtr, CString clause, Action<string, string> cb, Action<IntPtr> subCb);
 
         [DllImport("__Internal")]
-        public static extern void UpdateEntitySubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses);
+        public static extern void UpdateEntitySubscription(IntPtr clientPtr, IntPtr subPtr, CString clause);
 
         // Calls the callback at [callbackObjectName].[callbackMethodName] on event mnessage updated
         [DllImport("__Internal")]
-        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clauses, Action<string, string> cb, Action<IntPtr> subCb);
+        public static extern void OnEventMessageUpdated(IntPtr clientPtr, CString clause, Action<string, string> cb, Action<IntPtr> subCb);
 
         [DllImport("__Internal")]
-        public static extern void UpdateEventMessageSubscription(IntPtr clientPtr, IntPtr subPtr, CString clauses);
+        public static extern void UpdateEventMessageSubscription(IntPtr clientPtr, IntPtr subPtr, CString clause);
 
         [DllImport("__Internal")]
         public static extern void OnTokenUpdated(IntPtr clientPtr, CString contractAddresses, CString tokenIds, Action<string> cb, Action<IntPtr> subCb);
