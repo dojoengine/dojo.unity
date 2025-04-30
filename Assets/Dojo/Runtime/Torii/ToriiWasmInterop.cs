@@ -15,11 +15,12 @@ using Newtonsoft.Json.Linq;
 namespace Dojo.Torii
 {
     [Serializable]
-    public struct WasmEntity {
+    public struct WasmEntity
+    {
         public string hashed_keys;
         public Dictionary<string, Dictionary<string, WasmValue>> models;
     }
-    
+
     [Serializable]
     public struct WasmValue
     {
