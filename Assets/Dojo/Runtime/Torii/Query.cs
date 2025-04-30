@@ -12,49 +12,63 @@ namespace Dojo.Torii
 #nullable enable
 
     [Serializable]
-    public class Query
+    public struct Pagination
     {
         public uint limit;
-        public uint offset;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public Clause? clause;
-        public bool dont_include_hashed_keys;
+        public string? cursor;
         public OrderBy[] order_by;
-        public string[] entity_models;
-        public ulong entity_updated_after;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public dojo.PaginationDirection direction;
 
-        public Query(uint limit = 1000, uint offset = 0, Clause? clause = null, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null, ulong entity_updated_after = 0)
+        public Pagination(uint limit = 1000, dojo.PaginationDirection direction = dojo.PaginationDirection.Forward, string? cursor = null, OrderBy[]? order_by = null)
         {
             this.limit = limit;
-            this.offset = offset;
-            this.clause = clause;
-            this.dont_include_hashed_keys = dont_include_hashed_keys;
+            this.cursor = cursor;
+            this.direction = direction;
             this.order_by = order_by ?? Array.Empty<OrderBy>();
-            this.entity_models = entity_models ?? Array.Empty<string>();
-            this.entity_updated_after = entity_updated_after;
         }
 
-        public Query(Clause clause, uint limit = 1000, uint offset = 0, bool dont_include_hashed_keys = false, OrderBy[]? order_by = null, string[]? entity_models = null, ulong entity_updated_after = 0)
+        public dojo.Pagination ToNative()
         {
+            return new dojo.Pagination
+            {
+                limit = limit,
+                cursor = cursor is null ? new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Nonec_char } : new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Somec_char, some = cursor },
+                direction = direction,
+                order_by = order_by.Select(o => o.ToNative()).ToArray()
+            };
+        }
+    }
+
+    [Serializable]
+    public class Query
+    {
+        public Pagination pagination;
+        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+        public Clause? clause;
+        public bool no_hashed_keys;
+        public string[] models;
+        public bool historical;
+
+        public Query(Pagination? pagination = null, Clause? clause = null, bool no_hashed_keys = false, string[]? models = null, bool historical = false)
+        {
+            this.pagination = pagination ?? new Pagination();
             this.clause = clause;
-            this.limit = limit;
-            this.offset = offset;
-            this.dont_include_hashed_keys = dont_include_hashed_keys;
-            this.order_by = order_by ?? Array.Empty<OrderBy>();
-            this.entity_models = entity_models ?? Array.Empty<string>();
-            this.entity_updated_after = entity_updated_after;
+            this.no_hashed_keys = no_hashed_keys;
+            this.models = models ?? Array.Empty<string>();
+            this.historical = historical;
         }
 
         public dojo.Query ToNative()
         {
             var nativeQuery = new dojo.Query
             {
-                limit = limit,
-                offset = offset,
+                pagination = pagination.ToNative(),
                 clause = new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause },
-                dont_include_hashed_keys = dont_include_hashed_keys,
-                order_by = order_by.Select(o => o.ToNative()).ToArray(),
-                entity_models = entity_models
+                no_hashed_keys = no_hashed_keys,
+                models = models,
+                historical = historical
             };
 
             if (clause.HasValue)
@@ -131,43 +145,6 @@ namespace Dojo.Torii
                 return new dojo.Clause { tag = dojo.Clause_Tag.Composite, composite = Composite.Value.ToNative() };
 
             throw new InvalidOperationException("Clause must have one non-null value");
-        }
-    }
-
-    [Serializable]
-    public struct EntityKeysClause
-    {
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public FieldElement[]? HashedKeys;
-        [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-        public KeysClause? Keys;
-
-        public EntityKeysClause(object type) : this()
-        {
-            if (type is FieldElement[] hashedKeys)
-                HashedKeys = hashedKeys;
-            else if (type is KeysClause keys)
-                Keys = keys;
-            else
-                throw new ArgumentException("Invalid entity keys clause type");
-        }
-
-        public dojo.EntityKeysClause ToNative()
-        {
-            if (HashedKeys != null)
-                return new dojo.EntityKeysClause
-                {
-                    tag = dojo.EntityKeysClause_Tag.HashedKeys,
-                    hashed_keys = HashedKeys.Select(k => k.Inner).ToArray()
-                };
-            if (Keys.HasValue)
-                return new dojo.EntityKeysClause
-                {
-                    tag = dojo.EntityKeysClause_Tag.EntityKeys,
-                    entity_keys = Keys.Value.ToNative()
-                };
-
-            throw new InvalidOperationException("EntityKeysClause must have one non-null value");
         }
     }
 

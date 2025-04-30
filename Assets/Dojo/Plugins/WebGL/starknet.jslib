@@ -1,15 +1,16 @@
 mergeInto(LibraryManager.library, {
   NewProvider: function (rpcUrl) {
-    return wasm_bindgen
-      .createProvider(UTF8ToString(rpcUrl))
+    return new wasm_bindgen
+      .Provider(UTF8ToString(rpcUrl))
       .__destroy_into_raw();
   },
   NewAccount: async function (providerPtr, pk, address, cb) {
     const provider = wasm_bindgen.Provider.__wrap(providerPtr);
-    const account = await provider.createAccount(
+    const account = await (new wasm_bindgen.Account(
+      provider,
       UTF8ToString(pk),
       UTF8ToString(address)
-    );
+    ));
 
     provider.__destroy_into_raw();
     dynCall_vi(cb, account.__destroy_into_raw());
@@ -88,17 +89,15 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, confirmed);
   },
   NewSigningKey: function () {
-    let pk = wasm_bindgen.signingKeyNew();
+    let pk = new wasm_bindgen.SigningKey();
     let bufferSize = lengthBytesUTF8(pk) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(pk, buffer, bufferSize);
     return buffer;
   },
   Sign: function (pk, hash) {
-    let signature = wasm_bindgen.signingKeySign(
-      UTF8ToString(pk),
-      UTF8ToString(hash)
-    );
+    let signingKey = new wasm_bindgen.SigningKey(UTF8ToString(pk));
+    let signature = signingKey.sign(UTF8ToString(hash));
     let compactSig =
       signature.r.replace("0x", "").padStart(64, "0") +
       signature.s.replace("0x", "").padStart(64, "0");
@@ -107,16 +106,16 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(compactSig, buffer, bufferSize);
     return buffer;
   },
-  NewVerifyingKey: function (pk) {
-    let verifyingKey = wasm_bindgen.verifyingKeyNew(UTF8ToString(pk));
+  NewVerifyingKey: function (vk) {
+    let verifyingKey = new wasm_bindgen.VerifyingKey(UTF8ToString(vk));
     let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(verifyingKey, buffer, bufferSize);
     return buffer;
   },
   Verify: function (vk, hash, r, s) {
-    return wasm_bindgen.verifyingKeyVerify(
-      UTF8ToString(vk),
+    let verifyingKey = new wasm_bindgen.VerifyingKey(UTF8ToString(vk));
+    return verifyingKey.verify(
       UTF8ToString(hash),
       {
         r: UTF8ToString(r),
@@ -125,8 +124,7 @@ mergeInto(LibraryManager.library, {
     );
   },
   SerializeByteArray: function (byteArrayStr) {
-    const felts = wasm_bindgen.byteArraySerialize(UTF8ToString(byteArrayStr));
-    
+    const felts = new wasm_bindgen.ByteArray(UTF8ToString(byteArrayStr)).toRaw();
     const feltsString = JSON.stringify(felts);
     const bufferSize = lengthBytesUTF8(feltsString) + 1;
     const buffer = _malloc(bufferSize);
@@ -135,7 +133,7 @@ mergeInto(LibraryManager.library, {
   },
   DeserializeByteArray: function (feltsStr) {
     const felts = JSON.parse(UTF8ToString(feltsStr));
-    const byteArray = wasm_bindgen.byteArrayDeserialize(felts);
+    const byteArray = wasm_bindgen.ByteArray.fromRaw(felts);
     const bufferSize = lengthBytesUTF8(byteArray) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(byteArray, buffer, bufferSize);
