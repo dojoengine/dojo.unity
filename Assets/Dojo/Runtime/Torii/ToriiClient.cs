@@ -36,8 +36,8 @@ namespace Dojo.Torii
             client = result._ok;
             dojo.client_set_logger(client, new dojo.FnPtr_CString_Void((msg) => Debug.Log(msg)));
 
-            RegisterEntityStateUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
-            RegisterEventMessageUpdateEvent(new EntityKeysClause[] { }, dispatchEventsToMainThread);
+            RegisterEntityStateUpdateEvent(null, dispatchEventsToMainThread);
+            RegisterEventMessageUpdateEvent(null, dispatchEventsToMainThread);
             RegisterTokenUpdateEvent(new FieldElement[] { }, new BigInteger[] { }, dispatchEventsToMainThread);
             RegisterTokenBalanceUpdateEvent(new FieldElement[] { }, new FieldElement[] { }, new BigInteger[] { }, dispatchEventsToMainThread);
         }
@@ -66,7 +66,7 @@ namespace Dojo.Torii
             return result.ok;
         }
 
-        public List<Token> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null)
+        public Page<Token> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, uint limit = 1000, string cursor = null)
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (tokenIds == null) tokenIds = new BigInteger[] { };
@@ -92,16 +92,20 @@ namespace Dojo.Torii
                 nativeTokenIdsPtr = ptr;
             }
 
-            dojo.ResultCArrayToken result = dojo.client_tokens(client, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
-            if (result.tag == dojo.ResultCArrayToken_Tag.ErrCArrayToken)
+            dojo.ResultPageToken result = dojo.client_tokens(client, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length, limit, cursor is null ? new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Nonec_char } : new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Somec_char, some = cursor });
+            if (result.tag == dojo.ResultPageToken_Tag.ErrPageToken)
             {
                 throw new Exception(result.err.message);
             }
 
-            return result.ok.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToList();
+            var items = result.ok.items.ToArray().Select(t => new Token(new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray();
+            var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
+
+            dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
+            return new Page<Token>(items, nextCursor);
         }
 
-        public List<TokenBalance> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null)
+        public Page<TokenBalance> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, uint limit = 1000, string cursor = null)
         {
             if (contractAddresses == null) contractAddresses = new FieldElement[] { };
             if (accountAddresses == null) accountAddresses = new FieldElement[] { };
@@ -135,57 +139,55 @@ namespace Dojo.Torii
             }
 
 
-            dojo.ResultPageTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length);
+            dojo.ResultPageTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length, limit, cursor is null ? new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Nonec_char } : new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Somec_char, some = cursor });
             if (result.tag == dojo.ResultPageTokenBalance_Tag.ErrPageTokenBalance)
             {
                 throw new Exception(result.err.message);
             }
 
-            return new Page;
+            var items = result.ok.items.ToArray().Select(t => new TokenBalance(new BigInteger(t.balance.data, false, true), new FieldElement(t.account_address), new FieldElement(t.contract_address), new BigInteger(t.token_id.data, false, true))).ToArray();
+            var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
+
+            dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
+            return new Page<TokenBalance>(items, nextCursor);
         }
 
 
-        public List<Entity> Entities(Query query, bool historical = false)
+        public Page<Entity> Entities(Query query, bool historical = false)
         {
             var nativeQuery = query.ToNative();
 
-            dojo.ResultCArrayEntity result = dojo.client_entities(client, &nativeQuery, historical);
-            if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
+            dojo.ResultPageEntity result = dojo.client_entities(client, nativeQuery);
+            if (result.tag == dojo.ResultPageEntity_Tag.ErrPageEntity)
             {
                 throw new Exception(result.err.message);
             }
 
-            var entities = new List<Entity>();
-            for (var i = 0; i < (int)result._ok.data_len; i++)
-            {
-                entities.Add(new Entity(result._ok.data[i]));
-            }
+            var items = result.ok.items.ToArray().Select(e => new Entity(e)).ToArray();
+            var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
 
-            dojo.carray_free(result._ok.data, result._ok.data_len);
-            return entities;
+            dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
+            return new Page<Entity>(items, nextCursor);
         }
 
-        public List<Entity> EventMessages(Query query, bool historical = false)
+        public Page<Entity> EventMessages(Query query)
         {
             var nativeQuery = query.ToNative();
 
-            dojo.ResultCArrayEntity result = dojo.client_event_messages(client, &nativeQuery, historical);
-            if (result.tag == dojo.ResultCArrayEntity_Tag.ErrCArrayEntity)
+            dojo.ResultPageEntity result = dojo.client_event_messages(client, nativeQuery);
+            if (result.tag == dojo.ResultPageEntity_Tag.ErrPageEntity)
             {
                 throw new Exception(result.err.message);
             }
 
-            var entities = new List<Entity>();
-            for (var i = 0; i < (int)result._ok.data_len; i++)
-            {
-                entities.Add(new Entity(result._ok.data[i]));
-            }
+            var items = result.ok.items.ToArray().Select(e => new Entity(e)).ToArray();
+            var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
 
-            dojo.carray_free(result._ok.data, result._ok.data_len);
-            return entities;
+            dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
+            return new Page<Entity>(items, nextCursor);
         }
 
-        private void RegisterEntityStateUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
+        private void RegisterEntityStateUpdateEvent(Clause? clause = null, bool dispatchToMainThread = true)
         {
             onEntityStateUpdate = (key, models) =>
             {
@@ -214,14 +216,8 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* clausesPtr;
-            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
-            {
-                clausesPtr = ptr;
-            }
-
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
+            var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, nativeClause, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -328,19 +324,13 @@ namespace Dojo.Torii
 
             tokenBalanceUpdateSubscription = res._ok;
         }
-        public void UpdateEntitySubscription(EntityKeysClause[] clauses)
+        public void UpdateEntitySubscription(Clause? clause = null)
         {
-            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            dojo.EntityKeysClause* clausesPtr;
-            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
-            {
-                clausesPtr = ptr;
-            }
-
-            dojo.client_update_entity_subscription(client, entitySubscription, clausesPtr, (UIntPtr)clauses.Length);
+            var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
+            dojo.client_update_entity_subscription(client, entitySubscription, nativeClause);
         }
 
-        private void RegisterEventMessageUpdateEvent(EntityKeysClause[] clauses, bool dispatchToMainThread = true)
+        private void RegisterEventMessageUpdateEvent(Clause? clause = null, bool dispatchToMainThread = true)
         {
             onEventMessagesUpdate = (key, models) =>
             {
@@ -369,14 +359,9 @@ namespace Dojo.Torii
             };
 
 
-            dojo.EntityKeysClause* clausesPtr;
-            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
-            {
-                clausesPtr = ptr;
-            }
+            var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
 
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, clausesPtr, (UIntPtr)clauses.Length, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, nativeClause, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -385,17 +370,10 @@ namespace Dojo.Torii
             eventMessagesSubscription = res._ok;
         }
 
-        public void UpdateEventMessageSubscription(EntityKeysClause[] clauses)
+        public void UpdateEventMessageSubscription(Clause? clause = null)
         {
-            var mappedClauses = clauses.Select(c => c.ToNative()).ToArray();
-            dojo.EntityKeysClause* clausesPtr;
-            fixed (dojo.EntityKeysClause* ptr = mappedClauses)
-            {
-                clausesPtr = ptr;
-            }
-
-
-            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, clausesPtr, (UIntPtr)clauses.Length);
+            var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
+            dojo.client_update_event_message_subscription(client, eventMessagesSubscription, nativeClause);
         }
 
         public Span<byte> PublishMessage(TypedData typedData, FieldElement[] signature)
