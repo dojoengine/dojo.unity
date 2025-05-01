@@ -267,7 +267,7 @@ jobs:
           path: artifact/
 
   build_wasm:
-    name: Build WASM Package (Web)
+    name: Build WASM Package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
@@ -294,15 +294,15 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      - name: Build WASM (web)
+      - name: Build WASM
         working-directory: ./Bindings/dojo.c
-        run: wasm-pack build --out-dir pkg-web --release --target web
+        run: wasm-pack build --out-dir pkg --release --target no-modules
 
       - name: Upload WASM Artifact
         uses: actions/upload-artifact@v4
         with:
           name: wasm-artifact
-          path: ./Bindings/dojo.c/pkg-web # Upload the contents
+          path: ./Bindings/dojo.c/pkg # Upload the contents
 
   commit_files:
     name: Commit Updated Files
