@@ -344,7 +344,7 @@ jobs:
       - name: Organize downloaded files
         run: |
           # Bindings
-          cp artifacts/bindings-artifact/Dojo.cs Assets/Dojo/Runtime/Bindings/Dojo.cs
+          cp artifacts/bindings-artifact/* Assets/Dojo/Runtime/Bindings/
           # Libs
           cp artifacts/linux-x86_64-artifact/libdojo_c.so Assets/Dojo/Plugins/Linux/libdojo_c.so
           cp artifacts/windows-x86_64-artifact/dojo_c.dll Assets/Dojo/Plugins/Windows/libdojo_c.dll
