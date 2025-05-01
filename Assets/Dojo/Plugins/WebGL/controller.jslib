@@ -23,6 +23,26 @@ mergeInto(LibraryManager.library, {
       }, {})
     }
 
-    window.provider = new ControllerProvider(opts)
+    window.controllerProvider = new ControllerProvider(opts)
+  },
+  Probe: function (cb) {
+    window.controllerProvider.probe().then((account) => {
+      dynCall_vi(cb, account ? true : false)
+    })
+  },
+  Connect: function (cb) {
+    window.controllerProvider.connect().then((account) => {
+      dynCall_vi(cb, account ? true : false)
+    })
+  },
+  Disconnect: function (cb) {
+    window.controllerProvider.disconnect().then(() => {
+      dynCall_vi(cb)
+    })
+  },
+  Execute: function (cb, calls) {
+    window.controllerProvider.account.execute(JSON.parse(UTF8ToString(calls))).then((result) => {
+      dynCall_vi(cb, result.transaction_hash)
+    })
   }
 });
