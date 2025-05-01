@@ -9,7 +9,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_VERSION: 1.85.0 # Match the version in release.yml
-  DOTNET_VERSION: '8.0.300' # Specify exact SDK version
+  DOTNET_VERSION: '8.0.x' # Specify exact SDK version
 
 jobs:
   generate_bindings:
@@ -68,10 +68,10 @@ jobs:
 
       # Assuming the tools need to be built
       - name: Build CAstFfi.Tool
-        run: dotnet build ./CAstFfi/src/cs/production/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release /p:NoWarn=CA1515 # Suppress internal type warning
+        run: dotnet build ./CAstFfi/src/cs/production/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release --framework net8.0 # Adjust path/command if needed
 
       - name: Build C2CS.Tool
-        run: dotnet build ./c2cs/src/cs/production/C2CS.Tool/C2CS.Tool.csproj -c release # Adjust path/command if needed
+        run: dotnet build ./c2cs/src/cs/production/C2CS.Tool/C2CS.Tool.csproj -c release --framework net8.0 # Adjust path/command if needed
 
       - name: Extract Platform Bindings (Linux)
         working-directory: ./Bindings/dojo.c # Run from where dojo.h is expected
