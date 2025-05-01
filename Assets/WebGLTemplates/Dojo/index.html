@@ -166,6 +166,11 @@
 
       document.body.appendChild(script);
 
+      var controllerScript = document.createElement("script");
+      controllerScript.src = "TemplateData/controller/index.js"; // @controller
+      controllerScript.type = "module"; // @controller
+      document.body.appendChild(controllerScript); // @controller
+
     </script>
   </body>
 </html>
