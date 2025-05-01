@@ -9,7 +9,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_VERSION: 1.85.0 # Match the version in release.yml
-  DOTNET_VERSION: '8.0.x' # Specify exact SDK version
+  DOTNET_VERSION: '8.0.300' # Specify exact SDK version
 
 jobs:
   generate_bindings:
