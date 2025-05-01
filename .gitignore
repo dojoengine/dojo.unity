@@ -74,8 +74,8 @@ crashlytics-build.properties
 .DS_Store
 
 # builds
-dojo-webgl
-dojo-ios
-dojo-macos
-dojo-windows
-webgl
+/dojo-webgl
+/dojo-ios
+/dojo-macos
+/dojo-windows
+/webgl

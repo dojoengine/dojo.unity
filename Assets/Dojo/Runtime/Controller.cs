@@ -8,6 +8,8 @@ using System.Linq;
 
 namespace Dojo
 {
+
+    [Serializable]
     public struct Policy
     {
         public FieldElement target;
