@@ -1,0 +1,15 @@
+{
+  "name": "dojo-c",
+  "type": "module",
+  "version": "1.5.0",
+  "files": [
+    "dojo_c_bg.wasm",
+    "dojo_c.js",
+    "dojo_c.d.ts"
+  ],
+  "main": "dojo_c.js",
+  "types": "dojo_c.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
