@@ -177,10 +177,10 @@ jobs:
           # Cache key includes the target
           key: ${{ runner.os }}-${{ matrix.job.target }}
 
-      # Install cross for Linux builds if needed (currently only linux-gnu target)
+      # Install cross for Linux builds
       - name: Install cross
-        if: runner.os == 'Linux' && matrix.job.target == 'x86_64-unknown-linux-gnu'
-        run: cargo install cross
+        if: runner.os == 'Linux'
+        run: cargo install cross --locked # Using --locked for potentially more deterministic installs
 
       # Apple M1/iOS setup
       - name: Apple Setup
@@ -199,15 +199,11 @@ jobs:
         shell: bash
         run: |
           BUILD_CMD="cargo build"
-          if [[ "${{ runner.os }}" == "Linux" && "${{ matrix.job.target }}" == "x86_64-unknown-linux-gnu" ]]; then
-             # Cross is mainly for *to* Linux/Windows from Linux, or other complex cases.
-             # If building Linux on Linux, regular cargo might be fine unless specific linkers needed.
-             # Use cross if encountering issues. Build directly for now.
-             # BUILD_CMD="cross build"
-             echo "Using cargo build for Linux on Linux"
-          elif [[ "${{ runner.os }}" == "Linux" ]]; then
-             # If other targets run on Linux in future (e.g., cross-compiling Windows)
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+             echo "Using cross build for Linux runner"
              BUILD_CMD="cross build"
+          else
+             echo "Using cargo build for non-Linux runner"
           fi
 
           # Build
