@@ -66,12 +66,28 @@ jobs:
             fi
           fi
 
+      # === Create global.json before building tools ===
+      - name: Create global.json for .NET SDK version
+        run: |
+          echo '{' > global.json
+          echo '  "sdk": {' >> global.json
+          echo '    "version": "${{ env.DOTNET_VERSION }}",' >> global.json
+          echo '    "rollForward": "latestFeature"' >> global.json
+          echo '  }' >> global.json
+          echo '}' >> global.json
+          echo "Created global.json specifying SDK version ${{ env.DOTNET_VERSION }}"
+
       # Assuming the tools need to be built
       - name: Build CAstFfi.Tool
         run: dotnet build ./CAstFfi/src/cs/production/CAstFfi.Tool/CAstFfi.Tool.csproj -c Release --framework net8.0 # Adjust path/command if needed
 
       - name: Build C2CS.Tool
         run: dotnet build ./c2cs/src/cs/production/C2CS.Tool/C2CS.Tool.csproj -c release --framework net8.0 # Adjust path/command if needed
+
+      # === Remove global.json after building tools ===
+      - name: Remove temporary global.json
+        if: always() # Ensure removal even if builds fail
+        run: rm -f global.json && echo "Removed temporary global.json"
 
       - name: Extract Platform Bindings (Linux)
         working-directory: ./Bindings/dojo.c # Run from where dojo.h is expected
