@@ -11,15 +11,18 @@ namespace Dojo
     public class WorldManager : MonoBehaviour
     {
         public SynchronizationMaster synchronizationMaster;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public ToriiWasmClient toriiClient;
+#else
         public ToriiClient toriiClient;
-        public ToriiWasmClient wasmClient;
+#endif
         [SerializeField] public WorldManagerData dojoConfig;
 
         async void Awake()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            wasmClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
-            await wasmClient.CreateClient();
+            toriiClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
+            await toriiClient.CreateClient();
 #else
             toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.relayUrl, dojoConfig.worldAddress);
 #endif
@@ -117,7 +120,7 @@ namespace Dojo
         public async Task<byte[]> Publish(TypedData typedData, FieldElement[] signature)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            return await wasmClient.PublishMessage(typedData, signature);
+            return await toriiClient.PublishMessage(typedData, signature);
 #else
             return await Task.Run(() => toriiClient.PublishMessage(typedData, signature).ToArray());
 #endif

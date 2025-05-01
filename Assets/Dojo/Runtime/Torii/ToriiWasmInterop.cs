@@ -1,3 +1,4 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
 using UnityEngine;
 using System;
 using System.Runtime.InteropServices;
@@ -122,3 +123,4 @@ namespace Dojo.Torii
         public static extern void PublishMessage(IntPtr clientPtr, CString typedData, CString signature, Action<string> cb);
     }
 }
+#endif // UNITY_WEBGL

@@ -1,3 +1,4 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -276,3 +277,4 @@ namespace Dojo.Torii
         }
     }
 }
+#endif // UNITY_WEBGL

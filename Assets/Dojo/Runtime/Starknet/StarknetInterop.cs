@@ -1,3 +1,4 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -243,3 +244,4 @@ namespace Dojo.Starknet
         }
     }
 }
+#endif // UNITY_WEBGL
