@@ -799,12 +799,12 @@ declare interface InitOutput {
   readonly __externref_table_dealloc: (a: number) => void;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h25a2d6c0cac360bc: (a: number, b: number) => void;
-  readonly closure1133_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1158_externref_shim: (a: number, b: number, c: any) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hfd0262bcce7a58a4: (a: number, b: number) => void;
-  readonly closure2499_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure2675_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h117df3dc8165caf5: (a: number, b: number) => void;
+  readonly closure1134_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1159_externref_shim: (a: number, b: number, c: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9feb41257b1ba6f0: (a: number, b: number) => void;
+  readonly closure2500_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure2676_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
