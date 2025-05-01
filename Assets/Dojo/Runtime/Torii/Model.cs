@@ -43,12 +43,14 @@ namespace Dojo.Torii
         public string Name { get; }
         public Dictionary<string, object> Members { get; }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
         public Model(string name, Dictionary<string, WasmValue> members)
         {
             Name = name;
 
             Members = members.ToDictionary(k => k.Key, v => HandleWasmValue(v.Value));
         }
+#else
 
         public Model(string name, Dictionary<string, object> members)
         {
