@@ -14,7 +14,7 @@ env:
 jobs:
   generate_bindings:
     name: Generate C# Bindings
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     outputs:
       bindings_path: Assets/Dojo/Runtime/Bindings/Dojo.cs # Define expected output path
     steps:
@@ -33,25 +33,37 @@ jobs:
         with:
           toolchain: ${{ env.RUST_VERSION }}
 
-      # Install clang needed by CAstFfi.Tool
-      - name: Install Clang and Dev Library
-        run: sudo apt-get update && sudo apt-get install -y clang libclang-dev
+      # === Install clang/llvm via Homebrew ===
+      - name: Install LLVM (for Clang and libclang)
+        run: brew install llvm
 
-      # Find and link libclang.so
-      - name: Link libclang.so
+      # === Link libclang.dylib ===
+      - name: Link libclang.dylib
         run: |
-          find /usr/lib/ -name "libclang.so*" -print -quit
-          # Find the main libclang shared object (e.g., /usr/lib/x86_64-linux-gnu/libclang.so.14)
-          # The exact path might vary depending on the Ubuntu version and installed clang version
-          LIBCLANG_PATH=$(find /usr/lib/ -name "libclang.so*" | head -n 1)
+          echo "Finding libclang.dylib from Homebrew llvm..."
+          # Default Homebrew path for llvm libs on macOS runners
+          LLVM_LIB_PATH="$(brew --prefix llvm)/lib"
+          LIBCLANG_PATH=$(find "$LLVM_LIB_PATH" -name "libclang.dylib" -print -quit)
+
           if [ -n "$LIBCLANG_PATH" ]; then
-            echo "Found libclang at: $LIBCLANG_PATH"
-            # Create symlink in /usr/lib where the tool searches
-            sudo ln -s "$LIBCLANG_PATH" /usr/lib/libclang.so
-            echo "Created symlink /usr/lib/libclang.so -> $LIBCLANG_PATH"
+            echo "Found libclang.dylib at: $LIBCLANG_PATH"
+            # Link to /usr/local/lib where tools might search
+            # Ensure the directory exists
+            sudo mkdir -p /usr/local/lib
+            sudo ln -sf "$LIBCLANG_PATH" /usr/local/lib/libclang.dylib
+            echo "Ensured symlink /usr/local/lib/libclang.dylib -> $LIBCLANG_PATH"
           else
-            echo "::error::Could not find libclang.so after installation."
-            exit 1
+            echo "::error::Could not find libclang.dylib in $LLVM_LIB_PATH after installing llvm."
+            # As a fallback, check system paths (though brew install should provide it)
+            FALLBACK_PATH=$(find /Library/Developer/CommandLineTools /Applications/Xcode.app -name "libclang.dylib" -print -quit 2>/dev/null)
+            if [ -n "$FALLBACK_PATH" ]; then
+               echo "Found fallback libclang.dylib at: $FALLBACK_PATH"
+               sudo ln -sf "$FALLBACK_PATH" /usr/local/lib/libclang.dylib
+               echo "Ensured symlink /usr/local/lib/libclang.dylib -> $FALLBACK_PATH"
+            else
+               echo "::error::Could not find libclang.dylib via Homebrew or system paths."
+               exit 1
+            fi
           fi
 
       # Assuming the tools need to be built
@@ -61,14 +73,24 @@ jobs:
       - name: Build C2CS.Tool
         run: dotnet build ./c2cs/src/cs/production/C2CS.Tool/C2CS.Tool.csproj -c release # Adjust path/command if needed
 
-      - name: Extract Platform Bindings (Linux, macOS, Windows)
+      - name: Extract Platform Bindings (Linux)
         working-directory: ./Bindings/dojo.c # Run from where dojo.h is expected
         run: |
-          # Need to adjust tool paths relative to working-directory or use absolute paths
+          echo "Extracting Linux..."
           ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-linux.json
-          ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-macos.json
-          ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-windows.json
-        # Note: Errors are ignored in bindgen.sh with > /dev/null 2>&1, consider adding error checks
+
+      - name: Extract Platform Bindings (macOS)
+        working-directory: ./Bindings/dojo.c
+        run: |
+           echo "Extracting macOS..."
+           ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-macos.json
+
+      - name: Extract Platform Bindings (Windows)
+        working-directory: ./Bindings/dojo.c
+        run: |
+           echo "Extracting Windows..."
+           ../../CAstFfi/bin/CAstFfi.Tool/Release/net8.0/CAstFfi.Tool extract --config ../config-extract-windows.json
+        # Note: Errors were previously ignored in bindgen.sh, checking output now
 
       - name: Merge Platform Bindings
         working-directory: ./Bindings/dojo.c
