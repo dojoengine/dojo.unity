@@ -122,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bindings-artifact
-          path: Assets/Dojo/Runtime/bindings/client
+          path: Assets/Dojo/Runtime/Bindings
 
   build_libs:
     name: Build Native Libs (${{ matrix.job.target }})
