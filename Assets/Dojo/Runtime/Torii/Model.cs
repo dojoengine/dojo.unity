@@ -50,7 +50,7 @@ namespace Dojo.Torii
 
             Members = members.ToDictionary(k => k.Key, v => HandleWasmValue(v.Value));
         }
-#else
+#endif
 
         public Model(string name, Dictionary<string, object> members)
         {
@@ -100,6 +100,7 @@ namespace Dojo.Torii
             };
         }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
         private object HandleWasmValue(WasmValue value)
         {
             return value.type.ToLower() switch
@@ -147,7 +148,7 @@ namespace Dojo.Torii
                 _ => throw new Exception("Unknown type: " + value.type)
             };
         }
-
+#endif
         private byte[] hexStringToByteArray(string hex)
         {
             // Remove "0x" prefix if present
@@ -181,6 +182,7 @@ namespace Dojo.Torii
             return new Enum(en.name, option.name, HandleCValue(option.ty));
         }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
         private Struct HandleJSStruct(string name, Dictionary<string, WasmValue> str)
         {
             return new Struct(name, str.Select(m => new KeyValuePair<string, object>(m.Key, HandleWasmValue(m.Value))).ToDictionary(k => k.Key, v => v.Value));
@@ -190,7 +192,7 @@ namespace Dojo.Torii
         {
             return new Enum(name, en.option, HandleWasmValue(en.value));
         }
-
+#endif
         private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes, bool unsigned = false, int bits = 128)
         {
             var reversed = bytes.Reverse().ToArray();
