@@ -2,8 +2,13 @@ name: Generate DojoC Artifacts
 
 on:
   push:
+    paths:
+      - 'Bindings/dojo.c/**' # Trigger only on changes within the dojo.c submodule
+  pull_request:
     branches:
-      - main # Adjust branch name if needed
+      - main # Or specify other target branches for PRs
+    paths:
+      - 'Bindings/dojo.c/**' # Trigger only on changes within the dojo.c submodule
   workflow_dispatch: # Allows manual triggering
 
 env:
