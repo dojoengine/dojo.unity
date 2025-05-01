@@ -101,14 +101,12 @@ jobs:
         working-directory: ./Bindings/dojo.c
         run: |
           ../../c2cs/artifacts/bin/C2CS.Tool/release/C2CS.Tool generate --config ../config-generate-cs.json
-        # This should generate the file at the path specified in config-generate-cs.json
-        # Assuming it's Assets/Dojo/Runtime/Bindings/Dojo.cs relative to repo root
 
       - name: Upload C# Bindings Artifact
         uses: actions/upload-artifact@v4
         with:
           name: bindings-artifact
-          path: Assets/Dojo/Runtime/Bindings/Dojo.cs # Use the path defined in outputs
+          path: Assets/Dojo/Runtime/bindings/client
 
   build_libs:
     name: Build Native Libs (${{ matrix.job.target }})
@@ -166,7 +164,7 @@ jobs:
       # Install cross for Linux builds if needed (currently only linux-gnu target)
       - name: Install cross
         if: runner.os == 'Linux' && matrix.job.target == 'x86_64-unknown-linux-gnu'
-        run: cargo install cross --git https://github.com/cross-rs/cross --rev main # Use main branch for latest fixes
+        run: cargo install cross
 
       # Apple M1/iOS setup
       - name: Apple Setup
