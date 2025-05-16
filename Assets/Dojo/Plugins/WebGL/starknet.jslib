@@ -106,6 +106,14 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(compactSig, buffer, bufferSize);
     return buffer;
   },
+  DeriveVerifyingKey: function (pk) {
+    let signingKey = new wasm_bindgen.SigningKey(UTF8ToString(pk));
+    let verifyingKey = wasm_bindgen.VerifyingKey.fromSigningKey(signingKey);
+    let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
+    let buffer = _malloc(bufferSize);
+    stringToUTF8(verifyingKey, buffer, bufferSize);
+    return buffer;
+  },
   NewVerifyingKey: function (vk) {
     let verifyingKey = new wasm_bindgen.VerifyingKey(UTF8ToString(vk));
     let bufferSize = lengthBytesUTF8(verifyingKey) + 1;

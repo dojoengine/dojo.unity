@@ -217,6 +217,9 @@ namespace Dojo.Starknet
         public static extern string NewVerifyingKey(CString privateKey);
 
         [DllImport("__Internal")]
+        public static extern string DeriveVerifyingKey(CString privateKey);
+
+        [DllImport("__Internal")]
         public static extern bool Verify(CString publicKey, CString hash, CString r, CString s);
 
         [DllImport("__Internal")]
