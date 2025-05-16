@@ -8,6 +8,8 @@ using System.Linq;
 
 namespace Dojo
 {
+
+    [Serializable]
     public struct Policy
     {
         public FieldElement target;
@@ -24,6 +26,29 @@ namespace Dojo
         public dojo.Policy ToNative()
         {
             return new dojo.Policy { target = target.Inner, method = method, description = description };
+        }
+    }
+
+    [Serializable]
+    public struct ControllerCall {
+        public FieldElement contractAddress;
+        public string entrypoint;
+        public FieldElement[] calldata;
+
+        public ControllerCall(FieldElement contractAddress, string entrypoint, FieldElement[] calldata)
+        {
+            this.contractAddress = contractAddress;
+            this.entrypoint = entrypoint;
+            this.calldata = calldata;
+        }
+
+        public dojo.Call ToNative()
+        {
+            return new dojo.Call {
+                to = contractAddress.Inner,
+                selector = entrypoint,
+                calldata = calldata.Select(c => c.Inner).ToArray()
+            };
         }
     }
 
@@ -111,10 +136,11 @@ namespace Dojo
             return result.ok;
         }
 
-        public FieldElement ExecuteRaw(dojo.Call[] calls)
+        public FieldElement ExecuteRaw(ControllerCall[] calls)
         {
+            var nativeCalls = calls.Select(c => c.ToNative()).ToArray();
             dojo.Call* callsPtr;
-            fixed (dojo.Call* ptr = &calls[0])
+            fixed (dojo.Call* ptr = &nativeCalls[0])
             {
                 callsPtr = ptr;
             }
@@ -128,10 +154,11 @@ namespace Dojo
             return new FieldElement(result.ok);
         }
 
-        public FieldElement ExecuteFromOutside(dojo.Call[] calls)
+        public FieldElement ExecuteFromOutside(ControllerCall[] calls)
         {
+            var nativeCalls = calls.Select(c => c.ToNative()).ToArray();
             dojo.Call* callsPtr;
-            fixed (dojo.Call* ptr = &calls[0])
+            fixed (dojo.Call* ptr = &nativeCalls[0])
             {
                 callsPtr = ptr;
             }
