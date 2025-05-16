@@ -76,8 +76,27 @@ namespace Dojo.Starknet
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string result)
             {
-                Tcs.SetResult(new FieldElement(result));
+                try
+                {
+                    var message = JsonConvert.DeserializeObject<CallbackMessage>(result);
+
+                    if (message.Success)
+                        Tcs.SetResult(new FieldElement(message.Result));
+                    else
+                        Tcs.SetException(new Exception(message.Error));
+                }
+                catch (Exception ex)
+                {
+                    Tcs.SetException(ex);
+                }
             }
+        }
+
+        private class CallbackMessage
+        {
+            public bool Success { get; set; }
+            public string Result { get; set; }
+            public string Error { get; set; }
         }
 
         struct SerializedCall
