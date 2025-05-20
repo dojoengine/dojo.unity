@@ -43,8 +43,6 @@ namespace Dojo
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             var entities = await worldManager.toriiClient.Entities(worldManager.dojoConfig.query);
-            var tokens = await worldManager.toriiClient.Tokens();
-            var tokenBalances = await worldManager.toriiClient.TokenBalances();
 #else
             var entities = await Task.Run(() => worldManager.toriiClient.Entities(worldManager.dojoConfig.query));
 #endif
