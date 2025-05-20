@@ -42,9 +42,9 @@ namespace Dojo
         public async Task<int> SynchronizeEntities()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            var entities = await worldManager.wasmClient.Entities(worldManager.dojoConfig.query);
-            var tokens = await worldManager.wasmClient.Tokens();
-            var tokenBalances = await worldManager.wasmClient.TokenBalances();
+            var entities = await worldManager.toriiClient.Entities(worldManager.dojoConfig.query);
+            var tokens = await worldManager.toriiClient.Tokens();
+            var tokenBalances = await worldManager.toriiClient.TokenBalances();
 #else
             var entities = await Task.Run(() => worldManager.toriiClient.Entities(worldManager.dojoConfig.query));
 #endif
