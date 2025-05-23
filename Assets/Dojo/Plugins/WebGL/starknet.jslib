@@ -89,7 +89,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, confirmed);
   },
   NewSigningKey: function () {
-    let pk = new wasm_bindgen.SigningKey();
+    let pk = new wasm_bindgen.SigningKey().scalar();
     let bufferSize = lengthBytesUTF8(pk) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(pk, buffer, bufferSize);
@@ -108,14 +108,14 @@ mergeInto(LibraryManager.library, {
   },
   DeriveVerifyingKey: function (pk) {
     let signingKey = new wasm_bindgen.SigningKey(UTF8ToString(pk));
-    let verifyingKey = wasm_bindgen.VerifyingKey.fromSigningKey(signingKey);
+    let verifyingKey = wasm_bindgen.VerifyingKey.fromSigningKey(signingKey).scalar();
     let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(verifyingKey, buffer, bufferSize);
     return buffer;
   },
   NewVerifyingKey: function (vk) {
-    let verifyingKey = new wasm_bindgen.VerifyingKey(UTF8ToString(vk));
+    let verifyingKey = new wasm_bindgen.VerifyingKey(UTF8ToString(vk)).scalar();
     let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(verifyingKey, buffer, bufferSize);
