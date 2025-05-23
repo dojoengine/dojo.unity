@@ -96,7 +96,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
   Sign: function (pk, hash) {
-    let signingKey = new wasm_bindgen.SigningKey(UTF8ToString(pk));
+    let signingKey = wasm_bindgen.SigningKey.fromSecretScalar(UTF8ToString(pk));
     let signature = signingKey.sign(UTF8ToString(hash));
     let compactSig =
       signature.r.replace("0x", "").padStart(64, "0") +
@@ -107,7 +107,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
   DeriveVerifyingKey: function (pk) {
-    let signingKey = new wasm_bindgen.SigningKey(UTF8ToString(pk));
+    let signingKey = wasm_bindgen.SigningKey.fromSecretScalar(UTF8ToString(pk));
     let verifyingKey = wasm_bindgen.VerifyingKey.fromSigningKey(signingKey).scalar();
     let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
     let buffer = _malloc(bufferSize);
