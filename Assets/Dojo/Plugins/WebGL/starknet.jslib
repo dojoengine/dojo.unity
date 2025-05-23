@@ -89,7 +89,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, confirmed);
   },
   NewSigningKey: function () {
-    let pk = new wasm_bindgen.SigningKey().scalar();
+    let pk = new wasm_bindgen.SigningKey().secretScalar();
     let bufferSize = lengthBytesUTF8(pk) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(pk, buffer, bufferSize);
