@@ -107,8 +107,8 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
   DeriveVerifyingKey: function (pk) {
-    let signingKey = wasm_bindgen.SigningKey.fromSecretScalar(UTF8ToString(pk));
-    let verifyingKey = wasm_bindgen.VerifyingKey.fromSigningKey(signingKey).scalar();
+    let signingKey = new wasm_bindgen.SigningKey(UTF8ToString(pk));
+    let verifyingKey = signingKey.verifyingKey().scalar();
     let bufferSize = lengthBytesUTF8(verifyingKey) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(verifyingKey, buffer, bufferSize);

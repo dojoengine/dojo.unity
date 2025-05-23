@@ -470,27 +470,27 @@ let wasm_bindgen;
     };
 
     function __wbg_adapter_52(arg0, arg1) {
-        wasm._dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h117df3dc8165caf5(arg0, arg1);
+        wasm._dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h25a2d6c0cac360bc(arg0, arg1);
     }
 
     function __wbg_adapter_55(arg0, arg1, arg2) {
-        wasm.closure1134_externref_shim(arg0, arg1, arg2);
+        wasm.closure1136_externref_shim(arg0, arg1, arg2);
     }
 
     function __wbg_adapter_62(arg0, arg1, arg2) {
-        wasm.closure1159_externref_shim(arg0, arg1, arg2);
+        wasm.closure1161_externref_shim(arg0, arg1, arg2);
     }
 
     function __wbg_adapter_69(arg0, arg1) {
-        wasm._dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9feb41257b1ba6f0(arg0, arg1);
+        wasm._dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hfd0262bcce7a58a4(arg0, arg1);
     }
 
     function __wbg_adapter_72(arg0, arg1, arg2) {
-        wasm.closure2500_externref_shim(arg0, arg1, arg2);
+        wasm.closure2502_externref_shim(arg0, arg1, arg2);
     }
 
     function __wbg_adapter_436(arg0, arg1, arg2, arg3) {
-        wasm.closure2676_externref_shim(arg0, arg1, arg2, arg3);
+        wasm.closure2678_externref_shim(arg0, arg1, arg2, arg3);
     }
 
     const __wbindgen_enum_BinaryType = ["blob", "arraybuffer"];
@@ -1027,6 +1027,17 @@ let wasm_bindgen;
             const ret = wasm.provider_waitForTransaction(this.__wbg_ptr, ptr0, len0);
             return ret;
         }
+        /**
+         * Gets the chain id of the provider
+         *
+         * # Returns
+         * Result containing chain id as hex string or error
+         * @returns {Promise<string>}
+         */
+        chainId() {
+            const ret = wasm.provider_chainId(this.__wbg_ptr);
+            return ret;
+        }
     }
     __exports.Provider = Provider;
 
@@ -1060,10 +1071,16 @@ let wasm_bindgen;
          *
          * # Returns
          * Private key as hex string
+         * @param {string} secret_scalar
          */
-        constructor() {
-            const ret = wasm.signingkey_new();
-            this.__wbg_ptr = ret >>> 0;
+        constructor(secret_scalar) {
+            const ptr0 = passStringToWasm0(secret_scalar, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.signingkey_new(ptr0, len0);
+            if (ret[2]) {
+                throw takeFromExternrefTable0(ret[1]);
+            }
+            this.__wbg_ptr = ret[0] >>> 0;
             SigningKeyFinalization.register(this, this.__wbg_ptr, this);
             return this;
         }
@@ -1075,13 +1092,10 @@ let wasm_bindgen;
          *
          * # Returns
          * Result containing signing key or error
-         * @param {string} secret_scalar
          * @returns {SigningKey}
          */
-        static fromSecretScalar(secret_scalar) {
-            const ptr0 = passStringToWasm0(secret_scalar, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-            const len0 = WASM_VECTOR_LEN;
-            const ret = wasm.signingkey_fromSecretScalar(ptr0, len0);
+        static fromRandom() {
+            const ret = wasm.signingkey_fromRandom();
             if (ret[2]) {
                 throw takeFromExternrefTable0(ret[1]);
             }
@@ -1685,25 +1699,6 @@ let wasm_bindgen;
             this.__wbg_ptr = ret[0] >>> 0;
             VerifyingKeyFinalization.register(this, this.__wbg_ptr, this);
             return this;
-        }
-        /**
-         * Derives a verifying key from a signing key
-         *
-         * # Parameters
-         * * `signing_key` - Signing key as hex string
-         *
-         * # Returns
-         * Result containing verifying key or error
-         * @param {SigningKey} signing_key
-         * @returns {VerifyingKey}
-         */
-        static fromSigningKey(signing_key) {
-            _assertClass(signing_key, SigningKey);
-            const ret = wasm.verifyingkey_fromSigningKey(signing_key.__wbg_ptr);
-            if (ret[2]) {
-                throw takeFromExternrefTable0(ret[1]);
-            }
-            return VerifyingKey.__wrap(ret[0]);
         }
         /**
          * Returns the scalar of the verifying key
@@ -2551,40 +2546,40 @@ let wasm_bindgen;
             const ret = false;
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper2076 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 677, __wbg_adapter_52);
+        imports.wbg.__wbindgen_closure_wrapper2080 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 679, __wbg_adapter_52);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper3073 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1135, __wbg_adapter_55);
+        imports.wbg.__wbindgen_closure_wrapper3079 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1137, __wbg_adapter_55);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper3074 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1135, __wbg_adapter_55);
+        imports.wbg.__wbindgen_closure_wrapper3080 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1137, __wbg_adapter_55);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper3075 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1135, __wbg_adapter_55);
+        imports.wbg.__wbindgen_closure_wrapper3081 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1137, __wbg_adapter_55);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper3117 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1160, __wbg_adapter_62);
+        imports.wbg.__wbindgen_closure_wrapper3123 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1162, __wbg_adapter_62);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper3118 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1160, __wbg_adapter_62);
+        imports.wbg.__wbindgen_closure_wrapper3124 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1162, __wbg_adapter_62);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper3119 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1160, __wbg_adapter_62);
+        imports.wbg.__wbindgen_closure_wrapper3125 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1162, __wbg_adapter_62);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper5017 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 1932, __wbg_adapter_69);
+        imports.wbg.__wbindgen_closure_wrapper5027 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 1934, __wbg_adapter_69);
             return ret;
         };
-        imports.wbg.__wbindgen_closure_wrapper6321 = function(arg0, arg1, arg2) {
-            const ret = makeMutClosure(arg0, arg1, 2501, __wbg_adapter_72);
+        imports.wbg.__wbindgen_closure_wrapper6331 = function(arg0, arg1, arg2) {
+            const ret = makeMutClosure(arg0, arg1, 2503, __wbg_adapter_72);
             return ret;
         };
         imports.wbg.__wbindgen_debug_string = function(arg0, arg1) {

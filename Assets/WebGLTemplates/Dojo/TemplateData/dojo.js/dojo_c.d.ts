@@ -405,6 +405,13 @@ declare namespace wasm_bindgen {
 	   * Result containing success boolean or error
 	   */
 	  waitForTransaction(txn_hash: string): Promise<boolean>;
+	  /**
+	   * Gets the chain id of the provider
+	   *
+	   * # Returns
+	   * Result containing chain id as hex string or error
+	   */
+	  chainId(): Promise<string>;
 	}
 	export class SigningKey {
 	  free(): void;
@@ -414,7 +421,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Private key as hex string
 	   */
-	  constructor();
+	  constructor(secret_scalar: string);
 	  /**
 	   * Initializes a new signing key from a secret scalar
 	   *
@@ -424,7 +431,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing signing key or error
 	   */
-	  static fromSecretScalar(secret_scalar: string): SigningKey;
+	  static fromRandom(): SigningKey;
 	  /**
 	   * Returns the secret scalar of the signing key
 	   *
@@ -681,16 +688,6 @@ declare namespace wasm_bindgen {
 	   */
 	  constructor(verifying_key: string);
 	  /**
-	   * Derives a verifying key from a signing key
-	   *
-	   * # Parameters
-	   * * `signing_key` - Signing key as hex string
-	   *
-	   * # Returns
-	   * Result containing verifying key or error
-	   */
-	  static fromSigningKey(signing_key: SigningKey): VerifyingKey;
-	  /**
 	   * Returns the scalar of the verifying key
 	   *
 	   * # Returns
@@ -721,8 +718,8 @@ declare interface InitOutput {
   readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
   readonly __wbg_typeddata_free: (a: number, b: number) => void;
   readonly __wbg_bytearray_free: (a: number, b: number) => void;
-  readonly signingkey_new: () => number;
-  readonly signingkey_fromSecretScalar: (a: number, b: number) => [number, number, number];
+  readonly signingkey_new: (a: number, b: number) => [number, number, number];
+  readonly signingkey_fromRandom: () => [number, number, number];
   readonly signingkey_secretScalar: (a: number) => [number, number, number, number];
   readonly signingkey_sign: (a: number, b: number, c: number) => [number, number, number];
   readonly signingkey_verifyingKey: (a: number) => [number, number, number];
@@ -734,6 +731,7 @@ declare interface InitOutput {
   readonly provider_new: (a: number, b: number) => [number, number, number];
   readonly provider_call: (a: number, b: any, c: any) => any;
   readonly provider_waitForTransaction: (a: number, b: number, c: number) => any;
+  readonly provider_chainId: (a: number) => any;
   readonly account_new: (a: number, b: number, c: number, d: number, e: number) => any;
   readonly account_address: (a: number) => [number, number, number, number];
   readonly account_chainId: (a: number) => [number, number, number, number];
@@ -771,7 +769,6 @@ declare interface InitOutput {
   readonly toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
   readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => any;
   readonly subscription_cancel: (a: number) => void;
-  readonly verifyingkey_fromSigningKey: (a: number) => [number, number, number];
   readonly __wbg_toriiclient_free: (a: number, b: number) => void;
   readonly __wbg_provider_free: (a: number, b: number) => void;
   readonly __wbg_account_free: (a: number, b: number) => void;
@@ -799,12 +796,12 @@ declare interface InitOutput {
   readonly __externref_table_dealloc: (a: number) => void;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h117df3dc8165caf5: (a: number, b: number) => void;
-  readonly closure1134_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1159_externref_shim: (a: number, b: number, c: any) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9feb41257b1ba6f0: (a: number, b: number) => void;
-  readonly closure2500_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure2676_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h25a2d6c0cac360bc: (a: number, b: number) => void;
+  readonly closure1136_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1161_externref_shim: (a: number, b: number, c: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hfd0262bcce7a58a4: (a: number, b: number) => void;
+  readonly closure2502_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure2678_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
