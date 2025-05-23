@@ -28,7 +28,7 @@ namespace Dojo.Starknet
         public SigningKey()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            Inner = new FieldElement(StarknetInterop.NewSigningKey());
+            Inner = new FieldElement(StarknetInterop.RandomSigningKey());
 #else
             Inner = new FieldElement(dojo.signing_key_new());
 #endif

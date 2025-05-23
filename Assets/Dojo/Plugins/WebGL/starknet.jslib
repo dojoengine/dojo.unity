@@ -88,8 +88,8 @@ mergeInto(LibraryManager.library, {
     provider.__destroy_into_raw();
     dynCall_vi(cb, confirmed);
   },
-  NewSigningKey: function () {
-    let pk = new wasm_bindgen.SigningKey().secretScalar();
+  RandomSigningKey: function () {
+    let pk = wasm_bindgen.SigningKey.fromRandom().secretScalar();
     let bufferSize = lengthBytesUTF8(pk) + 1;
     let buffer = _malloc(bufferSize);
     stringToUTF8(pk, buffer, bufferSize);

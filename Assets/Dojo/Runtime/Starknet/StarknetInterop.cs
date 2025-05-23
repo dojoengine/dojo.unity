@@ -208,7 +208,7 @@ namespace Dojo.Starknet
         }
 
         [DllImport("__Internal")]
-        public static extern string NewSigningKey();
+        public static extern string RandomSigningKey();
 
         [DllImport("__Internal")]
         public static extern string Sign(CString privateKey, CString hash);
