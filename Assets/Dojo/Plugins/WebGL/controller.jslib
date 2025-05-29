@@ -1,8 +1,14 @@
 mergeInto(LibraryManager.library, {
-  NewController: function (rpcUrl, chainId, policies) {
-    const rpcUrl = UTF8ToString(rpcUrl);
-    const chainId = UTF8ToString(chainId);
-    const policies = JSON.parse(UTF8ToString(policies));
+  ControllerProbe: function (cb) {
+    window.starknet_controller.probe().then((account) => {
+      dynCall_vi(cb, account ? true : false)
+    })
+  },
+  ControllerConnect: async function (rpcUrl, policies, cb) {
+    rpcUrl = UTF8ToString(rpcUrl);
+    const provider = new RpcProvider(rpcUrl);
+    chainId = await provider.chainId();
+    policies = JSON.parse(UTF8ToString(policies));
 
     const opts = {
       chains: [
@@ -23,26 +29,36 @@ mergeInto(LibraryManager.library, {
       }, {})
     }
 
-    window.controllerProvider = new ControllerProvider(opts)
-  },
-  Probe: function (cb) {
-    window.controllerProvider.probe().then((account) => {
+    const controller = new ControllerProvider(opts)
+    controller.connect().then((account) => {
       dynCall_vi(cb, account ? true : false)
+    }).catch((error) => {
+      dynCall_vi(cb, false)
     })
   },
-  Connect: function (cb) {
-    window.controllerProvider.connect().then((account) => {
-      dynCall_vi(cb, account ? true : false)
-    })
-  },
-  Disconnect: function (cb) {
-    window.controllerProvider.disconnect().then(() => {
+  ControllerDisconnect: function (cb) {
+    window.starknet_controller.disconnect().then(() => {
       dynCall_vi(cb)
     })
   },
-  Execute: function (cb, calls) {
-    window.controllerProvider.account.execute(JSON.parse(UTF8ToString(calls))).then((result) => {
+  ControllerExecute: function (cb, calls) {
+    calls = JSON.parse(UTF8ToString(calls)).forEach(call => call.entrypoint = call.selector);
+    window.starknet_controller.account.execute(calls).then((result) => {
       dynCall_vi(cb, result.transaction_hash)
     })
-  }
+  },
+  ControllerAddress: function () {
+    const address = window.starknet_controller.account.address
+    const bufferSize = lengthBytesUTF8(address) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(address, buffer, bufferSize);
+    return buffer;
+  },
+  ControllerUsername: function () {
+    const username = window.starknet_controller.username()
+    const bufferSize = lengthBytesUTF8(username) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(username, buffer, bufferSize);
+    return buffer;
+  },
 });

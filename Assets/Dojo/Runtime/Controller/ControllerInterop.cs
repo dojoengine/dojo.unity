@@ -8,16 +8,14 @@ using bottlenoselabs.C2CS.Runtime;
 using Newtonsoft.Json;
 using UnityEngine;
 using System.Linq;
+using Dojo.Starknet;
 
-namespace Dojo
+namespace Dojo.Controller
 {
     public static class ControllerInterop
     {
         [DllImport("__Internal")]
-        private static extern void NewController(CString rpcUrl, CString chainId, CString policies);
-
-        [DllImport("__Internal")]
-        private static extern void Probe(Action<bool> cb);
+        private static extern void ControllerProbe(Action<bool> cb);
 
         private static class ProbeHelper
         {
@@ -33,13 +31,13 @@ namespace Dojo
         public static Task<bool> Probe()
         {
             ProbeHelper.Tcs = new TaskCompletionSource<bool>();
-            Probe(ProbeHelper.Callback);
+            ControllerProbe(ProbeHelper.Callback);
             return ProbeHelper.Tcs.Task;
         }
 
 
         [DllImport("__Internal")]
-        private static extern void Connect(Action<bool> cb);
+        private static extern void ControllerConnect(CString rpcUrl, CString policies, Action<bool> cb);
 
         private static class ConnectHelper
         {
@@ -52,16 +50,16 @@ namespace Dojo
             }
         }
 
-        public static Task<bool> Connect()
+        public static Task<bool> Connect(string rpcUrl, Policy[] policies)
         {
             ConnectHelper.Tcs = new TaskCompletionSource<bool>();
-            Connect(ConnectHelper.Callback);
+            ControllerConnect(new CString(rpcUrl), new CString(JsonConvert.SerializeObject(policies)), ConnectHelper.Callback);
             return ConnectHelper.Tcs.Task;
         }
 
 
         [DllImport("__Internal")]
-        private static extern void Disconnect(Action cb);
+        private static extern void ControllerDisconnect(Action cb);
 
         private static class DisconnectHelper
         {
@@ -77,13 +75,13 @@ namespace Dojo
         public static Task Disconnect()
         {
             DisconnectHelper.Tcs = new TaskCompletionSource<bool>();
-            Disconnect(DisconnectHelper.Callback);
+            ControllerDisconnect(DisconnectHelper.Callback);
             return DisconnectHelper.Tcs.Task;
         }
 
 
         [DllImport("__Internal")]
-        private static extern void Execute(Action<string> cb, CString calls);
+        private static extern void ControllerExecute(Action<string> cb, CString calls);
 
         private static class ExecuteHelper
         {
@@ -98,20 +96,10 @@ namespace Dojo
         }
 
 
-        // Takes ControllerCall structs, serializes them into the expected JSON format
-        public static Task<string> Execute(ControllerCall[] calls)
+        public static Task<string> Execute(Call[] calls)
         {
             ExecuteHelper.Tcs = new TaskCompletionSource<string>();
-             var serializedCalls = calls.Select(call => new SerializedCall(
-                new FieldElement(call.to),
-                call.selector,
-                // Ensure dojo.FieldElement can be converted to Dojo.Starknet.FieldElement if they differ
-                // Assuming direct conversion or access to underlying data works:
-                call.calldata.ToArray().Select(f => new FieldElement(f)).ToArray()
-            )).ToArray();
-
-            var jsonCalls = JsonConvert.SerializeObject(serializedCalls);
-            Execute(ExecuteHelper.Callback, new CString(jsonCalls));
+            ControllerExecute(ExecuteHelper.Callback, new CString(JsonConvert.SerializeObject(calls)));
             return ExecuteHelper.Tcs.Task;
         }
     }

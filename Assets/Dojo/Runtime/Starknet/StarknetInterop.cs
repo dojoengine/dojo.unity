@@ -80,23 +80,6 @@ namespace Dojo.Starknet
             }
         }
 
-        struct SerializedCall
-        {
-            public SerializedCall(FieldElement to, string selector, FieldElement[] calldata)
-            {
-                this.to = to.Hex();
-                this.selector = selector;
-                this.calldata = calldata.Select(f => f.Hex()).ToArray();
-            }
-
-            // hex string of address
-            public string to;
-            // the unhashed selector
-            public string selector;
-            // array of hex strings
-            public string[] calldata;
-        }
-
         class SerializedBlockId
         {
             public static object Serialize(dojo.BlockId blockId)
@@ -134,10 +117,10 @@ namespace Dojo.Starknet
             }
         }
 
-        public static Task<FieldElement> AccountExecuteRawAsync(IntPtr account, dojo.Call[] calls)
+        public static Task<FieldElement> AccountExecuteRawAsync(IntPtr account, Call[] calls)
         {
             AccountExecuteRawHelper.Tcs = new TaskCompletionSource<FieldElement>();
-            AccountExecuteRaw(account, new CString(JsonConvert.SerializeObject(calls.Select(call => new SerializedCall(new FieldElement(call.to), call.selector, call.calldata.ToArray().Select(f => new FieldElement(f)).ToArray())).ToArray())), AccountExecuteRawHelper.Callback);
+            AccountExecuteRaw(account, new CString(JsonConvert.SerializeObject(calls)), AccountExecuteRawHelper.Callback);
             return AccountExecuteRawHelper.Tcs.Task;
         }
 
@@ -176,13 +159,12 @@ namespace Dojo.Starknet
             }
         }
 
-        public static Task<FieldElement[]> CallAsync(IntPtr provider, dojo.Call call, dojo.BlockId blockId)
+        public static Task<FieldElement[]> CallAsync(IntPtr provider, Call call, dojo.BlockId blockId)
         {
             WaitForTransactionHelper.Tcs = new TaskCompletionSource<bool>();
-            var serializedCall = new SerializedCall(new FieldElement(call.to), call.selector, call.calldata.ToArray().Select(f => new FieldElement(f)).ToArray());
             object serializedBlockId = SerializedBlockId.Serialize(blockId);
 
-            Call(provider, new CString(JsonConvert.SerializeObject(serializedCall)), new CString(JsonConvert.SerializeObject(serializedBlockId)), CallHelper.Callback);
+            Call(provider, new CString(JsonConvert.SerializeObject(call)), new CString(JsonConvert.SerializeObject(serializedBlockId)), CallHelper.Callback);
             return CallHelper.Tcs.Task;
         }
 

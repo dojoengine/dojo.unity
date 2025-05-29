@@ -82,11 +82,7 @@ public class Tests
     [Test, Order(3)]
     public async void TestAccountExecuteRaw()
     {
-        dojo.Call call = new dojo.Call()
-        {
-            to = actionsAddress.Inner,
-            selector = "spawn"
-        };
+        var call = new Call(actionsAddress, "spawn");
 
         var txnHash = await account.ExecuteRaw(new[] { call });
 
@@ -108,12 +104,7 @@ public class Tests
         Assert.That(entityUpdated || modelEntityUpdated, Is.True);
 
         // Move to check for event message update
-        call = new dojo.Call()
-        {
-            to = actionsAddress.Inner,
-            selector = "move",
-            calldata = new dojo.FieldElement[] { new FieldElement(0).Inner }
-        };
+        call = new Call(actionsAddress, "move", new FieldElement(0));
 
         txnHash = await account.ExecuteRaw(new[] { call });
 

@@ -16,6 +16,7 @@ using Random = UnityEngine.Random;
 // Fix to use Records in Unity ref. https://stackoverflow.com/a/73100830
 using System.ComponentModel;
 using Newtonsoft.Json;
+using Dojo.Controller;
 namespace System.Runtime.CompilerServices
 {
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -36,11 +37,16 @@ public class GameManager : MonoBehaviour
     public Account masterAccount;
 
 
-    void Start()
+    async void Start()
     {
         provider = new JsonRpcClient(gameManagerData.rpcUrl);
         masterAccount = new Account(provider, new SigningKey(gameManagerData.masterPrivateKey), new FieldElement(gameManagerData.masterAddress));
         burnerManager = new BurnerManager(provider, masterAccount);
+
+        var controller = await Controller.Connect(gameManagerData.rpcUrl, new Policy[] {
+            new Policy(new FieldElement(actions.contractAddress), "spawn", "spawn"),
+            new Policy(new FieldElement(actions.contractAddress), "move", "move"),
+        });
 
         worldManager.synchronizationMaster.OnEntitySpawned.AddListener(InitEntity);
         foreach (var entity in worldManager.Entities<ns_Position>())

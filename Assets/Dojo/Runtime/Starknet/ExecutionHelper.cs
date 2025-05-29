@@ -1,25 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Dojo.Starknet;
-using dojo_bindings;
 
-namespace Starknet
+namespace Dojo.Starknet
 {
-    public struct Call
-    {
-        public FieldElement contractAddress;
-        public string selector;
-        public FieldElement[] calldata;
-
-        public Call(FieldElement contractAddress, string selector, params FieldElement[] calldata)
-        {
-            this.contractAddress = contractAddress;
-            this.selector = selector;
-            this.calldata = calldata;
-        }
-    }
 
     // A helper class for constructing and executing Starknet transactions.
     public class ExecutionHelper
@@ -47,12 +30,7 @@ namespace Starknet
 
         public async Task<FieldElement> Execute()
         {
-            return await account.ExecuteRaw(calls.Select(call => new dojo.Call
-            {
-                to = call.contractAddress.Inner,
-                selector = call.selector,
-                calldata = call.calldata.Select(field => field.Inner).ToArray()
-            }).ToArray());
+            return await account.ExecuteRaw(calls.ToArray());
         }
     }
 }

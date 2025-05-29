@@ -6,9 +6,8 @@ using UnityEngine;
 using Dojo.Starknet;
 using System.Linq;
 
-namespace Dojo
+namespace Dojo.Controller
 {
-
     [Serializable]
     public struct Policy
     {
@@ -29,45 +28,24 @@ namespace Dojo
         }
     }
 
-    [Serializable]
-    public struct ControllerCall {
-        public FieldElement contractAddress;
-        public string entrypoint;
-        public FieldElement[] calldata;
-
-        public ControllerCall(FieldElement contractAddress, string entrypoint, FieldElement[] calldata)
-        {
-            this.contractAddress = contractAddress;
-            this.entrypoint = entrypoint;
-            this.calldata = calldata;
-        }
-
-        public dojo.Call ToNative()
-        {
-            return new dojo.Call {
-                to = contractAddress.Inner,
-                selector = entrypoint,
-                calldata = calldata.Select(c => c.Inner).ToArray()
-            };
-        }
-    }
-
-    public unsafe class Controller
+    public class Controller
     {
-        private dojo.ControllerAccount* controller;
-        public FieldElement Address => new FieldElement(dojo.controller_address(controller));
-        public FieldElement ChainId => new FieldElement(dojo.controller_chain_id(controller));
-        public string Username => CString.ToString(dojo.controller_username(controller));
+        unsafe private dojo.ControllerAccount* controller;
+        unsafe public FieldElement Address => new FieldElement(dojo.controller_address(controller));
+        unsafe public FieldElement ChainId => new FieldElement(dojo.controller_chain_id(controller));
+        unsafe public string Username => CString.ToString(dojo.controller_username(controller));
 
         private static dojo.FnPtr_ControllerAccountPtr_Void onConnectCallback;
         private static TaskCompletionSource<Controller> connectionTask;
 
-        private Controller(dojo.ControllerAccount* controller)
+        unsafe private Controller(dojo.ControllerAccount* controller)
         {
             this.controller = controller;
         }
 
-        public static Controller GetAccount(Policy[] policies, FieldElement chainId)
+        private Controller() {}
+
+        unsafe public static Controller GetAccount(Policy[] policies, FieldElement chainId)
         {
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
             dojo.Policy* policiesPtr = null;
@@ -89,7 +67,13 @@ namespace Dojo
             return new Controller(result._ok);
         }
 
-        public static Task<Controller> Connect(string rpcUrl, Policy[] policies)
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public static async Task<Controller> Connect(string rpcUrl, Policy[] policies)
+        {
+            return await ControllerInterop.Connect(rpcUrl, policies) ? new Controller() : throw new Exception("Failed to connect to controller");
+        }
+#else
+        unsafe public static Task<Controller> Connect(string rpcUrl, Policy[] policies)
         {
             connectionTask = new TaskCompletionSource<Controller>();
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
@@ -114,8 +98,9 @@ namespace Dojo
 
             return connectionTask.Task;
         }
+#endif
 
-        public static bool Clear(Policy[] policies, FieldElement chainId)
+        unsafe public static bool Clear(Policy[] policies, FieldElement chainId)
         {
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
             dojo.Policy* policiesPtr = null;
@@ -136,7 +121,7 @@ namespace Dojo
             return result.ok;
         }
 
-        public FieldElement ExecuteRaw(ControllerCall[] calls)
+        unsafe public FieldElement ExecuteRaw(Call[] calls)
         {
             var nativeCalls = calls.Select(c => c.ToNative()).ToArray();
             dojo.Call* callsPtr;
@@ -154,7 +139,7 @@ namespace Dojo
             return new FieldElement(result.ok);
         }
 
-        public FieldElement ExecuteFromOutside(ControllerCall[] calls)
+        unsafe public FieldElement ExecuteFromOutside(Call[] calls)
         {
             var nativeCalls = calls.Select(c => c.ToNative()).ToArray();
             dojo.Call* callsPtr;
@@ -172,7 +157,7 @@ namespace Dojo
             return new FieldElement(result.ok);
         }
 
-        public FieldElement Nonce()
+        unsafe public FieldElement Nonce()
         {
             if (controller == null)
             {

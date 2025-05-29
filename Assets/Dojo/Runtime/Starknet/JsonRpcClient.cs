@@ -68,9 +68,9 @@ namespace Dojo.Starknet
 
 #if UNITY_WEBGL && !UNITY_EDITOR
 #else
-        private unsafe FieldElement[] CallSync(dojo.Call call, dojo.BlockId blockId)
+        private unsafe FieldElement[] CallSync(Call call, dojo.BlockId blockId)
         {
-            var result = dojo.starknet_call(client, call, blockId);
+            var result = dojo.starknet_call(client, call.ToNative(), blockId);
             if (result.tag == dojo.ResultCArrayFieldElement_Tag.ErrCArrayFieldElement)
             {
                 throw new Exception(result.err.message);
@@ -86,7 +86,7 @@ namespace Dojo.Starknet
         // Wait for the transaction to be confirmed. Asynchronously.
         // This doesn't guarantee that the torii client has updated its state
         // if an entity is updated.
-        public async Task<FieldElement[]> Call(dojo.Call call, dojo.BlockId blockId)
+        public async Task<FieldElement[]> Call(Call call, dojo.BlockId blockId)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
                         return await StarknetInterop.CallAsync(client, call, blockId);
