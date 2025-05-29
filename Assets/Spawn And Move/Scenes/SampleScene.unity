@@ -1897,7 +1897,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   worldManager: {fileID: 2019443015}
   chatManager: {fileID: 1082089485}
-  dojoConfig: {fileID: 11400000, guid: 1d6a5fa48aab79f0084b213f6fc768c5, type: 2}
   gameManagerData: {fileID: 11400000, guid: ac99ac978699e9d6e9fe53247c9138c8, type: 2}
   actions: {fileID: 2019443021}
 --- !u!114 &2019443021
@@ -1909,11 +1908,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 691548659}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 60b18adcaf2b047e6b2b01ff15e6aea9, type: 3}
+  m_Script: {fileID: 11500000, guid: c4fd9ad215c314bb1944a6d6b467f464, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  contractAddress:
-    hex: 0x024d926d75cd84104c3bd24f0f79e95c273d6a99ed449f3c8b83114857020332
+  contractAddress: 0x008a3bd0d277bc11897763b6098728c400c31a1afd2597b3d65a8a99a7f4e44b
 --- !u!1001 &1014796538906876319
 PrefabInstance:
   m_ObjectHideFlags: 0
