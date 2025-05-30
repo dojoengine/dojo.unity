@@ -37,7 +37,7 @@ namespace Dojo.Controller
 
 
         [DllImport("__Internal")]
-        private static extern void ControllerConnect(CString rpcUrl, CString policies, Action<bool> cb);
+        private static extern void ControllerConnect(CString rpcUrl, CString policies, CString chainId, Action<bool> cb);
 
         private static class ConnectHelper
         {
@@ -50,10 +50,10 @@ namespace Dojo.Controller
             }
         }
 
-        public static Task<bool> Connect(string rpcUrl, Policy[] policies)
+        public static Task<bool> Connect(string rpcUrl, Policy[] policies, FieldElement chainId = null)
         {
             ConnectHelper.Tcs = new TaskCompletionSource<bool>();
-            ControllerConnect(new CString(rpcUrl), new CString(JsonConvert.SerializeObject(policies)), ConnectHelper.Callback);
+            ControllerConnect(new CString(rpcUrl), new CString(JsonConvert.SerializeObject(policies)), chainId != null ? new CString(chainId.ToString()) : new CString(""), ConnectHelper.Callback);
             return ConnectHelper.Tcs.Task;
         }
 
@@ -101,6 +101,43 @@ namespace Dojo.Controller
             ExecuteHelper.Tcs = new TaskCompletionSource<string>();
             ControllerExecute(ExecuteHelper.Callback, new CString(JsonConvert.SerializeObject(calls)));
             return ExecuteHelper.Tcs.Task;
+        }
+
+        [DllImport("__Internal")]
+        private static extern string ControllerUsername();
+
+        public static string Username()
+        {
+            return ControllerUsername();
+        }
+
+        [DllImport("__Internal")]
+        private static extern string ControllerAddress();
+
+        public static string Address()
+        {
+            return ControllerAddress();
+        }
+
+        [DllImport("__Internal")]
+        private static extern void ControllerChainId(Action<string> cb);
+
+        private static class ChainIdHelper
+        {
+            public static TaskCompletionSource<FieldElement> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string result)
+            {
+                Tcs.SetResult(new FieldElement(result));
+            }
+        }
+
+        public static Task<FieldElement> ChainId()
+        {
+            ChainIdHelper.Tcs = new TaskCompletionSource<FieldElement>();
+            ControllerChainId(ChainIdHelper.Callback);
+            return ChainIdHelper.Tcs.Task;
         }
     }
 }

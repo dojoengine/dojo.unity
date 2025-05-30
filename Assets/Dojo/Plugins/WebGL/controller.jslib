@@ -4,10 +4,14 @@ mergeInto(LibraryManager.library, {
       dynCall_vi(cb, account ? true : false)
     })
   },
-  ControllerConnect: async function (rpcUrl, policies, cb) {
+  ControllerConnect: async function (rpcUrl, policies, chainId, cb) {
     rpcUrl = UTF8ToString(rpcUrl);
-    const provider = new wasm_bindgen.Provider(rpcUrl);
-    chainId = await provider.chainId();
+    chainId = UTF8ToString(chainId);
+    // chain id  is optional
+    if (chainId == "") {
+      const provider = new wasm_bindgen.Provider(rpcUrl);
+      chainId = await provider.chainId();
+    }
     policies = JSON.parse(UTF8ToString(policies));
 
     const opts = {
@@ -48,17 +52,24 @@ mergeInto(LibraryManager.library, {
     })
   },
   ControllerAddress: function () {
-    const address = window.starknet_controller.account.address
+    const address = window.starknet_controller.account.address;
     const bufferSize = lengthBytesUTF8(address) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(address, buffer, bufferSize);
     return buffer;
   },
   ControllerUsername: function () {
-    const username = window.starknet_controller.username()
+    const username = window.starknet_controller.username();
     const bufferSize = lengthBytesUTF8(username) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(username, buffer, bufferSize);
     return buffer;
+  },
+  ControllerChainId: async function (cb) {
+    const chainId = await window.starknet_controller.account.chainId();
+    const bufferSize = lengthBytesUTF8(chainId) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(chainId, buffer, bufferSize);
+    dynCall_vi(cb, buffer);
   },
 });

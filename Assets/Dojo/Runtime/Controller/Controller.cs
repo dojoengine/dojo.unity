@@ -31,9 +31,13 @@ namespace Dojo.Controller
     public class Controller
     {
         unsafe private dojo.ControllerAccount* controller;
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public FieldElement Address => new FieldElement(ControllerInterop.Address());
+        public string Username => ControllerInterop.Username();
+#else
         unsafe public FieldElement Address => new FieldElement(dojo.controller_address(controller));
-        unsafe public FieldElement ChainId => new FieldElement(dojo.controller_chain_id(controller));
         unsafe public string Username => CString.ToString(dojo.controller_username(controller));
+#endif
 
         private static dojo.FnPtr_ControllerAccountPtr_Void onConnectCallback;
         private static TaskCompletionSource<Controller> connectionTask;
@@ -45,7 +49,19 @@ namespace Dojo.Controller
 
         private Controller() {}
 
-        unsafe public static Controller GetAccount(Policy[] policies, FieldElement chainId)
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public static async Task<Controller> Connect(string rpcUrl, Policy[] policies, FieldElement chainId = null)
+        {
+            if (await ControllerInterop.Connect(rpcUrl, policies, chainId))
+            {
+                return new Controller();
+            }
+
+            Debug.LogWarning("Failed to connect to controller");
+            return null;
+        }
+#else
+        unsafe private static Controller GetAccount(Policy[] policies, FieldElement chainId)
         {
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
             dojo.Policy* policiesPtr = null;
@@ -67,14 +83,15 @@ namespace Dojo.Controller
             return new Controller(result._ok);
         }
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        public static async Task<Controller> Connect(string rpcUrl, Policy[] policies)
+        unsafe public static Task<Controller> Connect(string rpcUrl, Policy[] policies, FieldElement chainId = null)
         {
-            return await ControllerInterop.Connect(rpcUrl, policies) ? new Controller() : throw new Exception("Failed to connect to controller");
-        }
-#else
-        unsafe public static Task<Controller> Connect(string rpcUrl, Policy[] policies)
-        {
+            if (chainId != null) {
+                var account = GetAccount(policies, chainId);
+                if (account != null) {
+                    return Task.FromResult(account);
+                }
+            }
+
             connectionTask = new TaskCompletionSource<Controller>();
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
             CString crpcUrl = CString.FromString(rpcUrl);
@@ -100,6 +117,8 @@ namespace Dojo.Controller
         }
 #endif
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+#else
         unsafe public static bool Clear(Policy[] policies, FieldElement chainId)
         {
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
@@ -120,26 +139,16 @@ namespace Dojo.Controller
 
             return result.ok;
         }
+#endif
 
-        unsafe public FieldElement ExecuteRaw(Call[] calls)
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public async Task<FieldElement> Execute(Call[] calls)
         {
-            var nativeCalls = calls.Select(c => c.ToNative()).ToArray();
-            dojo.Call* callsPtr;
-            fixed (dojo.Call* ptr = &nativeCalls[0])
-            {
-                callsPtr = ptr;
-            }
-
-            var result = dojo.controller_execute_raw(controller, callsPtr, (UIntPtr)calls.Length);
-            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
-            {
-                throw new Exception(result.err.message);
-            }
-
-            return new FieldElement(result.ok);
+            var txHash = await ControllerInterop.Execute(calls);
+            return new FieldElement(txHash);
         }
-
-        unsafe public FieldElement ExecuteFromOutside(Call[] calls)
+#else
+        unsafe private FieldElement ExecuteSync(Call[] calls)
         {
             var nativeCalls = calls.Select(c => c.ToNative()).ToArray();
             dojo.Call* callsPtr;
@@ -157,20 +166,10 @@ namespace Dojo.Controller
             return new FieldElement(result.ok);
         }
 
-        unsafe public FieldElement Nonce()
+        public async Task<FieldElement> Execute(Call[] calls)
         {
-            if (controller == null)
-            {
-                throw new InvalidOperationException("Controller is not initialized");
-            }
-
-            var result = dojo.controller_nonce(controller);
-            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
-            {
-                throw new Exception(result.err.message);
-            }
-
-            return new FieldElement(result.ok);
+            return await Task.Run(() => ExecuteSync(calls));
         }
+#endif
     }
 }
