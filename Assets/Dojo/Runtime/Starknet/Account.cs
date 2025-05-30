@@ -7,6 +7,41 @@ using Debug = UnityEngine.Debug;
 
 namespace Dojo.Starknet
 {
+    [Serializable]
+    public struct Call {
+        public FieldElement contractAddress;
+        public string entrypoint;
+        public FieldElement[] calldata;
+
+        public Call(FieldElement contractAddress, string entrypoint)
+        {
+            this.contractAddress = contractAddress;
+            this.entrypoint = entrypoint;
+            this.calldata = new FieldElement[0];
+        }
+
+        public Call(FieldElement contractAddress, string entrypoint, params FieldElement[] calldata)
+        {
+            this.contractAddress = contractAddress;
+            this.entrypoint = entrypoint;
+            this.calldata = calldata;
+        }
+
+        public dojo.Call ToNative()
+        {
+            return new dojo.Call {
+                to = contractAddress.Inner,
+                selector = entrypoint,
+                calldata = calldata.Select(c => c.Inner).ToArray()
+            };
+        }
+
+        public static implicit operator Call(dojo.Call call)
+        {
+            return new Call(new FieldElement(call.to), call.selector, call.calldata.ToArray().Select(f => new FieldElement(f)).ToArray());
+        }
+    }
+
     public class Account
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -95,17 +130,22 @@ namespace Dojo.Starknet
 
 #if UNITY_WEBGL && !UNITY_EDITOR
         // webgl js interop starknet bindings
-        public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
+        public async Task<FieldElement> ExecuteRaw(Call[] calls)
         {
             var res = await StarknetInterop.AccountExecuteRawAsync(await account.Task, calls);
 
             return res;
         }
+
+        public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
+        {
+            return await ExecuteRaw(calls.Select(c => (Call)c).ToArray());
+        }
 #else
-        private unsafe FieldElement ExecuteRawSync(dojo.Call[] calls)
+        private unsafe FieldElement ExecuteRawSync(Call[] calls)
         {
             dojo.Call* callsPtr;
-            fixed (dojo.Call* ptr = &calls[0])
+            fixed (dojo.Call* ptr = &calls.Select(c => c.ToNative()).ToArray()[0])
             {
                 callsPtr = ptr;
             }
@@ -119,9 +159,14 @@ namespace Dojo.Starknet
             return new FieldElement(result.ok);
         }
 
-        public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
+        public async Task<FieldElement> ExecuteRaw(Call[] calls)
         {
             return await Task.Run(() => ExecuteRawSync(calls));
+        }
+
+        public async Task<FieldElement> ExecuteRaw(dojo.Call[] calls)
+        {
+            return await Task.Run(() => ExecuteRawSync(calls.Select(c => (Call)c).ToArray()));
         }
 #endif
 

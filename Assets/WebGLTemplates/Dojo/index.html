@@ -166,6 +166,21 @@
 
       document.body.appendChild(script);
 
+      var controllerScript = document.createElement("script");
+      controllerScript.src = "TemplateData/controller/index.js"; // @controller
+      controllerScript.type = "module"; // @controller
+      controllerScript.onload = () => {
+        // For ES modules, we need to import dynamically to access exports
+        import('./TemplateData/controller/index.js').then((controller) => {
+          window.Controller = controller;
+          window.ControllerProvider = controller.default;
+          console.log("Controller loaded globally as window.Controller");
+        }).catch((error) => {
+          console.error("Failed to load controller:", error);
+        });
+      };
+      document.body.appendChild(controllerScript); // @controller
+
     </script>
   </body>
 </html>
