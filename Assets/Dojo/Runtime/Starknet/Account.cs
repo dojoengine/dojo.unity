@@ -10,20 +10,20 @@ namespace Dojo.Starknet
     [Serializable]
     public struct Call {
         public FieldElement contractAddress;
-        public string selector;
+        public string entrypoint;
         public FieldElement[] calldata;
 
-        public Call(FieldElement contractAddress, string selector)
+        public Call(FieldElement contractAddress, string entrypoint)
         {
             this.contractAddress = contractAddress;
-            this.selector = selector;
+            this.entrypoint = entrypoint;
             this.calldata = new FieldElement[0];
         }
 
-        public Call(FieldElement contractAddress, string selector, params FieldElement[] calldata)
+        public Call(FieldElement contractAddress, string entrypoint, params FieldElement[] calldata)
         {
             this.contractAddress = contractAddress;
-            this.selector = selector;
+            this.entrypoint = entrypoint;
             this.calldata = calldata;
         }
 
@@ -31,7 +31,7 @@ namespace Dojo.Starknet
         {
             return new dojo.Call {
                 to = contractAddress.Inner,
-                selector = selector,
+                selector = entrypoint,
                 calldata = calldata.Select(c => c.Inner).ToArray()
             };
         }

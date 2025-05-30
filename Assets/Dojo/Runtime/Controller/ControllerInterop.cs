@@ -104,11 +104,24 @@ namespace Dojo.Controller
         }
 
         [DllImport("__Internal")]
-        private static extern string ControllerUsername();
+        private static extern void ControllerUsername(Action<string> cb);
 
-        public static string Username()
+        private static class UsernameHelper
         {
-            return ControllerUsername();
+            public static TaskCompletionSource<string> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string result)
+            {
+                Tcs.SetResult(result);
+            }
+        }
+
+        public static Task<string> Username()
+        {
+            UsernameHelper.Tcs = new TaskCompletionSource<string>();
+            ControllerUsername(UsernameHelper.Callback);
+            return UsernameHelper.Tcs.Task;
         }
 
         [DllImport("__Internal")]

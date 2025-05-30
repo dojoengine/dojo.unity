@@ -33,10 +33,8 @@ namespace Dojo.Controller
         unsafe private dojo.ControllerAccount* controller;
 #if UNITY_WEBGL && !UNITY_EDITOR
         public FieldElement Address => new FieldElement(ControllerInterop.Address());
-        public string Username => ControllerInterop.Username();
 #else
         unsafe public FieldElement Address => new FieldElement(dojo.controller_address(controller));
-        unsafe public string Username => CString.ToString(dojo.controller_username(controller));
 #endif
 
         private static dojo.FnPtr_ControllerAccountPtr_Void onConnectCallback;
@@ -144,8 +142,12 @@ namespace Dojo.Controller
 #if UNITY_WEBGL && !UNITY_EDITOR
         public async Task<FieldElement> Execute(Call[] calls)
         {
-            var txHash = await ControllerInterop.Execute(calls);
-            return new FieldElement(txHash);
+            var hashOrError = await ControllerInterop.Execute(calls);
+            if (hashOrError.StartsWith("0x")) {
+                return new FieldElement(hashOrError);
+            }
+
+            throw new Exception(hashOrError);
         }
 #else
         unsafe private FieldElement ExecuteSync(Call[] calls)
@@ -169,6 +171,30 @@ namespace Dojo.Controller
         public async Task<FieldElement> Execute(Call[] calls)
         {
             return await Task.Run(() => ExecuteSync(calls));
+        }
+#endif
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public Task<string> Username()
+        {
+            return ControllerInterop.Username();
+        }
+#else
+        unsafe public Task<string> Username()
+        {
+            return Task.Run(() => CString.ToString(dojo.controller_username(controller)));
+        }
+#endif
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public Task<FieldElement> ChainId()
+        {
+            return ControllerInterop.ChainId();
+        }
+#else
+        unsafe public Task<FieldElement> ChainId()
+        {
+            return Task.Run(() => new FieldElement(dojo.controller_chain_id(controller)));
         }
 #endif
     }
