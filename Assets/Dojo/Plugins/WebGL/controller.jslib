@@ -6,7 +6,7 @@ mergeInto(LibraryManager.library, {
   },
   ControllerConnect: async function (rpcUrl, policies, cb) {
     rpcUrl = UTF8ToString(rpcUrl);
-    const provider = new RpcProvider(rpcUrl);
+    const provider = new wasm_bindgen.Provider(rpcUrl);
     chainId = await provider.chainId();
     policies = JSON.parse(UTF8ToString(policies));
 
@@ -30,7 +30,7 @@ mergeInto(LibraryManager.library, {
     }
 
     const controller = new ControllerProvider(opts)
-    controller.connect().then((account) => {
+    controller.waitForKeychain().then(() => controller.connect()).then((account) => {
       dynCall_vi(cb, account ? true : false)
     }).catch((error) => {
       dynCall_vi(cb, false)
