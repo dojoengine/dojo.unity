@@ -46,14 +46,14 @@ namespace Dojo.Torii
     public class ControllerQuery
     {
         public string[] usernames;
-        public FieldElement[] contractAddresses;
+        public FieldElement[] contract_addresses;
         public Pagination pagination;
 
-        public ControllerQuery(string[] usernames, FieldElement[] contractAddresses, Pagination pagination)
+        public ControllerQuery(string[] usernames, FieldElement[] contract_addresses, Pagination pagination)
         {
             this.pagination = pagination;
             this.usernames = usernames;
-            this.contractAddresses = contractAddresses;
+            this.contract_addresses = contract_addresses;
         }
 
         public dojo.ControllerQuery ToNative()
@@ -61,7 +61,7 @@ namespace Dojo.Torii
             return new dojo.ControllerQuery
             {
                 usernames = usernames,
-                contract_addresses = contractAddresses.Select(c => c.Inner).ToArray(),
+                contract_addresses = contract_addresses.Select(c => c.Inner).ToArray(),
                 pagination = pagination.ToNative(),
             };
         }
@@ -70,23 +70,23 @@ namespace Dojo.Torii
     [Serializable]
     public class TokenQuery
     {
-        public FieldElement[] contractAddresses;
-        public BigInteger[] tokenIds;
+        public FieldElement[] contract_addresses;
+        public BigInteger[] token_ids;
         public Pagination pagination;
 
-        public TokenQuery(FieldElement[] contractAddresses, BigInteger[] tokenIds, Pagination pagination)
+        public TokenQuery(FieldElement[] contract_addresses, BigInteger[] token_ids, Pagination pagination)
         {
             this.pagination = pagination;
-            this.contractAddresses = contractAddresses;
-            this.tokenIds = tokenIds;
+            this.contract_addresses = contract_addresses;
+            this.token_ids = token_ids;
         }
 
         public dojo.TokenQuery ToNative()
         {
             return new dojo.TokenQuery
             {
-                contract_addresses = contractAddresses.Select(c => c.Inner).ToArray(),
-                token_ids = tokenIds.Select(t =>
+                contract_addresses = contract_addresses.Select(c => c.Inner).ToArray(),
+                token_ids = token_ids.Select(t =>
             {
                 var bytes = t.ToByteArray();
                 Array.Resize(ref bytes, 32);
@@ -100,26 +100,26 @@ namespace Dojo.Torii
     [Serializable]
     public class TokenBalanceQuery
     {
-        public FieldElement[] contractAddresses;
-        public FieldElement[] accountAddresses;
-        public BigInteger[] tokenIds;
+        public FieldElement[] contract_addresses;
+        public FieldElement[] account_addresses;
+        public BigInteger[] token_ids;
         public Pagination pagination;
 
-        public TokenBalanceQuery(FieldElement[] contractAddresses, FieldElement[] accountAddresses, BigInteger[] tokenIds, Pagination pagination)
+        public TokenBalanceQuery(FieldElement[] contract_addresses, FieldElement[] account_addresses, BigInteger[] token_ids, Pagination pagination)
         {
             this.pagination = pagination;
-            this.contractAddresses = contractAddresses;
-            this.accountAddresses = accountAddresses;
-            this.tokenIds = tokenIds;
+            this.contract_addresses = contract_addresses;
+            this.account_addresses = account_addresses;
+            this.token_ids = token_ids;
         }
 
         public dojo.TokenBalanceQuery ToNative()
         {
             return new dojo.TokenBalanceQuery
             {
-                contract_addresses = contractAddresses.Select(c => c.Inner).ToArray(),
-                account_addresses = accountAddresses.Select(a => a.Inner).ToArray(),
-                token_ids = tokenIds.Select(t =>
+                contract_addresses = contract_addresses.Select(c => c.Inner).ToArray(),
+                account_addresses = account_addresses.Select(a => a.Inner).ToArray(),
+                token_ids = token_ids.Select(t =>
             {
                 var bytes = t.ToByteArray();
                 Array.Resize(ref bytes, 32);

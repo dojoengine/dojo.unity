@@ -2,22 +2,21 @@ mergeInto(LibraryManager.library, {
   // Creates a new client and returns the pointer to it
   CreateClient: async function (
     toriiUrl,
-    relayUrl,
     worldAddress,
     cb
   ) {
     let client = await (new wasm_bindgen.ToriiClient({
       toriiUrl: UTF8ToString(toriiUrl),
-      relayUrl: UTF8ToString(relayUrl),
       worldAddress: UTF8ToString(worldAddress),
     }));
 
     dynCall_vi(cb, client.__destroy_into_raw());
   },
   // Returns an array of all tokens
-  GetTokens: async function (clientPtr, contractAddresses, tokenIds, limit, cursor, cb) {
+  GetTokens: async function (clientPtr, queryString, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const tokensPage = await client.getTokens(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, UTF8ToString(cursor));
+    const query = JSON.parse(UTF8ToString(queryString));
+    const tokensPage = await client.getTokens(query);
 
     const tokensPageString = JSON.stringify(tokensPage);
     const bufferSize = lengthBytesUTF8(tokensPageString) + 1;
@@ -28,9 +27,10 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   // Returns an array of all token balances
-  GetTokenBalances: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, limit, cursor, cb) {
+  GetTokenBalances: async function (clientPtr, queryString, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const balancesPage = await client.getTokenBalances(JSON.parse(UTF8ToString(contractAddresses)), JSON.parse(UTF8ToString(accountAddresses)), JSON.parse(UTF8ToString(tokenIds)), limit, UTF8ToString(cursor));
+    const query = JSON.parse(UTF8ToString(queryString));
+    const balancesPage = await client.getTokenBalances(query);
 
     const balancesPageString = JSON.stringify(balancesPage);
     const bufferSize = lengthBytesUTF8(balancesPageString) + 1;
@@ -243,14 +243,13 @@ mergeInto(LibraryManager.library, {
   // signature: string[]
   PublishMessage: async function (clientPtr, message, signature, cb) {
     let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    const published = await client.publishMessage(
-      UTF8ToString(message),
-      JSON.parse(UTF8ToString(signature)),
-    );
-    const publishedString = JSON.stringify(Array.from(published));
-    const bufferSize = lengthBytesUTF8(publishedString) + 1;
+    const id = await client.publishMessage({
+      message: UTF8ToString(message),
+      signature: JSON.parse(UTF8ToString(signature)),
+    });
+    const bufferSize = lengthBytesUTF8(id) + 1;
     const buffer = _malloc(bufferSize);
-    stringToUTF8(publishedString, buffer, bufferSize);
+    stringToUTF8(id, buffer, bufferSize);
 
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);

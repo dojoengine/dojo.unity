@@ -16,7 +16,6 @@ namespace Dojo.Torii
     public class ToriiWasmClient
     {
         private string toriiUrl;
-        private string relayUrl;
         private FieldElement world;
         public IntPtr clientPtr;
 
@@ -25,10 +24,9 @@ namespace Dojo.Torii
         IntPtr tokenSubscription;
         IntPtr tokenBalanceSubscription;
 
-        public ToriiWasmClient(string toriiUrl, string relayUrl, FieldElement world)
+        public ToriiWasmClient(string toriiUrl, FieldElement world)
         {
             this.toriiUrl = toriiUrl;
-            this.relayUrl = relayUrl;
             this.world = world;
         }
 
@@ -46,7 +44,7 @@ namespace Dojo.Torii
         public async Task CreateClient()
         {
             CreateClientHelper.Tcs = new TaskCompletionSource<IntPtr>();
-            ToriiWasmInterop.CreateClient(new CString(toriiUrl), new CString(relayUrl), new CString(world.Hex()), CreateClientHelper.Callback);
+            ToriiWasmInterop.CreateClient(new CString(toriiUrl), new CString(world.Hex()), CreateClientHelper.Callback);
             clientPtr = await CreateClientHelper.Tcs.Task;
 
             entitySubscription = await RegisterEntityStateUpdateEvent();
@@ -197,13 +195,10 @@ namespace Dojo.Torii
             }
         }
 
-        public Task<Page<Token>> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = "")
+        public Task<Page<Token>> Tokens(TokenQuery query)
         {
-            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
-            if (tokenIds == null) tokenIds = new BigInteger[] { };
-
             GetTokensHelper.Tcs = new TaskCompletionSource<Page<Token>>();
-            ToriiWasmInterop.GetTokens(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), limit, new CString(cursor), GetTokensHelper.Callback);
+            ToriiWasmInterop.GetTokens(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetTokensHelper.Callback);
             return GetTokensHelper.Tcs.Task;
         }
 
@@ -219,14 +214,10 @@ namespace Dojo.Torii
             }
         }
 
-        public Task<Page<TokenBalance>> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, int limit = 0, string cursor = "")
+        public Task<Page<TokenBalance>> TokenBalances(TokenBalanceQuery query)
         {
-            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
-            if (accountAddresses == null) accountAddresses = new FieldElement[] { };
-            if (tokenIds == null) tokenIds = new BigInteger[] { };
-
             GetTokenBalancesHelper.Tcs = new TaskCompletionSource<Page<TokenBalance>>();
-            ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(contractAddresses)), new CString(JsonConvert.SerializeObject(accountAddresses)), new CString(JsonConvert.SerializeObject(tokenIds)), limit, new CString(cursor), GetTokenBalancesHelper.Callback);
+            ToriiWasmInterop.GetTokenBalances(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetTokenBalancesHelper.Callback);
             return GetTokenBalancesHelper.Tcs.Task;
         }
 
