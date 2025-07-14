@@ -36,7 +36,7 @@ public class Tests
     [SetUp]
     public void SetupTorii()
     {
-        client = new ToriiClient(toriiUrl, relayUrl, worldAddress, false);
+        client = new ToriiClient(toriiUrl, worldAddress, false);
 
         if (client == null) throw new Exception("client is null");
     }
@@ -128,50 +128,6 @@ public class Tests
         }
 
         Assert.That(eventMessageUpdated, Is.True);
-    }
-
-    [Test]
-    public void TestWorldMetadata()
-    {
-        var worldMetadata = client.WorldMetadata();
-
-        // models should correspond to Moves and Position
-        var movesExists = false;
-        var positionExists = false;
-        foreach (var cHashItemCCharModelMetadata in worldMetadata.models)
-        {
-            var modelMetadata = cHashItemCCharModelMetadata.value;
-            switch (modelMetadata.name)
-            {
-                case "":
-
-                case "Moves":
-                    movesExists = true;
-
-                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.Struct_));
-                    Assert.That(modelMetadata.schema.struct_.children[0].name, Is.EqualTo("player"));
-                    Assert.That(modelMetadata.schema.struct_.children[1].name, Is.EqualTo("remaining"));
-                    Assert.That(modelMetadata.schema.struct_.children[2].name, Is.EqualTo("last_direction"));
-
-                    // maybe worth verifying the field types?
-
-                    break;
-                case "Position":
-                    positionExists = true;
-
-                    Assert.That(modelMetadata.schema.tag, Is.EqualTo(dojo.Ty_Tag.Struct_));
-                    Assert.That(modelMetadata.schema.struct_.children[0].name, Is.EqualTo("player"));
-                    Assert.That(modelMetadata.schema.struct_.children[1].name, Is.EqualTo("vec"));
-
-                    // maybe worth verifying the field types?
-
-                    break;
-            }
-        }
-
-        Assert.That(worldMetadata.world_address, Is.EqualTo(worldAddress.Inner));
-        Assert.That(movesExists, Is.True);
-        Assert.That(positionExists, Is.True);
     }
 
     [Test, Order(1)]

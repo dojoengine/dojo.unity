@@ -117,12 +117,12 @@ namespace Dojo
             }
         }
 
-        public async Task<byte[]> Publish(TypedData typedData, FieldElement[] signature)
+        public async Task<FieldElement> Publish(TypedData typedData, FieldElement[] signature)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             return await toriiClient.PublishMessage(typedData, signature);
 #else
-            return await Task.Run(() => toriiClient.PublishMessage(typedData, signature).ToArray());
+            return await Task.Run(() => toriiClient.PublishMessage(typedData, signature));
 #endif
         }
     }
