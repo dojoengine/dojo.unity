@@ -8,12 +8,12 @@ namespace Dojo.Torii
 #nullable enable
 
         public T[] items;
-        public string? nextCursor;
+        public string? next_cursor;
 
-        public Page(T[] items, string? nextCursor = null)
+        public Page(T[] items, string? next_cursor = null)
         {
             this.items = items;
-            this.nextCursor = nextCursor;
+            this.next_cursor = next_cursor;
         }
     }
 }

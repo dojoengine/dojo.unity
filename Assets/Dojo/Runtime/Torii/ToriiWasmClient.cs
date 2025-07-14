@@ -167,18 +167,18 @@ namespace Dojo.Torii
 
         private static class PublishMessageHelper
         {
-            public static TaskCompletionSource<byte[]> Tcs;
+            public static TaskCompletionSource<FieldElement> Tcs;
 
             [MonoPInvokeCallback(typeof(Action<string>))]
             public static void Callback(string messageId)
             {
-                Tcs.SetResult(JsonConvert.DeserializeObject<byte[]>(messageId));
+                Tcs.SetResult(new FieldElement(messageId));
             }
         }
 
-        public Task<byte[]> PublishMessage(TypedData typedData, FieldElement[] signature)
+        public Task<FieldElement> PublishMessage(TypedData typedData, FieldElement[] signature)
         {
-            PublishMessageHelper.Tcs = new TaskCompletionSource<byte[]>();
+            PublishMessageHelper.Tcs = new TaskCompletionSource<FieldElement>();
             ToriiWasmInterop.PublishMessage(clientPtr, new CString(JsonConvert.SerializeObject(typedData)), new CString(JsonConvert.SerializeObject(signature)), PublishMessageHelper.Callback);
             return PublishMessageHelper.Tcs.Task;
         }
@@ -191,7 +191,7 @@ namespace Dojo.Torii
             public static void Callback(string controllers)
             {
                 var parsedControllers = JsonConvert.DeserializeObject<Page<WasmController>>(controllers);
-                Tcs.SetResult(new Page<Controller>(parsedControllers.items.Select(c => new Controller(c.address, c.username, c.deployed_at)).ToArray(), parsedControllers.nextCursor));
+                Tcs.SetResult(new Page<Controller>(parsedControllers.items.Select(c => new Controller(c.address, c.username, DateTimeOffset.FromUnixTimeSeconds(c.deployed_at_timestamp).DateTime)).ToArray(), parsedControllers.next_cursor));
             }
         }
 
@@ -210,7 +210,7 @@ namespace Dojo.Torii
             public static void Callback(string tokens)
             {
                 var parsedTokens = JsonConvert.DeserializeObject<Page<WasmToken>>(tokens);
-                Tcs.SetResult(new Page<Token>(parsedTokens.items.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray(), parsedTokens.nextCursor));
+                Tcs.SetResult(new Page<Token>(parsedTokens.items.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray(), parsedTokens.next_cursor));
             }
         }
 
@@ -229,7 +229,7 @@ namespace Dojo.Torii
             public static void Callback(string tokenBalances)
             {
                 var parsedTokenBalances = JsonConvert.DeserializeObject<Page<WasmTokenBalance>>(tokenBalances);
-                Tcs.SetResult(new Page<TokenBalance>(parsedTokenBalances.items.Select(t => new TokenBalance(BigInteger.Parse(t.balance.Substring(2), System.Globalization.NumberStyles.HexNumber), new FieldElement(t.account_address), new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber))).ToArray(), parsedTokenBalances.nextCursor));
+                Tcs.SetResult(new Page<TokenBalance>(parsedTokenBalances.items.Select(t => new TokenBalance(BigInteger.Parse(t.balance.Substring(2), System.Globalization.NumberStyles.HexNumber), new FieldElement(t.account_address), new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber))).ToArray(), parsedTokenBalances.next_cursor));
             }
         }
 

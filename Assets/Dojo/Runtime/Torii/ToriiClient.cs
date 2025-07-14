@@ -35,6 +35,13 @@ namespace Dojo.Torii
             username = controller.username;
             deployedAt = DateTimeOffset.FromUnixTimeSeconds((long)controller.deployed_at_timestamp).DateTime;
         }
+
+        public Controller(string address, string username, DateTime deployedAt)
+        {
+            this.address = new FieldElement(address);
+            this.username = username;
+            this.deployedAt = deployedAt;
+        }
     }
 
     public unsafe class ToriiClient
