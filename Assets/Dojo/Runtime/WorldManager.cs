@@ -21,10 +21,10 @@ namespace Dojo
         async void Awake()
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
-            toriiClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.relayWebrtcUrl, dojoConfig.worldAddress);
+            toriiClient = new ToriiWasmClient(dojoConfig.toriiUrl, dojoConfig.worldAddress);
             await toriiClient.CreateClient();
 #else
-            toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.relayUrl, dojoConfig.worldAddress);
+            toriiClient = new ToriiClient(dojoConfig.toriiUrl, dojoConfig.worldAddress);
 #endif
 
             /*  fetch entities from the world
