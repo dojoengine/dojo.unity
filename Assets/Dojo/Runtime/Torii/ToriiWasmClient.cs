@@ -183,6 +183,25 @@ namespace Dojo.Torii
             return PublishMessageHelper.Tcs.Task;
         }
 
+        private static class GetControllersHelper
+        {
+            public static TaskCompletionSource<Page<Controller>> Tcs;
+
+            [MonoPInvokeCallback(typeof(Action<string>))]
+            public static void Callback(string controllers)
+            {
+                var parsedControllers = JsonConvert.DeserializeObject<Page<WasmController>>(controllers);
+                Tcs.SetResult(new Page<Controller>(parsedControllers.items.Select(c => new Controller(c.address, c.username, c.deployed_at)).ToArray(), parsedControllers.nextCursor));
+            }
+        }
+
+        public Task<Page<Controller>> Controllers(ControllerQuery query)
+        {
+            GetControllersHelper.Tcs = new TaskCompletionSource<Page<Controller>>();
+            ToriiWasmInterop.GetControllers(clientPtr, new CString(JsonConvert.SerializeObject(query)), GetControllersHelper.Callback);
+            return GetControllersHelper.Tcs.Task;
+        }
+
         private static class GetTokensHelper
         {
             public static TaskCompletionSource<Page<Token>> Tcs;

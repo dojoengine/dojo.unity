@@ -12,7 +12,21 @@ mergeInto(LibraryManager.library, {
 
     dynCall_vi(cb, client.__destroy_into_raw());
   },
-  // Returns an array of all tokens
+  // Returns a page of all controllers
+  GetControllers: async function (clientPtr, queryString, cb) {
+    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const query = JSON.parse(UTF8ToString(queryString));
+    const controllersPage = await client.getControllers(query);
+
+    const controllersPageString = JSON.stringify(controllersPage);
+    const bufferSize = lengthBytesUTF8(controllersPageString) + 1;
+    const buffer = _malloc(bufferSize);
+    stringToUTF8(controllersPageString, buffer, bufferSize);
+
+    client.__destroy_into_raw();
+    dynCall_vi(cb, buffer);
+  },
+  // Returns a page of all tokens
   GetTokens: async function (clientPtr, queryString, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
@@ -26,7 +40,7 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
-  // Returns an array of all token balances
+  // Returns a page of all token balances
   GetTokenBalances: async function (clientPtr, queryString, cb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const query = JSON.parse(UTF8ToString(queryString));
