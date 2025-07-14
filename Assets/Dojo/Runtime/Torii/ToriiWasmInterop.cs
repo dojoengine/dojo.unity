@@ -58,19 +58,31 @@ namespace Dojo.Torii
         public string token_id;
     }
 
+    [Serializable]
+    public struct WasmController
+    {
+        public string address;
+        public string username;
+        public long deployed_at_timestamp;
+    }
+
     public class ToriiWasmInterop : MonoBehaviour
     {
         // Creates a new client and returns the pointer to it
         [DllImport("__Internal")]
-        public static extern void CreateClient(CString toriiUrl, CString relayUrl, CString worldAddress, Action<IntPtr> cb);
+        public static extern void CreateClient(CString toriiUrl, CString worldAddress, Action<IntPtr> cb);
+
+        // Returns a page of all controllers
+        [DllImport("__Internal")]
+        public static extern void GetControllers(IntPtr clientPtr, CString query, Action<string> cb);
 
         // Returns an array of all tokens
         [DllImport("__Internal")]
-        public static extern void GetTokens(IntPtr clientPtr, CString contractAddresses, CString tokenIds, int limit, CString cursor, Action<string> cb);
+        public static extern void GetTokens(IntPtr clientPtr, CString query, Action<string> cb);
 
         // Returns an array of all token balances
         [DllImport("__Internal")]
-        public static extern void GetTokenBalances(IntPtr clientPtr, CString contractAddresses, CString accountAddresses, CString tokenIds, int limit, CString cursor, Action<string> cb);
+        public static extern void GetTokenBalances(IntPtr clientPtr, CString query, Action<string> cb);
 
         // Returns a dictionary of all of the entities
         [DllImport("__Internal")]

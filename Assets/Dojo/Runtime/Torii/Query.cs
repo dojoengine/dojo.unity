@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Numerics;
 using bottlenoselabs.C2CS.Runtime;
 using Dojo.Starknet;
 using dojo_bindings;
@@ -14,7 +15,7 @@ namespace Dojo.Torii
     [Serializable]
     public struct Pagination
     {
-        public uint limit;
+        public uint? limit;
         [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
         public string? cursor;
         public OrderBy[] order_by;
@@ -33,10 +34,98 @@ namespace Dojo.Torii
         {
             return new dojo.Pagination
             {
-                limit = limit,
+                limit = limit is null ? new dojo.COptionu32 { tag = dojo.COptionu32_Tag.Noneu32 } : new dojo.COptionu32 { tag = dojo.COptionu32_Tag.Someu32, some = limit.Value },
                 cursor = cursor is null ? new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Nonec_char } : new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Somec_char, some = cursor },
                 direction = direction,
                 order_by = order_by.Select(o => o.ToNative()).ToArray()
+            };
+        }
+    }
+
+    [Serializable]
+    public class ControllerQuery
+    {
+        public string[] usernames;
+        public FieldElement[] contract_addresses;
+        public Pagination pagination;
+
+        public ControllerQuery(string[] usernames, FieldElement[] contract_addresses, Pagination pagination)
+        {
+            this.pagination = pagination;
+            this.usernames = usernames;
+            this.contract_addresses = contract_addresses;
+        }
+
+        public dojo.ControllerQuery ToNative()
+        {
+            return new dojo.ControllerQuery
+            {
+                usernames = usernames,
+                contract_addresses = contract_addresses.Select(c => c.Inner).ToArray(),
+                pagination = pagination.ToNative(),
+            };
+        }
+    }
+
+    [Serializable]
+    public class TokenQuery
+    {
+        public FieldElement[] contract_addresses;
+        public BigInteger[] token_ids;
+        public Pagination pagination;
+
+        public TokenQuery(FieldElement[] contract_addresses, BigInteger[] token_ids, Pagination pagination)
+        {
+            this.pagination = pagination;
+            this.contract_addresses = contract_addresses;
+            this.token_ids = token_ids;
+        }
+
+        public dojo.TokenQuery ToNative()
+        {
+            return new dojo.TokenQuery
+            {
+                contract_addresses = contract_addresses.Select(c => c.Inner).ToArray(),
+                token_ids = token_ids.Select(t =>
+            {
+                var bytes = t.ToByteArray();
+                Array.Resize(ref bytes, 32);
+                return new dojo.U256 { data = bytes.Reverse().ToArray() };
+            }).ToArray(),
+                pagination = pagination.ToNative(),
+            };
+        }
+    }
+
+    [Serializable]
+    public class TokenBalanceQuery
+    {
+        public FieldElement[] contract_addresses;
+        public FieldElement[] account_addresses;
+        public BigInteger[] token_ids;
+        public Pagination pagination;
+
+        public TokenBalanceQuery(FieldElement[] contract_addresses, FieldElement[] account_addresses, BigInteger[] token_ids, Pagination pagination)
+        {
+            this.pagination = pagination;
+            this.contract_addresses = contract_addresses;
+            this.account_addresses = account_addresses;
+            this.token_ids = token_ids;
+        }
+
+        public dojo.TokenBalanceQuery ToNative()
+        {
+            return new dojo.TokenBalanceQuery
+            {
+                contract_addresses = contract_addresses.Select(c => c.Inner).ToArray(),
+                account_addresses = account_addresses.Select(a => a.Inner).ToArray(),
+                token_ids = token_ids.Select(t =>
+            {
+                var bytes = t.ToByteArray();
+                Array.Resize(ref bytes, 32);
+                return new dojo.U256 { data = bytes.Reverse().ToArray() };
+            }).ToArray(),
+                pagination = pagination.ToNative(),
             };
         }
     }
@@ -87,15 +176,13 @@ namespace Dojo.Torii
     [Serializable]
     public struct OrderBy
     {
-        public string model;
-        public string member;
+        public string field;
         [JsonConverter(typeof(StringEnumConverter))]
         public dojo.OrderDirection direction;
 
-        public OrderBy(string model, string member, dojo.OrderDirection direction)
+        public OrderBy(string field, dojo.OrderDirection direction)
         {
-            this.model = model;
-            this.member = member;
+            this.field = field;
             this.direction = direction;
         }
 
@@ -103,8 +190,7 @@ namespace Dojo.Torii
         {
             return new dojo.OrderBy
             {
-                model = model,
-                member = member,
+                field = field,
                 direction = direction
             };
         }

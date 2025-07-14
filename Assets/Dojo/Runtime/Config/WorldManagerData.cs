@@ -11,8 +11,6 @@ namespace Dojo
     {
         [Header("RPC")]
         public string toriiUrl = "http://localhost:8080";
-        public string relayUrl = "/ip4/127.0.0.1/tcp/9090";
-        public string relayWebrtcUrl;
         [Header("World")]
         public FieldElement worldAddress;
         public Query query = new Query();
