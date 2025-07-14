@@ -87,7 +87,7 @@ declare namespace wasm_bindgen {
 	
 	export type WasmU256 = string;
 	
-	export type Controllers = Controller[];
+	export type Controllers = Page<Controller>;
 	
 	export interface Controller {
 	    address: string;
@@ -99,6 +99,8 @@ declare namespace wasm_bindgen {
 	
 	export type TokenBalances = Page<TokenBalance>;
 	
+	export type TokenCollections = Page<TokenCollection>;
+	
 	export interface Token {
 	    contract_address: string;
 	    token_id: string;
@@ -108,11 +110,80 @@ declare namespace wasm_bindgen {
 	    metadata: string;
 	}
 	
+	export interface TokenCollection {
+	    contract_address: string;
+	    name: string;
+	    symbol: string;
+	    decimals: number;
+	    count: number;
+	    metadata: string;
+	}
+	
 	export interface TokenBalance {
 	    balance: string;
 	    account_address: string;
 	    contract_address: string;
 	    token_id: string;
+	}
+	
+	export interface TransactionFilter {
+	    transaction_hashes: string[];
+	    caller_addresses: string[];
+	    contract_addresses: string[];
+	    entrypoints: string[];
+	    model_selectors: string[];
+	    from_block: number | undefined;
+	    to_block: number | undefined;
+	}
+	
+	export interface TransactionQuery {
+	    filter: TransactionFilter | undefined;
+	    pagination: Pagination;
+	}
+	
+	export type Transactions = Page<Transaction>;
+	
+	export interface Transaction {
+	    transaction_hash: string;
+	    sender_address: string;
+	    calldata: string[];
+	    max_fee: string;
+	    signature: string[];
+	    nonce: string;
+	    block_number: number;
+	    transaction_type: string;
+	    block_timestamp: number;
+	    calls: TransactionCall[];
+	    unique_models: string[];
+	}
+	
+	export type CallType = "Execute" | "ExecuteFromOutside";
+	
+	export interface TransactionCall {
+	    contract_address: string;
+	    entrypoint: string;
+	    calldata: string[];
+	    call_type: CallType;
+	    caller_address: string;
+	}
+	
+	export interface ControllerQuery {
+	    contract_addresses: string[];
+	    usernames: string[];
+	    pagination: Pagination;
+	}
+	
+	export interface TokenQuery {
+	    contract_addresses: string[];
+	    token_ids: string[];
+	    pagination: Pagination;
+	}
+	
+	export interface TokenBalanceQuery {
+	    contract_addresses: string[];
+	    account_addresses: string[];
+	    token_ids: string[];
+	    pagination: Pagination;
 	}
 	
 	export interface IndexerUpdate {
@@ -124,7 +195,6 @@ declare namespace wasm_bindgen {
 	
 	export interface ClientConfig {
 	    toriiUrl: string;
-	    relayUrl: string;
 	    worldAddress: string;
 	}
 	
@@ -175,7 +245,7 @@ declare namespace wasm_bindgen {
 	}
 	
 	export interface Pagination {
-	    limit: number;
+	    limit: number | undefined;
 	    cursor: string | undefined;
 	    direction: PaginationDirection;
 	    order_by: OrderBy[];
@@ -184,8 +254,7 @@ declare namespace wasm_bindgen {
 	export type PaginationDirection = "Forward" | "Backward";
 	
 	export interface OrderBy {
-	    model: string;
-	    member: string;
+	    field: string;
 	    direction: OrderDirection;
 	}
 	
@@ -234,6 +303,11 @@ declare namespace wasm_bindgen {
 	    keys: string[];
 	    data: string[];
 	    transaction_hash: string;
+	}
+	
+	export interface Message {
+	    message: string;
+	    signature: string[];
 	}
 	
 	export class Account {
@@ -405,6 +479,13 @@ declare namespace wasm_bindgen {
 	   * Result containing success boolean or error
 	   */
 	  waitForTransaction(txn_hash: string): Promise<boolean>;
+	  /**
+	   * Gets the chain id of the provider
+	   *
+	   * # Returns
+	   * Result containing chain id as hex string or error
+	   */
+	  chainId(): Promise<string>;
 	}
 	export class SigningKey {
 	  free(): void;
@@ -414,7 +495,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Private key as hex string
 	   */
-	  constructor();
+	  constructor(secret_scalar: string);
 	  /**
 	   * Initializes a new signing key from a secret scalar
 	   *
@@ -424,7 +505,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing signing key or error
 	   */
-	  static fromSecretScalar(secret_scalar: string): SigningKey;
+	  static fromRandom(): SigningKey;
 	  /**
 	   * Returns the secret scalar of the signing key
 	   *
@@ -458,6 +539,7 @@ declare namespace wasm_bindgen {
 	   * Cancels an active subscription
 	   */
 	  cancel(): void;
+	  id: bigint;
 	}
 	export class ToriiClient {
 	  free(): void;
@@ -481,7 +563,28 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing controllers or error
 	   */
-	  getControllers(contract_addresses: string[]): Promise<Controllers>;
+	  getControllers(query: ControllerQuery): Promise<Controllers>;
+	  /**
+	   * Gets transactions matching the given query
+	   *
+	   * # Parameters
+	   * * `query` - Query parameters
+	   *
+	   * # Returns
+	   * Result containing transactions or error
+	   */
+	  getTransactions(query: TransactionQuery): Promise<Transactions>;
+	  /**
+	   * Subscribes to transactions
+	   *
+	   * # Parameters
+	   * * `filter` - Filter parameters
+	   * * `callback` - JavaScript function to call on updates
+	   *
+	   * # Returns
+	   * Result containing subscription handle or error
+	   */
+	  onTransaction(filter: TransactionFilter | null | undefined, callback: Function): Promise<Subscription>;
 	  /**
 	   * Gets token information for the given contract addresses
 	   *
@@ -494,7 +597,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing token information or error
 	   */
-	  getTokens(contract_addresses?: string[] | null, token_ids?: WasmU256[] | null, limit?: number | null, cursor?: string | null): Promise<Tokens>;
+	  getTokens(query: TokenQuery): Promise<Tokens>;
 	  /**
 	   * Subscribes to token updates
 	   *
@@ -505,7 +608,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onTokenUpdated(contract_addresses: string[] | null | undefined, token_ids: WasmU256[] | null | undefined, callback: Function): Subscription;
+	  onTokenUpdated(contract_addresses: string[] | null | undefined, token_ids: WasmU256[] | null | undefined, callback: Function): Promise<Subscription>;
 	  /**
 	   * Gets token balances for given accounts and contracts
 	   *
@@ -519,7 +622,21 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing token balances or error
 	   */
-	  getTokenBalances(contract_addresses?: string[] | null, account_addresses?: string[] | null, token_ids?: WasmU256[] | null, limit?: number | null, cursor?: string | null): Promise<TokenBalances>;
+	  getTokenBalances(query: TokenBalanceQuery): Promise<TokenBalances>;
+	  /**
+	   * Gets token collections for given accounts and contracts
+	   *
+	   * # Parameters
+	   * * `contract_addresses` - Array of contract addresses as hex strings
+	   * * `account_addresses` - Array of account addresses as hex strings
+	   * * `token_ids` - Array of token ids
+	   * * `limit` - Maximum number of token balances to return
+	   * * `cursor` - Cursor to start from
+	   *
+	   * # Returns
+	   * Result containing token balances or error
+	   */
+	  getTokenCollections(query: TokenBalanceQuery): Promise<TokenCollections>;
 	  /**
 	   * Queries entities based on the provided query parameters
 	   *
@@ -561,7 +678,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onEntityUpdated(clause: Clause | null | undefined, callback: Function): Subscription;
+	  onEntityUpdated(clause: Clause | null | undefined, callback: Function): Promise<Subscription>;
 	  /**
 	   * Updates an existing entity subscription
 	   *
@@ -583,7 +700,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onEventMessageUpdated(clause: Clause | null | undefined, callback: Function): Subscription;
+	  onEventMessageUpdated(clause: Clause | null | undefined, callback: Function): Promise<Subscription>;
 	  /**
 	   * Updates an existing event message subscription
 	   *
@@ -605,7 +722,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onStarknetEvent(clauses: KeysClause[], callback: Function): Subscription;
+	  onStarknetEvent(clauses: KeysClause[], callback: Function): Promise<Subscription>;
 	  /**
 	   * Subscribes to indexer updates
 	   *
@@ -616,7 +733,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onIndexerUpdated(contract_address: string | null | undefined, callback: Function): Subscription;
+	  onIndexerUpdated(contract_address: string | null | undefined, callback: Function): Promise<Subscription>;
 	  /**
 	   * Subscribes to token balance updates
 	   *
@@ -628,7 +745,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing subscription handle or error
 	   */
-	  onTokenBalanceUpdated(contract_addresses: string[] | null | undefined, account_addresses: string[] | null | undefined, token_ids: WasmU256[] | null | undefined, callback: Function): Subscription;
+	  onTokenBalanceUpdated(contract_addresses: string[] | null | undefined, account_addresses: string[] | null | undefined, token_ids: WasmU256[] | null | undefined, callback: Function): Promise<Subscription>;
 	  /**
 	   * Updates an existing token balance subscription
 	   *
@@ -649,9 +766,19 @@ declare namespace wasm_bindgen {
 	   * * `signature` - Array of signature field elements as hex strings
 	   *
 	   * # Returns
-	   * Result containing message ID as byte array or error
+	   * Result containing entity id of the offchain message or error
 	   */
-	  publishMessage(message: string, signature: string[]): Promise<Uint8Array>;
+	  publishMessage(message: Message): Promise<string>;
+	  /**
+	   * Publishes multiple messages to the network
+	   *
+	   * # Parameters
+	   * * `messages` - Array of Message objects, each containing message and signature fields
+	   *
+	   * # Returns
+	   * Result containing array of entity ids of the offchain messages or error
+	   */
+	  publishMessageBatch(messages: Message[]): Promise<string[]>;
 	}
 	export class TypedData {
 	  free(): void;
@@ -681,16 +808,6 @@ declare namespace wasm_bindgen {
 	   */
 	  constructor(verifying_key: string);
 	  /**
-	   * Derives a verifying key from a signing key
-	   *
-	   * # Parameters
-	   * * `signing_key` - Signing key as hex string
-	   *
-	   * # Returns
-	   * Result containing verifying key or error
-	   */
-	  static fromSigningKey(signing_key: SigningKey): VerifyingKey;
-	  /**
 	   * Returns the scalar of the verifying key
 	   *
 	   * # Returns
@@ -717,23 +834,29 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
+  readonly __wbg_provider_free: (a: number, b: number) => void;
+  readonly __wbg_account_free: (a: number, b: number) => void;
+  readonly __wbg_controlleraccount_free: (a: number, b: number) => void;
+  readonly __wbg_subscription_free: (a: number, b: number) => void;
+  readonly __wbg_get_subscription_id: (a: number) => bigint;
+  readonly __wbg_set_subscription_id: (a: number, b: bigint) => void;
   readonly __wbg_signingkey_free: (a: number, b: number) => void;
-  readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
   readonly __wbg_typeddata_free: (a: number, b: number) => void;
   readonly __wbg_bytearray_free: (a: number, b: number) => void;
-  readonly signingkey_new: () => number;
-  readonly signingkey_fromSecretScalar: (a: number, b: number) => [number, number, number];
+  readonly signingkey_new: (a: number, b: number) => [number, number, number];
+  readonly signingkey_fromRandom: () => [number, number, number];
   readonly signingkey_secretScalar: (a: number) => [number, number, number, number];
   readonly signingkey_sign: (a: number, b: number, c: number) => [number, number, number];
   readonly signingkey_verifyingKey: (a: number) => [number, number, number];
   readonly verifyingkey_new: (a: number, b: number) => [number, number, number];
-  readonly verifyingkey_scalar: (a: number) => [number, number, number, number];
   readonly verifyingkey_verify: (a: number, b: number, c: number, d: any) => [number, number, number];
   readonly typeddata_new: (a: number, b: number) => [number, number, number];
   readonly typeddata_encode: (a: number, b: number, c: number) => [number, number, number, number];
   readonly provider_new: (a: number, b: number) => [number, number, number];
   readonly provider_call: (a: number, b: any, c: any) => any;
   readonly provider_waitForTransaction: (a: number, b: number, c: number) => any;
+  readonly provider_chainId: (a: number) => any;
   readonly account_new: (a: number, b: number, c: number, d: number, e: number) => any;
   readonly account_address: (a: number) => [number, number, number, number];
   readonly account_chainId: (a: number) => [number, number, number, number];
@@ -754,29 +877,29 @@ declare interface InitOutput {
   readonly cairoShortStringToFelt: (a: number, b: number) => [number, number, number, number];
   readonly parseCairoShortString: (a: number, b: number) => [number, number, number, number];
   readonly toriiclient_new: (a: any) => any;
-  readonly toriiclient_getControllers: (a: number, b: number, c: number) => any;
-  readonly toriiclient_getTokens: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
-  readonly toriiclient_onTokenUpdated: (a: number, b: number, c: number, d: number, e: number, f: any) => [number, number, number];
-  readonly toriiclient_getTokenBalances: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number) => any;
+  readonly toriiclient_getControllers: (a: number, b: any) => any;
+  readonly toriiclient_getTransactions: (a: number, b: any) => any;
+  readonly toriiclient_onTransaction: (a: number, b: number, c: any) => any;
+  readonly toriiclient_getTokens: (a: number, b: any) => any;
+  readonly toriiclient_onTokenUpdated: (a: number, b: number, c: number, d: number, e: number, f: any) => any;
+  readonly toriiclient_getTokenBalances: (a: number, b: any) => any;
+  readonly toriiclient_getTokenCollections: (a: number, b: any) => any;
   readonly toriiclient_getEntities: (a: number, b: any) => any;
   readonly toriiclient_getAllEntities: (a: number, b: number, c: number, d: number) => any;
   readonly toriiclient_getEventMessages: (a: number, b: any) => any;
-  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: any) => [number, number, number];
+  readonly toriiclient_onEntityUpdated: (a: number, b: number, c: any) => any;
   readonly toriiclient_updateEntitySubscription: (a: number, b: number, c: number) => any;
-  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: any) => [number, number, number];
+  readonly toriiclient_onEventMessageUpdated: (a: number, b: number, c: any) => any;
   readonly toriiclient_updateEventMessageSubscription: (a: number, b: number, c: number) => any;
-  readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: any) => [number, number, number];
-  readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: any) => [number, number, number];
-  readonly toriiclient_onTokenBalanceUpdated: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: any) => [number, number, number];
+  readonly toriiclient_onStarknetEvent: (a: number, b: number, c: number, d: any) => any;
+  readonly toriiclient_onIndexerUpdated: (a: number, b: number, c: number, d: any) => any;
+  readonly toriiclient_onTokenBalanceUpdated: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: any) => any;
   readonly toriiclient_updateTokenBalanceSubscription: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => any;
-  readonly toriiclient_publishMessage: (a: number, b: number, c: number, d: number, e: number) => any;
+  readonly toriiclient_publishMessage: (a: number, b: any) => any;
+  readonly toriiclient_publishMessageBatch: (a: number, b: number, c: number) => any;
   readonly subscription_cancel: (a: number) => void;
-  readonly verifyingkey_fromSigningKey: (a: number) => [number, number, number];
-  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
-  readonly __wbg_provider_free: (a: number, b: number) => void;
-  readonly __wbg_account_free: (a: number, b: number) => void;
-  readonly __wbg_controlleraccount_free: (a: number, b: number) => void;
-  readonly __wbg_subscription_free: (a: number, b: number) => void;
+  readonly verifyingkey_scalar: (a: number) => [number, number, number, number];
+  readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
@@ -799,12 +922,9 @@ declare interface InitOutput {
   readonly __externref_table_dealloc: (a: number) => void;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h117df3dc8165caf5: (a: number, b: number) => void;
-  readonly closure1134_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1159_externref_shim: (a: number, b: number, c: any) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9feb41257b1ba6f0: (a: number, b: number) => void;
-  readonly closure2500_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure2676_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h38cae09d0de780a2: (a: number, b: number) => void;
+  readonly closure969_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1137_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
