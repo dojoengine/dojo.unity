@@ -27,7 +27,7 @@ namespace Dojo
         }
     }
 
-    public unsafe class Controller
+    public unsafe class ControllerAccount
     {
         private dojo.ControllerAccount* controller;
         public FieldElement Address => new FieldElement(dojo.controller_address(controller));
@@ -35,14 +35,14 @@ namespace Dojo
         public string Username => CString.ToString(dojo.controller_username(controller));
 
         private static dojo.FnPtr_ControllerAccountPtr_Void onConnectCallback;
-        private static TaskCompletionSource<Controller> connectionTask;
+        private static TaskCompletionSource<ControllerAccount> connectionTask;
 
-        private Controller(dojo.ControllerAccount* controller)
+        private ControllerAccount(dojo.ControllerAccount* controller)
         {
             this.controller = controller;
         }
 
-        public static Controller GetAccount(Policy[] policies, FieldElement chainId)
+        public static ControllerAccount GetAccount(Policy[] policies, FieldElement chainId)
         {
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
             dojo.Policy* policiesPtr = null;
@@ -61,12 +61,12 @@ namespace Dojo
                 return null;
             }
 
-            return new Controller(result._ok);
+            return new ControllerAccount(result._ok);
         }
 
-        public static Task<Controller> Connect(string rpcUrl, Policy[] policies)
+        public static Task<ControllerAccount> Connect(string rpcUrl, Policy[] policies)
         {
-            connectionTask = new TaskCompletionSource<Controller>();
+            connectionTask = new TaskCompletionSource<ControllerAccount>();
             var nativePolicies = policies.Select(p => p.ToNative()).ToArray();
             CString crpcUrl = CString.FromString(rpcUrl);
 
@@ -81,7 +81,7 @@ namespace Dojo
 
             onConnectCallback = new dojo.FnPtr_ControllerAccountPtr_Void((controllerPtr) =>
             {
-                var controller = new Controller(controllerPtr);
+                var controller = new ControllerAccount(controllerPtr);
                 connectionTask.TrySetResult(controller);
             });
 

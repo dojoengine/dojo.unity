@@ -7,9 +7,36 @@ using Dojo.Starknet;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 
 namespace Dojo.Torii
 {
+    public struct Message
+    {
+        public string message;
+        public FieldElement[] signature;
+
+        public Message(string message, FieldElement[] signature)
+        {
+            this.message = message;
+            this.signature = signature;
+        }
+    }
+
+    public struct Controller
+    {
+        public FieldElement address;
+        public string username;
+        public DateTime deployedAt;
+
+        public Controller(dojo.Controller controller)
+        {
+            address = new FieldElement(controller.address);
+            username = controller.username;
+            deployedAt = DateTimeOffset.FromUnixTimeSeconds((long)controller.deployed_at_timestamp).DateTime;
+        }
+    }
+
     public unsafe class ToriiClient
     {
         private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEntityStateUpdate;
@@ -22,12 +49,11 @@ namespace Dojo.Torii
         private dojo.Subscription* tokenUpdateSubscription;
         private dojo.Subscription* tokenBalanceUpdateSubscription;
 
-        public ToriiClient(string toriiUrl, string relayUrl, FieldElement worldAddress, bool dispatchEventsToMainThread = true)
+        public ToriiClient(string toriiUrl, FieldElement worldAddress, bool dispatchEventsToMainThread = true)
         {
             CString ctoriiUrl = CString.FromString(toriiUrl);
-            CString crelayUrl = CString.FromString(relayUrl);
 
-            var result = dojo.client_new(ctoriiUrl, crelayUrl, worldAddress.Inner);
+            var result = dojo.client_new(ctoriiUrl, worldAddress.Inner);
             if (result.tag == dojo.ResultToriiClient_Tag.ErrToriiClient)
             {
                 throw new Exception(result.err.message);
@@ -54,45 +80,27 @@ namespace Dojo.Torii
             dojo.client_free(client);
         }
 
-        public dojo.WorldMetadata WorldMetadata()
+        public Page<Controller> Controllers(ControllerQuery query)
         {
-            // TODO: implement a managed type for WorldMetadata too
-            dojo.ResultWorldMetadata result = dojo.client_metadata(client);
-            if (result.tag == dojo.ResultWorldMetadata_Tag.ErrWorldMetadata)
+            var nativeQuery = query.ToNative();
+            dojo.ResultPageController result = dojo.client_controllers(client, nativeQuery);
+            if (result.tag == dojo.ResultPageController_Tag.ErrPageController)
             {
                 throw new Exception(result.err.message);
             }
 
-            return result.ok;
+            var items = result.ok.items.ToArray().Select(c => new Controller(c)).ToArray();
+            var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
+
+            dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
+            return new Page<Controller>(items, nextCursor);
         }
 
-        public Page<Token> Tokens(FieldElement[] contractAddresses = null, BigInteger[] tokenIds = null, uint limit = 1000, string cursor = null)
+        public Page<Token> Tokens(TokenQuery query)
         {
-            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
-            if (tokenIds == null) tokenIds = new BigInteger[] { };
+            var nativeQuery = query.ToNative();
 
-            var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
-            var nativeTokenIds = tokenIds.Select(t =>
-            {
-                var bytes = t.ToByteArray();
-                Array.Resize(ref bytes, 32);
-                return new dojo.U256 { data = bytes.Reverse().ToArray() };
-            }).ToArray();
-
-            dojo.FieldElement* nativeContractAddressesPtr;
-            fixed (dojo.FieldElement* ptr = nativeContractAddresses)
-            {
-                nativeContractAddressesPtr = ptr;
-            }
-
-
-            dojo.U256* nativeTokenIdsPtr;
-            fixed (dojo.U256* ptr = nativeTokenIds)
-            {
-                nativeTokenIdsPtr = ptr;
-            }
-
-            dojo.ResultPageToken result = dojo.client_tokens(client, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length, limit, cursor is null ? new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Nonec_char } : new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Somec_char, some = cursor });
+            dojo.ResultPageToken result = dojo.client_tokens(client, nativeQuery);
             if (result.tag == dojo.ResultPageToken_Tag.ErrPageToken)
             {
                 throw new Exception(result.err.message);
@@ -105,41 +113,11 @@ namespace Dojo.Torii
             return new Page<Token>(items, nextCursor);
         }
 
-        public Page<TokenBalance> TokenBalances(FieldElement[] contractAddresses = null, FieldElement[] accountAddresses = null, BigInteger[] tokenIds = null, uint limit = 1000, string cursor = null)
+        public Page<TokenBalance> TokenBalances(TokenBalanceQuery query)
         {
-            if (contractAddresses == null) contractAddresses = new FieldElement[] { };
-            if (accountAddresses == null) accountAddresses = new FieldElement[] { };
-            if (tokenIds == null) tokenIds = new BigInteger[] { };
+            var nativeQuery = query.ToNative();
 
-            var nativeContractAddresses = contractAddresses.Select(c => c.Inner).ToArray();
-            var nativeAccountAddresses = accountAddresses.Select(a => a.Inner).ToArray();
-            var nativeTokenIds = tokenIds.Select(t =>
-            {
-                var bytes = t.ToByteArray();
-                Array.Resize(ref bytes, 32);
-                return new dojo.U256 { data = bytes.Reverse().ToArray() };
-            }).ToArray();
-
-            dojo.FieldElement* nativeAccountAddressesPtr;
-            fixed (dojo.FieldElement* ptr = nativeAccountAddresses)
-            {
-                nativeAccountAddressesPtr = ptr;
-            }
-
-            dojo.FieldElement* nativeContractAddressesPtr;
-            fixed (dojo.FieldElement* ptr = nativeContractAddresses)
-            {
-                nativeContractAddressesPtr = ptr;
-            }
-
-            dojo.U256* nativeTokenIdsPtr;
-            fixed (dojo.U256* ptr = nativeTokenIds)
-            {
-                nativeTokenIdsPtr = ptr;
-            }
-
-
-            dojo.ResultPageTokenBalance result = dojo.client_token_balances(client, nativeAccountAddressesPtr, (UIntPtr)nativeAccountAddresses.Length, nativeContractAddressesPtr, (UIntPtr)nativeContractAddresses.Length, nativeTokenIdsPtr, (UIntPtr)nativeTokenIds.Length, limit, cursor is null ? new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Nonec_char } : new dojo.COptionc_char { tag = dojo.COptionc_char_Tag.Somec_char, some = cursor });
+            dojo.ResultPageTokenBalance result = dojo.client_token_balances(client, nativeQuery);
             if (result.tag == dojo.ResultPageTokenBalance_Tag.ErrPageTokenBalance)
             {
                 throw new Exception(result.err.message);
@@ -383,7 +361,7 @@ namespace Dojo.Torii
             dojo.client_update_event_message_subscription(client, eventMessagesSubscription, nativeClause);
         }
 
-        public Span<byte> PublishMessage(TypedData typedData, FieldElement[] signature)
+        public FieldElement PublishMessage(TypedData typedData, FieldElement[] signature)
         {
             var mappedSignature = signature.Select(s => s.Inner).ToArray();
             dojo.FieldElement* signaturePtr;
@@ -392,13 +370,17 @@ namespace Dojo.Torii
                 signaturePtr = ptr;
             }
 
-            var result = dojo.client_publish_message(client, new CString(JsonConvert.SerializeObject(typedData)), signaturePtr, (UIntPtr)signature.Length);
-            if (result.tag == dojo.ResultCArrayu8_Tag.ErrCArrayu8)
+            var result = dojo.client_publish_message(client, new dojo.Message
+            {
+                message = JsonConvert.SerializeObject(typedData),
+                signature = mappedSignature
+            });
+            if (result.tag == dojo.ResultFieldElement_Tag.ErrFieldElement)
             {
                 throw new Exception(result.err.message);
             }
 
-            return result.ok;
+            return new FieldElement(result.ok);
         }
     }
 }
