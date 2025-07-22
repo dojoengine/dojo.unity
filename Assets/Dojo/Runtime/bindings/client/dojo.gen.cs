@@ -26,6 +26,8 @@ namespace dojo_bindings
     public static unsafe partial class dojo
     {
         private const string LibraryName = "libdojo_c";
+        // Uncomment this for iOS build (and comment previous line)
+        // private const string LibraryName = "__Internal"; 
 
         #region API
 
