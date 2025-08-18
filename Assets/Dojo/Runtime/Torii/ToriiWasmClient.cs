@@ -210,7 +210,7 @@ namespace Dojo.Torii
             public static void Callback(string tokens)
             {
                 var parsedTokens = JsonConvert.DeserializeObject<Page<WasmToken>>(tokens);
-                Tcs.SetResult(new Page<Token>(parsedTokens.items.Select(t => new Token(new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber), t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray(), parsedTokens.next_cursor));
+                Tcs.SetResult(new Page<Token>(parsedTokens.items.Select(t => new Token(new FieldElement(t.contract_address), t.token_id != null ? BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber) : null, t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray(), parsedTokens.next_cursor));
             }
         }
 
@@ -229,7 +229,7 @@ namespace Dojo.Torii
             public static void Callback(string tokenBalances)
             {
                 var parsedTokenBalances = JsonConvert.DeserializeObject<Page<WasmTokenBalance>>(tokenBalances);
-                Tcs.SetResult(new Page<TokenBalance>(parsedTokenBalances.items.Select(t => new TokenBalance(BigInteger.Parse(t.balance.Substring(2), System.Globalization.NumberStyles.HexNumber), new FieldElement(t.account_address), new FieldElement(t.contract_address), BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber))).ToArray(), parsedTokenBalances.next_cursor));
+                Tcs.SetResult(new Page<TokenBalance>(parsedTokenBalances.items.Select(t => new TokenBalance(BigInteger.Parse(t.balance.Substring(2), System.Globalization.NumberStyles.HexNumber), new FieldElement(t.account_address), new FieldElement(t.contract_address), t.token_id != null ? BigInteger.Parse(t.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber) : null)).ToArray(), parsedTokenBalances.next_cursor));
             }
         }
 
@@ -248,7 +248,7 @@ namespace Dojo.Torii
             {
                 var parsedToken = JsonConvert.DeserializeObject<WasmToken>(token);
                 // go from hex string to BigInteger
-                var tokenId = BigInteger.Parse(parsedToken.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                var tokenId = parsedToken.token_id != null ? BigInteger.Parse(parsedToken.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber) : (BigInteger?)null;
                 ToriiEvents.Instance.TokenUpdated(new Token(new FieldElement(parsedToken.contract_address), tokenId, parsedToken.name, parsedToken.symbol, parsedToken.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(parsedToken.metadata)));
             }
         }
@@ -269,7 +269,7 @@ namespace Dojo.Torii
             public static void Callback(string tokenBalance)
             {
                 var parsedTokenBalance = JsonConvert.DeserializeObject<WasmTokenBalance>(tokenBalance);
-                var tokenId = BigInteger.Parse(parsedTokenBalance.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber);
+                var tokenId = parsedTokenBalance.token_id != null ? BigInteger.Parse(parsedTokenBalance.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber) : (BigInteger?)null;
                 var balance = BigInteger.Parse(parsedTokenBalance.balance.Substring(2), System.Globalization.NumberStyles.HexNumber);
                 ToriiEvents.Instance.TokenBalanceUpdated(new TokenBalance(balance, new FieldElement(parsedTokenBalance.account_address), new FieldElement(parsedTokenBalance.contract_address), tokenId));
             }

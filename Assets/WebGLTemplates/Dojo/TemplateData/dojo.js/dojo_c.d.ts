@@ -103,7 +103,7 @@ declare namespace wasm_bindgen {
 	
 	export interface Token {
 	    contract_address: string;
-	    token_id: string;
+	    token_id: string | undefined;
 	    name: string;
 	    symbol: string;
 	    decimals: number;
@@ -123,7 +123,7 @@ declare namespace wasm_bindgen {
 	    balance: string;
 	    account_address: string;
 	    contract_address: string;
-	    token_id: string;
+	    token_id: string | undefined;
 	}
 	
 	export interface TransactionFilter {
@@ -834,13 +834,6 @@ declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssemb
 
 declare interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
-  readonly __wbg_provider_free: (a: number, b: number) => void;
-  readonly __wbg_account_free: (a: number, b: number) => void;
-  readonly __wbg_controlleraccount_free: (a: number, b: number) => void;
-  readonly __wbg_subscription_free: (a: number, b: number) => void;
-  readonly __wbg_get_subscription_id: (a: number) => bigint;
-  readonly __wbg_set_subscription_id: (a: number, b: bigint) => void;
   readonly __wbg_signingkey_free: (a: number, b: number) => void;
   readonly __wbg_typeddata_free: (a: number, b: number) => void;
   readonly __wbg_bytearray_free: (a: number, b: number) => void;
@@ -900,6 +893,13 @@ declare interface InitOutput {
   readonly subscription_cancel: (a: number) => void;
   readonly verifyingkey_scalar: (a: number) => [number, number, number, number];
   readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
+  readonly __wbg_toriiclient_free: (a: number, b: number) => void;
+  readonly __wbg_provider_free: (a: number, b: number) => void;
+  readonly __wbg_account_free: (a: number, b: number) => void;
+  readonly __wbg_controlleraccount_free: (a: number, b: number) => void;
+  readonly __wbg_subscription_free: (a: number, b: number) => void;
+  readonly __wbg_get_subscription_id: (a: number) => bigint;
+  readonly __wbg_set_subscription_id: (a: number, b: bigint) => void;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
@@ -922,9 +922,9 @@ declare interface InitOutput {
   readonly __externref_table_dealloc: (a: number) => void;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h38cae09d0de780a2: (a: number, b: number) => void;
-  readonly closure969_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1137_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9561f6d045b57095: (a: number, b: number) => void;
+  readonly closure970_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1138_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
