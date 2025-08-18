@@ -1,13 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
-export const __wbg_toriiclient_free: (a: number, b: number) => void;
-export const __wbg_provider_free: (a: number, b: number) => void;
-export const __wbg_account_free: (a: number, b: number) => void;
-export const __wbg_controlleraccount_free: (a: number, b: number) => void;
-export const __wbg_subscription_free: (a: number, b: number) => void;
-export const __wbg_get_subscription_id: (a: number) => bigint;
-export const __wbg_set_subscription_id: (a: number, b: bigint) => void;
 export const __wbg_signingkey_free: (a: number, b: number) => void;
 export const __wbg_typeddata_free: (a: number, b: number) => void;
 export const __wbg_bytearray_free: (a: number, b: number) => void;
@@ -67,6 +60,13 @@ export const toriiclient_publishMessageBatch: (a: number, b: number, c: number) 
 export const subscription_cancel: (a: number) => void;
 export const verifyingkey_scalar: (a: number) => [number, number, number, number];
 export const __wbg_verifyingkey_free: (a: number, b: number) => void;
+export const __wbg_toriiclient_free: (a: number, b: number) => void;
+export const __wbg_provider_free: (a: number, b: number) => void;
+export const __wbg_account_free: (a: number, b: number) => void;
+export const __wbg_controlleraccount_free: (a: number, b: number) => void;
+export const __wbg_subscription_free: (a: number, b: number) => void;
+export const __wbg_get_subscription_id: (a: number) => bigint;
+export const __wbg_set_subscription_id: (a: number, b: bigint) => void;
 export const __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
 export const intounderlyingbytesource_type: (a: number) => number;
 export const intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
@@ -89,7 +89,7 @@ export const __wbindgen_export_5: WebAssembly.Table;
 export const __externref_table_dealloc: (a: number) => void;
 export const __wbindgen_free: (a: number, b: number, c: number) => void;
 export const __externref_drop_slice: (a: number, b: number) => void;
-export const _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h38cae09d0de780a2: (a: number, b: number) => void;
-export const closure969_externref_shim: (a: number, b: number, c: any) => void;
-export const closure1137_externref_shim: (a: number, b: number, c: any, d: any) => void;
+export const _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h9561f6d045b57095: (a: number, b: number) => void;
+export const closure970_externref_shim: (a: number, b: number, c: any) => void;
+export const closure1138_externref_shim: (a: number, b: number, c: any, d: any) => void;
 export const __wbindgen_start: () => void;

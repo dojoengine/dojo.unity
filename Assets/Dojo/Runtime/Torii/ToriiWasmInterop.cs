@@ -42,7 +42,7 @@ namespace Dojo.Torii
     public struct WasmToken
     {
         public string contract_address;
-        public string token_id;
+        public string? token_id;
         public string name;
         public string symbol;
         public int decimals;
@@ -55,7 +55,7 @@ namespace Dojo.Torii
         public string balance;
         public string account_address;
         public string contract_address;
-        public string token_id;
+        public string? token_id;
     }
 
     [Serializable]
