@@ -638,9 +638,23 @@ typedef struct TokenQuery {
   struct Pagination pagination;
 } TokenQuery;
 
+typedef enum COptionU256_Tag {
+  SomeU256,
+  NoneU256,
+} COptionU256_Tag;
+
+typedef struct COptionU256 {
+  COptionU256_Tag tag;
+  union {
+    struct {
+      struct U256 some;
+    };
+  };
+} COptionU256;
+
 typedef struct Token {
   struct FieldElement contract_address;
-  struct U256 token_id;
+  struct COptionU256 token_id;
   const char *name;
   const char *symbol;
   uint8_t decimals;
@@ -719,7 +733,7 @@ typedef struct TokenBalance {
   struct U256 balance;
   struct FieldElement account_address;
   struct FieldElement contract_address;
-  struct U256 token_id;
+  struct COptionU256 token_id;
 } TokenBalance;
 
 typedef enum Resultc_char_Tag {
