@@ -929,8 +929,8 @@ declare interface InitOutput {
   readonly __externref_drop_slice: (a: number, b: number) => void;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h859b951bee550a5a: (a: number, b: number) => void;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hbd34cb1bbccea715: (a: number, b: number) => void;
-  readonly closure959_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1140_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly closure968_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1149_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
