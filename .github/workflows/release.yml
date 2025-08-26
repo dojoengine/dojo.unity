@@ -1,19 +1,31 @@
-name: Release
+name: Legacy Release Build
 
+# This workflow is triggered when a release is published (not draft)
+# It builds and uploads the Unity package to the existing release
 on:
   release:
-    types: [created]
+    types: [published]
 
 jobs:
-  build:
-    name: Build Package
+  build-and-upload:
+    name: Build and Upload Package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
           lfs: true
+          fetch-depth: 0
 
-      # Git LFS
+      - name: Get release info
+        id: release_info
+        run: |
+          echo "tag_name=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+          echo "release_name=${{ github.event.release.name }}" >> $GITHUB_OUTPUT
+          echo "Release: ${{ github.event.release.name }}"
+          echo "Tag: ${{ github.event.release.tag_name }}"
+
+      # Git LFS setup
       - name: Create LFS file list
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
@@ -31,14 +43,15 @@ jobs:
           git reset --hard
 
       # Unity Cache
-      - uses: actions/cache@v3
+      - name: Cache Unity Library
+        uses: actions/cache@v3
         with:
           path: Library
           key: Library-Build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-Build-
 
-      # Build
+      # Build Unity Package
       - name: Build Unity Package
         uses: game-ci/unity-builder@v4
         env:
@@ -49,7 +62,7 @@ jobs:
           targetPlatform: StandaloneLinux64
           buildMethod: Editor.Builder.BuildPackage
 
-      # Upload package to release
+      # Upload package to the published release
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
@@ -57,5 +70,15 @@ jobs:
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./Build/dojo.unitypackage
-          asset_name: dojo.unitypackage
-          asset_content_type: application/octet-stream 
+          asset_name: dojo-${{ steps.release_info.outputs.tag_name }}.unitypackage
+          asset_content_type: application/octet-stream
+
+      - name: Build Summary
+        run: |
+          echo "✅ **Unity Package Built Successfully!**"
+          echo ""
+          echo "**Release:** ${{ steps.release_info.outputs.release_name }}"
+          echo "**Tag:** ${{ steps.release_info.outputs.tag_name }}"
+          echo "**Package:** dojo-${{ steps.release_info.outputs.tag_name }}.unitypackage"
+          echo ""
+          echo "The package has been uploaded to the release."
