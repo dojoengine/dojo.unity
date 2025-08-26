@@ -40,6 +40,18 @@ namespace Dojo.Torii
             }
         }
 
+        public struct FixedSizeArray
+        {
+            public object[] array;
+            public uint size;
+
+            public FixedSizeArray(object[] array, uint size)
+            {
+                this.array = array;
+                this.size = size;
+            }
+        }
+
         public string Name { get; }
         public Dictionary<string, object> Members { get; }
 
@@ -70,6 +82,7 @@ namespace Dojo.Torii
             {
                 dojo.Ty_Tag.Struct_ => HandleCStruct(ty.struct_),
                 dojo.Ty_Tag.Enum_ => HandleCEnum(ty.enum_),
+                dojo.Ty_Tag.FixedSizeArray_ => new FixedSizeArray(ty.fixed_size_array.array.ToArray().Select(m => HandleCValue(m)).ToArray(), ty.fixed_size_array.size),
                 dojo.Ty_Tag.Tuple_ => ty.tuple.ToArray().Select(m => HandleCValue(m)).ToArray(),
                 dojo.Ty_Tag.Array_ => ty.array.ToArray().Select(m => HandleCValue(m)).ToList(),
                 dojo.Ty_Tag.Primitive_ => ty.primitive.tag switch
@@ -113,6 +126,7 @@ namespace Dojo.Torii
                 "tuple" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToArray(),
                 // array
                 "array" => value.value.ToObject<JArray>().Select(m => HandleWasmValue(m.ToObject<WasmValue>())).ToList(),
+                "fixed_size_array" => HandleWasmFixedSizeArray(value.value.ToObject<WasmFixedSizeArray>()),
                 "bytearray" => value.value.ToObject<string>(),
                 "primitive" => value.type_name.ToLower() switch
                 {
@@ -191,6 +205,12 @@ namespace Dojo.Torii
         private Enum HandleJSEnum(string name, WasmEnum en)
         {
             return new Enum(name, en.option, HandleWasmValue(en.value));
+        }
+
+        private FixedSizeArray HandleWasmFixedSizeArray(WasmFixedSizeArray fixedSizeArray)
+        {
+            var processedArray = fixedSizeArray.array.Select(m => HandleWasmValue(m)).ToArray();
+            return new FixedSizeArray(processedArray, fixedSizeArray.size);
         }
 #endif
         private BigInteger ConvertTwosComplementToBigInteger(byte[] bytes, bool unsigned = false, int bits = 128)

@@ -39,6 +39,13 @@ namespace Dojo.Torii
     }
 
     [Serializable]
+    public struct WasmFixedSizeArray
+    {
+        public WasmValue[] array;
+        public uint size;
+    }
+
+    [Serializable]
     public struct WasmToken
     {
         public string contract_address;
