@@ -113,7 +113,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            var items = result.ok.items.ToArray().Select(t => new Token(new FieldElement(t.contract_address), t.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(t.token_id.some.data, false, true) : null, t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray();
+            var items = result.ok.items.ToArray().Select(t => new Token(t)).ToArray();
             var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
 
             dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
@@ -130,7 +130,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            var items = result.ok.items.ToArray().Select(t => new TokenBalance(new BigInteger(t.balance.data, false, true), new FieldElement(t.account_address), new FieldElement(t.contract_address), t.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(t.token_id.some.data, false, true) : null)).ToArray();
+            var items = result.ok.items.ToArray().Select(t => new TokenBalance(t)).ToArray();
             var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
 
             dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
@@ -239,7 +239,7 @@ namespace Dojo.Torii
 
             onTokenUpdate = (token) =>
             {
-                var mappedToken = new Token(new FieldElement(token.contract_address), token.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(token.token_id.some.data, false, true) : null, token.name, token.symbol, token.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(token.metadata));
+                var mappedToken = new Token(token);
                 Action emit = () => ToriiEvents.Instance.TokenUpdated(mappedToken);
                 if (dispatchToMainThread)
                 {
@@ -296,7 +296,7 @@ namespace Dojo.Torii
 
             onTokenBalanceUpdate = (balance) =>
             {
-                var mappedTokenBalance = new TokenBalance(new BigInteger(balance.balance.data, false, true), new FieldElement(balance.account_address), new FieldElement(balance.contract_address), balance.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(balance.token_id.some.data, false, true) : null);
+                var mappedTokenBalance = new TokenBalance(balance);
                 Action emit = () => ToriiEvents.Instance.TokenBalanceUpdated(mappedTokenBalance);
                 if (dispatchToMainThread)
                 {
