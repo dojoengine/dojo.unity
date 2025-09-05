@@ -158,10 +158,10 @@ public class Tests
     [Test, Order(2)]
     public void TestOnEntityStateUpdate()
     {
-        ToriiEvents.OnEntityStateUpdateDelegate callback = (key, models) =>
+        ToriiEvents.OnEntityStateUpdateDelegate callback = (entity) =>
         {
-            if (models.Length == 0) return;
-            entityUpdated = models[0].Members["player"] == playerAddress;
+            if (entity.Models.Count == 0) return;
+            entityUpdated = entity.Models.Values.First().Members["player"] == playerAddress;
         };
         ToriiEvents.Instance.OnEntityUpdated += callback;
     }
@@ -169,10 +169,10 @@ public class Tests
     [Test, Order(2)]
     public void TestOnEventMessageUpdate()
     {
-        ToriiEvents.OnEventMessageUpdateDelegate callback = (key, models) =>
+        ToriiEvents.OnEventMessageUpdateDelegate callback = (entity) =>
         {
-            if (models.Length == 0) return;
-            eventMessageUpdated = models[0].Members["player"] == playerAddress;
+            if (entity.Models.Count == 0) return;
+            eventMessageUpdated = entity.Models.Values.First().Members["player"] == playerAddress;
         };
         ToriiEvents.Instance.OnEventMessageUpdated += callback;
     }

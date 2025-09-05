@@ -29,7 +29,19 @@ namespace Dojo.Torii
         public Entity(WasmEntity entity)
         {
             HashedKeys = new FieldElement(entity.hashed_keys);
-            Models = new Dictionary<string, Model>(entity.models.ToArray().Select(m => new KeyValuePair<string, Model>(m.Key, new Model(m.Value))));
+
+            var models = new Dictionary<string, Model>();
+            foreach (var model in entity.models)
+            {
+                models.Add(model.Key, new Model(
+                    model.Key,
+                    model.Value.ToDictionary(
+                        m => m.Key,
+                        m => m.Value
+                    )
+                ));
+            }
+            Models = models;
             CreatedAt = DateTimeOffset.FromUnixTimeSeconds(entity.created_at).DateTime;
             UpdatedAt = DateTimeOffset.FromUnixTimeSeconds(entity.updated_at).DateTime;
             ExecutedAt = DateTimeOffset.FromUnixTimeSeconds(entity.executed_at).DateTime;

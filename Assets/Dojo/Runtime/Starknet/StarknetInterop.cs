@@ -110,7 +110,7 @@ namespace Dojo.Starknet
                         BlockTag = blockId.block_tag switch
                         {
                             dojo.BlockTag.Latest => "Latest",
-                            dojo.BlockTag.Pending => "Pending",
+                            dojo.BlockTag.PreConfirmed => "PreConfirmed",
                             _ => throw new Exception("Unknown block tag")
                         }
                     },

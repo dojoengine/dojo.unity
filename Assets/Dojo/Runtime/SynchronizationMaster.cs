@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Dojo.Starknet;
 using Dojo.Torii;
 using dojo_bindings;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -87,19 +86,19 @@ namespace Dojo
         }
 
         // Handles spawning / updating entities as they are updated from the dojo world
-        private void HandleEntityUpdate(FieldElement hashedKeys, Model[] entityModels)
+        private void HandleEntityUpdate(Entity entity)
         {
             // Get the entity game object
-            var entity = GameObject.Find(hashedKeys.Hex());
-            if (entity == null)
+            var entityGameObject = GameObject.Find(entity.HashedKeys.Hex());
+            if (entityGameObject == null)
             {
-                entity = SpawnEntity(hashedKeys, entityModels);
+                entityGameObject = SpawnEntity(entity.HashedKeys, entity.Models.Values.ToArray());
                 // We don't need to update the entity models
                 return;
             }
 
             // Update each one of the entity models
-            foreach (var entityModel in entityModels)
+            foreach (var entityModel in entity.Models.Values)
             {
                 string[] parts = entityModel.Name.Split('-');
                 string @namespace = parts[0];
@@ -111,12 +110,12 @@ namespace Dojo
                     continue;
                 }
 
-                var component = entity.GetComponent(model.GetType());
+                var component = entityGameObject.GetComponent(model.GetType());
                 if (component == null)
                 {
                     // we dont need to initialize the component
                     // because it'll get updated
-                    component = (ModelInstance)entity.AddComponent(model.GetType());
+                    component = (ModelInstance)entityGameObject.AddComponent(model.GetType());
                 }
 
                 // update component with new model data
@@ -125,9 +124,9 @@ namespace Dojo
             }
         }
 
-        private void HandleEventMessage(FieldElement hashedKeys, Model[] entityModels)
+        private void HandleEventMessage(Entity entity)
         {
-            foreach (var entityModel in entityModels)
+            foreach (var entityModel in entity.Models.Values)
             {
                 string[] parts = entityModel.Name.Split('-');
                 string @namespace = parts[0];

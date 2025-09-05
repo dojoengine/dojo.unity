@@ -46,8 +46,8 @@ namespace Dojo.Torii
 
     public unsafe class ToriiClient
     {
-        private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEntityStateUpdate;
-        private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEventMessagesUpdate;
+        private dojo.FnPtr_Entity_Void.@delegate onEntityStateUpdate;
+        private dojo.FnPtr_Entity_Void.@delegate onEventMessagesUpdate;
         private dojo.FnPtr_Token_Void.@delegate onTokenUpdate;
         private dojo.FnPtr_TokenBalance_Void.@delegate onTokenBalanceUpdate;
         private dojo.ToriiClient* client;
@@ -174,35 +174,28 @@ namespace Dojo.Torii
 
         private void RegisterEntityStateUpdateEvent(Clause? clause = null, bool dispatchToMainThread = true)
         {
-            onEntityStateUpdate = (key, models) =>
+            onEntityStateUpdate = (entity) =>
             {
-                var mappedModels = new Model[(int)models.data_len];
-                for (var i = 0; i < (int)models.data_len; i++)
-                {
-                    mappedModels[i] = new Model(models.data[i]);
-                    // cleanup model
-                    // dojo.model_free(&models.data[i]);
-                }
-
+                var mappedEntity = new Entity(entity);
                 // only run this when in unity play mode
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(mappedEntity));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels);
+                    ToriiEvents.Instance.EntityUpdated(mappedEntity);
                 }
 
                 // cleanup
-                dojo.carray_free(models.data, models.data_len);
+                dojo.carray_free(entity._models.data, entity._models.data_len);
                 // TODO: free field element
             };
 
 
             var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, nativeClause, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, nativeClause, new dojo.FnPtr_Entity_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -324,36 +317,30 @@ namespace Dojo.Torii
 
         private void RegisterEventMessageUpdateEvent(Clause? clause = null, bool dispatchToMainThread = true)
         {
-            onEventMessagesUpdate = (key, models) =>
+            onEventMessagesUpdate = (entity) =>
             {
-                var mappedModels = new Model[(int)models.data_len];
-                for (var i = 0; i < (int)models.data_len; i++)
-                {
-                    mappedModels[i] = new Model(models.data[i]);
-                    // cleanup model
-                    // dojo.model_free(&models.data[i]);
-                }
+                var mappedEntity = new Entity(entity);
 
                 // only run this when in unity play mode
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EventMessageUpdated(mappedEntity));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels);
+                    ToriiEvents.Instance.EventMessageUpdated(mappedEntity);
                 }
 
                 // cleanup
-                dojo.carray_free(models.data, models.data_len);
+                dojo.carray_free(entity._models.data, entity._models.data_len);
                 // TODO: free field element
             };
 
 
             var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
 
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, nativeClause, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, nativeClause, new dojo.FnPtr_Entity_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);

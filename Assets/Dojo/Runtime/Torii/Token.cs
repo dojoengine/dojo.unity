@@ -27,6 +27,19 @@ namespace Dojo.Torii
             this.totalSupply = totalSupply;
         }
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public Token(WasmToken token)
+        {
+            this.contractAddress = new FieldElement(token.contract_address);
+            this.tokenId = token.token_id != null ? BigInteger.Parse(token.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber) : null;
+            this.name = token.name;
+            this.symbol = token.symbol;
+            this.decimals = token.decimals;
+            this.metadata = JsonConvert.DeserializeObject<Dictionary<string, object>>(token.metadata);
+            this.totalSupply = token.total_supply != null ? BigInteger.Parse(token.total_supply.Substring(2), System.Globalization.NumberStyles.HexNumber) : null;
+        }
+#endif
+
         public Token(dojo.Token token)
         {
             this.contractAddress = new FieldElement(token.contract_address);
@@ -53,6 +66,17 @@ namespace Dojo.Torii
             this.contractAddress = contractAddress;
             this.tokenId = tokenId;
         }
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+        public TokenBalance(WasmTokenBalance tokenBalance)
+        {
+            this.balance = BigInteger.Parse(tokenBalance.balance.Substring(2), System.Globalization.NumberStyles.HexNumber);
+            this.accountAddress = new FieldElement(tokenBalance.account_address);
+            this.contractAddress = new FieldElement(tokenBalance.contract_address);
+            this.tokenId = tokenBalance.token_id != null ? BigInteger.Parse(tokenBalance.token_id.Substring(2), System.Globalization.NumberStyles.HexNumber) : null;
+        }
+#endif
+
 
         public TokenBalance(dojo.TokenBalance tokenBalance)
         {
