@@ -46,8 +46,8 @@ namespace Dojo.Torii
 
     public unsafe class ToriiClient
     {
-        private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEntityStateUpdate;
-        private dojo.FnPtr_FieldElement_CArrayStruct_Void.@delegate onEventMessagesUpdate;
+        private dojo.FnPtr_Entity_Void.@delegate onEntityStateUpdate;
+        private dojo.FnPtr_Entity_Void.@delegate onEventMessagesUpdate;
         private dojo.FnPtr_Token_Void.@delegate onTokenUpdate;
         private dojo.FnPtr_TokenBalance_Void.@delegate onTokenBalanceUpdate;
         private dojo.ToriiClient* client;
@@ -113,7 +113,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            var items = result.ok.items.ToArray().Select(t => new Token(new FieldElement(t.contract_address), t.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(t.token_id.some.data, false, true) : null, t.name, t.symbol, t.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(t.metadata))).ToArray();
+            var items = result.ok.items.ToArray().Select(t => new Token(t)).ToArray();
             var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
 
             dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
@@ -130,7 +130,7 @@ namespace Dojo.Torii
                 throw new Exception(result.err.message);
             }
 
-            var items = result.ok.items.ToArray().Select(t => new TokenBalance(new BigInteger(t.balance.data, false, true), new FieldElement(t.account_address), new FieldElement(t.contract_address), t.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(t.token_id.some.data, false, true) : null)).ToArray();
+            var items = result.ok.items.ToArray().Select(t => new TokenBalance(t)).ToArray();
             var nextCursor = result.ok.next_cursor.tag == dojo.COptionc_char_Tag.Somec_char ? result.ok.next_cursor.some : null;
 
             dojo.carray_free(result.ok._items.data, result.ok._items.data_len);
@@ -174,35 +174,28 @@ namespace Dojo.Torii
 
         private void RegisterEntityStateUpdateEvent(Clause? clause = null, bool dispatchToMainThread = true)
         {
-            onEntityStateUpdate = (key, models) =>
+            onEntityStateUpdate = (entity) =>
             {
-                var mappedModels = new Model[(int)models.data_len];
-                for (var i = 0; i < (int)models.data_len; i++)
-                {
-                    mappedModels[i] = new Model(models.data[i]);
-                    // cleanup model
-                    // dojo.model_free(&models.data[i]);
-                }
-
+                var mappedEntity = new Entity(entity);
                 // only run this when in unity play mode
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EntityUpdated(mappedEntity));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EntityUpdated(new FieldElement(key), mappedModels);
+                    ToriiEvents.Instance.EntityUpdated(mappedEntity);
                 }
 
                 // cleanup
-                dojo.carray_free(models.data, models.data_len);
+                dojo.carray_free(entity._models.data, entity._models.data_len);
                 // TODO: free field element
             };
 
 
             var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
-            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, nativeClause, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEntityStateUpdate));
+            dojo.ResultSubscription res = dojo.client_on_entity_state_update(client, nativeClause, new dojo.FnPtr_Entity_Void(onEntityStateUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);
@@ -239,7 +232,7 @@ namespace Dojo.Torii
 
             onTokenUpdate = (token) =>
             {
-                var mappedToken = new Token(new FieldElement(token.contract_address), token.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(token.token_id.some.data, false, true) : null, token.name, token.symbol, token.decimals, JsonConvert.DeserializeObject<Dictionary<string, object>>(token.metadata));
+                var mappedToken = new Token(token);
                 Action emit = () => ToriiEvents.Instance.TokenUpdated(mappedToken);
                 if (dispatchToMainThread)
                 {
@@ -296,7 +289,7 @@ namespace Dojo.Torii
 
             onTokenBalanceUpdate = (balance) =>
             {
-                var mappedTokenBalance = new TokenBalance(new BigInteger(balance.balance.data, false, true), new FieldElement(balance.account_address), new FieldElement(balance.contract_address), balance.token_id.tag == dojo.COptionU256_Tag.SomeU256 ? new BigInteger(balance.token_id.some.data, false, true) : null);
+                var mappedTokenBalance = new TokenBalance(balance);
                 Action emit = () => ToriiEvents.Instance.TokenBalanceUpdated(mappedTokenBalance);
                 if (dispatchToMainThread)
                 {
@@ -324,36 +317,30 @@ namespace Dojo.Torii
 
         private void RegisterEventMessageUpdateEvent(Clause? clause = null, bool dispatchToMainThread = true)
         {
-            onEventMessagesUpdate = (key, models) =>
+            onEventMessagesUpdate = (entity) =>
             {
-                var mappedModels = new Model[(int)models.data_len];
-                for (var i = 0; i < (int)models.data_len; i++)
-                {
-                    mappedModels[i] = new Model(models.data[i]);
-                    // cleanup model
-                    // dojo.model_free(&models.data[i]);
-                }
+                var mappedEntity = new Entity(entity);
 
                 // only run this when in unity play mode
                 // we need our unity main thread dispatcher to run this on the main thread
                 if (dispatchToMainThread)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels));
+                    UnityMainThreadDispatcher.Instance().Enqueue(() => ToriiEvents.Instance.EventMessageUpdated(mappedEntity));
                 }
                 else
                 {
-                    ToriiEvents.Instance.EventMessageUpdated(new FieldElement(key), mappedModels);
+                    ToriiEvents.Instance.EventMessageUpdated(mappedEntity);
                 }
 
                 // cleanup
-                dojo.carray_free(models.data, models.data_len);
+                dojo.carray_free(entity._models.data, entity._models.data_len);
                 // TODO: free field element
             };
 
 
             var nativeClause = clause is null ? new dojo.COptionClause { tag = dojo.COptionClause_Tag.NoneClause } : new dojo.COptionClause { tag = dojo.COptionClause_Tag.SomeClause, some = clause.Value.ToNative() };
 
-            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, nativeClause, new dojo.FnPtr_FieldElement_CArrayStruct_Void(onEventMessagesUpdate));
+            dojo.ResultSubscription res = dojo.client_on_event_message_update(client, nativeClause, new dojo.FnPtr_Entity_Void(onEventMessagesUpdate));
             if (res.tag == dojo.ResultSubscription_Tag.ErrSubscription)
             {
                 throw new Exception(res.err.message);

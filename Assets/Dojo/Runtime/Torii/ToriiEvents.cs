@@ -23,8 +23,8 @@ namespace Dojo.Torii
         }
 
         public delegate void OnSyncModelUpdateDelegate();
-        public delegate void OnEntityStateUpdateDelegate(FieldElement key, Model[] models);
-        public delegate void OnEventMessageUpdateDelegate(FieldElement key, Model[] models);
+        public delegate void OnEntityStateUpdateDelegate(Entity entity);
+        public delegate void OnEventMessageUpdateDelegate(Entity entity);
         public delegate void OnTokenUpdateDelegate(Token token);
         public delegate void OnTokenBalanceUpdateDelegate(TokenBalance tokenBalance);
 
@@ -34,14 +34,14 @@ namespace Dojo.Torii
         public event OnTokenUpdateDelegate OnTokenUpdated;
         public event OnTokenBalanceUpdateDelegate OnTokenBalanceUpdated;
 
-        public void EventMessageUpdated(FieldElement key, Model[] models)
+        public void EventMessageUpdated(Entity entity)
         {
-            OnEventMessageUpdated?.Invoke(key, models);
+            OnEventMessageUpdated?.Invoke(entity);
         }
 
-        public void EntityUpdated(FieldElement key, Model[] models)
+        public void EntityUpdated(Entity entity)
         {
-            OnEntityUpdated?.Invoke(key, models);
+            OnEntityUpdated?.Invoke(entity);
         }
 
         public void SyncModelUpdated()

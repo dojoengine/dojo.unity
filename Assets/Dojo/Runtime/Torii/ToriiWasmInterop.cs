@@ -20,6 +20,9 @@ namespace Dojo.Torii
     {
         public string hashed_keys;
         public Dictionary<string, Dictionary<string, WasmValue>> models;
+        public long created_at;
+        public long updated_at;
+        public long executed_at;
     }
 
     [Serializable]
@@ -54,6 +57,7 @@ namespace Dojo.Torii
         public string symbol;
         public int decimals;
         public string metadata;
+        public string? total_supply;
     }
 
     [Serializable]

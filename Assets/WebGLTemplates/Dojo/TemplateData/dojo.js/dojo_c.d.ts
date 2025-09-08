@@ -108,6 +108,7 @@ declare namespace wasm_bindgen {
 	    symbol: string;
 	    decimals: number;
 	    metadata: string;
+	    total_supply: string | undefined;
 	}
 	
 	export interface TokenCollection {
@@ -227,6 +228,9 @@ declare namespace wasm_bindgen {
 	export interface Entity {
 	    hashed_keys: string;
 	    models: Record<string, Model>;
+	    created_at: number;
+	    updated_at: number;
+	    executed_at: number;
 	}
 	
 	export type Entities = Page<Entity>;
@@ -929,8 +933,8 @@ declare interface InitOutput {
   readonly __externref_drop_slice: (a: number, b: number) => void;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h859b951bee550a5a: (a: number, b: number) => void;
   readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hbd34cb1bbccea715: (a: number, b: number) => void;
-  readonly closure968_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1149_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly closure965_externref_shim: (a: number, b: number, c: any) => void;
+  readonly closure1146_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 

@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: WorldManagerLocalConfig
   m_EditorClassIdentifier: 
   toriiUrl: http://localhost:8080
-  relayUrl: /ip4/127.0.0.1/tcp/9090
-  relayWebrtcUrl: /ip4/127.0.0.1/udp/9091/webrtc-direct/certhash/uEiAS9CpA5yNwO7iidBM5f9FcPl67PwohiK-1J9BhnFMrHg
   worldAddress:
     hex: 0x05cb84ccfa869ea8cf9acb0c77b2d1a67a7e9e8fd4a877a1c111e3c2b1eb0f03
   query:
-    limit: 100
-    offset: 0
-    dont_include_hashed_keys: 0
-    order_by: []
-    entity_models: []
-    entity_updated_after: 0
+    pagination:
+      cursor: 
+      order_by: []
+      direction: 0
+    no_hashed_keys: 0
+    models: []
+    historical: 0
