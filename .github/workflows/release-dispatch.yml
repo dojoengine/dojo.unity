@@ -74,10 +74,9 @@ jobs:
           echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "Current: $CURRENT_VERSION → New: $NEW_VERSION"
 
-      - name: Create release branch
+      - name: Set branch name
         run: |
           BRANCH_NAME="release/${{ steps.version.outputs.tag }}"
-          git checkout -b "$BRANCH_NAME"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Update version files
@@ -133,17 +132,13 @@ jobs:
           echo "" >> CHANGELOG.md
           echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...$TAG" >> CHANGELOG.md
 
-      - name: Commit and push changes
-        run: |
-          git add .
-          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
-          git push origin "$BRANCH_NAME"
-
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ env.BRANCH_NAME }}
+          base: main
+          commit-message: "chore: bump version to ${{ steps.version.outputs.version }}"
           title: "Release ${{ steps.version.outputs.tag }}"
           body: |
             ## 🚀 Release ${{ steps.version.outputs.tag }}
