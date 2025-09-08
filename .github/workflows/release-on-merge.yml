@@ -1,4 +1,4 @@
-name: Create Release on Merge
+name: Release on Merge
 
 on:
   pull_request:
@@ -6,141 +6,77 @@ on:
     branches: [main]
 
 jobs:
-  check-release-pr:
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    outputs:
-      is_release_pr: ${{ steps.check.outputs.is_release_pr }}
-      version: ${{ steps.check.outputs.version }}
-    steps:
-      - name: Check if this is a release PR
-        id: check
-        run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
-          
-          echo "PR Title: $PR_TITLE"
-          echo "PR Branch: $PR_BRANCH"
-          
-          # Check if this is a release PR (title starts with "Release v" or branch starts with "release/")
-          if [[ "$PR_TITLE" =~ ^Release\ v[0-9]+\.[0-9]+\.[0-9]+$ ]] || [[ "$PR_BRANCH" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "is_release_pr=true" >> $GITHUB_OUTPUT
-            
-            # Extract version from title or branch
-            if [[ "$PR_TITLE" =~ ^Release\ v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
-              VERSION="${BASH_REMATCH[1]}"
-            elif [[ "$PR_BRANCH" =~ ^release/v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
-              VERSION="${BASH_REMATCH[1]}"
-            fi
-            
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "Detected release PR for version: $VERSION"
-          else
-            echo "is_release_pr=false" >> $GITHUB_OUTPUT
-            echo "Not a release PR"
-          fi
-
-  create-release:
-    needs: check-release-pr
-    if: needs.check-release-pr.outputs.is_release_pr == 'true'
+  release:
+    name: Create Release
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.title, 'Release v')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          lfs: true
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+      - name: Extract version
+        id: version
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [[ "$PR_TITLE" =~ ^Release\ v([0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[0-9]+)?)?)$ ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+            echo "Detected version: $VERSION"
+          else
+            echo "❌ Could not extract version from PR title: $PR_TITLE"
+            echo "Expected format: 'Release vX.Y.Z' or 'Release vX.Y.Z-prerelease'"
+            exit 1
+          fi
 
       - name: Verify version in package.json
-        id: verify_version
         run: |
           PACKAGE_VERSION=$(jq -r '.version' package.json)
-          EXPECTED_VERSION="${{ needs.check-release-pr.outputs.version }}"
-          
-          echo "Package.json version: $PACKAGE_VERSION"
-          echo "Expected version: $EXPECTED_VERSION"
+          EXPECTED_VERSION="${{ steps.version.outputs.version }}"
           
           if [ "$PACKAGE_VERSION" != "$EXPECTED_VERSION" ]; then
             echo "❌ Version mismatch! Expected $EXPECTED_VERSION but found $PACKAGE_VERSION in package.json"
             exit 1
           fi
-          
           echo "✅ Version verified: $PACKAGE_VERSION"
-          echo "verified_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Create and push tag
         run: |
-          VERSION="v${{ steps.verify_version.outputs.verified_version }}"
-          
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
-          # Create annotated tag
-          git tag -a "$VERSION" -m "Release $VERSION"
-          git push origin "$VERSION"
-          
-          echo "Created and pushed tag: $VERSION"
+          git tag -a "${{ steps.version.outputs.tag }}" -m "Release ${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
 
-      - name: Generate detailed changelog
-        id: changelog
+      - name: Generate changelog
         run: |
-          VERSION="v${{ steps.verify_version.outputs.verified_version }}"
-          
-          echo "# Release $VERSION" > FULL_CHANGELOG.md
-          echo "" >> FULL_CHANGELOG.md
-          
-          # Get the previous tag
+          TAG="${{ steps.version.outputs.tag }}"
           PREVIOUS_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
           
+          echo "# Release $TAG" > RELEASE_NOTES.md
+          echo "" >> RELEASE_NOTES.md
+          
           if [ -n "$PREVIOUS_TAG" ]; then
-            echo "## Changes since $PREVIOUS_TAG" >> FULL_CHANGELOG.md
-            echo "" >> FULL_CHANGELOG.md
-            
-            # Get commits with more detail
-            echo "### 🚀 Features and Improvements" >> FULL_CHANGELOG.md
-            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --grep="feat" --grep="add" --grep="implement" >> FULL_CHANGELOG.md || true
-            echo "" >> FULL_CHANGELOG.md
-            
-            echo "### 🐛 Bug Fixes" >> FULL_CHANGELOG.md
-            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --grep="fix" --grep="bug" >> FULL_CHANGELOG.md || true
-            echo "" >> FULL_CHANGELOG.md
-            
-            echo "### 📚 Documentation" >> FULL_CHANGELOG.md
-            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --grep="doc" >> FULL_CHANGELOG.md || true
-            echo "" >> FULL_CHANGELOG.md
-            
-            echo "### 🔧 Other Changes" >> FULL_CHANGELOG.md
-            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --invert-grep --grep="feat" --grep="add" --grep="implement" --grep="fix" --grep="bug" --grep="doc" >> FULL_CHANGELOG.md || true
+            echo "## Changes since $PREVIOUS_TAG" >> RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD >> RELEASE_NOTES.md
           else
-            echo "## Initial Release" >> FULL_CHANGELOG.md
-            echo "" >> FULL_CHANGELOG.md
-            echo "This is the initial release of the Dojo Unity SDK." >> FULL_CHANGELOG.md
+            echo "## Initial Release" >> RELEASE_NOTES.md
+            echo "" >> RELEASE_NOTES.md
+            echo "This is the initial release of the Dojo Unity SDK." >> RELEASE_NOTES.md
           fi
           
-          echo "" >> FULL_CHANGELOG.md
-          echo "---" >> FULL_CHANGELOG.md
-          echo "" >> FULL_CHANGELOG.md
-          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...$VERSION" >> FULL_CHANGELOG.md
-          
-          # Set output for release description
-          {
-            echo 'changelog<<EOF'
-            cat FULL_CHANGELOG.md
-            echo EOF
-          } >> $GITHUB_OUTPUT
+          echo "" >> RELEASE_NOTES.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...$TAG" >> RELEASE_NOTES.md
 
-      # Git LFS setup (copied from existing release.yml)
-      - name: Create LFS file list
+      # Git LFS setup
+      - name: Setup Git LFS
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-      - name: Restore LFS cache
-        uses: actions/cache@v3
-        id: lfs-cache
+      - name: Cache Git LFS
+        uses: actions/cache@v4
         with:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -151,15 +87,16 @@ jobs:
           git add .
           git reset --hard
 
-      # Unity Cache (copied from existing release.yml)
-      - uses: actions/cache@v3
+      # Unity Cache
+      - name: Cache Unity Library
+        uses: actions/cache@v4
         with:
           path: Library
-          key: Library-Build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-${{ runner.os }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
-            Library-Build-
+            Library-${{ runner.os }}-
 
-      # Build Unity Package (copied from existing release.yml)
+      # Build Unity Package
       - name: Build Unity Package
         uses: game-ci/unity-builder@v4
         env:
@@ -171,47 +108,30 @@ jobs:
           buildMethod: Editor.Builder.BuildPackage
 
       - name: Create Draft Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: v${{ steps.verify_version.outputs.verified_version }}
-          release_name: Release v${{ steps.verify_version.outputs.verified_version }}
-          body: ${{ steps.changelog.outputs.changelog }}
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body_path: RELEASE_NOTES.md
           draft: true
-          prerelease: false
+          files: |
+            ./Build/dojo.unitypackage
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Unity Package to Release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./Build/dojo.unitypackage
-          asset_name: dojo-v${{ steps.verify_version.outputs.verified_version }}.unitypackage
-          asset_content_type: application/octet-stream
-
-      - name: Comment on merged PR
+      - name: Comment on PR
         uses: peter-evans/create-or-update-comment@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             🎉 **Release Created Successfully!**
             
-            **Version:** v${{ steps.verify_version.outputs.verified_version }}
-            **Tag:** Created and pushed
-            **Release:** [Draft Release](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.verify_version.outputs.verified_version }})
-            **Package:** Built and uploaded
+            **Version:** ${{ steps.version.outputs.tag }}
+            **Release:** [Draft Release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }})
             
-            ### Next Steps:
-            1. ✅ Git tag `v${{ steps.verify_version.outputs.verified_version }}` has been created
-            2. ✅ Unity package has been built and attached to the release
-            3. 📝 Draft release is ready for review
-            4. 🚀 **[Review and publish the release](https://github.com/${{ github.repository }}/releases/tag/v${{ steps.verify_version.outputs.verified_version }})** when ready
+            ### ✅ Completed:
+            - Git tag `${{ steps.version.outputs.tag }}` created and pushed
+            - Unity package built and uploaded
+            - Draft release created with changelog
             
-            The release includes:
-            - 📦 Unity package (`dojo-v${{ steps.verify_version.outputs.verified_version }}.unitypackage`)
-            - 📋 Generated changelog
-            - 🏷️ Git tag for version tracking
+            ### 🚀 Next Steps:
+            **[Review and publish the release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }})** when ready!

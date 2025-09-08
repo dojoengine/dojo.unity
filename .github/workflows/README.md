@@ -1,192 +1,260 @@
 # GitHub Workflows for Dojo Unity SDK
 
-This directory contains the GitHub Actions workflows for managing releases and CI/CD for the Dojo Unity SDK.
+This directory contains streamlined GitHub Actions workflows for managing releases and CI/CD for the Dojo Unity SDK.
 
-## Workflows Overview
+## 🚀 Quick Start
 
-### 1. `prepare-release.yml` - Prepare Release
+### Creating a Release (Recommended Flow)
+
+1. **Go to GitHub Actions** → **Release Dispatch** → **Run workflow**
+2. **Enter version** (e.g., `1.4.0` or `patch`/`minor`/`major`)
+3. **Review the auto-created PR** and merge it
+4. **Publish the draft release** when ready
+
+That's it! 🎉
+
+## 📋 Workflows Overview
+
+### 1. `release-dispatch.yml` - Release Dispatch (Main Workflow)
 **Trigger:** Manual workflow dispatch
-**Purpose:** Prepares a new release by updating version numbers and creating a PR
+**Purpose:** One-stop workflow for creating releases
 
-**Usage:**
-```bash
-# Go to Actions tab → Prepare Release → Run workflow
-# Choose version bump type: patch, minor, or major
-# Or provide a custom version override
-```
+**How it works:**
+- Creates a release branch with version updates
+- Generates changelog from git commits  
+- Creates a PR with all changes
+- Optionally builds and creates the release immediately
 
-**What it does:**
-- ✅ Updates `package.json` version
-- ✅ Updates Unity package files
-- ✅ Creates a release branch (`release/vX.X.X`)
-- ✅ Generates changelog from git commits
-- ✅ Creates a PR with all changes
-- ✅ Adds helpful comments and labels
+### 2. `release-on-merge.yml` - Release on Merge
+**Trigger:** Automatic when release PR is merged
+**Purpose:** Automatically creates draft release when release PR is merged
 
-### 2. `release-on-merge.yml` - Create Release on Merge
-**Trigger:** Automatic when release PR is merged to main
-**Purpose:** Automatically creates a draft release when a release PR is merged
+**How it works:**
+- Detects release PRs (title: "Release vX.X.X")
+- Creates git tag
+- Builds Unity package
+- Creates draft release
+- Comments on PR with next steps
 
-**What it does:**
-- ✅ Detects release PRs (title: "Release vX.X.X" or branch: "release/vX.X.X")
-- ✅ Verifies version consistency
-- ✅ Creates and pushes git tag
-- ✅ Builds Unity package
-- ✅ Creates draft release with changelog
-- ✅ Uploads Unity package to release
-- ✅ Comments on the merged PR with next steps
-
-### 3. `manual-release.yml` - Manual Release
-**Trigger:** Manual workflow dispatch
-**Purpose:** Create a release manually for an existing tag
-
-**Usage:**
-```bash
-# Go to Actions tab → Manual Release → Run workflow
-# Provide the tag (e.g., v1.4.0)
-# Choose draft/prerelease options
-```
-
-### 4. `release.yml` - Legacy Release Build
-**Trigger:** Automatic when a release is published (not draft)
-**Purpose:** Builds and uploads Unity package to published releases
+### 3. `ci.yml` - Continuous Integration
+**Trigger:** Push/PR to main branch
+**Purpose:** Code quality checks and build verification
 
 **What it does:**
-- ✅ Builds Unity package when release is published
-- ✅ Uploads package with versioned filename
+- Code formatting checks (C#)
+- Unity package build verification
+- (Tests commented out until ready)
 
-## Complete Release Process
+### 4. `dojoc.yml` - DojoC Artifacts
+**Trigger:** Changes to `Bindings/dojo.c/**` or manual dispatch
+**Purpose:** Generates C# bindings and native libraries
 
-### Option A: Automated Release Process (Recommended)
+## 📖 Step-by-Step Release Guide
 
-1. **Prepare Release**
-   ```bash
-   # Go to GitHub Actions → Prepare Release → Run workflow
-   # Select version bump type or provide custom version
+### Option A: Automatic Version Bumping
+
+1. **Navigate to GitHub Actions**
+   ```
+   GitHub Repository → Actions tab → Release Dispatch → Run workflow
    ```
 
-2. **Review and Merge PR**
-   - Review the automatically created PR
-   - Check version updates and changelog
-   - Merge the PR to main
+2. **Choose Version Type**
+   - `patch` - Bug fixes (1.2.3 → 1.2.4)
+   - `minor` - New features (1.2.3 → 1.3.0) 
+   - `major` - Breaking changes (1.2.3 → 2.0.0)
 
-3. **Publish Release**
-   - A draft release is automatically created
-   - Review the draft release
-   - Click "Publish release" when ready
+3. **Configure Options**
+   - ✅ **Draft**: `true` (recommended) - Creates draft for review
+   - ❌ **Pre-release**: `false` (unless it's a beta/alpha)
 
-### Option B: Manual Release Process
+4. **Run the Workflow**
+   - Click "Run workflow"
+   - Wait for completion (~2-3 minutes)
 
-1. **Update version manually** in `package.json`
-2. **Create and push tag**
-   ```bash
-   git tag -a v1.4.0 -m "Release v1.4.0"
-   git push origin v1.4.0
+5. **Review the PR**
+   - A PR titled "Release vX.X.X" will be created
+   - Review version changes in `package.json`
+   - Review generated changelog
+   - Merge the PR when satisfied
+
+6. **Publish the Release**
+   - Navigate to Releases tab
+   - Find the draft release
+   - Review release notes and attached Unity package
+   - Click "Publish release"
+
+### Option B: Custom Version
+
+1. **Navigate to GitHub Actions**
    ```
-3. **Run Manual Release workflow**
-   - Go to Actions → Manual Release
-   - Provide the tag name
-   - Choose options and run
+   GitHub Repository → Actions tab → Release Dispatch → Run workflow
+   ```
 
-## Workflow Features
+2. **Enter Custom Version**
+   - Type exact version: `1.4.0`
+   - Set options as desired
 
-### 🚀 Version Management
-- Automatic semantic versioning (patch/minor/major)
-- Custom version override support
-- Consistent version updates across all files
+3. **Follow steps 4-6 from Option A**
 
-### 📋 Changelog Generation
-- Automatic changelog from git commits
-- Categorized by commit types (features, fixes, docs)
-- Links to commits and comparisons
+### Option C: Manual Process
 
-### 🏷️ Git Tagging
-- Automatic tag creation and pushing
-- Annotated tags with release messages
-- Tag verification and validation
+1. **Update Version Manually**
+   ```bash
+   # Edit package.json
+   vim package.json
+   # Change version field to desired version
+   ```
 
-### 📦 Unity Package Building
-- Automatic Unity package compilation
-- LFS support for large assets
-- Caching for faster builds
-- Versioned package filenames
+2. **Create Release Branch**
+   ```bash
+   git checkout -b release/v1.4.0
+   git add package.json
+   git commit -m "chore: bump version to 1.4.0"
+   git push origin release/v1.4.0
+   ```
 
-### 🔄 PR Management
-- Automatic PR creation for releases
-- Helpful descriptions and comments
-- Proper labeling and reviewer assignment
-- Status updates throughout process
+3. **Create PR**
+   - Create PR with title "Release v1.4.0"
+   - Merge when ready
 
-## Configuration Requirements
+4. **The rest is automatic!**
+   - `release-on-merge.yml` will trigger
+   - Draft release will be created
+   - Publish when ready
 
-### Repository Secrets
-Make sure these secrets are configured in your repository:
+## 🔧 Workflow Configuration
 
-- `UNITY_LICENSE` - Your Unity license
-- `UNITY_EMAIL` - Unity account email
-- `UNITY_PASSWORD` - Unity account password
-- `GITHUB_TOKEN` - Automatically provided by GitHub
+### Required Repository Secrets
 
-### Permissions
-The workflows require these permissions:
-- Contents: write (for creating tags and releases)
-- Pull requests: write (for creating PRs)
-- Actions: read (for workflow status)
+```yaml
+UNITY_LICENSE: Your Unity license key
+UNITY_EMAIL: Unity account email  
+UNITY_PASSWORD: Unity account password
+GITHUB_TOKEN: Automatically provided
+```
 
-## File Structure
+### Required Permissions
+
+```yaml
+Contents: write      # Create tags and releases
+Pull requests: write # Create PRs
+Actions: read        # Read workflow status
+```
+
+## 📁 File Structure After Cleanup
 
 ```
 .github/workflows/
-├── README.md                 # This file
-├── prepare-release.yml       # Prepare new release
-├── release-on-merge.yml      # Auto-create release on merge
-├── manual-release.yml        # Manual release creation
-├── release.yml              # Legacy release build
-├── ci.yml                   # Existing CI workflow
-└── dojoc.yml               # Existing dojo.c workflow
+├── README.md              # This guide
+├── release-dispatch.yml   # 🚀 Main release workflow
+├── release-on-merge.yml   # 🔄 Auto-release on PR merge
+├── ci.yml                # ✅ Code quality & build checks
+└── dojoc.yml             # 🔧 Native bindings generation
 ```
 
-## Troubleshooting
+## 🎯 Key Improvements
 
-### Common Issues
+### ✅ What's Better Now
 
-1. **Version mismatch error**
-   - Ensure package.json version matches the expected version
-   - Check that the release PR was merged properly
+- **Simplified**: 4 workflows instead of 7
+- **Modern**: Uses latest GitHub Actions (v4)
+- **Reliable**: Better error handling and validation
+- **Flexible**: Support both semantic and custom versioning
+- **Automated**: Less manual work, more automation
+- **Clear**: Better naming and documentation
 
-2. **Unity build fails**
-   - Check Unity license secrets
-   - Verify Unity project configuration
-   - Check for compilation errors in Unity
+### 🗑️ What Was Removed
 
-3. **Tag already exists**
-   - Use a different version number
-   - Delete the existing tag if needed: `git tag -d v1.4.0 && git push origin :refs/tags/v1.4.0`
+- `release.yml` - Merged into `release-dispatch.yml`
+- `manual-release.yml` - Functionality in `release-dispatch.yml`  
+- `prepare-release.yml` - Functionality in `release-dispatch.yml`
 
-4. **PR not detected as release PR**
-   - Ensure PR title follows format: "Release vX.X.X"
-   - Or use branch name format: "release/vX.X.X"
+## 🚨 Common Scenarios
 
-### Debug Tips
+### Hotfix Release
 
-- Check workflow logs in the Actions tab
-- Verify repository permissions and secrets
-- Test with a patch version first
-- Use draft releases for testing
+```bash
+# For urgent bug fixes
+GitHub Actions → Release Dispatch → Run workflow
+Version: "patch"
+Draft: true
+→ Review → Merge PR → Publish Release
+```
 
-## Customization
+### Feature Release
 
-To customize the workflows for your needs:
+```bash  
+# For new features
+GitHub Actions → Release Dispatch → Run workflow
+Version: "minor" 
+Draft: true
+→ Review → Merge PR → Publish Release
+```
 
-1. **Changelog format** - Edit the changelog generation sections
-2. **Version files** - Add more files to update in `prepare-release.yml`
-3. **Build process** - Modify the Unity build steps
-4. **Notifications** - Add Slack/Discord notifications
-5. **Validation** - Add additional checks and tests
+### Major Release
 
-## Support
+```bash
+# For breaking changes
+GitHub Actions → Release Dispatch → Run workflow  
+Version: "major"
+Draft: true
+→ Extra review → Merge PR → Publish Release
+```
 
-For issues with these workflows:
-1. Check the workflow logs in GitHub Actions
-2. Review this README for configuration requirements
-3. Open an issue with workflow logs and error details
+### Pre-release/Beta
+
+```bash
+GitHub Actions → Release Dispatch → Run workflow
+Version: "1.4.0-beta.1"
+Pre-release: true
+Draft: false
+→ Creates immediate pre-release
+```
+
+## 🔍 Troubleshooting
+
+### "Version mismatch" Error
+- Check that `package.json` version matches expected version
+- Ensure release PR was merged properly
+
+### Unity Build Fails  
+- Verify Unity license secrets are correct
+- Check Unity project for compilation errors
+- Review workflow logs for specific errors
+
+### PR Not Detected as Release PR
+- Ensure PR title is exactly "Release vX.X.X"
+- Check branch name follows "release/vX.X.X" format
+
+### Permission Denied
+- Verify repository has required permissions
+- Check if branch protection rules are blocking
+
+## 💡 Pro Tips
+
+1. **Always use draft releases** for review before publishing
+2. **Test with patch versions** before major releases  
+3. **Review generated changelogs** and edit if needed
+4. **Use semantic versioning** for consistency
+5. **Monitor workflow logs** for any issues
+
+## 🆘 Emergency Procedures
+
+### Rollback a Release
+```bash
+# Delete tag and release if needed
+git tag -d v1.4.0
+git push origin :refs/tags/v1.4.0
+# Then delete release from GitHub UI
+```
+
+### Fix Failed Release
+```bash
+# If release workflow failed
+GitHub Actions → Release Dispatch → Run workflow
+# Use same version, it will overwrite
+```
+
+---
+
+**Need help?** Check workflow logs in GitHub Actions or open an issue with error details.
