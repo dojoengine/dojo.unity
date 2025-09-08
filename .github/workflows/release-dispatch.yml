@@ -1,0 +1,247 @@
+name: Release Dispatch
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.4.0 or patch/minor/major)'
+        required: true
+        type: string
+      prerelease:
+        description: 'Create as pre-release'
+        required: false
+        default: false
+        type: boolean
+      draft:
+        description: 'Create as draft'
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  prepare-release:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Calculate version
+        id: version
+        run: |
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+          
+          if [[ "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[0-9]+)?)?$ ]]; then
+            # Direct version specified (supports pre-release: 1.2.3, 1.2.3-alpha, 1.2.3-alpha.1, 1.2.3-beta.2)
+            NEW_VERSION="$INPUT_VERSION"
+          elif [[ "$INPUT_VERSION" == "patch" || "$INPUT_VERSION" == "minor" || "$INPUT_VERSION" == "major" ]]; then
+            # Semantic version bump
+            IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+            MAJOR=${VERSION_PARTS[0]}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+            
+            case "$INPUT_VERSION" in
+              "major") MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+              "minor") MINOR=$((MINOR + 1)); PATCH=0 ;;
+              "patch") PATCH=$((PATCH + 1)) ;;
+            esac
+            
+            NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          else
+            echo "❌ Invalid version format. Use semantic version (1.4.0) or bump type (patch/minor/major)"
+            exit 1
+          fi
+          
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "Current: $CURRENT_VERSION → New: $NEW_VERSION"
+
+      - name: Create release branch
+        run: |
+          BRANCH_NAME="release/${{ steps.version.outputs.tag }}"
+          git checkout -b "$BRANCH_NAME"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Update version files
+        run: |
+          NEW_VERSION="${{ steps.version.outputs.version }}"
+          
+          # Update main package.json
+          jq --arg version "$NEW_VERSION" '.version = $version' package.json > package.json.tmp
+          mv package.json.tmp package.json
+          
+          # Update WebGL template package.json if exists
+          if [ -f "Assets/WebGLTemplates/Dojo/TemplateData/dojo.js/package.json" ]; then
+            jq --arg version "$NEW_VERSION" '.version = $version' "Assets/WebGLTemplates/Dojo/TemplateData/dojo.js/package.json" > temp.json
+            mv temp.json "Assets/WebGLTemplates/Dojo/TemplateData/dojo.js/package.json"
+          fi
+          
+          # Update artifact package.json if exists
+          if [ -f "artifacts/wasm-artifact/package.json" ]; then
+            jq --arg version "$NEW_VERSION" '.version = $version' "artifacts/wasm-artifact/package.json" > temp.json
+            mv temp.json "artifacts/wasm-artifact/package.json"
+          fi
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          PREVIOUS_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          
+          echo "# Release $TAG" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "## Changes since $PREVIOUS_TAG" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            
+            # Categorize commits
+            echo "### 🚀 Features" >> CHANGELOG.md
+            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --grep="feat" --grep="add" >> CHANGELOG.md 2>/dev/null || echo "- No new features" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            
+            echo "### 🐛 Bug Fixes" >> CHANGELOG.md
+            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --grep="fix" --grep="bug" >> CHANGELOG.md 2>/dev/null || echo "- No bug fixes" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            
+            echo "### 🔧 Other Changes" >> CHANGELOG.md
+            git log --pretty=format:"- %s ([%h](https://github.com/${{ github.repository }}/commit/%H))" $PREVIOUS_TAG..HEAD --invert-grep --grep="feat" --grep="add" --grep="fix" --grep="bug" >> CHANGELOG.md 2>/dev/null || echo "- No other changes" >> CHANGELOG.md
+          else
+            echo "## Initial Release" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            echo "This is the initial release of the Dojo Unity SDK." >> CHANGELOG.md
+          fi
+          
+          echo "" >> CHANGELOG.md
+          echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/$PREVIOUS_TAG...$TAG" >> CHANGELOG.md
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git commit -m "chore: bump version to ${{ steps.version.outputs.version }}"
+          git push origin "$BRANCH_NAME"
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ env.BRANCH_NAME }}
+          title: "Release ${{ steps.version.outputs.tag }}"
+          body: |
+            ## 🚀 Release ${{ steps.version.outputs.tag }}
+            
+            This PR prepares the release for version ${{ steps.version.outputs.version }}.
+            
+            ### ✅ Changes Made:
+            - Updated `package.json` version to ${{ steps.version.outputs.version }}
+            - Updated Unity package files
+            - Generated release changelog
+            
+            ### 📋 Release Notes:
+            
+            $(cat CHANGELOG.md)
+            
+            ### 🔄 Next Steps:
+            1. Review and merge this PR
+            2. Release workflow will automatically create a draft release
+            3. Review and publish the release when ready
+          labels: |
+            release
+            automated
+
+  build-and-release:
+    name: Build and Release
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    if: github.event.inputs.draft == 'false' || github.event.inputs.prerelease == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: release/${{ needs.prepare-release.outputs.tag }}
+          lfs: true
+          fetch-depth: 0
+
+      - name: Create and push tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "${{ needs.prepare-release.outputs.tag }}" -m "Release ${{ needs.prepare-release.outputs.tag }}"
+          git push origin "${{ needs.prepare-release.outputs.tag }}"
+
+      # Git LFS setup
+      - name: Setup Git LFS
+        run: |
+          git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+
+      - name: Cache Git LFS
+        uses: actions/cache@v4
+        with:
+          path: .git/lfs
+          key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+
+      - name: Git LFS Pull
+        run: |
+          git lfs pull
+          git add .
+          git reset --hard
+
+      # Unity Cache
+      - name: Cache Unity Library
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ runner.os }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-${{ runner.os }}-
+
+      # Build Unity Package
+      - name: Build Unity Package
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: StandaloneLinux64
+          buildMethod: Editor.Builder.BuildPackage
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.prepare-release.outputs.tag }}
+          name: Release ${{ needs.prepare-release.outputs.tag }}
+          body_path: CHANGELOG.md
+          draft: ${{ github.event.inputs.draft }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+          files: |
+            ./Build/dojo.unitypackage
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "🎉 **Release ${{ needs.prepare-release.outputs.tag }} Created!**"
+          echo ""
+          echo "**Version:** ${{ needs.prepare-release.outputs.version }}"
+          echo "**Tag:** ${{ needs.prepare-release.outputs.tag }}"
+          echo "**Draft:** ${{ github.event.inputs.draft }}"
+          echo "**Pre-release:** ${{ github.event.inputs.prerelease }}"
+          echo "**Release URL:** https://github.com/${{ github.repository }}/releases/tag/${{ needs.prepare-release.outputs.tag }}"

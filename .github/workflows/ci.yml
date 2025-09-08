@@ -7,66 +7,67 @@ on:
     branches: [ main ]
 
 jobs:
-#   test:
-#     name: Run Tests
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
+  # Commented out until tests are ready
+  # test:
+  #   name: Run Tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         lfs: true
 
-#        # Git LFS
-#       - name: Create LFS file list
-#         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
+  #     - name: Setup Git LFS
+  #       run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-#       - name: Restore LFS cache
-#         uses: actions/cache@v3
-#         id: lfs-cache
-#         with:
-#           path: .git/lfs
-#           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
+  #     - name: Cache Git LFS
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: .git/lfs
+  #         key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
 
-#       - name: Git LFS Pull
-#         run: |
-#           git lfs pull
-#           git add .
-#           git reset --hard
+  #     - name: Git LFS Pull
+  #       run: |
+  #         git lfs pull
+  #         git add .
+  #         git reset --hard
 
-#       # Cache
-#       - uses: actions/cache@v3
-#         with:
-#           path: Library
-#           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-#           restore-keys: |
-#             Library-
+  #     - name: Cache Unity Library
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: Library
+  #         key: Library-${{ runner.os }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+  #         restore-keys: |
+  #           Library-${{ runner.os }}-
 
-#       - name: Run Unity Tests
-#         uses: game-ci/unity-test-runner@v4
-#         env:
-#           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-#           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-#           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-#         with:
-#           projectPath: .
-#           testMode: all
-#           artifactsPath: TestResults
-#           githubToken: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Run Unity Tests
+  #       uses: game-ci/unity-test-runner@v4
+  #       env:
+  #         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+  #         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+  #         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+  #       with:
+  #         projectPath: .
+  #         testMode: all
+  #         artifactsPath: TestResults
+  #         githubToken: ${{ secrets.GITHUB_TOKEN }}
 
-#       - name: Upload Test Results
-#         uses: actions/upload-artifact@v3
-#         if: always()
-#         with:
-#           name: Test Results
-#           path: TestResults
+  #     - name: Upload Test Results
+  #       uses: actions/upload-artifact@v4
+  #       if: always()
+  #       with:
+  #         name: test-results
+  #         path: TestResults
 
   format:
     name: Check Code Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
 
       - name: Install dotnet-format
         run: dotnet tool install -g dotnet-format
@@ -105,17 +106,15 @@ jobs:
     name: Build Package
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           lfs: true
 
-      # Git LFS
-      - name: Create LFS file list
+      - name: Setup Git LFS
         run: git lfs ls-files -l | cut -d' ' -f1 | sort > .lfs-assets-id
 
-      - name: Restore LFS cache
-        uses: actions/cache@v3
-        id: lfs-cache
+      - name: Cache Git LFS
+        uses: actions/cache@v4
         with:
           path: .git/lfs
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
@@ -126,15 +125,14 @@ jobs:
           git add .
           git reset --hard
 
-      # Unity Cache
-      - uses: actions/cache@v3
+      - name: Cache Unity Library
+        uses: actions/cache@v4
         with:
           path: Library
-          key: Library-Build-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-${{ runner.os }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
-            Library-Build-
+            Library-${{ runner.os }}-
 
-      # Build
       - name: Build Unity Package
         uses: game-ci/unity-builder@v4
         env:
