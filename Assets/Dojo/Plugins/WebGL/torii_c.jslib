@@ -1,9 +1,4 @@
 mergeInto(LibraryManager.library, {
-  // Global objects to store client instances and subscriptions
-  toriiClients: {},
-  toriiSubscriptions: {},
-  nextClientId: 1,
-  nextSubscriptionId: 1,
   // Creates a new client and returns the pointer to it
   CreateClient: async function (
     toriiUrl,
@@ -16,13 +11,14 @@ mergeInto(LibraryManager.library, {
     }));
 
     // Store client in global object and return virtual pointer
-    let clientId = this.nextClientId++;
+    let clientId = this.nextClientId ? this.nextClientId++ : (this.nextClientId = 2, 1);
+    this.toriiClients = this.toriiClients || {};
     this.toriiClients[clientId] = client;
     dynCall_vi(cb, clientId);
   },
   // Returns a page of all controllers
   GetControllers: async function (clientPtr, queryString, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -40,7 +36,7 @@ mergeInto(LibraryManager.library, {
   },
   // Returns a page of all tokens
   GetTokens: async function (clientPtr, queryString, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -58,7 +54,7 @@ mergeInto(LibraryManager.library, {
   },
   // Returns a page of all token balances
   GetTokenBalances: async function (clientPtr, queryString, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -76,7 +72,7 @@ mergeInto(LibraryManager.library, {
   },
   // Returns a dictionary of all of the entities
   GetEntities: async function (clientPtr, queryString, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -96,7 +92,7 @@ mergeInto(LibraryManager.library, {
   },
   // Returns a dictionary of all of the eventmessages
   GetEventMessages: async function (clientPtr, queryString, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -116,7 +112,7 @@ mergeInto(LibraryManager.library, {
   },
   // Get the value of a model for a specific set of keys
   GetModelValue: async function (clientPtr, model, keys, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -137,7 +133,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   OnTokenUpdated: async function (clientPtr, contractAddresses, tokenIds, cb, subCb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -156,12 +152,13 @@ mergeInto(LibraryManager.library, {
       });
 
     // Store subscription in global object and return virtual pointer
-    let subscriptionId = this.nextSubscriptionId++;
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
     this.toriiSubscriptions[subscriptionId] = subscription;
     dynCall_vi(subCb, subscriptionId);
   },
   OnTokenBalanceUpdated: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, cb, subCb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -181,12 +178,13 @@ mergeInto(LibraryManager.library, {
       });
 
     // Store subscription in global object and return virtual pointer
-    let subscriptionId = this.nextSubscriptionId++;
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
     this.toriiSubscriptions[subscriptionId] = subscription;
     dynCall_vi(subCb, subscriptionId);
   },
   OnEntityUpdated: async function (clientPtr, clauseStr, cb, subCb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -206,13 +204,14 @@ mergeInto(LibraryManager.library, {
     });
 
     // Store subscription in global object and return virtual pointer
-    let subscriptionId = this.nextSubscriptionId++;
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
     this.toriiSubscriptions[subscriptionId] = subscription;
     dynCall_vi(subCb, subscriptionId);
   },
   UpdateEntitySubscription: async function (clientPtr, subPtr, clauseStr) {
-    const client = this.toriiClients[clientPtr];
-    const subscription = this.toriiSubscriptions[subPtr];
+    const client = (this.toriiClients || {})[clientPtr];
+    const subscription = (this.toriiSubscriptions || {})[subPtr];
     
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
@@ -227,7 +226,7 @@ mergeInto(LibraryManager.library, {
     await client.updateEntitySubscription(subscription, clause !== "" ? JSON.parse(clause) : undefined);
   },
   OnEventMessageUpdated: async function (clientPtr, clauseStr, cb, subCb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -250,13 +249,14 @@ mergeInto(LibraryManager.library, {
     );
 
     // Store subscription in global object and return virtual pointer
-    let subscriptionId = this.nextSubscriptionId++;
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
     this.toriiSubscriptions[subscriptionId] = subscription;
     dynCall_vi(subCb, subscriptionId);
   },
   UpdateEventMessageSubscription: async function (clientPtr, subPtr, clauseStr) {
-    const client = this.toriiClients[clientPtr];
-    const subscription = this.toriiSubscriptions[subPtr];
+    const client = (this.toriiClients || {})[clientPtr];
+    const subscription = (this.toriiSubscriptions || {})[subPtr];
     
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
@@ -271,7 +271,7 @@ mergeInto(LibraryManager.library, {
     await client.updateEventMessageSubscription(subscription, clause !== "" ? JSON.parse(clause) : undefined);
   },
   AddModelsToSync: function (clientPtr, models) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -283,7 +283,7 @@ mergeInto(LibraryManager.library, {
     client.addModelsToSync(modelsArray);
   },
   RemoveModelsToSync: function (clientPtr, models) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -300,7 +300,7 @@ mergeInto(LibraryManager.library, {
     callbackObjectName,
     callbackMethodName
   ) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -317,7 +317,8 @@ mergeInto(LibraryManager.library, {
     });
     
     // Store subscription in global object (no need to return ID since it's not used elsewhere)
-    let subscriptionId = this.nextSubscriptionId++;
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
     this.toriiSubscriptions[subscriptionId] = subscription;
   },
   // Encode typed data with the corresponding address and return the message hash
@@ -340,7 +341,7 @@ mergeInto(LibraryManager.library, {
   // message: typed data JSON string
   // signature: string[]
   PublishMessage: async function (clientPtr, message, signature, cb) {
-    const client = this.toriiClients[clientPtr];
+    const client = (this.toriiClients || {})[clientPtr];
     if (!client) {
       console.error('Client not found for ID:', clientPtr);
       return;
@@ -358,13 +359,13 @@ mergeInto(LibraryManager.library, {
   },
   // Cleanup function to dispose of a client and all its subscriptions
   DisposeClient: function (clientPtr) {
-    if (this.toriiClients[clientPtr]) {
+    if (this.toriiClients && this.toriiClients[clientPtr]) {
       delete this.toriiClients[clientPtr];
     }
   },
   // Cleanup function to dispose of a subscription
   DisposeSubscription: function (subPtr) {
-    if (this.toriiSubscriptions[subPtr]) {
+    if (this.toriiSubscriptions && this.toriiSubscriptions[subPtr]) {
       delete this.toriiSubscriptions[subPtr];
     }
   },
