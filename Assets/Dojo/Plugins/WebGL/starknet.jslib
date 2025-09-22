@@ -1,20 +1,19 @@
-// Global objects to store provider and account instances
-var starknetProviders = {};
-var starknetAccounts = {};
-var nextProviderId = 1;
-var nextAccountId = 1;
-
 mergeInto(LibraryManager.library, {
+  // Global objects to store provider and account instances
+  starknetProviders: {},
+  starknetAccounts: {},
+  nextProviderId: 1,
+  nextAccountId: 1,
   NewProvider: function (rpcUrl) {
     let provider = new wasm_bindgen.Provider(UTF8ToString(rpcUrl));
     
     // Store provider in global object and return virtual pointer
-    let providerId = nextProviderId++;
-    starknetProviders[providerId] = provider;
+    let providerId = this.nextProviderId++;
+    this.starknetProviders[providerId] = provider;
     return providerId;
   },
   NewAccount: async function (providerPtr, pk, address, cb) {
-    const provider = starknetProviders[providerPtr];
+    const provider = this.starknetProviders[providerPtr];
     if (!provider) {
       console.error('Provider not found for ID:', providerPtr);
       return;
@@ -27,12 +26,12 @@ mergeInto(LibraryManager.library, {
     ));
 
     // Store account in global object and return virtual pointer
-    let accountId = nextAccountId++;
-    starknetAccounts[accountId] = account;
+    let accountId = this.nextAccountId++;
+    this.starknetAccounts[accountId] = account;
     dynCall_vi(cb, accountId);
   },
   AccountAddress: function (accountPtr) {
-    const account = starknetAccounts[accountPtr];
+    const account = this.starknetAccounts[accountPtr];
     if (!account) {
       console.error('Account not found for ID:', accountPtr);
       return null;
@@ -46,7 +45,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
   AccountChainId: function (accountPtr) {
-    const account = starknetAccounts[accountPtr];
+    const account = this.starknetAccounts[accountPtr];
     if (!account) {
       console.error('Account not found for ID:', accountPtr);
       return null;
@@ -60,7 +59,7 @@ mergeInto(LibraryManager.library, {
     return buffer;
   },
   AccountSetBlockId: function (accountPtr, blockId) {
-    const account = starknetAccounts[accountPtr];
+    const account = this.starknetAccounts[accountPtr];
     if (!account) {
       console.error('Account not found for ID:', accountPtr);
       return;
@@ -69,7 +68,7 @@ mergeInto(LibraryManager.library, {
     account.setBlockId(UTF8ToString(blockId));
   },
   AccountExecuteRaw: async function (accountPtr, callsStr, cb) {
-    const account = starknetAccounts[accountPtr];
+    const account = this.starknetAccounts[accountPtr];
     if (!account) {
       console.error('Account not found for ID:', accountPtr);
       return;
@@ -84,7 +83,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   AccountDeployBurner: async function (accountPtr, privateKey, cb) {
-    const account = starknetAccounts[accountPtr];
+    const account = this.starknetAccounts[accountPtr];
     if (!account) {
       console.error('Account not found for ID:', accountPtr);
       return;
@@ -93,12 +92,12 @@ mergeInto(LibraryManager.library, {
     const burner = await account.deployBurner(UTF8ToString(privateKey));
 
     // Store burner account in global object and return virtual pointer
-    let burnerId = nextAccountId++;
-    starknetAccounts[burnerId] = burner;
+    let burnerId = this.nextAccountId++;
+    this.starknetAccounts[burnerId] = burner;
     dynCall_vi(cb, burnerId);
   },
   AccountNonce: async function (accountPtr, cb) {
-    const account = starknetAccounts[accountPtr];
+    const account = this.starknetAccounts[accountPtr];
     if (!account) {
       console.error('Account not found for ID:', accountPtr);
       return;
@@ -112,7 +111,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   Call: async function (providerPtr, callStr, blockIdStr, cb) {
-    const provider = starknetProviders[providerPtr];
+    const provider = this.starknetProviders[providerPtr];
     if (!provider) {
       console.error('Provider not found for ID:', providerPtr);
       return;
@@ -128,7 +127,7 @@ mergeInto(LibraryManager.library, {
     dynCall_vi(cb, buffer);
   },
   WaitForTransaction: async function (providerPtr, txHash, cb) {
-    const provider = starknetProviders[providerPtr];
+    const provider = this.starknetProviders[providerPtr];
     if (!provider) {
       console.error('Provider not found for ID:', providerPtr);
       return;
@@ -207,14 +206,14 @@ mergeInto(LibraryManager.library, {
   },
   // Cleanup function to dispose of a provider
   DisposeProvider: function (providerPtr) {
-    if (starknetProviders[providerPtr]) {
-      delete starknetProviders[providerPtr];
+    if (this.starknetProviders[providerPtr]) {
+      delete this.starknetProviders[providerPtr];
     }
   },
   // Cleanup function to dispose of an account
   DisposeAccount: function (accountPtr) {
-    if (starknetAccounts[accountPtr]) {
-      delete starknetAccounts[accountPtr];
+    if (this.starknetAccounts[accountPtr]) {
+      delete this.starknetAccounts[accountPtr];
     }
   },
 });
