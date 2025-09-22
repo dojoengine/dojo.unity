@@ -89,6 +89,8 @@ declare namespace wasm_bindgen {
 	
 	export type Controllers = Page<Controller>;
 	
+	export type Contracts = Contract[];
+	
 	export interface Controller {
 	    address: string;
 	    username: string;
@@ -99,7 +101,14 @@ declare namespace wasm_bindgen {
 	
 	export type TokenBalances = Page<TokenBalance>;
 	
-	export type TokenCollections = Page<TokenCollection>;
+	export type TokenContracts = Page<TokenContract>;
+	
+	export interface TokenTransferQuery {
+	    contract_addresses: string[];
+	    account_addresses: string[];
+	    token_ids: string[];
+	    pagination: Pagination;
+	}
 	
 	export interface Token {
 	    contract_address: string;
@@ -111,13 +120,13 @@ declare namespace wasm_bindgen {
 	    total_supply: string | undefined;
 	}
 	
-	export interface TokenCollection {
+	export interface TokenContract {
 	    contract_address: string;
 	    name: string;
 	    symbol: string;
 	    decimals: number;
-	    count: number;
 	    metadata: string;
+	    total_supply: string | undefined;
 	}
 	
 	export interface TokenBalance {
@@ -174,9 +183,15 @@ declare namespace wasm_bindgen {
 	    pagination: Pagination;
 	}
 	
+	export interface AttributeFilter {
+	    trait_name: string;
+	    trait_value: string;
+	}
+	
 	export interface TokenQuery {
 	    contract_addresses: string[];
 	    token_ids: string[];
+	    attribute_filters: AttributeFilter[];
 	    pagination: Pagination;
 	}
 	
@@ -187,11 +202,28 @@ declare namespace wasm_bindgen {
 	    pagination: Pagination;
 	}
 	
-	export interface IndexerUpdate {
-	    head: number;
-	    tps: number;
-	    last_block_timestamp: number;
+	export interface TokenContractQuery {
+	    contract_addresses: string[];
+	    contract_types: ContractType[];
+	    pagination: Pagination;
+	}
+	
+	export type ContractType = "WORLD" | "ERC20" | "ERC721" | "ERC1155" | "UDC" | "OTHER";
+	
+	export interface ContractQuery {
+	    contract_addresses: string[];
+	    contract_types: ContractType[];
+	}
+	
+	export interface Contract {
 	    contract_address: string;
+	    contract_type: ContractType;
+	    head: number | undefined;
+	    tps: number | undefined;
+	    last_block_timestamp: number | undefined;
+	    last_pending_block_tx: string | undefined;
+	    updated_at: number;
+	    created_at: number;
 	}
 	
 	export interface ClientConfig {
@@ -574,6 +606,16 @@ declare namespace wasm_bindgen {
 	   */
 	  getControllers(query: ControllerQuery): Promise<Controllers>;
 	  /**
+	   * Gets contracts matching the given query
+	   *
+	   * # Parameters
+	   * * `query` - ContractQuery parameters
+	   *
+	   * # Returns
+	   * Result containing contracts or error
+	   */
+	  getContracts(query: ContractQuery): Promise<Contracts>;
+	  /**
 	   * Gets transactions matching the given query
 	   *
 	   * # Parameters
@@ -633,7 +675,7 @@ declare namespace wasm_bindgen {
 	   */
 	  getTokenBalances(query: TokenBalanceQuery): Promise<TokenBalances>;
 	  /**
-	   * Gets token collections for given accounts and contracts
+	   * Gets token contracts for given accounts and contracts
 	   *
 	   * # Parameters
 	   * * `contract_addresses` - Array of contract addresses as hex strings
@@ -645,7 +687,7 @@ declare namespace wasm_bindgen {
 	   * # Returns
 	   * Result containing token balances or error
 	   */
-	  getTokenCollections(query: TokenBalanceQuery): Promise<TokenCollections>;
+	  getTokenContracts(query: TokenContractQuery): Promise<TokenContracts>;
 	  /**
 	   * Queries entities based on the provided query parameters
 	   *
@@ -851,6 +893,7 @@ declare interface InitOutput {
   readonly __wbg_get_subscription_id: (a: number) => bigint;
   readonly __wbg_set_subscription_id: (a: number, b: bigint) => void;
   readonly __wbg_signingkey_free: (a: number, b: number) => void;
+  readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
   readonly __wbg_typeddata_free: (a: number, b: number) => void;
   readonly __wbg_bytearray_free: (a: number, b: number) => void;
   readonly signingkey_new: (a: number, b: number) => [number, number, number];
@@ -859,6 +902,7 @@ declare interface InitOutput {
   readonly signingkey_sign: (a: number, b: number, c: number) => [number, number, number];
   readonly signingkey_verifyingKey: (a: number) => [number, number, number];
   readonly verifyingkey_new: (a: number, b: number) => [number, number, number];
+  readonly verifyingkey_scalar: (a: number) => [number, number, number, number];
   readonly verifyingkey_verify: (a: number, b: number, c: number, d: any) => [number, number, number];
   readonly typeddata_new: (a: number, b: number) => [number, number, number];
   readonly typeddata_encode: (a: number, b: number, c: number) => [number, number, number, number];
@@ -887,12 +931,13 @@ declare interface InitOutput {
   readonly parseCairoShortString: (a: number, b: number) => [number, number, number, number];
   readonly toriiclient_new: (a: any) => any;
   readonly toriiclient_getControllers: (a: number, b: any) => any;
+  readonly toriiclient_getContracts: (a: number, b: any) => any;
   readonly toriiclient_getTransactions: (a: number, b: any) => any;
   readonly toriiclient_onTransaction: (a: number, b: number, c: any) => any;
   readonly toriiclient_getTokens: (a: number, b: any) => any;
   readonly toriiclient_onTokenUpdated: (a: number, b: number, c: number, d: number, e: number, f: any) => any;
   readonly toriiclient_getTokenBalances: (a: number, b: any) => any;
-  readonly toriiclient_getTokenCollections: (a: number, b: any) => any;
+  readonly toriiclient_getTokenContracts: (a: number, b: any) => any;
   readonly toriiclient_getEntities: (a: number, b: any) => any;
   readonly toriiclient_getAllEntities: (a: number, b: number, c: number, d: number) => any;
   readonly toriiclient_getEventMessages: (a: number, b: any) => any;
@@ -907,34 +952,32 @@ declare interface InitOutput {
   readonly toriiclient_publishMessage: (a: number, b: any) => any;
   readonly toriiclient_publishMessageBatch: (a: number, b: number, c: number) => any;
   readonly subscription_cancel: (a: number) => void;
-  readonly verifyingkey_scalar: (a: number) => [number, number, number, number];
-  readonly __wbg_verifyingkey_free: (a: number, b: number) => void;
-  readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
-  readonly intounderlyingsource_pull: (a: number, b: any) => any;
-  readonly intounderlyingsource_cancel: (a: number) => void;
-  readonly __wbg_intounderlyingsink_free: (a: number, b: number) => void;
-  readonly intounderlyingsink_write: (a: number, b: any) => any;
-  readonly intounderlyingsink_close: (a: number) => any;
-  readonly intounderlyingsink_abort: (a: number, b: any) => any;
   readonly __wbg_intounderlyingbytesource_free: (a: number, b: number) => void;
   readonly intounderlyingbytesource_type: (a: number) => number;
   readonly intounderlyingbytesource_autoAllocateChunkSize: (a: number) => number;
   readonly intounderlyingbytesource_start: (a: number, b: any) => void;
   readonly intounderlyingbytesource_pull: (a: number, b: any) => any;
   readonly intounderlyingbytesource_cancel: (a: number) => void;
+  readonly __wbg_intounderlyingsink_free: (a: number, b: number) => void;
+  readonly intounderlyingsink_write: (a: number, b: any) => any;
+  readonly intounderlyingsink_close: (a: number) => any;
+  readonly intounderlyingsink_abort: (a: number, b: any) => any;
+  readonly __wbg_intounderlyingsource_free: (a: number, b: number) => void;
+  readonly intounderlyingsource_pull: (a: number, b: any) => any;
+  readonly intounderlyingsource_cancel: (a: number) => void;
   readonly __wbindgen_malloc: (a: number, b: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
   readonly __wbindgen_exn_store: (a: number) => void;
   readonly __externref_table_alloc: () => number;
   readonly __wbindgen_export_4: WebAssembly.Table;
-  readonly __wbindgen_export_5: WebAssembly.Table;
-  readonly __externref_table_dealloc: (a: number) => void;
-  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __externref_drop_slice: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__h859b951bee550a5a: (a: number, b: number) => void;
-  readonly _dyn_core__ops__function__FnMut_____Output___R_as_wasm_bindgen__closure__WasmClosure___describe__invoke__hbd34cb1bbccea715: (a: number, b: number) => void;
-  readonly closure965_externref_shim: (a: number, b: number, c: any) => void;
-  readonly closure1146_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly __wbindgen_free: (a: number, b: number, c: number) => void;
+  readonly __wbindgen_export_7: WebAssembly.Table;
+  readonly __externref_table_dealloc: (a: number) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h393ac263d49faac3: (a: number, b: number) => void;
+  readonly closure975_externref_shim: (a: number, b: number, c: any) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h18edae019c731a7c: (a: number, b: number) => void;
+  readonly closure1149_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
