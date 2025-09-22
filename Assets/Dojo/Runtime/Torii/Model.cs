@@ -135,17 +135,13 @@ namespace Dojo.Torii
                     "i8" => value.value.ToObject<sbyte>(),
                     "i16" => value.value.ToObject<short>(),
                     "i32" => value.value.ToObject<int>(),
-                    "i64" => (long)ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), bits: 64),
-                    "i128" => ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), bits: 128),
+                    "i64" => long.Parse(value.value.ToObject<string>()),
+                    "i128" => BigInteger.Parse(value.value.ToObject<string>()),
                     "u8" => value.value.ToObject<byte>(),
                     "u16" => value.value.ToObject<ushort>(),
                     "u32" => value.value.ToObject<uint>(),
-                    "u64" => (long)ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), unsigned: true, bits: 64),
-                    // NOTE: UNTESTED
-                    // NOTE: slow?
-                    // use BigInteger parse instead maybe but seems a bit
-                    // uninconvenient to use
-                    "u128" => ConvertTwosComplementToBigInteger(hexStringToByteArray(value.value.ToObject<string>()), unsigned: true, bits: 128),
+                    "u64" => ulong.Parse(value.value.ToObject<string>()),
+                    "u128" => BigInteger.Parse(value.value.ToObject<string>()),
                     // convert a 64 character hex string to a BigInteger
                     // IMPLEMNET
                     "u256" => new Struct("U256", new Dictionary<string, object>(){
