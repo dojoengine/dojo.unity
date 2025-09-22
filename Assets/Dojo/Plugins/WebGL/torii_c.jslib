@@ -10,11 +10,20 @@ mergeInto(LibraryManager.library, {
       worldAddress: UTF8ToString(worldAddress),
     }));
 
-    dynCall_vi(cb, client.__destroy_into_raw());
+    // Store client in global object and return virtual pointer
+    let clientId = this.nextClientId ? this.nextClientId++ : (this.nextClientId = 2, 1);
+    this.toriiClients = this.toriiClients || {};
+    this.toriiClients[clientId] = client;
+    dynCall_vi(cb, clientId);
   },
   // Returns a page of all controllers
   GetControllers: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const query = JSON.parse(UTF8ToString(queryString));
     const controllersPage = await client.getControllers(query);
 
@@ -23,12 +32,16 @@ mergeInto(LibraryManager.library, {
     const buffer = _malloc(bufferSize);
     stringToUTF8(controllersPageString, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns a page of all tokens
   GetTokens: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const query = JSON.parse(UTF8ToString(queryString));
     const tokensPage = await client.getTokens(query);
 
@@ -37,12 +50,16 @@ mergeInto(LibraryManager.library, {
     const buffer = _malloc(bufferSize);
     stringToUTF8(tokensPageString, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns a page of all token balances
   GetTokenBalances: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const query = JSON.parse(UTF8ToString(queryString));
     const balancesPage = await client.getTokenBalances(query);
 
@@ -51,12 +68,16 @@ mergeInto(LibraryManager.library, {
     const buffer = _malloc(bufferSize);
     stringToUTF8(balancesPageString, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns a dictionary of all of the entities
   GetEntities: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const query = JSON.parse(UTF8ToString(queryString));
     let entitiesPage = await client.getEntities(query);
 
@@ -67,12 +88,16 @@ mergeInto(LibraryManager.library, {
     let buffer = _malloc(bufferSize);
     stringToUTF8(entitiesPageString, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Returns a dictionary of all of the eventmessages
   GetEventMessages: async function (clientPtr, queryString, cb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const query = JSON.parse(UTF8ToString(queryString));
     let eventMessagesPage = await client.getEventMessages(query);
 
@@ -83,12 +108,16 @@ mergeInto(LibraryManager.library, {
     let buffer = _malloc(bufferSize);
     stringToUTF8(eventMessagesPageString, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   // Get the value of a model for a specific set of keys
   GetModelValue: async function (clientPtr, model, keys, cb) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     let modelValue = await client.getModelValue(
       UTF8ToString(model),
       JSON.parse(UTF8ToString(keys))
@@ -101,11 +130,15 @@ mergeInto(LibraryManager.library, {
     let buffer = _malloc(bufferSize);
     stringToUTF8(modelValueString, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   OnTokenUpdated: async function (clientPtr, contractAddresses, tokenIds, cb, subCb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const subscription = await client.onTokenUpdated(
       JSON.parse(UTF8ToString(contractAddresses)),
       JSON.parse(UTF8ToString(tokenIds)),
@@ -115,15 +148,22 @@ mergeInto(LibraryManager.library, {
         const buffer = _malloc(bufferSize);
         stringToUTF8(tokenString, buffer, bufferSize);
 
-      client.__destroy_into_raw();
-      dynCall_vi(cb, buffer);
-    });
+        dynCall_vi(cb, buffer);
+      });
 
-    client.__destroy_into_raw();
-    dynCall_vi(subCb, subscription.__destroy_into_raw());
+    // Store subscription in global object and return virtual pointer
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
+    this.toriiSubscriptions[subscriptionId] = subscription;
+    dynCall_vi(subCb, subscriptionId);
   },
   OnTokenBalanceUpdated: async function (clientPtr, contractAddresses, accountAddresses, tokenIds, cb, subCb) {
-    const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const subscription = await client.onTokenBalanceUpdated(
       JSON.parse(UTF8ToString(contractAddresses)),
       JSON.parse(UTF8ToString(accountAddresses)),
@@ -134,15 +174,22 @@ mergeInto(LibraryManager.library, {
         const buffer = _malloc(bufferSize);
         stringToUTF8(balanceString, buffer, bufferSize);
 
-      client.__destroy_into_raw();
-      dynCall_vi(cb, buffer);
-    });
+        dynCall_vi(cb, buffer);
+      });
 
-    client.__destroy_into_raw();
-    dynCall_vi(subCb, subscription.__destroy_into_raw());
+    // Store subscription in global object and return virtual pointer
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
+    this.toriiSubscriptions[subscriptionId] = subscription;
+    dynCall_vi(subCb, subscriptionId);
   },
   OnEntityUpdated: async function (clientPtr, clauseStr, cb, subCb) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     let clause = UTF8ToString(clauseStr);
 
     const subscription = await client.onEntityUpdated(clause !== "" ? JSON.parse(clause) : undefined, (entity) => {
@@ -156,21 +203,35 @@ mergeInto(LibraryManager.library, {
       dynCall_vi(cb, buffer);
     });
 
-    client.__destroy_into_raw();
-    dynCall_vi(subCb, subscription.__destroy_into_raw());
+    // Store subscription in global object and return virtual pointer
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
+    this.toriiSubscriptions[subscriptionId] = subscription;
+    dynCall_vi(subCb, subscriptionId);
   },
   UpdateEntitySubscription: async function (clientPtr, subPtr, clauseStr) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    const subscription = (this.toriiSubscriptions || {})[subPtr];
+    
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    if (!subscription) {
+      console.error('Subscription not found for ID:', subPtr);
+      return;
+    }
+    
     let clause = UTF8ToString(clauseStr);
-
     await client.updateEntitySubscription(subscription, clause !== "" ? JSON.parse(clause) : undefined);
-
-    client.__destroy_into_raw();
-    subscription.__destroy_into_raw();
   },
   OnEventMessageUpdated: async function (clientPtr, clauseStr, cb, subCb) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     let clause = UTF8ToString(clauseStr);
 
     const subscription = await client.onEventMessageUpdated(
@@ -187,33 +248,50 @@ mergeInto(LibraryManager.library, {
       }
     );
 
-    client.__destroy_into_raw();
-    dynCall_vi(subCb, subscription.__destroy_into_raw());
+    // Store subscription in global object and return virtual pointer
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
+    this.toriiSubscriptions[subscriptionId] = subscription;
+    dynCall_vi(subCb, subscriptionId);
   },
   UpdateEventMessageSubscription: async function (clientPtr, subPtr, clauseStr) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let subscription = wasm_bindgen.Subscription.__wrap(subPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    const subscription = (this.toriiSubscriptions || {})[subPtr];
+    
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    if (!subscription) {
+      console.error('Subscription not found for ID:', subPtr);
+      return;
+    }
+    
     let clause = UTF8ToString(clauseStr);
-
     await client.updateEventMessageSubscription(subscription, clause !== "" ? JSON.parse(clause) : undefined);
-
-    client.__destroy_into_raw();
-    subscription.__destroy_into_raw();
   },
   AddModelsToSync: function (clientPtr, models) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     let modelsString = UTF8ToString(models);
     let modelsArray = JSON.parse(modelsString);
 
-    client.__destroy_into_raw();
     client.addModelsToSync(modelsArray);
   },
   RemoveModelsToSync: function (clientPtr, models) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     let modelsString = UTF8ToString(models);
     let modelsArray = JSON.parse(modelsString);
 
-    client.__destroy_into_raw();
     client.removeModelsToSync(modelsArray);
   },
   OnSyncModelChange: async function (
@@ -222,7 +300,12 @@ mergeInto(LibraryManager.library, {
     callbackObjectName,
     callbackMethodName
   ) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     let modelsString = UTF8ToString(models);
     let modelsArray = JSON.parse(modelsString);
 
@@ -232,9 +315,11 @@ mergeInto(LibraryManager.library, {
         UTF8ToString(callbackMethodName)
       );
     });
-    subscription.__destroy_into_raw();
-
-    client.__destroy_into_raw();
+    
+    // Store subscription in global object (no need to return ID since it's not used elsewhere)
+    let subscriptionId = this.nextSubscriptionId ? this.nextSubscriptionId++ : (this.nextSubscriptionId = 2, 1);
+    this.toriiSubscriptions = this.toriiSubscriptions || {};
+    this.toriiSubscriptions[subscriptionId] = subscription;
   },
   // Encode typed data with the corresponding address and return the message hash
   // typedData: JSON string
@@ -256,7 +341,12 @@ mergeInto(LibraryManager.library, {
   // message: typed data JSON string
   // signature: string[]
   PublishMessage: async function (clientPtr, message, signature, cb) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
+    const client = (this.toriiClients || {})[clientPtr];
+    if (!client) {
+      console.error('Client not found for ID:', clientPtr);
+      return;
+    }
+    
     const id = await client.publishMessage({
       message: UTF8ToString(message),
       signature: JSON.parse(UTF8ToString(signature)),
@@ -265,7 +355,18 @@ mergeInto(LibraryManager.library, {
     const buffer = _malloc(bufferSize);
     stringToUTF8(id, buffer, bufferSize);
 
-    client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
+  },
+  // Cleanup function to dispose of a client and all its subscriptions
+  DisposeClient: function (clientPtr) {
+    if (this.toriiClients && this.toriiClients[clientPtr]) {
+      delete this.toriiClients[clientPtr];
+    }
+  },
+  // Cleanup function to dispose of a subscription
+  DisposeSubscription: function (subPtr) {
+    if (this.toriiSubscriptions && this.toriiSubscriptions[subPtr]) {
+      delete this.toriiSubscriptions[subPtr];
+    }
   },
 });

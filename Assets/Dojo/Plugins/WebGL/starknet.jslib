@@ -1,76 +1,120 @@
 mergeInto(LibraryManager.library, {
   NewProvider: function (rpcUrl) {
-    return new wasm_bindgen
-      .Provider(UTF8ToString(rpcUrl))
-      .__destroy_into_raw();
+    let provider = new wasm_bindgen.Provider(UTF8ToString(rpcUrl));
+    
+    // Store provider in global object and return virtual pointer
+    let providerId = this.nextProviderId ? this.nextProviderId++ : (this.nextProviderId = 2, 1);
+    this.starknetProviders = this.starknetProviders || {};
+    this.starknetProviders[providerId] = provider;
+    return providerId;
   },
   NewAccount: async function (providerPtr, pk, address, cb) {
-    const provider = wasm_bindgen.Provider.__wrap(providerPtr);
+    const provider = (this.starknetProviders || {})[providerPtr];
+    if (!provider) {
+      console.error('Provider not found for ID:', providerPtr);
+      return;
+    }
+    
     const account = await (new wasm_bindgen.Account(
       provider,
       UTF8ToString(pk),
       UTF8ToString(address)
     ));
 
-    provider.__destroy_into_raw();
-    dynCall_vi(cb, account.__destroy_into_raw());
+    // Store account in global object and return virtual pointer
+    let accountId = this.nextAccountId ? this.nextAccountId++ : (this.nextAccountId = 2, 1);
+    this.starknetAccounts = this.starknetAccounts || {};
+    this.starknetAccounts[accountId] = account;
+    dynCall_vi(cb, accountId);
   },
   AccountAddress: function (accountPtr) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const account = (this.starknetAccounts || {})[accountPtr];
+    if (!account) {
+      console.error('Account not found for ID:', accountPtr);
+      return null;
+    }
+    
     const address = account.address();
     const bufferSize = lengthBytesUTF8(address) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(address, buffer, bufferSize);
 
-    account.__destroy_into_raw();
     return buffer;
   },
   AccountChainId: function (accountPtr) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const account = (this.starknetAccounts || {})[accountPtr];
+    if (!account) {
+      console.error('Account not found for ID:', accountPtr);
+      return null;
+    }
+    
     const chainId = account.chainId();
     const bufferSize = lengthBytesUTF8(chainId) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(chainId, buffer, bufferSize);
 
-    account.__destroy_into_raw();
     return buffer;
   },
   AccountSetBlockId: function (accountPtr, blockId) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const account = (this.starknetAccounts || {})[accountPtr];
+    if (!account) {
+      console.error('Account not found for ID:', accountPtr);
+      return;
+    }
 
-    account.__destroy_into_raw();
     account.setBlockId(UTF8ToString(blockId));
   },
   AccountExecuteRaw: async function (accountPtr, callsStr, cb) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const account = (this.starknetAccounts || {})[accountPtr];
+    if (!account) {
+      console.error('Account not found for ID:', accountPtr);
+      return;
+    }
+    
     const calls = JSON.parse(UTF8ToString(callsStr));
     const txHash = await account.executeRaw(calls);
     const bufferSize = lengthBytesUTF8(txHash) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(txHash, buffer, bufferSize);
 
-    account.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   AccountDeployBurner: async function (accountPtr, privateKey, cb) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const account = (this.starknetAccounts || {})[accountPtr];
+    if (!account) {
+      console.error('Account not found for ID:', accountPtr);
+      return;
+    }
+    
     const burner = await account.deployBurner(UTF8ToString(privateKey));
 
-    account.__destroy_into_raw();
-    dynCall_vi(cb, burner.__destroy_into_raw());
+    // Store burner account in global object and return virtual pointer
+    let burnerId = this.nextAccountId ? this.nextAccountId++ : (this.nextAccountId = 2, 1);
+    this.starknetAccounts = this.starknetAccounts || {};
+    this.starknetAccounts[burnerId] = burner;
+    dynCall_vi(cb, burnerId);
   },
   AccountNonce: async function (accountPtr, cb) {
-    const account = wasm_bindgen.Account.__wrap(accountPtr);
+    const account = (this.starknetAccounts || {})[accountPtr];
+    if (!account) {
+      console.error('Account not found for ID:', accountPtr);
+      return;
+    }
+    
     const nonce = await account.nonce();
     const bufferSize = lengthBytesUTF8(nonce) + 1;
     const buffer = _malloc(bufferSize);
     stringToUTF8(nonce, buffer, bufferSize);
     
-    account.__destroy_into_raw();
     dynCall_vi(cb, buffer);
-},
+  },
   Call: async function (providerPtr, callStr, blockIdStr, cb) {
-    const provider = wasm_bindgen.Provider.__wrap(providerPtr);
+    const provider = (this.starknetProviders || {})[providerPtr];
+    if (!provider) {
+      console.error('Provider not found for ID:', providerPtr);
+      return;
+    }
+    
     const call = JSON.parse(UTF8ToString(callStr));
     const blockId = JSON.parse(UTF8ToString(blockIdStr));
     const result = await provider.call(call, blockId);
@@ -78,14 +122,17 @@ mergeInto(LibraryManager.library, {
     const buffer = _malloc(bufferSize);
     stringToUTF8(result, buffer, bufferSize);
 
-    provider.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
   WaitForTransaction: async function (providerPtr, txHash, cb) {
-    const provider = wasm_bindgen.Provider.__wrap(providerPtr);
+    const provider = (this.starknetProviders || {})[providerPtr];
+    if (!provider) {
+      console.error('Provider not found for ID:', providerPtr);
+      return;
+    }
+    
     const confirmed = await provider.waitForTransaction(UTF8ToString(txHash));
 
-    provider.__destroy_into_raw();
     dynCall_vi(cb, confirmed);
   },
   RandomSigningKey: function () {
@@ -155,5 +202,16 @@ mergeInto(LibraryManager.library, {
     stringToUTF8(hash, buffer, bufferSize);
     return buffer;
   },
-  
+  // Cleanup function to dispose of a provider
+  DisposeProvider: function (providerPtr) {
+    if (this.starknetProviders && this.starknetProviders[providerPtr]) {
+      delete this.starknetProviders[providerPtr];
+    }
+  },
+  // Cleanup function to dispose of an account
+  DisposeAccount: function (accountPtr) {
+    if (this.starknetAccounts && this.starknetAccounts[accountPtr]) {
+      delete this.starknetAccounts[accountPtr];
+    }
+  },
 });
