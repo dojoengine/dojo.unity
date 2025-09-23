@@ -974,10 +974,10 @@ declare interface InitOutput {
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
   readonly __wbindgen_export_7: WebAssembly.Table;
   readonly __externref_table_dealloc: (a: number) => void;
-  readonly wasm_bindgen__convert__closures_____invoke__h393ac263d49faac3: (a: number, b: number) => void;
-  readonly closure975_externref_shim: (a: number, b: number, c: any) => void;
-  readonly wasm_bindgen__convert__closures_____invoke__h18edae019c731a7c: (a: number, b: number) => void;
-  readonly closure1149_externref_shim: (a: number, b: number, c: any, d: any) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__h48c1f7f6b2e7507f: (a: number, b: number) => void;
+  readonly closure974_externref_shim: (a: number, b: number, c: any) => void;
+  readonly wasm_bindgen__convert__closures_____invoke__ha650cbf29b909d89: (a: number, b: number) => void;
+  readonly closure1148_externref_shim: (a: number, b: number, c: any, d: any) => void;
   readonly __wbindgen_start: () => void;
 }
 
