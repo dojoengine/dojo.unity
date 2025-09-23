@@ -86,24 +86,6 @@ mergeInto(LibraryManager.library, {
     client.__destroy_into_raw();
     dynCall_vi(cb, buffer);
   },
-  // Get the value of a model for a specific set of keys
-  GetModelValue: async function (clientPtr, model, keys, cb) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let modelValue = await client.getModelValue(
-      UTF8ToString(model),
-      JSON.parse(UTF8ToString(keys))
-    );
-
-    // stringify the model value
-    let modelValueString = JSON.stringify(modelValue);
-    // return buffer
-    let bufferSize = lengthBytesUTF8(modelValueString) + 1;
-    let buffer = _malloc(bufferSize);
-    stringToUTF8(modelValueString, buffer, bufferSize);
-
-    client.__destroy_into_raw();
-    dynCall_vi(cb, buffer);
-  },
   OnTokenUpdated: async function (clientPtr, contractAddresses, tokenIds, cb, subCb) {
     const client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
     const subscription = await client.onTokenUpdated(
@@ -199,42 +181,6 @@ mergeInto(LibraryManager.library, {
 
     client.__destroy_into_raw();
     subscription.__destroy_into_raw();
-  },
-  AddModelsToSync: function (clientPtr, models) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let modelsString = UTF8ToString(models);
-    let modelsArray = JSON.parse(modelsString);
-
-    client.__destroy_into_raw();
-    client.addModelsToSync(modelsArray);
-  },
-  RemoveModelsToSync: function (clientPtr, models) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let modelsString = UTF8ToString(models);
-    let modelsArray = JSON.parse(modelsString);
-
-    client.__destroy_into_raw();
-    client.removeModelsToSync(modelsArray);
-  },
-  OnSyncModelChange: async function (
-    clientPtr,
-    models,
-    callbackObjectName,
-    callbackMethodName
-  ) {
-    let client = wasm_bindgen.ToriiClient.__wrap(clientPtr);
-    let modelsString = UTF8ToString(models);
-    let modelsArray = JSON.parse(modelsString);
-
-    const subscription = await client.onSyncModelChange(modelsArray, () => {
-      gameInstance.SendMessage(
-        UTF8ToString(callbackObjectName),
-        UTF8ToString(callbackMethodName)
-      );
-    });
-    subscription.__destroy_into_raw();
-
-    client.__destroy_into_raw();
   },
   // Encode typed data with the corresponding address and return the message hash
   // typedData: JSON string
