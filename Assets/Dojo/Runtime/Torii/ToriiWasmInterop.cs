@@ -102,11 +102,6 @@ namespace Dojo.Torii
         [DllImport("__Internal")]
         public static extern void GetEventMessages(IntPtr clientPtr, CString query, Action<string> cb);
 
-        // Get the value of a model for a specific set of keys
-        [DllImport("__Internal")]
-        public static extern string GetModelValue(IntPtr clientPtr, CString model, CString keys);
-
-        // Calls the callback at [callbackObjectName].[callbackMethodName] on entity updated
         [DllImport("__Internal")]
         public static extern void OnEntityUpdated(IntPtr clientPtr, CString clause, Action<string> cb, Action<IntPtr> subCb);
 
@@ -126,21 +121,8 @@ namespace Dojo.Torii
         [DllImport("__Internal")]
         public static extern void OnTokenBalanceUpdated(IntPtr clientPtr, CString contractAddresses, CString accountAddresses, CString tokenIds, Action<string> cb, Action<IntPtr> subCb);
 
-        // Add models to sync
-        [DllImport("__Internal")]
-        public static extern void AddModelsToSync(IntPtr clientPtr, CString models);
-
-        // Remove models to sync
-        [DllImport("__Internal")]
-        public static extern void RemoveModelsToSync(IntPtr clientPtr, CString models);
-
-        // Calls the callback at [callbackObjectName].[callbackMethodName] on model change
-        [DllImport("__Internal")]
-        public static extern void OnSyncModelChange(IntPtr clientPtr, CString model, CString callbackObjectName, CString callbackMethodName);
-
         [DllImport("__Internal")]
         public static extern string EncodeTypedData(CString typedData, CString address);
-
 
         [DllImport("__Internal")]
         public static extern void PublishMessage(IntPtr clientPtr, CString typedData, CString signature, Action<string> cb);

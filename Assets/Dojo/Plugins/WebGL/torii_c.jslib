@@ -1,26 +1,20 @@
 mergeInto(LibraryManager.library, {
-  // Initialize client registry if it doesn't exist
-  _initClientRegistry: function() {
-    if (!window.toriiClients) {
-      window.toriiClients = {};
-    }
-  },
-
   // Creates a new client and returns the client ID
   CreateClient: async function (
     toriiUrl,
     worldAddress,
     cb
   ) {
-    this._initClientRegistry();
+    if (!window.toriiClients) {
+      window.toriiClients = {};
+    }
     
     let client = await (new wasm_bindgen.ToriiClient({
       toriiUrl: UTF8ToString(toriiUrl),
       worldAddress: UTF8ToString(worldAddress),
     }));
 
-    // Generate a unique client ID
-    const clientId = Date.now() + Math.random();
+    const clientId = Math.floor(Math.random() * 1000000);
     window.toriiClients[clientId] = client;
     
     dynCall_vi(cb, clientId);
