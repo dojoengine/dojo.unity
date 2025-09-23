@@ -358,6 +358,11 @@ jobs:
           # WASM
           cp -r artifacts/wasm-artifact/* Assets/WebGLTemplates/Dojo/TemplateData/dojo.js/
 
+      - name: Clean up artifacts directory
+        run: |
+          rm -rf artifacts
+          echo "Removed artifacts directory"
+
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
